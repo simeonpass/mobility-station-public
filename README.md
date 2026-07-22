@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mobility Station Public Website
 
-## Getting Started
+Premium SEO-first public site for [mobilitystation.co.uk](https://mobilitystation.co.uk), built with Next.js App Router, TypeScript and Tailwind CSS v4.
 
-First, run the development server:
+## Stack
+
+- Next.js (App Router) + React 19
+- Tailwind CSS v4 with Mobility Station brand tokens
+- Supabase (read products/content; insert enquiries)
+- Leaflet + OpenStreetMap for branch maps
+- Vercel Speed Insights + optional GA4
+
+## Getting started
 
 ```bash
+npm install
+cp .env.example .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Without Supabase credentials the site serves curated fallback content so pages and forms still work in development.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```env
+SUPABASE_URL=
+SUPABASE_PUBLIC_SITE_KEY=
+NEXT_PUBLIC_SITE_URL=https://mobilitystation.co.uk
+NEXT_PUBLIC_GA_ID=
+```
 
-## Learn More
+Run `supabase/public_site_grants.sql` in Supabase to create the minimum `public_site` grants.
 
-To learn more about Next.js, take a look at the following resources:
+## Key routes
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Route | Purpose |
+| --- | --- |
+| `/` | Homepage |
+| `/vehicle-adaptations` | Adaptations hub + service pages |
+| `/shop` | Scooters & wheelchairs listing |
+| `/{category}/{slug}` | Root-level product URLs |
+| `/locations` | Heathrow & Ferndown |
+| `/book-a-demo` | Demo booking (Server Action → `enquiries`) |
+| `/book-a-service` | Service booking |
+| `/blog` | Advice articles |
+| `/lightweight-folding-mobility` | Lightweight hub + spin-off CTA |
+| `/mobility-scooter-hire` | Hire |
+| `/trade-in` | Trade-in valuation |
+| `/sitemap.xml` / `/robots.txt` | SEO |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Notes
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Brand colours and Manrope typography are enforced via CSS variables / theme tokens
+- Forms validate with Zod on the server and write to Supabase `enquiries`
+- Do not generate `og:image` in code unless an absolute HTTPS asset URL is supplied
