@@ -9,7 +9,14 @@ export const metadata = createMetadata({
   path: "/book-a-demo",
 });
 
-export default function BookADemoPage() {
+export default async function BookADemoPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ product?: string }>;
+}) {
+  const { product } = await searchParams;
+  const productSlug = product?.trim() || undefined;
+
   return (
     <>
       <Hero
@@ -41,7 +48,12 @@ export default function BookADemoPage() {
             </ul>
           </div>
           <div className="rounded-lg bg-soft p-6 md:p-8">
-            <EnquiryForm enquiryType="demo" title="Request your demonstration" />
+            <EnquiryForm
+              enquiryType="demo"
+              title="Request your demonstration"
+              defaultInterest={productSlug ? productSlug.replace(/-/g, " ") : ""}
+              productSlug={productSlug}
+            />
           </div>
         </div>
       </section>

@@ -1,11 +1,13 @@
+import Link from "next/link";
+import { ProductCard } from "@/components/ProductCard";
 import { BranchMap } from "@/components/sections/branch-map";
 import { CtaFooter } from "@/components/sections/cta-footer";
 import { Hero } from "@/components/sections/hero";
-import { ProductGrid } from "@/components/sections/product-grid";
 import { SolutionsGrid } from "@/components/sections/solutions-grid";
 import { Testimonials } from "@/components/sections/testimonials";
 import { TrustStrip } from "@/components/sections/trust-strip";
-import { getBranches, getProducts, getReviews } from "@/lib/data";
+import { getBranches, getReviews } from "@/lib/data";
+import { getFeaturedProducts } from "@/lib/products";
 import { createMetadata, jsonLdScript, SITE } from "@/lib/seo";
 
 export const metadata = createMetadata({
@@ -19,11 +21,17 @@ export const metadata = createMetadata({
 export const revalidate = 300;
 
 export default async function HomePage() {
-  const [products, branches, reviews] = await Promise.all([
-    getProducts({ featured: true, limit: 4 }),
+  const [branches, reviews] = await Promise.all([
     getBranches(),
     getReviews(),
   ]);
+
+  let featured: Awaited<ReturnType<typeof getFeaturedProducts>> = [];
+  try {
+    featured = await getFeaturedProducts(8);
+  } catch (error) {
+    console.error("Featured products error:", error);
+  }
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -53,7 +61,30 @@ export default async function HomePage() {
       />
       <TrustStrip />
       <SolutionsGrid />
-      <ProductGrid products={products} />
+
+      {featured.length > 0 ? (
+        <section className="bg-soft py-16 md:py-20">
+          <div className="container-site">
+            <div className="mb-6 flex items-end justify-between gap-4">
+              <h2 className="text-3xl font-extrabold tracking-tight text-primary md:text-4xl">
+                Featured products
+              </h2>
+              <Link
+                href="/shop"
+                className="font-semibold text-primary underline underline-offset-4 hover:text-primary-dark"
+              >
+                See all →
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+              {featured.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
       <BranchMap branches={branches} />
       <Testimonials reviews={reviews} />
       <CtaFooter />
