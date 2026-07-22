@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { SITE } from "@/lib/seo";
 import { BRANCHES } from "@/data/content";
@@ -39,8 +40,14 @@ export function SiteFooter() {
     <footer className="mt-auto bg-primary text-primary-foreground">
       <div className="container-site grid gap-10 py-14 md:grid-cols-2 lg:grid-cols-4">
         <div>
-          <p className="text-xl font-extrabold tracking-tight">Mobility Station</p>
-          <p className="mt-3 text-sm leading-relaxed text-white/80">
+          <Image
+            src="/brand/logo-lime.png"
+            alt="Mobility Station"
+            width={240}
+            height={46}
+            className="h-10 w-auto"
+          />
+          <p className="mt-4 text-sm leading-relaxed text-white/80">
             Free home demonstrations from our Heathrow and Ferndown branches.
             Motability accredited. We come to you.
           </p>

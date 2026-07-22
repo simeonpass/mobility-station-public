@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
+import { CatalogImage } from "@/components/product/catalog-image";
 import { cn } from "@/lib/utils";
 
 export function ProductGallery({
@@ -23,7 +23,7 @@ export function ProductGallery({
         onClick={() => setOpen(true)}
         aria-label={`View larger image of ${name}`}
       >
-        <Image
+        <CatalogImage
           src={current}
           alt={`${name} mobility product`}
           fill
@@ -45,7 +45,7 @@ export function ProductGallery({
                 onClick={() => setActive(index)}
                 aria-label={`Show image ${index + 1}`}
               >
-                <Image
+                <CatalogImage
                   src={src}
                   alt={`${name} thumbnail ${index + 1}`}
                   fill
@@ -66,8 +66,11 @@ export function ProductGallery({
           aria-label={`${name} image lightbox`}
           onClick={() => setOpen(false)}
         >
-          <div className="relative h-[80vh] w-full max-w-4xl" onClick={(e) => e.stopPropagation()}>
-            <Image
+          <div
+            className="relative h-[80vh] w-full max-w-4xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <CatalogImage
               src={current}
               alt={`${name} enlarged view`}
               fill

@@ -25,7 +25,7 @@ export type ProductListItem = {
   slug: string;
   category: string | null;
   manufacturer: string | null;
-  retail_price: number | null;
+  unit_price: number | null;
   sale_price: number | null;
   motability_price: number | null;
   motability_weekly_price: number | null;
@@ -34,16 +34,23 @@ export type ProductListItem = {
   seo_title: string | null;
   meta_description: string | null;
   product_type: string | null;
+  quantity: number | null;
+  track_stock: boolean;
+  condition: "new" | "ex-demo" | "refurbished" | "pre-owned" | null;
+  condition_grade: "A" | "B" | "C" | null;
+  pre_order_enabled: boolean;
 };
 
 export type ProductVariant = {
   id: string;
-  variant_label: string | null;
-  retail_price: number | null;
+  label: string | null;
+  unit_price: number | null;
   sale_price: number | null;
   image_url: string | null;
   colour: string | null;
-  in_stock: boolean;
+  quantity: number;
+  track_stock: boolean;
+  is_addon: boolean;
 };
 
 export type ProductDetail = ProductListItem & {
@@ -55,17 +62,24 @@ export type ProductDetail = ProductListItem & {
   dimensions: string | null;
   colour_options: string[] | null;
   delivery_estimate: string | null;
-  pre_order_enabled: boolean;
   pre_order_message: string | null;
   video_url: string | null;
+  sku: string | null;
+  location: string | null;
+  is_discontinued: boolean;
+  discontinued_message: string | null;
+  adaptation_id: string | null;
+  variant_group_id: string | null;
+  variant_label: string | null;
   images: ProductImage[];
   variants: ProductVariant[];
 };
 
 const LIST_COLUMNS = `
-  id, name, slug, category, manufacturer, retail_price, sale_price,
+  id, name, slug, category, manufacturer, unit_price, sale_price,
   motability_price, motability_weekly_price, is_featured, image_url,
-  seo_title, meta_description, product_type
+  seo_title, meta_description, product_type, quantity, track_stock,
+  condition, condition_grade, pre_order_enabled
 `;
 
 export function categoryToSlug(category: string) {
@@ -74,6 +88,14 @@ export function categoryToSlug(category: string) {
 
 export function slugToCategoryHint(slug: string) {
   return slug.replace(/-/g, " ");
+}
+
+function mapListItem(row: Record<string, unknown>): ProductListItem {
+  return {
+    ...(row as unknown as ProductListItem),
+    track_stock: row.track_stock !== false,
+    pre_order_enabled: Boolean(row.pre_order_enabled),
+  };
 }
 
 export async function getPublishedProducts(
@@ -89,6 +111,7 @@ export async function getPublishedProducts(
     .select(LIST_COLUMNS)
     .eq("published_to_website", true)
     .eq("website_visible", true)
+    .neq("product_type", "archived")
     .not("slug", "is", null)
     .order("is_featured", { ascending: false })
     .order("name", { ascending: true });
@@ -100,7 +123,7 @@ export async function getPublishedProducts(
 
   const { data, error } = await q;
   if (error) throw error;
-  return (data ?? []) as ProductListItem[];
+  return (data ?? []).map((row) => mapListItem(row as Record<string, unknown>));
 }
 
 export async function getFeaturedProducts(limit = 8): Promise<ProductListItem[]> {
@@ -111,12 +134,15 @@ export async function getFeaturedProducts(limit = 8): Promise<ProductListItem[]>
     .eq("published_to_website", true)
     .eq("website_visible", true)
     .eq("is_featured", true)
+    .neq("product_type", "archived")
     .not("slug", "is", null)
     .order("name", { ascending: true })
     .limit(limit);
 
   if (error) throw error;
-  if (data?.length) return data as ProductListItem[];
+  if (data?.length) {
+    return data.map((row) => mapListItem(row as Record<string, unknown>));
+  }
 
   // Fallback when nothing is flagged featured yet
   return getPublishedProducts({ limit });
@@ -131,6 +157,7 @@ export async function getCategories(): Promise<
     .select("category")
     .eq("published_to_website", true)
     .eq("website_visible", true)
+    .neq("product_type", "archived")
     .not("category", "is", null);
 
   if (error) throw error;
@@ -167,12 +194,15 @@ export async function getProductBySlug(
       ${LIST_COLUMNS},
       description, features, specifications, suitability_info,
       weight, dimensions, colour_options, delivery_estimate,
-      pre_order_enabled, pre_order_message, video_url
+      pre_order_message, video_url, sku, location,
+      is_discontinued, discontinued_message, adaptation_id,
+      variant_group_id, variant_label
     `,
     )
     .eq("slug", slug)
     .eq("published_to_website", true)
     .eq("website_visible", true)
+    .neq("product_type", "archived")
     .maybeSingle();
 
   if (error) throw error;
@@ -189,15 +219,29 @@ export async function getProductBySlug(
     supabase
       .from("product_variants")
       .select(
-        "id, variant_label, retail_price, sale_price, image_url, colour, in_stock",
+        "id, label, unit_price, sale_price, image_url, colour, quantity, track_stock, is_addon",
       )
-      .eq("stock_item_id", productId),
+      .eq("stock_item_id", productId)
+      .order("sort_order", { ascending: true }),
   ]);
 
+  const mapped = mapListItem(product as Record<string, unknown>);
+
   return {
-    ...(product as ProductListItem & ProductDetail),
+    ...mapped,
+    ...(product as ProductDetail),
+    track_stock: mapped.track_stock,
+    pre_order_enabled: mapped.pre_order_enabled,
+    is_discontinued: Boolean(
+      (product as { is_discontinued?: boolean }).is_discontinued,
+    ),
     images: (imagesRes.data ?? []) as ProductImage[],
-    variants: (variantsRes.data ?? []) as ProductVariant[],
+    variants: ((variantsRes.data ?? []) as ProductVariant[]).map((v) => ({
+      ...v,
+      track_stock: v.track_stock !== false,
+      is_addon: Boolean(v.is_addon),
+      quantity: v.quantity ?? 0,
+    })),
   };
 }
 
@@ -210,6 +254,7 @@ export async function getAllPublishedSlugs(): Promise<
     .select("slug, updated_at")
     .eq("published_to_website", true)
     .eq("website_visible", true)
+    .neq("product_type", "archived")
     .not("slug", "is", null);
 
   if (error) throw error;
@@ -224,13 +269,26 @@ export function primaryImage(p: {
   return primary?.image_url ?? p.image_url ?? "/placeholder-product.svg";
 }
 
+/** Match Lovable: sale price when discounted, otherwise unit_price. */
 export function displayPrice(
-  p: Pick<ProductListItem, "retail_price" | "sale_price">,
+  p: Pick<ProductListItem, "unit_price" | "sale_price">,
 ) {
-  if (p.sale_price && p.retail_price && p.sale_price < p.retail_price) {
-    return { current: p.sale_price, was: p.retail_price };
+  const unit =
+    p.unit_price != null && Number(p.unit_price) > 0
+      ? Number(p.unit_price)
+      : null;
+  const sale =
+    p.sale_price != null && Number(p.sale_price) > 0
+      ? Number(p.sale_price)
+      : null;
+
+  if (sale != null && unit != null && sale < unit) {
+    return { current: sale, was: unit };
   }
-  return { current: p.retail_price ?? null, was: null };
+  if (sale != null && unit == null) {
+    return { current: sale, was: null };
+  }
+  return { current: unit, was: null };
 }
 
 export function formatGBP(n: number | null | undefined) {
@@ -238,6 +296,56 @@ export function formatGBP(n: number | null | undefined) {
   return new Intl.NumberFormat("en-GB", {
     style: "currency",
     currency: "GBP",
-    maximumFractionDigits: 0,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(n);
+}
+
+export function formatWeeklyGBP(n: number | null | undefined) {
+  if (n == null) return null;
+  return formatGBP(n);
+}
+
+export function isUsedCondition(
+  condition: ProductListItem["condition"] | null | undefined,
+) {
+  return (
+    condition === "ex-demo" ||
+    condition === "refurbished" ||
+    condition === "pre-owned"
+  );
+}
+
+export function conditionLabel(
+  condition: ProductListItem["condition"] | null | undefined,
+) {
+  if (condition === "ex-demo") return "Ex-Demo";
+  if (condition === "refurbished") return "Refurbished";
+  if (condition === "pre-owned") return "Pre-Owned";
+  return "New";
+}
+
+export function stockStatus(p: {
+  track_stock: boolean;
+  quantity: number | null;
+  pre_order_enabled: boolean;
+  is_discontinued?: boolean;
+}) {
+  if (p.is_discontinued) {
+    return { label: "Discontinued", available: false } as const;
+  }
+  if (!p.track_stock) {
+    return { label: "Available to order", available: true } as const;
+  }
+  const qty = p.quantity ?? 0;
+  if (qty > 0) {
+    return {
+      label: qty <= 5 ? `Only ${qty} left` : "In stock",
+      available: true,
+    } as const;
+  }
+  if (p.pre_order_enabled) {
+    return { label: "Pre-order", available: true } as const;
+  }
+  return { label: "Out of stock", available: false } as const;
 }

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ProductCard } from "@/components/ProductCard";
 import { BranchMap } from "@/components/sections/branch-map";
 import { CtaFooter } from "@/components/sections/cta-footer";
-import { Hero } from "@/components/sections/hero";
+import { HomeHero } from "@/components/sections/home-hero";
 import { SolutionsGrid } from "@/components/sections/solutions-grid";
 import { Testimonials } from "@/components/sections/testimonials";
 import { TrustStrip } from "@/components/sections/trust-strip";
@@ -55,10 +55,7 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLdScript(jsonLd)}
       />
-      <Hero
-        title="We come to you with mobility solutions that fit real life"
-        subtitle="Free home demonstrations for scooters, wheelchairs and vehicle adaptations from our Heathrow and Ferndown branches. Motability accredited."
-      />
+      <HomeHero />
       <TrustStrip />
       <SolutionsGrid />
 

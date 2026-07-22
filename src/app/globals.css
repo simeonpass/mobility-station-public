@@ -3,19 +3,20 @@
 :root {
   /* Brand */
   --primary: #003f43;
-  --primary-dark: #0a565a;
+  --primary-dark: #0d6b70;
+  --primary-soft: #e6f0ee;
   --accent: #8cd63f;
   --accent-hover: #a4e85a;
   --tertiary: #f5cf2e;
 
   /* Surfaces */
   --background: #ffffff;
-  --soft: #f7faf9;
-  --border: #e7eeec;
+  --soft: #eef5f3;
+  --border: #d5e3df;
 
   /* Text */
-  --foreground: #1e2b2b;
-  --muted: #8a9997;
+  --foreground: #1a2626;
+  --muted: #5f726f;
 
   /* Functional */
   --success: #27ae60;
@@ -34,6 +35,7 @@
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
   --color-primary-dark: var(--primary-dark);
+  --color-primary-soft: var(--primary-soft);
   --color-primary-foreground: var(--primary-foreground);
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
@@ -113,8 +115,19 @@
 
   .bg-hero-mesh {
     background:
-      radial-gradient(ellipse 80% 60% at 85% 20%, rgb(140 214 63 / 0.18), transparent 55%),
-      radial-gradient(ellipse 60% 50% at 10% 80%, rgb(10 86 90 / 0.12), transparent 50%),
-      linear-gradient(165deg, #f7faf9 0%, #ffffff 45%, #eef6f3 100%);
+      radial-gradient(ellipse 70% 55% at 90% 15%, rgb(140 214 63 / 0.14), transparent 55%),
+      radial-gradient(ellipse 55% 45% at 8% 85%, rgb(0 63 67 / 0.08), transparent 50%),
+      linear-gradient(165deg, #eef5f3 0%, #ffffff 42%, #e6f0ee 100%);
+  }
+}
+
+@keyframes fadeRise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
