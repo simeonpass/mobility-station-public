@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
+import { AddToCartButton } from "@/components/product/add-to-cart-button";
 import { ProductGallery } from "@/components/product/product-gallery";
 import {
   conditionLabel,
@@ -302,16 +303,27 @@ export default async function ProductPage({ params }: Props) {
             </section>
           ) : null}
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link
-              href={`/book-a-demo?product=${encodeURIComponent(product.slug)}`}
-              className="flex-1 rounded-xl bg-accent px-6 py-3 text-center font-semibold text-accent-foreground transition-colors hover:bg-accent-hover"
-            >
-              Book a free home demo
-            </Link>
+          <div className="mt-8 space-y-3">
+            {stock.available && price.current != null ? (
+              <AddToCartButton
+                product={{
+                  id: product.id,
+                  name: product.name,
+                  slug: product.slug,
+                  image_url: primaryImage(product),
+                  unit_price: product.unit_price ?? price.current,
+                  sale_price: product.sale_price,
+                  category: product.category,
+                  weight: product.weight,
+                  condition: product.condition,
+                  product_type: product.product_type,
+                  pre_order_enabled: product.pre_order_enabled,
+                }}
+              />
+            ) : null}
             <a
               href="tel:08007723870"
-              className="flex-1 rounded-xl border border-primary px-6 py-3 text-center font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+              className="flex w-full rounded-xl border border-primary px-6 py-3 text-center font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
             >
               Call 0800 772 3870
             </a>

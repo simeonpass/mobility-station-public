@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { Menu, Phone, X } from "lucide-react";
+import { CartButton } from "@/components/cart/cart-drawer";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { SITE } from "@/lib/seo";
 import { cn } from "@/lib/utils";
@@ -60,6 +61,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
+          <CartButton />
           <a
             href={SITE.phoneHref}
             className={cn(buttonVariants({ variant: "phone", size: "sm" }), "rounded-full")}
@@ -72,11 +74,27 @@ export function SiteHeader() {
           </Link>
         </div>
 
+        <div className="flex items-center gap-1 md:hidden">
+          <CartButton />
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            aria-expanded={open}
+            aria-controls="mobile-nav"
+            aria-label={open ? "Close menu" : "Open menu"}
+            onClick={() => setOpen((v) => !v)}
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
+        </div>
+
+        {/* Tablet: hamburger without duplicating cart (cart is in md:flex cluster) */}
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          className="lg:hidden"
+          className="hidden md:inline-flex lg:hidden"
           aria-expanded={open}
           aria-controls="mobile-nav"
           aria-label={open ? "Close menu" : "Open menu"}
