@@ -1,9 +1,7 @@
-import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
-import { AddToCartButton } from "@/components/product/add-to-cart-button";
-import { ProductGallery } from "@/components/product/product-gallery";
+import { ProductDetailView } from "@/components/product/product-detail-view";
 import {
   conditionLabel,
   displayPrice,
@@ -131,288 +129,101 @@ export default async function ProductPage({ params }: Props) {
       : undefined,
   };
 
+  const cartProduct =
+    price.current != null
+      ? {
+          id: product.id,
+          name: product.name,
+          slug: product.slug,
+          image_url: primaryImage(product),
+          unit_price: product.unit_price ?? price.current,
+          sale_price: product.sale_price,
+          category: product.category,
+          weight: product.weight,
+          condition: product.condition,
+          product_type: product.product_type,
+          pre_order_enabled: product.pre_order_enabled,
+        }
+      : null;
+
   return (
-    <main className="container-site py-8 md:py-12">
+    <div className="pb-4 md:pb-12">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLdScript(jsonLd)}
       />
 
-      <Breadcrumbs
-        items={[
-          { label: "Home", href: "/" },
-          { label: "Shop", href: "/shop" },
-          ...(product.category
-            ? [
-                {
-                  label: product.category,
-                  href: `/shop/${product.category
-                    .toLowerCase()
-                    .replace(/\s+/g, "-")}`,
-                },
-              ]
-            : []),
-          { label: product.name },
-        ]}
-      />
-
-      <div className="grid gap-8 md:grid-cols-2 lg:gap-12">
-        <ProductGallery images={galleryUrls} name={product.name} />
-
-        <div>
-          <div className="mb-3 flex flex-wrap gap-2">
-            {used ? (
-              <span className="rounded-full bg-error px-3 py-1 text-xs font-semibold text-white">
-                Clearance · {conditionLabel(product.condition)}
-              </span>
-            ) : null}
-            {product.condition_grade ? (
-              <span className="rounded-full bg-soft px-3 py-1 text-xs font-semibold text-primary">
-                Grade {product.condition_grade}
-              </span>
-            ) : null}
-            {price.was ? (
-              <span className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
-                Sale — save {formatGBP(price.was - (price.current ?? 0))}
-              </span>
-            ) : null}
-          </div>
-
-          {product.manufacturer ? (
-            <p className="text-sm font-semibold uppercase tracking-wider text-muted">
-              {product.manufacturer}
-            </p>
-          ) : null}
-          <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-primary md:text-4xl">
-            {product.name}
-          </h1>
-
-          <p
-            className={`mt-3 text-sm font-medium ${
-              stock.available ? "text-success" : "text-error"
-            }`}
-          >
-            {stock.label}
-            {product.pre_order_enabled && product.pre_order_message
-              ? ` — ${product.pre_order_message}`
-              : null}
-          </p>
-
-          <div className="mt-6 flex flex-wrap items-baseline gap-3">
-            {price.current != null ? (
-              <>
-                <span className="text-sm text-muted">From</span>
-                <span className="text-3xl font-bold text-primary">
-                  {formatGBP(price.current)}
-                </span>
-              </>
-            ) : (
-              <span className="text-3xl font-bold text-primary">POA</span>
-            )}
-            {price.was ? (
-              <span className="text-lg text-muted line-through">
-                RRP {formatGBP(price.was)}
-              </span>
-            ) : null}
-          </div>
-
-          {(product.motability_weekly_price != null &&
-            product.motability_weekly_price >= 0) ||
-          product.motability_price != null ? (
-            <div className="mt-4 rounded-xl bg-primary px-4 py-3 text-primary-foreground">
-              <p className="text-xs font-semibold uppercase tracking-wide opacity-80">
-                Motability Scheme
-              </p>
-              {product.motability_weekly_price != null &&
-              product.motability_weekly_price > 0 ? (
-                <p className="mt-1 text-lg font-bold">
-                  {formatGBP(product.motability_weekly_price)}/week
-                </p>
-              ) : product.motability_weekly_price === 0 ||
-                product.motability_price === 0 ? (
-                <p className="mt-1 text-lg font-bold">Free of charge</p>
-              ) : product.motability_price != null ? (
-                <p className="mt-1 text-lg font-bold">
-                  {formatGBP(product.motability_price)} contribution
-                </p>
-              ) : null}
-              <Link
-                href="/motability"
-                className="mt-1 inline-block text-sm underline opacity-90 hover:opacity-100"
-              >
-                Learn about Motability
-              </Link>
-            </div>
-          ) : null}
-
-          {product.delivery_estimate ? (
-            <p className="mt-4 text-sm text-muted">
-              Delivery: {product.delivery_estimate}
-            </p>
-          ) : null}
-
-          {product.colour_options && product.colour_options.length > 0 ? (
-            <div className="mt-6">
-              <h2 className="mb-2 text-sm font-semibold text-primary">
-                Colour options
-              </h2>
-              <ul className="flex flex-wrap gap-2">
-                {product.colour_options.map((colour) => (
-                  <li
-                    key={colour}
-                    className="rounded-full border border-border px-3 py-1 text-sm"
-                  >
-                    {colour}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-
-          {optionVariants.length > 0 ? (
-            <section className="mt-6">
-              <h2 className="mb-3 text-lg font-semibold text-primary">
-                Options
-              </h2>
-              <ul className="space-y-2 text-sm">
-                {optionVariants.map((variant) => {
-                  const variantPrice = displayPrice({
-                    unit_price: variant.unit_price,
-                    sale_price: variant.sale_price,
-                  });
-                  const variantOut =
-                    variant.track_stock && (variant.quantity ?? 0) <= 0;
-                  return (
-                    <li
-                      key={variant.id}
-                      className="flex items-center justify-between border-b border-border py-2"
-                    >
-                      <span>
-                        {variant.label || variant.colour || "Option"}
-                        {variantOut ? (
-                          <span className="ml-2 text-muted">(out of stock)</span>
-                        ) : null}
-                      </span>
-                      <span className="font-semibold">
-                        {formatGBP(variantPrice.current)}
-                      </span>
-                    </li>
-                  );
-                })}
-              </ul>
-            </section>
-          ) : null}
-
-          <div className="mt-8 space-y-3">
-            {stock.available && price.current != null ? (
-              <AddToCartButton
-                product={{
-                  id: product.id,
-                  name: product.name,
-                  slug: product.slug,
-                  image_url: primaryImage(product),
-                  unit_price: product.unit_price ?? price.current,
-                  sale_price: product.sale_price,
-                  category: product.category,
-                  weight: product.weight,
-                  condition: product.condition,
-                  product_type: product.product_type,
-                  pre_order_enabled: product.pre_order_enabled,
-                }}
-              />
-            ) : null}
-            <a
-              href="tel:08007723870"
-              className="flex w-full rounded-xl border border-primary px-6 py-3 text-center font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
-            >
-              Call 0800 772 3870
-            </a>
-          </div>
-
-          {product.is_discontinued && product.discontinued_message ? (
-            <p className="mt-4 rounded-lg bg-soft p-3 text-sm text-muted">
-              {product.discontinued_message}
-            </p>
-          ) : null}
-
-          {product.description ? (
-            <div className="mt-8 max-w-none">
-              <p className="whitespace-pre-line leading-relaxed text-foreground/85">
-                {product.description}
-              </p>
-            </div>
-          ) : null}
-
-          {product.features && product.features.length > 0 ? (
-            <section className="mt-8">
-              <h2 className="mb-3 text-lg font-semibold text-primary">
-                Key features
-              </h2>
-              <ul className="space-y-2">
-                {product.features.slice(0, 12).map((feature) => (
-                  <li key={feature} className="flex gap-2">
-                    <span className="font-bold text-accent" aria-hidden>
-                      ✓
-                    </span>
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ) : null}
-
-          {product.suitability_info ? (
-            <section className="mt-8">
-              <h2 className="mb-3 text-lg font-semibold text-primary">
-                Who is it suitable for?
-              </h2>
-              <div className="space-y-2 text-foreground/85">
-                {product.suitability_info
-                  .split("\n")
-                  .filter(Boolean)
-                  .map((line) => (
-                    <p key={line}>{line}</p>
-                  ))}
-              </div>
-            </section>
-          ) : null}
-
-          {specs.length > 0 ? (
-            <section className="mt-8">
-              <h2 className="mb-3 text-lg font-semibold text-primary">
-                Specifications
-              </h2>
-              <dl className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
-                {specs.map(([key, value]) => (
-                  <div key={key} className="border-b border-border py-2">
-                    <dt className="capitalize text-muted">
-                      {key.replace(/_/g, " ")}
-                    </dt>
-                    <dd className="font-medium text-foreground">
-                      {String(value)}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            </section>
-          ) : null}
-
-          {videoEmbed ? (
-            <section className="mt-8">
-              <h2 className="mb-3 text-lg font-semibold text-primary">Video</h2>
-              <div className="aspect-video overflow-hidden rounded-xl bg-soft">
-                <iframe
-                  src={videoEmbed}
-                  title={`${product.name} video`}
-                  className="h-full w-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            </section>
-          ) : null}
-        </div>
+      <div className="container-site pt-4 md:pt-8">
+        <Breadcrumbs
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Shop", href: "/shop" },
+            ...(product.category
+              ? [
+                  {
+                    label: product.category,
+                    href: `/shop/${product.category
+                      .toLowerCase()
+                      .replace(/\s+/g, "-")}`,
+                  },
+                ]
+              : []),
+            { label: product.name },
+          ]}
+        />
       </div>
-    </main>
+
+      <div className="container-site">
+        <ProductDetailView
+          name={product.name}
+          manufacturer={product.manufacturer}
+          gallery={galleryUrls}
+          priceCurrent={price.current}
+          priceWas={price.was}
+          stockLabel={[
+            stock.label,
+            product.pre_order_enabled && product.pre_order_message
+              ? product.pre_order_message
+              : null,
+          ]
+            .filter(Boolean)
+            .join(" — ")}
+          stockAvailable={stock.available}
+          used={used}
+          conditionLabel={used ? conditionLabel(product.condition) : null}
+          conditionGrade={product.condition_grade}
+          saleSaveLabel={
+            price.was && price.current
+              ? `Sale — save ${formatGBP(price.was - price.current)}`
+              : null
+          }
+          motabilityWeekly={product.motability_weekly_price}
+          motabilityPrice={product.motability_price}
+          deliveryEstimate={product.delivery_estimate}
+          colourOptions={product.colour_options ?? []}
+          optionVariants={optionVariants.map((variant) => {
+            const variantPrice = displayPrice({
+              unit_price: variant.unit_price,
+              sale_price: variant.sale_price,
+            });
+            return {
+              id: variant.id,
+              label: variant.label || variant.colour || "Option",
+              priceLabel: formatGBP(variantPrice.current),
+              outOfStock: variant.track_stock && (variant.quantity ?? 0) <= 0,
+            };
+          })}
+          cartProduct={cartProduct}
+          discontinuedMessage={
+            product.is_discontinued ? product.discontinued_message : null
+          }
+          description={product.description}
+          features={(product.features ?? []).slice(0, 12)}
+          suitabilityInfo={product.suitability_info}
+          specs={specs.map(([k, v]) => [k, String(v)])}
+          videoEmbed={videoEmbed}
+        />
+      </div>
+    </div>
   );
 }
