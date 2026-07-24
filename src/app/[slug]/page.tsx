@@ -37,6 +37,11 @@ export default async function LegacyProductSlugPage({ params }: Props) {
     "trade-in",
     "mobility-scooter-hire",
     "lightweight-folding-mobility",
+    "hire",
+    "delivery",
+    "service-area",
+    "find-my-scooter",
+    "our-work",
   ]);
   if (reserved.has(slug.toLowerCase())) notFound();
 

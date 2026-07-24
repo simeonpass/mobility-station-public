@@ -9,8 +9,10 @@ const columns = [
     links: [
       { href: "/vehicle-adaptations", label: "Vehicle Adaptations" },
       { href: "/shop", label: "Scooters & Wheelchairs" },
+      { href: "/find-my-scooter", label: "Find My Scooter" },
+      { href: "/hire", label: "Scooter Hire" },
+      { href: "/clearance", label: "Clearance" },
       { href: "/lightweight-folding-mobility", label: "Lightweight Mobility" },
-      { href: "/mobility-scooter-hire", label: "Scooter Hire" },
       { href: "/trade-in", label: "Trade-In" },
     ],
   },
@@ -19,8 +21,10 @@ const columns = [
     links: [
       { href: "/about-us", label: "About Us" },
       { href: "/motability", label: "Motability" },
-      { href: "/clearance", label: "Clearance" },
+      { href: "/service-area", label: "Service Area" },
+      { href: "/delivery", label: "Delivery" },
       { href: "/locations", label: "Locations" },
+      { href: "/our-work", label: "Our Work" },
       { href: "/blog", label: "Blog" },
       { href: "/faq", label: "FAQ" },
       { href: "/contact", label: "Contact" },

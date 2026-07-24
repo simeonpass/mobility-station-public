@@ -3,10 +3,11 @@ import { ProductCard } from "@/components/ProductCard";
 import { BranchMap } from "@/components/sections/branch-map";
 import { CtaFooter } from "@/components/sections/cta-footer";
 import { HomeHero } from "@/components/sections/home-hero";
+import { RecentWorkStrip } from "@/components/sections/recent-work-strip";
 import { SolutionsGrid } from "@/components/sections/solutions-grid";
 import { Testimonials } from "@/components/sections/testimonials";
 import { TrustStrip } from "@/components/sections/trust-strip";
-import { getBranches, getReviews } from "@/lib/data";
+import { getBranches, getPublicPortfolio, getReviews } from "@/lib/data";
 import { getFeaturedProducts } from "@/lib/products";
 import { createMetadata, jsonLdScript, SITE } from "@/lib/seo";
 
@@ -27,10 +28,14 @@ export default async function HomePage() {
   ]);
 
   let featured: Awaited<ReturnType<typeof getFeaturedProducts>> = [];
+  let portfolio: Awaited<ReturnType<typeof getPublicPortfolio>> = [];
   try {
-    featured = await getFeaturedProducts(8);
+    [featured, portfolio] = await Promise.all([
+      getFeaturedProducts(8),
+      getPublicPortfolio(6),
+    ]);
   } catch (error) {
-    console.error("Featured products error:", error);
+    console.error("Homepage catalogue error:", error);
   }
 
   const jsonLd = {
@@ -81,6 +86,8 @@ export default async function HomePage() {
           </div>
         </section>
       ) : null}
+
+      <RecentWorkStrip items={portfolio} />
 
       <BranchMap branches={branches} />
       <Testimonials reviews={reviews} />

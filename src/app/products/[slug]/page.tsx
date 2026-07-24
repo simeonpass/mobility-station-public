@@ -240,6 +240,7 @@ export default async function ProductPage({ params }: Props) {
           adaptationId={product.adaptation_id}
           isAdaptation={adaptation}
           deliveryEstimate={product.delivery_estimate}
+          weight={product.weight}
           colourOptions={product.colour_options ?? []}
           optionVariants={optionVariants.map((variant) => {
             const variantPrice = displayPrice({

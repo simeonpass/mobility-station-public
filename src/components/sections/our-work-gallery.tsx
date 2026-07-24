@@ -1,0 +1,117 @@
+"use client";
+
+import { useState } from "react";
+import Image from "next/image";
+import type { PortfolioItem } from "@/lib/data";
+
+const FILTERS = [
+  { label: "All", value: "all" },
+  { label: "Adaptations", value: "adaptations" },
+  { label: "Scooters & Wheelchairs", value: "scooters-wheelchairs" },
+  { label: "Servicing", value: "servicing" },
+];
+
+export function OurWorkGallery({ items }: { items: PortfolioItem[] }) {
+  const [filter, setFilter] = useState("all");
+  const [active, setActive] = useState<PortfolioItem | null>(null);
+
+  const filtered =
+    filter === "all"
+      ? items
+      : items.filter((i) => i.category === filter);
+
+  return (
+    <>
+      <div className="mb-8 flex flex-wrap justify-center gap-2">
+        {FILTERS.map((f) => (
+          <button
+            key={f.value}
+            type="button"
+            onClick={() => setFilter(f.value)}
+            className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+              filter === f.value
+                ? "bg-primary text-primary-foreground"
+                : "border border-border bg-white text-primary"
+            }`}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+
+      {!filtered.length ? (
+        <p className="py-12 text-center text-muted">
+          No items in this category yet — check back soon.
+        </p>
+      ) : (
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 sm:gap-4">
+          {filtered.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => setActive(item)}
+              className="group relative aspect-square overflow-hidden rounded-xl bg-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              aria-label={item.title || "Recent work photo"}
+            >
+              <Image
+                src={item.url}
+                alt={item.title || item.description || "Mobility Station job"}
+                fill
+                className="object-cover transition duration-500 group-hover:scale-105"
+                sizes="(max-width: 768px) 50vw, 25vw"
+              />
+              {item.title ? (
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3 opacity-0 transition group-hover:opacity-100">
+                  <p className="line-clamp-2 text-left text-sm font-semibold text-white">
+                    {item.title}
+                  </p>
+                </div>
+              ) : null}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {active ? (
+        <div
+          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 p-4"
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setActive(null)}
+        >
+          <button
+            type="button"
+            className="absolute right-4 top-4 rounded-full bg-white/10 px-3 py-1 text-sm text-white"
+            onClick={() => setActive(null)}
+          >
+            Close
+          </button>
+          <div
+            className="relative max-h-[85vh] w-full max-w-4xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-black">
+              <Image
+                src={active.url}
+                alt={active.title || "Recent work"}
+                fill
+                className="object-contain"
+                sizes="90vw"
+              />
+            </div>
+            {(active.title || active.description) && (
+              <div className="mt-3 text-center text-white">
+                {active.title ? (
+                  <p className="font-semibold">{active.title}</p>
+                ) : null}
+                {active.description ? (
+                  <p className="mt-1 text-sm text-white/80">{active.description}</p>
+                ) : null}
+              </div>
+            )}
+          </div>
+        </div>
+      ) : null}
+    </>
+  );
+}

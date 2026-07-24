@@ -4,6 +4,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { CartProvider } from "@/components/cart/cart-provider";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { Analytics } from "@/components/layout/analytics";
+import { CookieConsentBanner } from "@/components/layout/cookie-consent-banner";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SITE } from "@/lib/seo";
@@ -50,6 +51,7 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
           <SiteFooter />
           <CartDrawer />
+          <CookieConsentBanner />
           <Analytics />
           <SpeedInsights />
         </CartProvider>

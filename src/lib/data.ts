@@ -190,6 +190,74 @@ export async function getBlogPost(slug: string): Promise<BlogPost | null> {
   return posts.find((p) => p.slug === slug) ?? null;
 }
 
+const R2_CDN_URL = "https://pub-d0fa88fa71f044d9a9fc37a3c9d5fe47.r2.dev";
+
+export type PortfolioItem = {
+  id: string;
+  title: string | null;
+  description: string | null;
+  category: string | null;
+  url: string;
+};
+
+function portfolioUrl(filePath: string) {
+  if (filePath.startsWith("http")) return filePath;
+  return `${R2_CDN_URL}/${encodeURI(filePath)}`;
+}
+
+export async function getPublicPortfolio(
+  limit = 48,
+  category?: string,
+): Promise<PortfolioItem[]> {
+  if (!hasSupabase()) return [];
+  const supabase = getSupabase();
+  if (!supabase) return [];
+
+  const imageTypes = [
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+    "image/webp",
+    "image/heic",
+    "image/heif",
+    "image/gif",
+  ];
+
+  let query = supabase
+    .from("portfolio_uploads")
+    .select(
+      "id, file_path, file_type, title, description, category, display_order, created_at",
+    )
+    .eq("is_public", true)
+    .in("file_type", imageTypes)
+    .order("display_order", { ascending: true })
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (category && category !== "all") {
+    query = query.eq("category", category);
+  }
+
+  const { data, error } = await query;
+  if (error || !data) return [];
+
+  return data
+    .filter(
+      (r) =>
+        typeof r.file_path === "string" &&
+        (r.file_path.startsWith("http") ||
+          r.file_path.includes("/") ||
+          r.file_path.length > 0),
+    )
+    .map((r) => ({
+      id: String(r.id),
+      title: r.title ? String(r.title) : null,
+      description: r.description ? String(r.description) : null,
+      category: r.category ? String(r.category) : null,
+      url: portfolioUrl(String(r.file_path)),
+    }));
+}
+
 export async function getReviews(): Promise<Review[]> {
   if (!hasSupabase()) return REVIEWS;
   const supabase = getSupabase();

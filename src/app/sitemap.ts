@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { LOCATION_PAGES } from "@/data/location-pages";
 import {
   ADAPTATION_SECTIONS,
   categoryToSlug as adaptationCategoryToSlug,
@@ -42,6 +43,36 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.7,
+    },
+    {
+      url: `${SITE.url}/hire`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    {
+      url: `${SITE.url}/delivery`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: `${SITE.url}/service-area`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${SITE.url}/find-my-scooter`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: `${SITE.url}/our-work`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.6,
     },
     {
       url: `${SITE.url}/lightweight-folding-mobility`,
@@ -119,6 +150,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("Sitemap blog fetch failed:", error);
   }
 
+  const townRoutes = LOCATION_PAGES.map((loc) => ({
+    url: `${SITE.url}/service-area/${loc.slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.55,
+  }));
+
   const adaptationRoutes = [
     ...ADAPTATION_SECTIONS.map((section) => ({
       url: `${SITE.url}/vehicle-adaptations/${section.id}`,
@@ -138,6 +176,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     ...staticRoutes,
+    ...townRoutes,
     ...adaptationRoutes,
     ...products.map((p) => ({
       url: `${SITE.url}/products/${p.slug}`,

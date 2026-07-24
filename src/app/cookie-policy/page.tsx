@@ -38,18 +38,24 @@ export default function CookiePolicyPage() {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td className="font-mono text-xs">ms-cart</td>
-                  <td>Stores your shopping basket contents</td>
-                  <td>Functional</td>
-                  <td>Until cleared</td>
-                </tr>
-                <tr>
-                  <td className="font-mono text-xs">ms_cookie_consent</td>
-                  <td>Remembers your cookie preferences (when shown)</td>
-                  <td>Essential</td>
-                  <td>1 year</td>
-                </tr>
+                  <tr>
+                    <td className="font-mono text-xs">ms-cart</td>
+                    <td>Stores your shopping basket contents</td>
+                    <td>Functional</td>
+                    <td>Until cleared</td>
+                  </tr>
+                  <tr>
+                    <td className="font-mono text-xs">ms_cookie_consent</td>
+                    <td>Remembers your cookie preferences</td>
+                    <td>Essential</td>
+                    <td>1 year</td>
+                  </tr>
+                  <tr>
+                    <td className="font-mono text-xs">_ga / _ga_*</td>
+                    <td>Google Analytics (only if you accept analytics)</td>
+                    <td>Analytics</td>
+                    <td>Up to 2 years</td>
+                  </tr>
               </tbody>
             </table>
           </div>

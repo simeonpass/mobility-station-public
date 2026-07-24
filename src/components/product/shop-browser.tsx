@@ -154,6 +154,12 @@ export function ShopBrowser({
         >
           Motability
         </Link>
+        <Link
+          href="/find-my-scooter"
+          className="rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold text-primary hover:border-primary"
+        >
+          Help me choose
+        </Link>
       </div>
 
       <div className="mb-6 grid gap-3 rounded-2xl border border-border bg-white p-4 md:grid-cols-2 lg:grid-cols-4">

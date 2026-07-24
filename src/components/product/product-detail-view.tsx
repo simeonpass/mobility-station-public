@@ -7,6 +7,7 @@ import {
   StickyBuyBar,
 } from "@/components/product/add-to-cart-button";
 import { BrandLogo } from "@/components/product/brand-logo";
+import { DeliveryChecker } from "@/components/product/delivery-checker";
 import { ProductAccordion } from "@/components/product/product-accordion";
 import { ProductGallery } from "@/components/product/product-gallery";
 import type { CartProduct } from "@/lib/cart";
@@ -31,6 +32,7 @@ export type ProductDetailViewProps = {
   adaptationId: string | null;
   isAdaptation: boolean;
   deliveryEstimate: string | null;
+  weight: number | null;
   colourOptions: string[];
   optionVariants: Array<{
     id: string;
@@ -293,6 +295,17 @@ export function ProductDetailView(props: ProductDetailViewProps) {
             <p className="mt-3 text-sm text-muted">
               Delivery: {props.deliveryEstimate}
             </p>
+          ) : null}
+
+          {!props.isAdaptation ? (
+            <div className="mt-5">
+              <DeliveryChecker weight={props.weight} compact />
+              <p className="mt-2 text-xs text-muted">
+                <Link href="/delivery" className="underline hover:text-primary">
+                  Delivery &amp; returns information
+                </Link>
+              </p>
+            </div>
           ) : null}
 
           {props.colourOptions.length > 0 ? (

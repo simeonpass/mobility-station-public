@@ -422,3 +422,92 @@ export function stockStatus(p: {
   }
   return { label: "Out of stock", available: false } as const;
 }
+
+export type HireProduct = {
+  id: string;
+  name: string;
+  slug: string;
+  image_url: string | null;
+  hire_daily_rate: number | null;
+  hire_weekly_rate: number | null;
+  hire_monthly_rate: number | null;
+  hire_deposit: number | null;
+  hire_nationwide: boolean;
+  hire_courier_fee: number | null;
+  hire_min_days: number | null;
+};
+
+export async function getHireProducts(): Promise<HireProduct[]> {
+  const supabase = getClient();
+  const { data, error } = await supabase
+    .from("stock_items")
+    .select(
+      `id, name, slug, image_url, hire_daily_rate, hire_weekly_rate,
+       hire_monthly_rate, hire_deposit, hire_nationwide, hire_courier_fee,
+       hire_min_days`,
+    )
+    .eq("hire_enabled", true)
+    .eq("website_visible", true)
+    .neq("product_type", "archived")
+    .order("name", { ascending: true });
+
+  if (error) throw error;
+  return (data ?? []).map((row) => ({
+    ...(row as unknown as HireProduct),
+    hire_nationwide: Boolean(row.hire_nationwide),
+  }));
+}
+
+export type QuizProduct = ProductListItem & {
+  description: string | null;
+  specifications: Record<string, unknown> | null;
+};
+
+export async function getScooterQuizProducts(): Promise<QuizProduct[]> {
+  const supabase = getClient();
+  const { data, error } = await supabase
+    .from("stock_items")
+    .select(`${LIST_COLUMNS}, description, specifications`)
+    .eq("published_to_website", true)
+    .eq("website_visible", true)
+    .neq("product_type", "archived")
+    .neq("product_type", "vehicle_adaptation")
+    .not("slug", "is", null)
+    .in("category", [
+      "Mobility Scooters",
+      "Small Scooters",
+      "Mid Size Scooters",
+      "Large Mobility Scooters",
+      "Folding Mobility Scooters",
+    ])
+    .order("is_featured", { ascending: false })
+    .limit(200);
+
+  if (error) throw error;
+  return (data ?? []).map((row) => ({
+    ...mapListItem(row as Record<string, unknown>),
+    description: (row.description as string | null) ?? null,
+    specifications:
+      (row.specifications as Record<string, unknown> | null) ?? null,
+  }));
+}
+
+export function calcHirePrice(
+  days: number,
+  daily: number,
+  weekly: number,
+  monthly: number,
+): number {
+  const d = Math.max(1, Math.floor(days));
+  const dailyOnly = daily * d;
+  if (!weekly && !monthly) return Number(dailyOnly.toFixed(2));
+  const months = monthly > 0 ? Math.floor(d / 30) : 0;
+  const remaining = d - months * 30;
+  const weeks = weekly > 0 ? Math.floor(remaining / 7) : 0;
+  const remDays = remaining - weeks * 7;
+  const tieredCost =
+    months * (monthly || 0) + weeks * (weekly || 0) + remDays * (daily || 0);
+  const altWeekly = weekly > 0 && d <= 7 ? weekly : Infinity;
+  const altMonthly = monthly > 0 && d <= 30 ? monthly : Infinity;
+  return Number(Math.min(dailyOnly, tieredCost, altWeekly, altMonthly).toFixed(2));
+}
