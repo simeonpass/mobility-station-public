@@ -6,13 +6,16 @@ import {
   AddToCartButton,
   StickyBuyBar,
 } from "@/components/product/add-to-cart-button";
+import { BrandLogo } from "@/components/product/brand-logo";
 import { ProductAccordion } from "@/components/product/product-accordion";
 import { ProductGallery } from "@/components/product/product-gallery";
 import type { CartProduct } from "@/lib/cart";
+import { getBrandLogo } from "@/lib/brand-logos";
 import { formatGBP } from "@/lib/products";
 
 export type ProductDetailViewProps = {
   name: string;
+  slug: string;
   manufacturer: string | null;
   gallery: string[];
   priceCurrent: number | null;
@@ -25,6 +28,8 @@ export type ProductDetailViewProps = {
   saleSaveLabel: string | null;
   motabilityWeekly: number | null;
   motabilityPrice: number | null;
+  adaptationId: string | null;
+  isAdaptation: boolean;
   deliveryEstimate: string | null;
   colourOptions: string[];
   optionVariants: Array<{
@@ -165,6 +170,11 @@ export function ProductDetailView(props: ProductDetailViewProps) {
 
         <div>
           <div className="mb-3 flex flex-wrap gap-2">
+            {props.isAdaptation ? (
+              <span className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
+                Supplied &amp; fitted
+              </span>
+            ) : null}
             {props.used && props.conditionLabel ? (
               <span className="rounded-full bg-error px-3 py-1 text-xs font-semibold text-white">
                 Clearance · {props.conditionLabel}
@@ -182,7 +192,11 @@ export function ProductDetailView(props: ProductDetailViewProps) {
             ) : null}
           </div>
 
-          {props.manufacturer ? (
+          {getBrandLogo(props.manufacturer) ? (
+            <div className="mb-3">
+              <BrandLogo manufacturer={props.manufacturer} height={36} />
+            </div>
+          ) : props.manufacturer ? (
             <p className="text-sm font-semibold uppercase tracking-wider text-muted">
               {props.manufacturer}
             </p>
@@ -216,6 +230,12 @@ export function ProductDetailView(props: ProductDetailViewProps) {
               </span>
             ) : null}
           </div>
+          {props.isAdaptation && props.priceCurrent != null ? (
+            <p className="mt-1 text-xs text-muted">
+              Indicative supplied &amp; fitted price — final quote tailored to
+              your vehicle
+            </p>
+          ) : null}
 
           {(props.motabilityWeekly != null && props.motabilityWeekly >= 0) ||
           props.motabilityPrice != null ? (
@@ -233,7 +253,13 @@ export function ProductDetailView(props: ProductDetailViewProps) {
                   <p className="text-base font-bold">Free of charge</p>
                 ) : props.motabilityPrice != null ? (
                   <p className="text-base font-bold">
-                    {formatGBP(props.motabilityPrice)} contribution
+                    {formatGBP(props.motabilityPrice)}{" "}
+                    {props.isAdaptation ? "advance payment" : "contribution"}
+                  </p>
+                ) : null}
+                {props.adaptationId ? (
+                  <p className="mt-0.5 text-[11px] opacity-80">
+                    Code: {props.adaptationId}
                   </p>
                 ) : null}
               </div>
@@ -246,7 +272,24 @@ export function ProductDetailView(props: ProductDetailViewProps) {
             </div>
           ) : null}
 
-          {props.deliveryEstimate ? (
+          {props.isAdaptation ? (
+            <div className="mt-4 grid gap-2 rounded-xl border border-border bg-soft p-4 text-sm sm:grid-cols-3">
+              <div>
+                <p className="font-semibold text-primary">Workshop fitting</p>
+                <p className="mt-0.5 text-xs text-muted">Included at Heathrow or Ferndown</p>
+              </div>
+              <div>
+                <p className="font-semibold text-primary">Mobile fitting</p>
+                <p className="mt-0.5 text-xs text-muted">Ask us where possible</p>
+              </div>
+              <div>
+                <p className="font-semibold text-primary">Vehicle collection</p>
+                <p className="mt-0.5 text-xs text-muted">Available at reasonable cost</p>
+              </div>
+            </div>
+          ) : null}
+
+          {!props.isAdaptation && props.deliveryEstimate ? (
             <p className="mt-3 text-sm text-muted">
               Delivery: {props.deliveryEstimate}
             </p>
@@ -269,7 +312,27 @@ export function ProductDetailView(props: ProductDetailViewProps) {
           ) : null}
 
           <div ref={buyRef} className="mt-6 space-y-3">
-            {props.cartProduct && props.stockAvailable ? (
+            {props.isAdaptation ? (
+              <>
+                <Link
+                  href={`/contact?interest=adaptation&product=${encodeURIComponent(props.slug)}`}
+                  className="flex w-full items-center justify-center rounded-xl bg-accent px-6 py-3 text-center font-semibold text-accent-foreground hover:bg-accent-hover"
+                >
+                  Get a free quotation
+                </Link>
+                <Link
+                  href={`/book-a-demo?type=adaptation&product=${encodeURIComponent(props.slug)}`}
+                  className="flex w-full items-center justify-center rounded-xl border border-primary px-6 py-3 text-center font-semibold text-primary hover:bg-primary hover:text-primary-foreground"
+                >
+                  Book a free home demo
+                </Link>
+                <p className="text-xs leading-relaxed text-muted">
+                  Adaptations aren&apos;t available for online checkout because
+                  fitting depends on your vehicle. We&apos;ll confirm
+                  compatibility and a firm price before any work starts.
+                </p>
+              </>
+            ) : props.cartProduct && props.stockAvailable ? (
               <AddToCartButton product={props.cartProduct} layout="stack" />
             ) : null}
             <a
@@ -292,7 +355,7 @@ export function ProductDetailView(props: ProductDetailViewProps) {
         </div>
       </div>
 
-      {props.cartProduct && props.stockAvailable ? (
+      {!props.isAdaptation && props.cartProduct && props.stockAvailable ? (
         <StickyBuyBar
           product={props.cartProduct}
           priceLabel={priceLabel}
@@ -300,8 +363,7 @@ export function ProductDetailView(props: ProductDetailViewProps) {
         />
       ) : null}
 
-      {/* Spacer so sticky bar doesn't cover accordion end on mobile */}
-      {props.cartProduct && props.stockAvailable ? (
+      {!props.isAdaptation && props.cartProduct && props.stockAvailable ? (
         <div className="h-20 md:hidden" aria-hidden />
       ) : null}
     </>

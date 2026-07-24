@@ -1,5 +1,9 @@
 import type { MetadataRoute } from "next";
-import { ADAPTATION_SERVICES, BLOG_POSTS } from "@/data/content";
+import {
+  ADAPTATION_SECTIONS,
+  categoryToSlug as adaptationCategoryToSlug,
+} from "@/lib/adaptations";
+import { getBlogPosts } from "@/lib/data";
 import { getAllPublishedSlugs } from "@/lib/products";
 import { SITE } from "@/lib/seo";
 
@@ -34,6 +38,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     },
     {
+      url: `${SITE.url}/clearance`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    {
       url: `${SITE.url}/lightweight-folding-mobility`,
       lastModified: now,
       changeFrequency: "monthly",
@@ -60,8 +70,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     {
       url: `${SITE.url}/motability`,
       lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.6,
+      changeFrequency: "weekly",
+      priority: 0.7,
     },
     {
       url: `${SITE.url}/faq`,
@@ -75,6 +85,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.6,
     },
+    {
+      url: `${SITE.url}/privacy-policy`,
+      lastModified: now,
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+    {
+      url: `${SITE.url}/cookie-policy`,
+      lastModified: now,
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+    {
+      url: `${SITE.url}/terms`,
+      lastModified: now,
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
   ];
 
   let products: { slug: string; updated_at: string }[] = [];
@@ -84,21 +112,40 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("Sitemap product fetch failed:", error);
   }
 
+  let blogPosts: Awaited<ReturnType<typeof getBlogPosts>> = [];
+  try {
+    blogPosts = await getBlogPosts();
+  } catch (error) {
+    console.error("Sitemap blog fetch failed:", error);
+  }
+
+  const adaptationRoutes = [
+    ...ADAPTATION_SECTIONS.map((section) => ({
+      url: `${SITE.url}/vehicle-adaptations/${section.id}`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.75,
+    })),
+    ...ADAPTATION_SECTIONS.flatMap((section) =>
+      section.categories.map((category) => ({
+        url: `${SITE.url}/vehicle-adaptations/${adaptationCategoryToSlug(category)}`,
+        lastModified: now,
+        changeFrequency: "weekly" as const,
+        priority: 0.7,
+      })),
+    ),
+  ];
+
   return [
     ...staticRoutes,
-    ...ADAPTATION_SERVICES.map((service) => ({
-      url: `${SITE.url}/vehicle-adaptations/${service.slug}`,
-      lastModified: now,
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
-    })),
+    ...adaptationRoutes,
     ...products.map((p) => ({
       url: `${SITE.url}/products/${p.slug}`,
       lastModified: p.updated_at ? new Date(p.updated_at) : now,
       changeFrequency: "weekly" as const,
       priority: 0.7,
     })),
-    ...BLOG_POSTS.map((post) => ({
+    ...blogPosts.map((post) => ({
       url: `${SITE.url}/blog/${post.slug}`,
       lastModified: new Date(post.publishedAt),
       changeFrequency: "monthly" as const,

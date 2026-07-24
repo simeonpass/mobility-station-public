@@ -521,8 +521,8 @@ export const SOLUTIONS = [
     description: "Mobility scooters, powerchairs and folding travel solutions.",
   },
   {
-    title: "Mobility Hoists",
-    href: "/vehicle-adaptations/scooter-hoists",
+    title: "Boot Hoists",
+    href: "/vehicle-adaptations/boot-hoists",
     description: "Lift scooters and chairs safely into your vehicle.",
   },
   {
@@ -532,23 +532,23 @@ export const SOLUTIONS = [
   },
   {
     title: "Hand Controls",
-    href: "/vehicle-adaptations/hand-controls",
+    href: "/vehicle-adaptations/mechanical-hand-controls",
     description: "Drive without pedals using proven control systems.",
   },
   {
     title: "Boot Openers",
-    href: "/vehicle-adaptations/boot-openers",
+    href: "/vehicle-adaptations/automatic-boot-openers",
     description: "Powered boot access for everyday loading.",
   },
   {
-    title: "Car Ramps",
-    href: "/vehicle-adaptations/car-ramps",
-    description: "Practical ramp solutions for suitable vehicles.",
+    title: "Driving Controls",
+    href: "/vehicle-adaptations/driving-controls",
+    description: "Accelerators, steering aids and secondary controls.",
   },
   {
-    title: "Wheelchair Accessible Vehicles",
-    href: "/vehicle-adaptations/wheelchair-accessible-vehicles",
-    description: "Travel seated in your wheelchair with WAV options.",
+    title: "Vehicle Access",
+    href: "/vehicle-adaptations/vehicle-access",
+    description: "Steps, grab handles, transfer plates and seating mods.",
   },
 ] as const;
 

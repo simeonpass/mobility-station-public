@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard";
+import { adaptationHref, isAdaptationCategory } from "@/lib/adaptations";
 import {
   categoryToSlug,
   getCategories,
@@ -56,9 +57,13 @@ export default async function ShopCategoryPage({ params }: Props) {
   const category = await resolveCategoryFromSlug(categorySlug);
   if (!category) notFound();
 
+  if (isAdaptationCategory(category)) {
+    redirect(adaptationHref(category));
+  }
+
   const [products, categories] = await Promise.all([
-    getPublishedProducts({ category, limit: 60 }),
-    getCategories(),
+    getPublishedProducts({ category, limit: 60, shopOnly: true }),
+    getCategories({ shopOnly: true }),
   ]);
 
   return (

@@ -19,6 +19,7 @@ const columns = [
     links: [
       { href: "/about-us", label: "About Us" },
       { href: "/motability", label: "Motability" },
+      { href: "/clearance", label: "Clearance" },
       { href: "/locations", label: "Locations" },
       { href: "/blog", label: "Blog" },
       { href: "/faq", label: "FAQ" },
@@ -113,9 +114,21 @@ export function SiteFooter() {
       </div>
 
       <div className="border-t border-white/10">
-        <div className="container-site flex flex-col gap-2 py-5 text-xs text-white/60 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} {SITE.legalName}. All rights reserved.</p>
-          <p>UK English · Heathrow &amp; Ferndown</p>
+        <div className="container-site flex flex-col gap-3 py-5 text-xs text-white/60 sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            © {new Date().getFullYear()} {SITE.legalName}. All rights reserved.
+          </p>
+          <div className="flex flex-wrap gap-x-4 gap-y-1">
+            <Link href="/privacy-policy" className="hover:text-white">
+              Privacy Policy
+            </Link>
+            <Link href="/cookie-policy" className="hover:text-white">
+              Cookie Policy
+            </Link>
+            <Link href="/terms" className="hover:text-white">
+              Terms
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

@@ -159,10 +159,13 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
   const supabase = getSupabase();
   if (!supabase) return BLOG_POSTS;
 
+  // Shared catalogue with Lovable admin (`blog_articles`)
   const { data, error } = await supabase
-    .from("blog_posts")
-    .select("*")
-    .eq("published", true)
+    .from("blog_articles")
+    .select(
+      "id, title, slug, excerpt, content_html, image_url, image_alt, tags, published_at, is_published",
+    )
+    .eq("is_published", true)
     .order("published_at", { ascending: false });
 
   if (error || !data?.length) return BLOG_POSTS;
@@ -172,10 +175,13 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
     slug: String(row.slug),
     title: String(row.title),
     excerpt: String(row.excerpt ?? ""),
-    content: String(row.content ?? ""),
+    content: String(row.excerpt ?? ""),
+    contentHtml: String(row.content_html ?? ""),
     image: String(row.image_url ?? "/images/blog/placeholder-demo.svg"),
+    imageAlt: row.image_alt ? String(row.image_alt) : undefined,
     publishedAt: String(row.published_at),
-    author: String(row.author ?? "Mobility Station"),
+    author: "Mobility Station",
+    tags: Array.isArray(row.tags) ? (row.tags as string[]) : [],
   }));
 }
 

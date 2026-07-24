@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandLogo } from "@/components/product/brand-logo";
 import { CatalogImage } from "@/components/product/catalog-image";
 import {
   conditionLabel,
@@ -9,6 +10,7 @@ import {
   stockStatus,
   type ProductListItem,
 } from "@/lib/products";
+import { getBrandLogo } from "@/lib/brand-logos";
 
 export function ProductCard({ product }: { product: ProductListItem }) {
   const price = displayPrice(product);
@@ -64,7 +66,11 @@ export function ProductCard({ product }: { product: ProductListItem }) {
         ) : null}
       </div>
       <div className="p-4">
-        {product.manufacturer ? (
+        {getBrandLogo(product.manufacturer) ? (
+          <div className="mb-2">
+            <BrandLogo manufacturer={product.manufacturer} height={22} />
+          </div>
+        ) : product.manufacturer ? (
           <p className="mb-1 text-xs uppercase tracking-wide text-muted">
             {product.manufacturer}
           </p>

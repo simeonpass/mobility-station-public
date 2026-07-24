@@ -3,6 +3,12 @@ import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { ProductDetailView } from "@/components/product/product-detail-view";
 import {
+  adaptationHref,
+  findSectionForCategory,
+  isAdaptationProduct,
+  sectionHref,
+} from "@/lib/adaptations";
+import {
   conditionLabel,
   displayPrice,
   formatGBP,
@@ -80,6 +86,8 @@ export default async function ProductPage({ params }: Props) {
   const price = displayPrice(product);
   const stock = stockStatus(product);
   const used = isUsedCondition(product.condition);
+  const adaptation = isAdaptationProduct(product);
+  const adaptationSection = findSectionForCategory(product.category);
 
   const galleryUrls: string[] = [];
   if (product.image_url) galleryUrls.push(product.image_url);
@@ -130,7 +138,7 @@ export default async function ProductPage({ params }: Props) {
   };
 
   const cartProduct =
-    price.current != null
+    !adaptation && price.current != null
       ? {
           id: product.id,
           name: product.name,
@@ -157,17 +165,42 @@ export default async function ProductPage({ params }: Props) {
         <Breadcrumbs
           items={[
             { label: "Home", href: "/" },
-            { label: "Shop", href: "/shop" },
-            ...(product.category
+            ...(adaptation
               ? [
                   {
-                    label: product.category,
-                    href: `/shop/${product.category
-                      .toLowerCase()
-                      .replace(/\s+/g, "-")}`,
+                    label: "Vehicle Adaptations",
+                    href: "/vehicle-adaptations",
                   },
+                  ...(adaptationSection
+                    ? [
+                        {
+                          label: adaptationSection.title,
+                          href: sectionHref(adaptationSection.id),
+                        },
+                      ]
+                    : []),
+                  ...(product.category
+                    ? [
+                        {
+                          label: product.category,
+                          href: adaptationHref(product.category),
+                        },
+                      ]
+                    : []),
                 ]
-              : []),
+              : [
+                  { label: "Shop", href: "/shop" },
+                  ...(product.category
+                    ? [
+                        {
+                          label: product.category,
+                          href: `/shop/${product.category
+                            .toLowerCase()
+                            .replace(/\s+/g, "-")}`,
+                        },
+                      ]
+                    : []),
+                ]),
             { label: product.name },
           ]}
         />
@@ -176,18 +209,23 @@ export default async function ProductPage({ params }: Props) {
       <div className="container-site">
         <ProductDetailView
           name={product.name}
+          slug={product.slug}
           manufacturer={product.manufacturer}
           gallery={galleryUrls}
           priceCurrent={price.current}
           priceWas={price.was}
-          stockLabel={[
-            stock.label,
-            product.pre_order_enabled && product.pre_order_message
-              ? product.pre_order_message
-              : null,
-          ]
-            .filter(Boolean)
-            .join(" — ")}
+          stockLabel={
+            adaptation
+              ? "Available to order — quotation required"
+              : [
+                  stock.label,
+                  product.pre_order_enabled && product.pre_order_message
+                    ? product.pre_order_message
+                    : null,
+                ]
+                  .filter(Boolean)
+                  .join(" — ")
+          }
           stockAvailable={stock.available}
           used={used}
           conditionLabel={used ? conditionLabel(product.condition) : null}
@@ -199,6 +237,8 @@ export default async function ProductPage({ params }: Props) {
           }
           motabilityWeekly={product.motability_weekly_price}
           motabilityPrice={product.motability_price}
+          adaptationId={product.adaptation_id}
+          isAdaptation={adaptation}
           deliveryEstimate={product.delivery_estimate}
           colourOptions={product.colour_options ?? []}
           optionVariants={optionVariants.map((variant) => {

@@ -42,7 +42,37 @@ export function isUsedCartProduct(product: CartProduct) {
 }
 
 export function isAdaptationProduct(product: CartProduct) {
-  return product.product_type === "vehicle_adaptation";
+  return (
+    product.product_type === "vehicle_adaptation" ||
+    // Keep in sync with src/lib/adaptations.ts category list for cart safety
+    [
+      "Mechanical Hand Controls",
+      "Electronic Accelerators",
+      "Hinged Accelerator",
+      "Parking Sensors",
+      "Left Foot Accelerators",
+      "Pedal Extensions",
+      "Pedal Guards",
+      "Steering Aids",
+      "Electric Handbrakes",
+      "Secondary Controls",
+      "Easy Release",
+      "Boot Hoists",
+      "Pre-Owned Boot Hoists",
+      "Person Hoists",
+      "Wheelchair Docking Systems",
+      "Wheelchair Stowage - Rooftop",
+      "Wheelchair Winches",
+      "Boot Straps",
+      "Automatic Boot Openers",
+      "Swivel Seats",
+      "Transfer Plates",
+      "Side Steps",
+      "Grab Handles",
+      "Seating Modifications",
+      "Protective Screens",
+    ].includes(product.category || "")
+  );
 }
 
 export type CheckoutPayload = {

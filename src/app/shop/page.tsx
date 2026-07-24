@@ -1,6 +1,5 @@
-import Link from "next/link";
-import { ProductCard } from "@/components/ProductCard";
-import { categoryToSlug, getCategories, getPublishedProducts } from "@/lib/products";
+import { ShopBrowser } from "@/components/product/shop-browser";
+import { getCategories, getPublishedProducts } from "@/lib/products";
 import { createMetadata } from "@/lib/seo";
 
 export const revalidate = 300;
@@ -12,15 +11,20 @@ export const metadata = createMetadata({
   path: "/shop",
 });
 
-export default async function ShopPage() {
+type Props = {
+  searchParams: Promise<{ sub?: string }>;
+};
+
+export default async function ShopPage({ searchParams }: Props) {
+  const { sub } = await searchParams;
   let products: Awaited<ReturnType<typeof getPublishedProducts>> = [];
   let categories: Awaited<ReturnType<typeof getCategories>> = [];
   let errorMessage: string | null = null;
 
   try {
     [products, categories] = await Promise.all([
-      getPublishedProducts({ limit: 60 }),
-      getCategories(),
+      getPublishedProducts({ limit: 500, shopOnly: true }),
+      getCategories({ shopOnly: true }),
     ]);
   } catch (error) {
     console.error("Shop catalog error:", error);
@@ -29,7 +33,7 @@ export default async function ShopPage() {
   }
 
   return (
-    <main className="container-site py-12 md:py-16">
+    <div className="container-site py-12 md:py-16">
       <header className="mb-8">
         <p className="mb-2 text-sm font-semibold uppercase tracking-wider text-accent">
           Mobility Station
@@ -38,8 +42,8 @@ export default async function ShopPage() {
           Scooters &amp; Wheelchairs
         </h1>
         <p className="mt-3 max-w-2xl text-muted">
-          Every product below is available for a free home demonstration from our
-          Heathrow or Ferndown branches.
+          Search and filter our catalogue, then book a free home demonstration
+          from Heathrow or Ferndown.
         </p>
       </header>
 
@@ -48,41 +52,12 @@ export default async function ShopPage() {
           {errorMessage}
         </p>
       ) : (
-        <>
-          <nav className="mb-8 flex flex-wrap gap-2" aria-label="Product categories">
-            <Link
-              href="/shop"
-              className="rounded-full bg-primary px-4 py-2 text-sm text-primary-foreground"
-            >
-              All ({products.length}
-              {products.length >= 60 ? "+" : ""})
-            </Link>
-            {categories.slice(0, 12).map((c) => (
-              <Link
-                key={c.category}
-                href={`/shop/${encodeURIComponent(categoryToSlug(c.category))}`}
-                className="rounded-full border border-border bg-white px-4 py-2 text-sm text-primary hover:border-primary"
-              >
-                {c.category} ({c.count})
-              </Link>
-            ))}
-          </nav>
-
-          {products.length ? (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {products.map((p) => (
-                <ProductCard key={p.id} product={p} />
-              ))}
-            </div>
-          ) : (
-            <p className="text-muted">
-              No published products found. Check Supabase RLS/GRANTs and that
-              products have <code>published_to_website</code> and{" "}
-              <code>website_visible</code> set.
-            </p>
-          )}
-        </>
+        <ShopBrowser
+          products={products}
+          categories={categories}
+          initialSub={sub === "scooters" || sub === "wheelchairs" ? sub : ""}
+        />
       )}
-    </main>
+    </div>
   );
 }

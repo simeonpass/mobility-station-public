@@ -1,4 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
+import {
+  isAdaptationProduct,
+} from "@/lib/adaptations";
 
 function getClient() {
   const url = process.env.SUPABASE_URL;
@@ -98,11 +101,67 @@ function mapListItem(row: Record<string, unknown>): ProductListItem {
   };
 }
 
+function excludeAdaptations(items: ProductListItem[]) {
+  return items.filter((p) => !isAdaptationProduct(p));
+}
+
+function onlyAdaptations(items: ProductListItem[]) {
+  return items.filter((p) => isAdaptationProduct(p));
+}
+
 export async function getPublishedProducts(
   opts: {
     category?: string;
     limit?: number;
     offset?: number;
+    /** When true (default), vehicle adaptations are excluded from the shop catalogue. */
+    shopOnly?: boolean;
+  } = {},
+): Promise<ProductListItem[]> {
+  const shopOnly = opts.shopOnly !== false;
+  const supabase = getClient();
+  let q = supabase
+    .from("stock_items")
+    .select(LIST_COLUMNS)
+    .eq("published_to_website", true)
+    .eq("website_visible", true)
+    .neq("product_type", "archived")
+    .not("slug", "is", null)
+    .order("is_featured", { ascending: false })
+    .order("name", { ascending: true });
+
+  if (shopOnly) {
+    q = q.neq("product_type", "vehicle_adaptation");
+  }
+  if (opts.category) q = q.eq("category", opts.category);
+
+  // Fetch a wider window when filtering adaptations client-side by category list
+  const fetchLimit = opts.limit
+    ? shopOnly
+      ? opts.limit + 40
+      : opts.limit
+    : undefined;
+  if (fetchLimit) {
+    q = q.range(opts.offset ?? 0, (opts.offset ?? 0) + fetchLimit - 1);
+  }
+
+  const { data, error } = await q;
+  if (error) throw error;
+  let items = (data ?? []).map((row) =>
+    mapListItem(row as Record<string, unknown>),
+  );
+  if (shopOnly) {
+    items = excludeAdaptations(items);
+  }
+  if (opts.limit) items = items.slice(0, opts.limit);
+  return items;
+}
+
+export async function getAdaptationProducts(
+  opts: {
+    category?: string;
+    categories?: string[];
+    limit?: number;
   } = {},
 ): Promise<ProductListItem[]> {
   const supabase = getClient();
@@ -116,14 +175,21 @@ export async function getPublishedProducts(
     .order("is_featured", { ascending: false })
     .order("name", { ascending: true });
 
-  if (opts.category) q = q.eq("category", opts.category);
-  if (opts.limit) {
-    q = q.range(opts.offset ?? 0, (opts.offset ?? 0) + opts.limit - 1);
+  if (opts.category) {
+    q = q.eq("category", opts.category);
+  } else if (opts.categories?.length) {
+    q = q.in("category", opts.categories);
+  } else {
+    q = q.eq("product_type", "vehicle_adaptation");
   }
+
+  if (opts.limit) q = q.limit(opts.limit);
 
   const { data, error } = await q;
   if (error) throw error;
-  return (data ?? []).map((row) => mapListItem(row as Record<string, unknown>));
+  return onlyAdaptations(
+    (data ?? []).map((row) => mapListItem(row as Record<string, unknown>)),
+  );
 }
 
 export async function getFeaturedProducts(limit = 8): Promise<ProductListItem[]> {
@@ -135,37 +201,44 @@ export async function getFeaturedProducts(limit = 8): Promise<ProductListItem[]>
     .eq("website_visible", true)
     .eq("is_featured", true)
     .neq("product_type", "archived")
+    .neq("product_type", "vehicle_adaptation")
     .not("slug", "is", null)
     .order("name", { ascending: true })
-    .limit(limit);
+    .limit(limit + 10);
 
   if (error) throw error;
-  if (data?.length) {
-    return data.map((row) => mapListItem(row as Record<string, unknown>));
-  }
+  const items = excludeAdaptations(
+    (data ?? []).map((row) => mapListItem(row as Record<string, unknown>)),
+  ).slice(0, limit);
+  if (items.length) return items;
 
   // Fallback when nothing is flagged featured yet
-  return getPublishedProducts({ limit });
+  return getPublishedProducts({ limit, shopOnly: true });
 }
 
-export async function getCategories(): Promise<
-  { category: string; count: number }[]
-> {
+export async function getCategories(
+  opts: { shopOnly?: boolean } = {},
+): Promise<{ category: string; count: number }[]> {
+  const shopOnly = opts.shopOnly !== false;
   const supabase = getClient();
-  const { data, error } = await supabase
+  let q = supabase
     .from("stock_items")
-    .select("category")
+    .select("category, product_type")
     .eq("published_to_website", true)
     .eq("website_visible", true)
     .neq("product_type", "archived")
     .not("category", "is", null);
 
+  if (shopOnly) q = q.neq("product_type", "vehicle_adaptation");
+
+  const { data, error } = await q;
   if (error) throw error;
 
   const counts = new Map<string, number>();
   for (const row of data ?? []) {
-    const c = (row as { category: string }).category;
-    counts.set(c, (counts.get(c) ?? 0) + 1);
+    const r = row as { category: string; product_type: string | null };
+    if (shopOnly && isAdaptationProduct(r)) continue;
+    counts.set(r.category, (counts.get(r.category) ?? 0) + 1);
   }
 
   return [...counts.entries()]
@@ -176,7 +249,7 @@ export async function getCategories(): Promise<
 export async function resolveCategoryFromSlug(
   categorySlug: string,
 ): Promise<string | null> {
-  const categories = await getCategories();
+  const categories = await getCategories({ shopOnly: false });
   const match = categories.find(
     (c) => categoryToSlug(c.category) === categorySlug,
   );

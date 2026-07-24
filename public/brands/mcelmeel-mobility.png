@@ -1,0 +1,345 @@
+
+
+<!DOCTYPE html>
+<html>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-T8P9GZR6');</script>
+<!-- End Google Tag Manager -->
+
+
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+
+
+<title>Page Not Found</title>
+<meta name="description" content="This page cannot be found." />
+
+
+
+<link rel="canonical" href="https://www.mobility-services.com" />
+
+<!-- Open Graph -->
+<meta property="og:locale" content="en_GB" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Page Not Found" />
+<meta property="og:description" content="This page cannot be found." />
+<meta property="og:url" content="https://mobility-services.com" />
+<meta property="og:site_name" content="McElmeel Mobility Services" />
+<meta property="og:image" content="https://mobility-services.com/images/noimage.jpg" />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:description" content="This page cannot be found."/>
+<meta name="twitter:title" content=Page Not Found""/>
+<meta name="twitter:site" content=""/>
+<meta name="twitter:domain" content="https://www.mobility-services.com"/>
+<meta name="twitter:image" content="https://mobility-services.com/images/noimage.jpg"/>
+<meta name="twitter:creator" content=""/>
+<meta name="twitter:url" content="https://twitter.com/">
+
+<!--Fav Icons-->
+<link rel="apple-touch-icon" sizes="180x180" href="/images/favicons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/favicons/favicon-16x16.png">
+<link rel="mask-icon" href="/images/favicons/safari-pinned-tab.svg" color="#006272">
+<link rel="shortcut icon" href="/images/favicons/favicon.ico">
+<meta name="msapplication-TileColor" content="#006272">
+<meta name="msapplication-config" content="/images/favicons/browserconfig.xml">
+<meta name="theme-color" content="#ffffff">
+
+<!-- CSS Resets -->
+<link rel="stylesheet" href="/css/normalize.css">
+
+<!--Fonts-->
+<link rel="stylesheet" href="https://use.typekit.net/tfr7zyu.css">
+
+<link href="/fa/css/all.min.css" rel="stylesheet">
+<link href="/fa/css/v4-shims.css" rel="stylesheet">
+
+
+<!--Styles-->
+
+
+<link rel="stylesheet" href="/css/main.css?v=1.1.9" media="screen" type="text/css" />
+<link rel="stylesheet" href="/css/animate.css">
+
+
+
+
+
+<!-- Head Scripts -->
+<script src="/js/jquery.min.js" type="text/javascript"></script>
+<script src="/js/main.js?v=1.1.9" type="text/javascript"></script>
+<!--[if lt IE 9]>
+<script src="/js/html5shiv.js"></script>
+<script src="/js/respond.js" type="text/javascript"></script>
+![endif]-->
+<noscript>Javascript is vital for the this website to function properly. Please enable or upgrade your browser</noscript>
+
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '645427678441494');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=645427678441494&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BG1SQ10SN4"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-BG1SQ10SN4');
+</script>
+
+
+
+<body>
+
+    
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T8P9GZR6"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<section id="top" class="fixed tr-a">
+  <div class="inner cf">
+    <div class="grid-1">
+      <div class="topbar">
+        <ul class="left social">
+          <li><a class="tr-a" target="_blank" href="https://www.facebook.com/McElmeelMobilityServices/"><i class="fa fa-facebook-f"></i></a></li>
+          <li><a class="tr-a" target="_blank" href="https://twitter.com/mcelmeelmob"><i class="fa fa-twitter"></i></a></li>
+          <li><a class="tr-a" target="_blank" href="https://www.youtube.com/@McElmeelMobility/videos"><i class="fa fa-youtube"></i></a></li>
+          <li><a class="tr-a" target="_blank" href="https://www.instagram.com/mcelmeelmobility/"><i class="fa fa-instagram"></i></a></li>
+
+          <li class="tel"><a onclick="gtag('event', 'Click', { 'event_category': 'Phone Call', 'event_label': 'Phone Call Top Bar' });" class="tr-a" href="tel:0283752 5333"><i class="fa fa-phone"></i>(028) 3752 5333</a></li>
+        </ul> 
+        
+        <ul class="right top-nav">
+          <li><a class="tr-a" href="/careers">Careers</a></li>
+          <li><a class="tr-a" href="/about-us">About</a></li>
+          <li><a class="tr-a" href="/news/">News & Events</a></li>
+          <li><a class="tr-a" href="/breakdown-aftersales">Breakdown / Aftersales</a></li>
+          <li><a class="tr-a" href="/contact-us">Contact</a></li>
+        </ul>
+      </div>
+      <div class="bottombar">
+        <div class="logo">
+          <a href="/">
+            <img src="/images/logo.jpg" alt="McEmeel Mobility Services" title="McEmeel Mobility Services"/>
+          </a>
+        </div>
+        <nav>
+          <ul class="main-nav"> 
+
+            <li><a class="tr-a" href="/">Home</a></li>
+            <li><a class="tr-a" href="/motability">Motability</a></li>
+      
+            <li><a class="tr-a">Wheelchair Accessible Vehicles <i class="fa fa-angle-down"></i></a>
+              <ul class="drop">
+             	<li><a href="/new-wavs">Motability WAVs</a></li>
+          	 	<li><a href="/new-wavs">New WAV Stock</a></li>
+           		<li><a href="/used-vehicles">Used WAV Stock</a></li>
+              </ul>
+            </li>
+            <li><a href="/adaptations" class="tr-a">Adaptations</a></li>
+            <li><a href="/wav-hire" class="tr-a">WAV Hire</a></li>
+            <li><a class="tr-a" href="/healthcare-professionals">Healthcare Professionals</a></li>
+            <li class="last"><a href="/customer-reviews/" class="tr-a">Reviews</a></li>
+         
+          <li class="hide"><a class="tr-a" href="/careers">Careers</a></li>
+          <li class="hide"><a class="tr-a" href="/news">Blog</a></li>
+          <li class="hide"><a class="tr-a" href="/about-us">About</a></li>
+          <li class="hide"><a class="tr-a" href="/breakdown-aftersales">Breakdown / Aftersales</a></li>
+          <li class="hide"><a class="tr-a" href="/contact-us">Contact</a></li>
+          </ul>
+        </nav>
+        <a id="nav-btn"><span></span></a>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="topblock" class="fixed"></section>
+   
+   
+<section id="content">
+  <div class="inner inner--small cf" style="text-align:center;">
+    <div class="grid-1">
+      <div class="content-info gaplg">
+     
+
+        <div class="col-1">
+          <header>
+            <h1 class="section-title">Page not found</h1>
+          </header>
+          <div class="text u-margin-top-20"> 
+          	Sorry, this page could not be found. <a href="/">Please click here to go to our home page</a>.
+            <br><br>
+          </div>
+              
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div id="signup"></div>
+  <div class="footer-top">
+  <div class="inner cf">
+    <div class="grid-4">
+      <div class="footer-logo">
+        <a href="/">
+          <img src="/images/footer-logo.png" alt="McElmeel Mobility Services Logo" title="McElmeel Mobility Services Logo">
+        </a>
+      </div>
+
+
+      <div class="footer-social">
+        <a class="tr-a" target="_blank" href="https://www.facebook.com/McElmeelMobilityServices/"><i class="fa fa-facebook-f" aria-hidden="true"></i></a>
+        <a class="tr-a" target="_blank" href="https://vimeo.com/user70560915"><i class="fa fa-vimeo" aria-hidden="true"></i></a>
+        <a class="tr-a" target="_blank" href="https://twitter.com/mcelmeelmob"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+        <a class="tr-a" target="_blank" href="https://www.youtube.com/@McElmeelMobility/videos"><i class="fa fa-youtube" aria-hidden="true"></i></a>
+      </div>
+
+    </div>
+
+    <div class="grid-4">
+      <header>
+        <h3>Contact Us</h3>
+      </header>
+      <div class="footer-contact"> 
+        <div class="text address">
+          <strong>McElmeel Mobility Services</strong><br>
+          15 Ballyscandal Road<br>
+          Armagh<br>
+          Northern Ireland<br>
+          BT61 8BL
+        </div>
+        <div class="text numbers u-margin-top-20">
+          Contact Us: <a onclick="gtag('event', 'Click', { 'event_category': 'Phone Call', 'event_label': 'Phone Call Sales Footer' });" class="tr-a" href="tel:02837525333">(028) 3752 5333</a><br>
+        </div>
+      </div> 
+    </div>
+
+    <div class="grid-4">
+      <header>
+        <h3>Hours of Business</h3>
+      </header>
+      <div class="footer-contact"> 
+        <div class="text address">
+          Monday - Thursday: 9.00 - 17.30<br>
+          Friday: 9.00 - 16.30 <br>
+          Closed - Saturday
+        </div>
+      </div> 
+    </div>
+
+    <div class="grid-4">
+      <header>
+        <h3>Useful Links</h3>
+      </header>
+      <div class="footer-links">
+        <ul>
+           <li><a href="/">Home</a>        
+        	<li><a href="/motability/">Motability WAVs</a></li>
+           <li><a href="/new-wavs">New WAV Stock</a></li>
+           <li><a href="/used-vehicles">Used WAV Stock</a></li>
+           <li><a href="/adaptations/" class="tr-a">Adaptations</a></li>
+           <li><a href="/wav-hire" class="tr-a">WAV Hire</a></li>
+           <li><a href="/customer-reviews/" class="tr-a">Reviews</a></li>
+           <li><a href="/healthcare-professionals/" class="tr-a">Healthcare Professionals</a></li>
+           <li><a href="/news/5663/aftersales-how-to-videos/" class="tr-a">How to Videos</a></li>
+           <li><a href="/news/5630/repair--maintenance-information/" class="tr-a">Repair & Maintenance Information</a></li>
+   
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div class="footer-bottom">
+    <div class="inner cf">
+      <div class="grid-1">
+
+        <div class="links">
+          <span class="left">© Copyright 2024 McElmeel Mobility Services Limited<br />
+              <a href="/privacy-policy.pdf" target="_blank">Privacy Policy</a> | <a href="/customer-complaints.pdf" target="_blank">Customer Complaints</a> | <a href="/website-terms.pdf" target="_blank">Website Terms</a> 
+
+          </span>
+
+          <span class="right">Designed By <a href="">Bluecubes</a></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
+
+
+<!-- Cookie Consent by FreePrivacyPolicy.com https://www.FreePrivacyPolicy.com -->
+<script type="text/javascript" src="//www.freeprivacypolicy.com/public/cookie-consent/4.1.0/cookie-consent.js" charset="UTF-8"></script>
+<script type="text/javascript" charset="UTF-8">
+document.addEventListener('DOMContentLoaded', function () {
+cookieconsent.run({"notice_banner_type":"simple","consent_type":"express","palette":"light","language":"en_gb","page_load_consent_levels":["strictly-necessary"],"notice_banner_reject_button_hide":false,"preferences_center_close_button_hide":false,"page_refresh_confirmation_buttons":false,"website_name":"McElmeel Mobility Services","website_privacy_policy_url":"https://www.mobility-services.com/privacy-policy.pdf"});
+});
+</script>
+
+<script>
+function scrollto(location) {
+  const element = document.getElementById(location);
+  element.scrollIntoView();
+}
+$(document).ready(function(){
+  if ($("section:last-of-type").hasClass("u-bg-color-gray-10")) {
+    $('footer #signup').addClass("u-bg-color-gray-10");
+  }
+  if($('section:last-of-type').prop('id')=='newcar-videos'){
+    $('footer #signup').addClass("u-bg-color-black");
+  }
+  if($('section:last-of-type').prop('id')=='newcar-tab-section'){
+    $('footer #signup').addClass("u-bg-color-gray-10");
+  }
+});
+</script>
+
+
+<!--Start of Tawk.to Script-->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/6620fa85a0c6737bd12d7c38/1hrod56ee';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+</script>
+<!--End of Tawk.to Script-->
+
+
+</body>
+</html>

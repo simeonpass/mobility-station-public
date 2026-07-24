@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { CtaFooter } from "@/components/sections/cta-footer";
 import { getBlogPost, getBlogPosts } from "@/lib/data";
+import { plainTextToHtml, sanitizeBlogHtml } from "@/lib/sanitize-html";
 import { createMetadata, jsonLdScript, SITE } from "@/lib/seo";
 import { truncate } from "@/lib/utils";
 
@@ -26,7 +27,7 @@ export async function generateMetadata({ params }: Props) {
   }
   return createMetadata({
     title: truncate(post.title, 50),
-    description: truncate(post.excerpt, 160),
+    description: truncate(post.excerpt || post.title, 160),
     path: `/blog/${post.slug}`,
     type: "article",
   });
@@ -39,6 +40,12 @@ export default async function BlogPostPage({ params }: Props) {
   const post = await getBlogPost(slug);
   if (!post) notFound();
 
+  const html = sanitizeBlogHtml(
+    post.contentHtml?.trim()
+      ? post.contentHtml
+      : plainTextToHtml(post.content),
+  );
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -48,6 +55,8 @@ export default async function BlogPostPage({ params }: Props) {
     author: { "@type": "Organization", name: post.author },
     publisher: { "@type": "Organization", name: SITE.name },
     mainEntityOfPage: `${SITE.url}/blog/${post.slug}`,
+    ...(post.image ? { image: post.image } : {}),
+    ...(post.tags?.length ? { keywords: post.tags.join(", ") } : {}),
   };
 
   return (
@@ -76,21 +85,37 @@ export default async function BlogPostPage({ params }: Props) {
             <h1 className="mt-3 max-w-3xl text-4xl font-extrabold tracking-tight md:text-5xl">
               {post.title}
             </h1>
-            <div className="relative mt-8 aspect-[3/4] max-w-md overflow-hidden bg-soft">
-              <Image
-                src={post.image}
-                alt={post.title}
-                fill
-                priority
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 400px"
-              />
-            </div>
-            <div className="prose-mobility mt-8 max-w-3xl space-y-4 text-lg leading-relaxed text-foreground/85">
-              {post.content.split("\n\n").map((para) => (
-                <p key={para.slice(0, 24)}>{para}</p>
-              ))}
-            </div>
+            {post.excerpt ? (
+              <p className="mt-4 max-w-3xl text-lg text-muted">{post.excerpt}</p>
+            ) : null}
+            {post.tags?.length ? (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {post.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full bg-soft px-3 py-1 text-xs font-medium text-muted"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            ) : null}
+            {post.image ? (
+              <div className="relative mt-8 aspect-[3/4] max-w-md overflow-hidden bg-soft">
+                <Image
+                  src={post.image}
+                  alt={post.imageAlt || post.title}
+                  fill
+                  priority
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 400px"
+                />
+              </div>
+            ) : null}
+            <div
+              className="blog-article mt-8 max-w-3xl"
+              dangerouslySetInnerHTML={{ __html: html }}
+            />
             {post.slug.includes("lightweight") ? (
               <p className="mt-8 text-sm text-muted">
                 Looking for ultra-lightweight folding products?{" "}
@@ -112,18 +137,29 @@ export default async function BlogPostPage({ params }: Props) {
             </p>
             <ul className="mt-3 space-y-2 text-sm">
               <li>
-                <Link href="/lightweight-folding-mobility" className="hover:text-primary-dark">
+                <Link
+                  href="/lightweight-folding-mobility"
+                  className="hover:text-primary-dark"
+                >
                   Lightweight folding mobility
                 </Link>
               </li>
               <li>
-                <Link href="/vehicle-adaptations" className="hover:text-primary-dark">
+                <Link
+                  href="/vehicle-adaptations"
+                  className="hover:text-primary-dark"
+                >
                   Vehicle adaptations
                 </Link>
               </li>
               <li>
                 <Link href="/motability" className="hover:text-primary-dark">
                   Motability
+                </Link>
+              </li>
+              <li>
+                <Link href="/shop" className="hover:text-primary-dark">
+                  Shop scooters &amp; wheelchairs
                 </Link>
               </li>
             </ul>

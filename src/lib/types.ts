@@ -42,10 +42,15 @@ export type BlogPost = {
   slug: string;
   title: string;
   excerpt: string;
+  /** Plain-text fallback (static seed posts). */
   content: string;
+  /** HTML body from Supabase `blog_articles.content_html`. */
+  contentHtml?: string;
   image: string;
+  imageAlt?: string;
   publishedAt: string;
   author: string;
+  tags?: string[];
 };
 
 export type Review = {
