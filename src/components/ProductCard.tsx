@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BrandLogo } from "@/components/product/brand-logo";
 import { CatalogImage } from "@/components/product/catalog-image";
+import { MotabilityLogo } from "@/components/product/motability-logo";
 import {
   conditionLabel,
   formatGBP,
@@ -17,10 +18,6 @@ export function ProductCard({ product }: { product: ProductListItem }) {
   const img = primaryImage(product);
   const used = isUsedCondition(product.condition);
   const stock = stockStatus(product);
-  const hasMotability =
-    (product.motability_weekly_price != null &&
-      product.motability_weekly_price > 0) ||
-    (product.motability_price != null && product.motability_price >= 0);
 
   const headline =
     vat.mode === "always-inc" ? vat.gross : vat.net;
@@ -54,11 +51,6 @@ export function ProductCard({ product }: { product: ProductListItem }) {
           {wasHeadline ? (
             <span className="rounded bg-primary px-2 py-1 text-xs font-semibold text-primary-foreground">
               Sale
-            </span>
-          ) : null}
-          {hasMotability ? (
-            <span className="rounded bg-tertiary px-2 py-1 text-xs font-semibold text-foreground">
-              Motability
             </span>
           ) : null}
         </div>
@@ -113,14 +105,19 @@ export function ProductCard({ product }: { product: ProductListItem }) {
         </div>
         {product.motability_weekly_price != null &&
         product.motability_weekly_price > 0 ? (
-          <p className="mt-1 text-xs text-muted">
-            or {formatGBP(product.motability_weekly_price)}/week on Motability
+          <p className="mt-2.5 flex flex-wrap items-center gap-2 text-sm text-muted">
+            <span>or {formatGBP(product.motability_weekly_price)}/week on</span>
+            <MotabilityLogo height={18} />
           </p>
         ) : product.motability_price === 0 ? (
-          <p className="mt-1 text-xs text-muted">Free on Motability</p>
+          <p className="mt-2.5 flex flex-wrap items-center gap-2 text-sm text-muted">
+            <span>Free on</span>
+            <MotabilityLogo height={18} />
+          </p>
         ) : product.motability_price != null && product.motability_price > 0 ? (
-          <p className="mt-1 text-xs text-muted">
-            {formatGBP(product.motability_price)} on Motability
+          <p className="mt-2.5 flex flex-wrap items-center gap-2 text-sm text-muted">
+            <span>{formatGBP(product.motability_price)} on</span>
+            <MotabilityLogo height={18} />
           </p>
         ) : null}
       </div>

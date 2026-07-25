@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BrandLogo } from "@/components/product/brand-logo";
 import { CatalogImage } from "@/components/product/catalog-image";
+import { MotabilityLogo } from "@/components/product/motability-logo";
 import { getBrandLogo } from "@/lib/brand-logos";
 import {
   formatGBP,
@@ -78,10 +79,13 @@ export function AdaptationCard({ product }: { product: ProductListItem }) {
             </p>
           )}
           {hasMotability ? (
-            <p className="mt-1 text-xs font-medium text-primary">
-              {freeMotability
-                ? "Free on Motability"
-                : `${formatGBP(product.motability_price)} on Motability`}
+            <p className="mt-2.5 flex flex-wrap items-center gap-2 text-sm font-medium text-primary">
+              <span>
+                {freeMotability
+                  ? "Free on"
+                  : `${formatGBP(product.motability_price)} on`}
+              </span>
+              <MotabilityLogo height={18} />
             </p>
           ) : null}
           <span className="mt-3 inline-flex text-sm font-semibold text-primary group-hover:underline">

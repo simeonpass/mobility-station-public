@@ -45,14 +45,28 @@ export async function invokeHireFunction(
   return data;
 }
 
+function isPublicOrigin(origin: string) {
+  try {
+    const { hostname } = new URL(origin);
+    return (
+      hostname !== "localhost" &&
+      hostname !== "127.0.0.1" &&
+      hostname !== "[::1]" &&
+      !hostname.endsWith(".local")
+    );
+  } catch {
+    return false;
+  }
+}
+
 export function resolveReturnOrigin(request: Request) {
   const fromHeader = request.headers.get("origin");
-  if (fromHeader) return fromHeader;
+  if (fromHeader && isPublicOrigin(fromHeader)) return fromHeader;
 
-  const site = process.env.NEXT_PUBLIC_SITE_URL;
-  if (site) return site.replace(/\/$/, "");
+  const site = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
+  if (site && isPublicOrigin(site)) return site;
 
-  return "http://localhost:3000";
+  return "https://mobilitystation.co.uk";
 }
 
 export async function getHireBooking(id: string) {

@@ -26,7 +26,7 @@ export function SignaturePad({
       ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
       ctx.lineWidth = 2;
       ctx.lineCap = "round";
-      ctx.strokeStyle = "#003F43";
+      ctx.strokeStyle = "#0C3B45";
     };
     resize();
     window.addEventListener("resize", resize);

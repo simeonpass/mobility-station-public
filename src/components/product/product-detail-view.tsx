@@ -10,6 +10,7 @@ import { BrandLogo } from "@/components/product/brand-logo";
 import { DeliveryChecker } from "@/components/product/delivery-checker";
 import { ProductAccordion } from "@/components/product/product-accordion";
 import { ProductGallery } from "@/components/product/product-gallery";
+import { MotabilityLogo } from "@/components/product/motability-logo";
 import { VatReliefDialog } from "@/components/product/vat-relief-dialog";
 import type { CartProduct } from "@/lib/cart";
 import { getBrandLogo } from "@/lib/brand-logos";
@@ -290,9 +291,7 @@ export function ProductDetailView(props: ProductDetailViewProps) {
           props.motabilityPrice != null ? (
             <div className="mt-4 flex items-center justify-between gap-3 rounded-xl bg-primary px-4 py-3 text-primary-foreground">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wide opacity-80">
-                  Motability
-                </p>
+                <MotabilityLogo variant="white" height={24} className="mb-2" />
                 {props.motabilityWeekly != null && props.motabilityWeekly > 0 ? (
                   <p className="text-base font-bold">
                     {formatGBP(props.motabilityWeekly)}/week

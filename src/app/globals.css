@@ -1,32 +1,40 @@
 @import "tailwindcss";
 
 :root {
-  /* Brand — Lovable teal + lime */
-  --primary: #003f43;
-  --primary-dark: #0d6b70;
-  --primary-soft: #e6f0ee;
-  --accent: #8cd63f;
-  --accent-hover: #a4e85a;
-  --tertiary: #f5cf2e;
+  /*
+   * Atlantic Trust — final brand palette
+   * One teal family: deep for authority, mid for CTAs (always white text),
+   * light mint for accents on dark bars/footers. Calm for older eyes.
+   */
+  --primary: #0c3b45;
+  --primary-dark: #082f37;
+  --primary-soft: #e7f1f1;
+  --accent: #178574;
+  --accent-hover: #126b5e;
+  --accent-on-dark: #8fd4c4;
+  --accent-on-dark-hover: #b5e6db;
+  --tertiary: #b8954a;
+  --footer: #0c3b45;
+  --footer-foreground: #ffffff;
 
   /* Surfaces */
   --background: #ffffff;
-  --soft: #eef5f3;
-  --border: #d5e3df;
+  --soft: #f3f7f6;
+  --border: #d2dedc;
 
   /* Text */
-  --foreground: #1a2626;
-  --muted: #5f726f;
+  --foreground: #1a2b2e;
+  --muted: #5a6d70;
 
   /* Functional */
-  --success: #27ae60;
-  --info: #2d9cdb;
-  --warning: #f2c94c;
-  --error: #eb5757;
+  --success: #2f8f5b;
+  --info: #3a8fc4;
+  --warning: #c9953a;
+  --error: #c94c4c;
 
   /* Derived */
   --primary-foreground: #ffffff;
-  --accent-foreground: #003f43;
+  --accent-foreground: #ffffff;
   --radius: 0.5rem;
 }
 
@@ -40,7 +48,11 @@
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
   --color-accent-foreground: var(--accent-foreground);
+  --color-accent-on-dark: var(--accent-on-dark);
+  --color-accent-on-dark-hover: var(--accent-on-dark-hover);
   --color-tertiary: var(--tertiary);
+  --color-footer: var(--footer);
+  --color-footer-foreground: var(--footer-foreground);
   --color-soft: var(--soft);
   --color-border: var(--border);
   --color-muted: var(--muted);
@@ -115,9 +127,9 @@
 
   .bg-hero-mesh {
     background:
-      radial-gradient(ellipse 70% 55% at 90% 15%, rgb(140 214 63 / 0.14), transparent 55%),
-      radial-gradient(ellipse 55% 45% at 8% 85%, rgb(0 63 67 / 0.08), transparent 50%),
-      linear-gradient(165deg, #eef5f3 0%, #ffffff 42%, #e6f0ee 100%);
+      radial-gradient(ellipse 70% 55% at 90% 15%, rgb(23 133 116 / 0.11), transparent 55%),
+      radial-gradient(ellipse 55% 45% at 8% 85%, rgb(12 59 69 / 0.07), transparent 50%),
+      linear-gradient(165deg, #f3f7f6 0%, #ffffff 42%, #e7f1f1 100%);
   }
 }
 

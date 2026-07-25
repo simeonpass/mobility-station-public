@@ -181,7 +181,7 @@ export default async function VehicleAdaptationsPage() {
       />
 
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#f4faf7] via-white to-[#eef5f3]">
+      <section className="relative overflow-hidden bg-gradient-to-br from-soft via-white to-primary-soft">
         <div
           className="pointer-events-none absolute -left-20 top-16 h-64 w-64 rounded-full bg-accent/15 blur-3xl"
           aria-hidden

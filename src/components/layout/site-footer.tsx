@@ -1,5 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
+import {
+  SiApplepay,
+  SiGooglepay,
+  SiMastercard,
+  SiPaypal,
+  SiVisa,
+} from "react-icons/si";
 import { SITE } from "@/lib/seo";
 import { BRANCHES } from "@/data/content";
 
@@ -9,7 +16,6 @@ const columns = [
     links: [
       { href: "/vehicle-adaptations", label: "All Adaptations" },
       { href: "/our-work", label: "Our Work" },
-      { href: "/motability", label: "Motability" },
       { href: "/book-a-demo", label: "Book a Home Visit" },
       { href: "/service-area", label: "Service Area" },
     ],
@@ -39,53 +45,83 @@ const columns = [
   },
 ];
 
+const PAYMENT_ICONS = [
+  { Icon: SiVisa, label: "Visa" },
+  { Icon: SiMastercard, label: "Mastercard" },
+  { Icon: SiApplepay, label: "Apple Pay" },
+  { Icon: SiGooglepay, label: "Google Pay" },
+  { Icon: SiPaypal, label: "PayPal" },
+];
+
 export function SiteFooter() {
   return (
-    <footer className="mt-auto bg-primary text-primary-foreground">
-      <div className="container-site grid gap-10 py-14 md:grid-cols-2 lg:grid-cols-4">
+    <footer className="mt-auto bg-footer text-footer-foreground">
+      <div className="container-site grid gap-x-8 gap-y-6 py-7 md:grid-cols-2 lg:grid-cols-4">
         <div>
           <Image
-            src="/brand/logo-lime.png"
+            src="/brand/logo-footer-v4.png"
             alt="Mobility Station"
             width={240}
             height={98}
-            className="h-11 w-auto"
+            className="h-8 w-auto"
           />
-          <p className="mt-4 text-sm leading-relaxed text-white/80">
-            Vehicle adaptations and mobility scooters &amp; wheelchairs. Free
-            home visits from Heathrow and Ferndown. Motability accredited.
-          </p>
           <a
             href={SITE.phoneHref}
-            className="mt-4 inline-block text-lg font-bold text-accent hover:text-accent-hover"
+            className="mt-3 inline-block text-base font-bold text-white hover:text-accent-on-dark"
           >
             {SITE.phone}
           </a>
-          <p className="mt-6 text-sm leading-relaxed text-white/75">
-            Looking for ultra-lightweight folding wheelchairs and scooters? Visit
-            our dedicated lightweight mobility store.{" "}
-            <a
-              href={SITE.lightweightUrl}
-              className="font-semibold text-accent hover:text-accent-hover"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              lightweightmobility.co.uk
-            </a>
-          </p>
+          <a
+            href={`mailto:${SITE.email}`}
+            className="mt-1 block text-sm text-white hover:text-accent-on-dark"
+          >
+            {SITE.email}
+          </a>
+
+          <ul className="mt-4 space-y-1.5 text-sm text-white">
+            {BRANCHES.map((branch) => (
+              <li key={branch.id} className="leading-snug">
+                <span className="font-semibold">{branch.name}:</span>{" "}
+                {branch.addressLine1}, {branch.postalCode} ·{" "}
+                <a
+                  href={`tel:${branch.phone.replace(/\s/g, "")}`}
+                  className="hover:text-accent-on-dark"
+                >
+                  {branch.phone}
+                </a>
+              </li>
+            ))}
+          </ul>
+
+          <Link
+            href="/motability"
+            className="mt-4 inline-flex flex-col gap-1 transition-opacity hover:opacity-80"
+          >
+            <Image
+              src="/brand/motability-scheme-white.png"
+              alt="Motability Scheme"
+              width={220}
+              height={75}
+              className="h-6 w-auto object-contain"
+              style={{ width: "auto", height: "1.5rem" }}
+            />
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-accent-on-dark">
+              Accredited dealer
+            </span>
+          </Link>
         </div>
 
         {columns.map((col) => (
           <div key={col.title}>
-            <p className="text-sm font-bold uppercase tracking-wide text-accent">
+            <p className="text-xs font-bold uppercase tracking-wide text-accent-on-dark">
               {col.title}
             </p>
-            <ul className="mt-4 space-y-2">
+            <ul className="mt-2 space-y-1">
               {col.links.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-white/85 transition-colors hover:text-white"
+                    className="text-sm text-white transition-colors hover:text-accent-on-dark"
                   >
                     {link.label}
                   </Link>
@@ -94,48 +130,51 @@ export function SiteFooter() {
             </ul>
           </div>
         ))}
+      </div>
 
-        <div className="md:col-span-2 lg:col-span-1">
-          <p className="text-sm font-bold uppercase tracking-wide text-accent">
-            Branches
-          </p>
-          <ul className="mt-4 space-y-4 text-sm text-white/85">
-            {BRANCHES.map((branch) => (
-              <li key={branch.id}>
-                <p className="font-semibold text-white">{branch.name}</p>
-                <p>
-                  {branch.addressLine1}, {branch.addressLocality},{" "}
-                  {branch.postalCode}
-                </p>
-                <a
-                  href={`tel:${branch.phone.replace(/\s/g, "")}`}
-                  className="hover:text-accent"
-                >
-                  {branch.phone}
-                </a>
+      <div className="border-t border-white/15">
+        <div className="container-site flex flex-col gap-2.5 py-3 text-xs text-white sm:flex-row sm:items-center sm:justify-between">
+          <ul
+            className="flex flex-wrap items-center gap-3"
+            aria-label="Accepted payment methods"
+          >
+            {PAYMENT_ICONS.map(({ Icon, label }) => (
+              <li key={label}>
+                <Icon
+                  className="h-5 w-auto text-white/85"
+                  role="img"
+                  aria-label={label}
+                />
               </li>
             ))}
           </ul>
-        </div>
-      </div>
-
-      <div className="border-t border-white/10">
-        <div className="container-site flex flex-col gap-3 py-5 text-xs text-white/60 sm:flex-row sm:items-center sm:justify-between">
-          <p>
-            © {new Date().getFullYear()} {SITE.legalName}. All rights reserved.
-          </p>
           <div className="flex flex-wrap gap-x-4 gap-y-1">
-            <Link href="/privacy-policy" className="hover:text-white">
-              Privacy Policy
+            <a
+              href={SITE.lightweightUrl}
+              className="hover:text-accent-on-dark"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              Lightweight store
+            </a>
+            <Link href="/privacy-policy" className="hover:text-accent-on-dark">
+              Privacy
             </Link>
-            <Link href="/cookie-policy" className="hover:text-white">
-              Cookie Policy
+            <Link href="/cookie-policy" className="hover:text-accent-on-dark">
+              Cookies
             </Link>
-            <Link href="/terms" className="hover:text-white">
+            <Link href="/terms" className="hover:text-accent-on-dark">
               Terms
             </Link>
           </div>
         </div>
+      </div>
+
+      <div className="border-t border-white/15">
+        <p className="container-site py-2.5 text-center text-xs leading-snug text-white/80 sm:text-left">
+          © {new Date().getFullYear()} {SITE.name}. {SITE.name} is a trading
+          name of {SITE.legalName}. All rights reserved.
+        </p>
       </div>
     </footer>
   );

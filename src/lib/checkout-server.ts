@@ -47,12 +47,30 @@ export async function invokeCheckoutFunction(
   return data;
 }
 
+function isPublicOrigin(origin: string) {
+  try {
+    const { hostname } = new URL(origin);
+    return (
+      hostname !== "localhost" &&
+      hostname !== "127.0.0.1" &&
+      hostname !== "[::1]" &&
+      !hostname.endsWith(".local")
+    );
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Origin passed to Supabase checkout functions for Revolut/PayPal return URLs.
+ * Revolut rejects localhost hosts, so local/dev falls back to the public site URL.
+ */
 export function resolveReturnOrigin(request: Request) {
   const fromHeader = request.headers.get("origin");
-  if (fromHeader) return fromHeader;
+  if (fromHeader && isPublicOrigin(fromHeader)) return fromHeader;
 
-  const site = process.env.NEXT_PUBLIC_SITE_URL;
-  if (site) return site.replace(/\/$/, "");
+  const site = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
+  if (site && isPublicOrigin(site)) return site;
 
-  return "http://localhost:3000";
+  return "https://mobilitystation.co.uk";
 }

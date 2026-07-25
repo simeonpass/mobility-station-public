@@ -28,13 +28,13 @@ export function SiteHeader() {
             Heathrow &amp; Ferndown Branches |{" "}
             <Link
               href="/book-a-demo#demo-terms"
-              className="hover:text-accent"
+              className="hover:text-accent-on-dark"
             >
               Free home demonstrations*
             </Link>
           </p>
           <div className="flex items-center gap-3">
-            <a href={SITE.phoneHref} className="hover:text-accent">
+            <a href={SITE.phoneHref} className="hover:text-accent-on-dark">
               {SITE.phone}
             </a>
           </div>
@@ -44,7 +44,7 @@ export function SiteHeader() {
       <div className="container-site flex h-[4.25rem] items-center justify-between gap-4">
         <Link href="/" className="flex shrink-0 items-center" onClick={() => setOpen(false)}>
           <Image
-            src="/brand/logo-header.png"
+            src="/brand/logo-header-v4.png"
             alt="Mobility Station"
             width={240}
             height={98}
