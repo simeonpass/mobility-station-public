@@ -22,8 +22,6 @@ import {
 } from "@/lib/adaptations";
 import {
   getAdaptationProducts,
-  primaryImage,
-  type ProductListItem,
 } from "@/lib/products";
 import { createMetadata, jsonLdScript, SITE } from "@/lib/seo";
 import { cn } from "@/lib/utils";
@@ -37,42 +35,51 @@ export const metadata = createMetadata({
   path: "/vehicle-adaptations",
 });
 
-/** Fallback adaptation close-ups if catalogue images are unavailable */
-const FALLBACK_COLLAGE: CollageTile[] = [
+/** Dedicated landscape adaptation photos for the hero collage.
+ *  Drop replacements in public/images/adaptations/collage/ (keep filenames). */
+const ADAPTATIONS_HERO_COLLAGE: CollageTile[] = [
   {
-    src: "/images/hero-options/05-hand-controls.png",
-    alt: "Hand controls fitted in a vehicle",
+    src: "/images/adaptations/collage/01-hand-controls.png",
+    alt: "Hand controls and steering knob fitted in a VW",
+    object: "object-center",
   },
   {
-    src: "/images/hero-options/09-steering-knob.png",
-    alt: "Steering knob adaptation",
+    src: "/images/adaptations/collage/02-steering-knob.png",
+    alt: "Push-pull hand control fitted in an Audi",
+    object: "object-[45%_50%]",
   },
   {
-    src: "/images/hero-options/07-swivel-seat.png",
-    alt: "Swivel seat vehicle access",
+    src: "/images/adaptations/collage/03-swivel-seat.png",
+    alt: "Swivel seat for easier vehicle access",
+    object: "object-[55%_45%]",
   },
   {
-    src: "/images/hero-options/05-hand-controls.png",
-    alt: "Driving controls",
+    src: "/images/adaptations/collage/04-driver-controls.png",
+    alt: "Driver using hand controls in a Volvo",
+    object: "object-[40%_40%]",
   },
   {
-    src: "/images/hero-options/09-steering-knob.png",
-    alt: "Steering aid",
+    src: "/images/adaptations/collage/05-boot-hoist.png",
+    alt: "Boot hoist lifting a mobility scooter",
+    object: "object-[45%_50%]",
   },
 ];
 
 const SECTION_FALLBACK: Record<AdaptationSectionId, CollageTile> = {
   "driving-controls": {
-    src: "/images/hero-options/05-hand-controls.png",
+    src: "/images/adaptations/collage/01-hand-controls.png",
     alt: "Driving controls",
+    object: "object-center",
   },
   "hoists-stowage": {
-    src: "/images/hero-options/09-steering-knob.png",
+    src: "/images/adaptations/collage/05-boot-hoist.png",
     alt: "Boot hoist and stowage",
+    object: "object-[45%_50%]",
   },
   "vehicle-access": {
-    src: "/images/hero-options/07-swivel-seat.png",
+    src: "/images/adaptations/collage/03-swivel-seat.png",
     alt: "Vehicle access adaptations",
+    object: "object-[55%_45%]",
   },
 };
 
@@ -125,52 +132,6 @@ const WHY_US = [
   },
 ] as const;
 
-function isCatalogueImage(url: string) {
-  return Boolean(url) && !url.includes("placeholder");
-}
-
-/** Pick up to 5 adaptation product photos, preferring category variety. */
-function pickCollageTiles(products: ProductListItem[]): CollageTile[] {
-  const seen = new Set<string>();
-  const picks: CollageTile[] = [];
-
-  const tryAdd = (p: ProductListItem) => {
-    const src = primaryImage(p);
-    if (!isCatalogueImage(src) || seen.has(src)) return false;
-    seen.add(src);
-    picks.push({ src, alt: p.name });
-    return true;
-  };
-
-  for (const section of ADAPTATION_SECTIONS) {
-    for (const cat of section.categories) {
-      const match = products.find((p) => p.category === cat);
-      if (match) tryAdd(match);
-      if (picks.length >= 5) return picks;
-    }
-  }
-
-  for (const p of products) {
-    tryAdd(p);
-    if (picks.length >= 5) break;
-  }
-
-  return picks.length >= 3 ? picks : FALLBACK_COLLAGE;
-}
-
-function sectionCoverImage(
-  sectionId: AdaptationSectionId,
-  sectionProducts: ProductListItem[],
-): CollageTile {
-  for (const p of sectionProducts) {
-    const src = primaryImage(p);
-    if (isCatalogueImage(src)) {
-      return { src, alt: p.name };
-    }
-  }
-  return SECTION_FALLBACK[sectionId];
-}
-
 export default async function VehicleAdaptationsPage() {
   let products: Awaited<ReturnType<typeof getAdaptationProducts>> = [];
   let errorMessage: string | null = null;
@@ -192,7 +153,6 @@ export default async function VehicleAdaptationsPage() {
   }
 
   const freeOnMotability = products.filter((p) => p.motability_price === 0);
-  const collageTiles = pickCollageTiles(products);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -269,7 +229,7 @@ export default async function VehicleAdaptationsPage() {
           </div>
 
           <div className="animate-[fadeRise_900ms_ease-out]">
-            <ImageCollage tiles={collageTiles} contain priority />
+            <ImageCollage tiles={ADAPTATIONS_HERO_COLLAGE} priority />
           </div>
         </div>
       </section>
@@ -292,20 +252,23 @@ export default async function VehicleAdaptationsPage() {
                 (cat) => byCategory.get(cat) ?? [],
               );
               const count = sectionProducts.length;
-              const cover = sectionCoverImage(section.id, sectionProducts);
+              const cover = SECTION_FALLBACK[section.id];
               return (
                 <li key={section.id}>
                   <Link
                     href={sectionHref(section.id)}
                     className="group block border-t-2 border-border pt-6 transition-colors hover:border-accent"
                   >
-                    <div className="relative mb-5 aspect-[16/10] overflow-hidden rounded-2xl border border-border/60 bg-white">
+                    <div className="relative mb-5 aspect-[16/10] overflow-hidden rounded-2xl border border-border/60 bg-soft">
                       <Image
                         src={cover.src}
                         alt={cover.alt}
                         fill
                         sizes="(min-width: 768px) 30vw, 100vw"
-                        className="object-contain p-4 transition-transform duration-500 group-hover:scale-[1.03]"
+                        className={cn(
+                          "object-cover transition-transform duration-500 group-hover:scale-[1.03]",
+                          cover.object,
+                        )}
                       />
                     </div>
                     <h3 className="text-2xl font-extrabold tracking-tight text-primary group-hover:text-primary-dark">

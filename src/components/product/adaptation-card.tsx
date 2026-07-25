@@ -23,13 +23,13 @@ export function AdaptationCard({ product }: { product: ProductListItem }) {
       href={`/products/${product.slug}`}
       className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-white transition-shadow hover:shadow-lg"
     >
-      <div className="relative aspect-[4/3] border-b border-border bg-white">
+      <div className="relative aspect-[4/3] overflow-hidden border-b border-border bg-white">
         <CatalogImage
           src={img}
           alt={product.name}
           fill
           sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
-          className="object-contain p-2 transition-transform group-hover:scale-[1.03]"
+          className="object-cover transition-transform group-hover:scale-[1.03]"
         />
         <div className="absolute left-3 top-3 flex flex-col gap-1.5">
           <span className="rounded bg-primary px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-primary-foreground">
