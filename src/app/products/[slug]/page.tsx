@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
+import { AdaptationCard } from "@/components/product/adaptation-card";
+import { ProductCard } from "@/components/ProductCard";
 import { ProductDetailView } from "@/components/product/product-detail-view";
 import {
   adaptationHref,
@@ -14,6 +16,7 @@ import {
   formatGBP,
   getAllPublishedSlugs,
   getProductBySlug,
+  getRelatedProducts,
   isUsedCondition,
   primaryImage,
   stockStatus,
@@ -88,6 +91,7 @@ export default async function ProductPage({ params }: Props) {
   const used = isUsedCondition(product.condition);
   const adaptation = isAdaptationProduct(product);
   const adaptationSection = findSectionForCategory(product.category);
+  const related = await getRelatedProducts(product, 4);
 
   const galleryUrls: string[] = [];
   if (product.image_url) galleryUrls.push(product.image_url);
@@ -211,6 +215,8 @@ export default async function ProductPage({ params }: Props) {
           name={product.name}
           slug={product.slug}
           manufacturer={product.manufacturer}
+          category={product.category}
+          condition={product.condition}
           gallery={galleryUrls}
           priceCurrent={price.current}
           priceWas={price.was}
@@ -265,6 +271,28 @@ export default async function ProductPage({ params }: Props) {
           videoEmbed={videoEmbed}
         />
       </div>
+
+      {related.length > 0 ? (
+        <section className="container-site mt-12 border-t border-border pt-10 md:mt-16 md:pt-14">
+          <h2 className="text-2xl font-extrabold tracking-tight text-primary md:text-3xl">
+            You may also like
+          </h2>
+          <p className="mt-1 text-sm text-muted">
+            {adaptation
+              ? "More adaptations from our catalogue."
+              : "More scooters and wheelchairs you might consider."}
+          </p>
+          <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {related.map((item) =>
+              adaptation ? (
+                <AdaptationCard key={item.id} product={item} />
+              ) : (
+                <ProductCard key={item.id} product={item} />
+              ),
+            )}
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }

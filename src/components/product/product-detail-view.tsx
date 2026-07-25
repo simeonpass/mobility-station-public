@@ -10,14 +10,18 @@ import { BrandLogo } from "@/components/product/brand-logo";
 import { DeliveryChecker } from "@/components/product/delivery-checker";
 import { ProductAccordion } from "@/components/product/product-accordion";
 import { ProductGallery } from "@/components/product/product-gallery";
+import { VatReliefDialog } from "@/components/product/vat-relief-dialog";
 import type { CartProduct } from "@/lib/cart";
 import { getBrandLogo } from "@/lib/brand-logos";
-import { formatGBP } from "@/lib/products";
+import { formatGBP, type ProductListItem } from "@/lib/products";
+import { getVatPriceDisplay } from "@/lib/vat";
 
 export type ProductDetailViewProps = {
   name: string;
   slug: string;
   manufacturer: string | null;
+  category: string | null;
+  condition: ProductListItem["condition"];
   gallery: string[];
   priceCurrent: number | null;
   priceWas: number | null;
@@ -51,8 +55,29 @@ export type ProductDetailViewProps = {
 
 export function ProductDetailView(props: ProductDetailViewProps) {
   const buyRef = useRef<HTMLDivElement | null>(null);
-  const priceLabel =
-    props.priceCurrent == null ? "POA" : formatGBP(props.priceCurrent);
+  const vat = getVatPriceDisplay({
+    unit_price:
+      props.priceWas != null ? props.priceWas : props.priceCurrent,
+    sale_price: props.priceWas != null ? props.priceCurrent : null,
+    category: props.category,
+    name: props.name,
+    condition: props.condition,
+  });
+  const net = props.priceCurrent ?? vat.net;
+  const wasNet = props.priceWas ?? vat.wasNet;
+  const gross =
+    net != null && vat.mode !== "no-vat"
+      ? (vat.gross ?? net)
+      : net;
+  const wasGross =
+    wasNet != null && vat.mode !== "no-vat"
+      ? (vat.wasGross ?? wasNet)
+      : wasNet;
+
+  const headline = vat.mode === "always-inc" ? gross : net;
+  const wasHeadline = vat.mode === "always-inc" ? wasGross : wasNet;
+
+  const priceLabel = headline == null ? "POA" : formatGBP(headline);
 
   const sections = [
     props.description
@@ -170,7 +195,7 @@ export function ProductDetailView(props: ProductDetailViewProps) {
       <div className="grid items-start gap-6 md:grid-cols-2 md:gap-10 lg:gap-12">
         <ProductGallery images={props.gallery} name={props.name} />
 
-        <div>
+        <div className="min-w-0">
           <div className="mb-3 flex flex-wrap gap-2">
             {props.isAdaptation ? (
               <span className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
@@ -215,29 +240,51 @@ export function ProductDetailView(props: ProductDetailViewProps) {
             {props.stockLabel}
           </p>
 
-          <div className="mt-4 flex flex-wrap items-baseline gap-2">
-            {props.priceCurrent != null ? (
-              <>
-                <span className="text-sm text-muted">From</span>
-                <span className="text-3xl font-bold text-primary">
-                  {formatGBP(props.priceCurrent)}
+          <div className="mt-4 space-y-2">
+            <div className="flex flex-wrap items-baseline gap-2">
+              {headline != null ? (
+                <>
+                  <span className="text-sm text-muted">From</span>
+                  <span className="text-3xl font-bold text-primary">
+                    {formatGBP(headline)}
+                  </span>
+                </>
+              ) : (
+                <span className="text-3xl font-bold text-primary">POA</span>
+              )}
+              {wasHeadline ? (
+                <span className="text-base text-muted line-through">
+                  RRP {formatGBP(wasHeadline)}
                 </span>
-              </>
-            ) : (
-              <span className="text-3xl font-bold text-primary">POA</span>
-            )}
-            {props.priceWas ? (
-              <span className="text-base text-muted line-through">
-                RRP {formatGBP(props.priceWas)}
-              </span>
+              ) : null}
+            </div>
+
+            {vat.mode === "relief" && net != null && gross != null ? (
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                <p className="text-sm text-muted">ex VAT</p>
+                <VatReliefDialog
+                  netPrice={net}
+                  grossPrice={gross}
+                  variant="link"
+                />
+              </div>
+            ) : null}
+
+            {vat.mode === "always-inc" && headline != null ? (
+              <p className="text-sm text-muted">inc. VAT</p>
+            ) : null}
+
+            {vat.mode === "no-vat" && headline != null ? (
+              <p className="text-sm text-muted">No VAT</p>
+            ) : null}
+
+            {props.isAdaptation && props.priceCurrent != null ? (
+              <p className="text-xs text-muted">
+                Indicative supplied &amp; fitted price — final quote tailored to
+                your vehicle
+              </p>
             ) : null}
           </div>
-          {props.isAdaptation && props.priceCurrent != null ? (
-            <p className="mt-1 text-xs text-muted">
-              Indicative supplied &amp; fitted price — final quote tailored to
-              your vehicle
-            </p>
-          ) : null}
 
           {(props.motabilityWeekly != null && props.motabilityWeekly >= 0) ||
           props.motabilityPrice != null ? (
@@ -337,7 +384,7 @@ export function ProductDetailView(props: ProductDetailViewProps) {
                   href={`/book-a-demo?type=adaptation&product=${encodeURIComponent(props.slug)}`}
                   className="flex w-full items-center justify-center rounded-xl border border-primary px-6 py-3 text-center font-semibold text-primary hover:bg-primary hover:text-primary-foreground"
                 >
-                  Book a free home demo
+                  Book a home demo
                 </Link>
                 <p className="text-xs leading-relaxed text-muted">
                   Adaptations aren&apos;t available for online checkout because
@@ -355,6 +402,22 @@ export function ProductDetailView(props: ProductDetailViewProps) {
               Call 0800 772 3870
             </a>
           </div>
+
+          <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">
+            {props.isAdaptation ? (
+              <>
+                <li>Workshop fitting included</li>
+                <li>Motability accredited</li>
+                <li>Home visit available</li>
+              </>
+            ) : (
+              <>
+                <li>Free UK delivery</li>
+                <li>Motability options</li>
+                <li>Home demonstration</li>
+              </>
+            )}
+          </ul>
 
           {props.discontinuedMessage ? (
             <p className="mt-4 rounded-lg bg-soft p-3 text-sm text-muted">

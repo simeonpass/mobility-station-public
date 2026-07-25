@@ -37,10 +37,26 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       { source: "/about", destination: "/about-us", permanent: true },
+      // Hire paused for now — keep code in place for a possible Flex Hire relaunch.
+      {
+        source: "/hire",
+        destination: "/",
+        permanent: false,
+      },
+      {
+        source: "/hire/:path*",
+        destination: "/",
+        permanent: false,
+      },
       {
         source: "/mobility-scooter-hire",
-        destination: "/hire",
-        permanent: true,
+        destination: "/",
+        permanent: false,
+      },
+      {
+        source: "/website/hire/:path*",
+        destination: "/",
+        permanent: false,
       },
       { source: "/privacy", destination: "/privacy-policy", permanent: true },
       { source: "/cookies", destination: "/cookie-policy", permanent: true },

@@ -5,37 +5,36 @@ import { BRANCHES } from "@/data/content";
 
 const columns = [
   {
-    title: "Solutions",
+    title: "Vehicle adaptations",
     links: [
-      { href: "/vehicle-adaptations", label: "Vehicle Adaptations" },
-      { href: "/shop", label: "Scooters & Wheelchairs" },
+      { href: "/vehicle-adaptations", label: "All Adaptations" },
+      { href: "/our-work", label: "Our Work" },
+      { href: "/motability", label: "Motability" },
+      { href: "/book-a-demo", label: "Book a Home Visit" },
+      { href: "/service-area", label: "Service Area" },
+    ],
+  },
+  {
+    title: "Scooters & wheelchairs",
+    links: [
+      { href: "/shop", label: "Shop" },
       { href: "/find-my-scooter", label: "Find My Scooter" },
-      { href: "/hire", label: "Scooter Hire" },
       { href: "/clearance", label: "Clearance" },
       { href: "/lightweight-folding-mobility", label: "Lightweight Mobility" },
       { href: "/trade-in", label: "Trade-In" },
+      { href: "/delivery", label: "Delivery" },
     ],
   },
   {
     title: "Company",
     links: [
       { href: "/about-us", label: "About Us" },
-      { href: "/motability", label: "Motability" },
-      { href: "/service-area", label: "Service Area" },
-      { href: "/delivery", label: "Delivery" },
       { href: "/locations", label: "Locations" },
-      { href: "/our-work", label: "Our Work" },
       { href: "/blog", label: "Blog" },
       { href: "/faq", label: "FAQ" },
+      { href: "/vat-relief", label: "VAT Relief" },
       { href: "/contact", label: "Contact" },
-    ],
-  },
-  {
-    title: "Book",
-    links: [
-      { href: "/book-a-demo", label: "Book a Demo" },
       { href: "/book-a-service", label: "Book a Service" },
-      { href: "/contact", label: "General Enquiry" },
     ],
   },
 ];
@@ -49,12 +48,12 @@ export function SiteFooter() {
             src="/brand/logo-lime.png"
             alt="Mobility Station"
             width={240}
-            height={46}
-            className="h-10 w-auto"
+            height={98}
+            className="h-11 w-auto"
           />
           <p className="mt-4 text-sm leading-relaxed text-white/80">
-            Free home demonstrations from our Heathrow and Ferndown branches.
-            Motability accredited. We come to you.
+            Vehicle adaptations and mobility scooters &amp; wheelchairs. Free
+            home visits from Heathrow and Ferndown. Motability accredited.
           </p>
           <a
             href={SITE.phoneHref}
@@ -108,7 +107,10 @@ export function SiteFooter() {
                   {branch.addressLine1}, {branch.addressLocality},{" "}
                   {branch.postalCode}
                 </p>
-                <a href={`tel:${branch.phone.replace(/\s/g, "")}`} className="hover:text-accent">
+                <a
+                  href={`tel:${branch.phone.replace(/\s/g, "")}`}
+                  className="hover:text-accent"
+                >
                   {branch.phone}
                 </a>
               </li>

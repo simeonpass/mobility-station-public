@@ -26,7 +26,7 @@ export function BranchMap({ branches }: { branches: Branch[] }) {
             Heathrow &amp; Ferndown branches
           </h2>
           <p className="mt-3 text-muted">
-            Visit us locally or book a free home demonstration — we come to you.
+            Visit us locally — or we come to you from Heathrow and Ferndown.
           </p>
         </div>
         <div className="mt-8 overflow-hidden rounded-lg border border-border bg-white">

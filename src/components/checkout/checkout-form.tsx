@@ -17,7 +17,7 @@ import { formatGBP } from "@/lib/products";
 
 export function CheckoutForm() {
   const { items, subtotal, clearCart } = useCart();
-  const [loading, setLoading] = useState<"stripe" | "paypal" | null>(null);
+  const [loading, setLoading] = useState<"revolut" | "paypal" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [declarationConfirmed, setDeclarationConfirmed] = useState(false);
   const [form, setForm] = useState({
@@ -135,7 +135,7 @@ export function CheckoutForm() {
     return null;
   }
 
-  async function pay(provider: "stripe" | "paypal") {
+  async function pay(provider: "revolut" | "paypal") {
     const validationError = validate();
     if (validationError) {
       setError(validationError);
@@ -294,6 +294,17 @@ export function CheckoutForm() {
 
         <section className="rounded-2xl border border-border bg-white p-6">
           <h2 className="text-lg font-bold text-primary">3. VAT relief</h2>
+          <p className="mt-2 text-sm text-muted">
+            Catalogue line prices are ex VAT (VAT relief price). Standard
+            customers pay +20% VAT.{" "}
+            <Link
+              href="/vat-relief"
+              className="font-semibold text-primary underline"
+            >
+              Learn about VAT relief
+            </Link>
+            .
+          </p>
           {batteryVatBlocked ? (
             <p className="mt-3 text-sm text-muted">
               Batteries and chargers are only eligible for VAT relief when
@@ -379,6 +390,9 @@ export function CheckoutForm() {
               </div>
               <p className="text-sm font-semibold">
                 {formatGBP(linePrice(item.product) * item.quantity)}
+                <span className="block text-[10px] font-normal text-muted">
+                  ex VAT
+                </span>
               </p>
             </li>
           ))}
@@ -386,11 +400,15 @@ export function CheckoutForm() {
 
         <dl className="mt-6 space-y-2 border-t border-border pt-4 text-sm">
           <div className="flex justify-between">
-            <dt className="text-muted">Subtotal</dt>
+            <dt className="text-muted">Subtotal (ex VAT)</dt>
             <dd className="font-medium">{formatGBP(subtotal)}</dd>
           </div>
           <div className="flex justify-between">
-            <dt className="text-muted">VAT ({vatRate}%)</dt>
+            <dt className="text-muted">
+              {form.isVatExempt && !batteryVatBlocked
+                ? "VAT (relief claimed)"
+                : `VAT (${vatRate}%)`}
+            </dt>
             <dd className="font-medium">{formatGBP(vatAmount)}</dd>
           </div>
           <div className="flex justify-between">
@@ -398,7 +416,9 @@ export function CheckoutForm() {
             <dd className="font-medium">Free</dd>
           </div>
           <div className="flex justify-between border-t border-border pt-2 text-base">
-            <dt className="font-bold text-primary">Total</dt>
+            <dt className="font-bold text-primary">
+              Total {form.isVatExempt && !batteryVatBlocked ? "(ex VAT)" : "(inc VAT)"}
+            </dt>
             <dd className="font-extrabold text-primary">{formatGBP(total)}</dd>
           </div>
         </dl>
@@ -410,9 +430,11 @@ export function CheckoutForm() {
             type="button"
             className="w-full rounded-xl"
             disabled={loading !== null}
-            onClick={() => pay("stripe")}
+            onClick={() => pay("revolut")}
           >
-            {loading === "stripe" ? "Redirecting to Stripe…" : "Pay with Stripe"}
+            {loading === "revolut"
+              ? "Redirecting to Revolut…"
+              : "Pay securely with Revolut"}
           </Button>
           <Button
             type="button"

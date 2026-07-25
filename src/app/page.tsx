@@ -3,8 +3,8 @@ import { ProductCard } from "@/components/ProductCard";
 import { BranchMap } from "@/components/sections/branch-map";
 import { CtaFooter } from "@/components/sections/cta-footer";
 import { HomeHero } from "@/components/sections/home-hero";
+import { HomePaths } from "@/components/sections/home-paths";
 import { RecentWorkStrip } from "@/components/sections/recent-work-strip";
-import { SolutionsGrid } from "@/components/sections/solutions-grid";
 import { Testimonials } from "@/components/sections/testimonials";
 import { TrustStrip } from "@/components/sections/trust-strip";
 import { getBranches, getPublicPortfolio, getReviews } from "@/lib/data";
@@ -12,9 +12,9 @@ import { getFeaturedProducts } from "@/lib/products";
 import { createMetadata, jsonLdScript, SITE } from "@/lib/seo";
 
 export const metadata = createMetadata({
-  title: "Mobility Station | Free Home Demonstrations",
+  title: "Mobility Station | Vehicle Adaptations & Mobility",
   description:
-    "We come to you with scooters, wheelchairs and vehicle adaptations. Free home demos. Heathrow & Ferndown. Motability accredited.",
+    "Vehicle adaptations and mobility scooters & wheelchairs. Free home visits. Heathrow & Ferndown. Motability accredited.",
   path: "/",
   absoluteTitle: true,
 });
@@ -62,18 +62,23 @@ export default async function HomePage() {
       />
       <HomeHero />
       <TrustStrip />
-      <SolutionsGrid />
+      <HomePaths />
 
       {featured.length > 0 ? (
         <section className="bg-soft py-16 md:py-20">
           <div className="container-site">
             <div className="mb-6 flex items-end justify-between gap-4">
-              <h2 className="text-3xl font-extrabold tracking-tight text-primary md:text-4xl">
-                Featured products
-              </h2>
+              <div>
+                <h2 className="text-3xl font-extrabold tracking-tight text-primary md:text-4xl">
+                  Scooters &amp; wheelchairs
+                </h2>
+                <p className="mt-2 text-muted">
+                  Popular models ready for a home demonstration.
+                </p>
+              </div>
               <Link
                 href="/shop"
-                className="font-semibold text-primary underline underline-offset-4 hover:text-primary-dark"
+                className="shrink-0 font-semibold text-primary underline underline-offset-4 hover:text-primary-dark"
               >
                 See all →
               </Link>
@@ -91,7 +96,10 @@ export default async function HomePage() {
 
       <BranchMap branches={branches} />
       <Testimonials reviews={reviews} />
-      <CtaFooter />
+      <CtaFooter
+        title="Book a home demonstration"
+        subtitle="Whether you need a vehicle adaptation or a scooter or wheelchair — we come to you from Heathrow or Ferndown."
+      />
     </>
   );
 }

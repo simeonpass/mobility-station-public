@@ -44,7 +44,6 @@ Run `supabase/public_site_grants.sql` in Supabase to create the minimum `public_
 | `/book-a-service` | Service booking |
 | `/blog` | Advice articles |
 | `/lightweight-folding-mobility` | Lightweight hub + spin-off CTA |
-| `/mobility-scooter-hire` | Hire |
 | `/trade-in` | Trade-in valuation |
 | `/sitemap.xml` / `/robots.txt` | SEO |
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Expand, X } from "lucide-react";
 import { CatalogImage } from "@/components/product/catalog-image";
 import { cn } from "@/lib/utils";
 
@@ -66,8 +66,8 @@ export function ProductGallery({
   }, [lightbox, active, goTo]);
 
   return (
-    <div className="md:sticky md:top-28">
-      <div className="relative overflow-hidden rounded-2xl bg-soft">
+    <div className="min-w-0 md:sticky md:top-28">
+      <div className="relative w-full overflow-hidden rounded-2xl border border-border bg-white">
         <div
           ref={scrollerRef}
           className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
@@ -76,7 +76,7 @@ export function ProductGallery({
             <button
               key={src + index}
               type="button"
-              className="relative aspect-[4/3] w-full shrink-0 snap-center sm:aspect-square"
+              className="relative aspect-square w-full shrink-0 snap-center"
               onClick={() => setLightbox(true)}
               aria-label={`View larger image ${index + 1} of ${name}`}
             >
@@ -85,18 +85,28 @@ export function ProductGallery({
                 alt={`${name} mobility product ${index + 1}`}
                 fill
                 priority={index === 0}
-                className="object-contain p-4 sm:p-6"
+                className="object-contain p-3 sm:p-4"
                 sizes="(max-width: 768px) 100vw, 50vw"
               />
             </button>
           ))}
         </div>
 
+        <button
+          type="button"
+          className="absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-2.5 py-1.5 text-xs font-semibold text-primary shadow-sm"
+          onClick={() => setLightbox(true)}
+          aria-label="Enlarge image"
+        >
+          <Expand className="h-3.5 w-3.5" aria-hidden />
+          <span className="hidden sm:inline">Enlarge</span>
+        </button>
+
         {count > 1 ? (
           <>
             <button
               type="button"
-              className="absolute left-2 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-primary shadow md:flex"
+              className="absolute left-2 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-primary shadow"
               aria-label="Previous image"
               onClick={() => goTo(active - 1)}
             >
@@ -104,7 +114,7 @@ export function ProductGallery({
             </button>
             <button
               type="button"
-              className="absolute right-2 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-primary shadow md:flex"
+              className="absolute right-2 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-primary shadow"
               aria-label="Next image"
               onClick={() => goTo(active + 1)}
             >
@@ -131,7 +141,7 @@ export function ProductGallery({
         ) : null}
 
         {count > 1 ? (
-          <p className="absolute right-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-primary">
+          <p className="absolute right-3 top-3 rounded-full bg-white/95 px-2.5 py-1 text-xs font-semibold text-primary shadow-sm">
             {active + 1} / {count}
           </p>
         ) : null}
@@ -147,8 +157,10 @@ export function ProductGallery({
               key={src + index}
               type="button"
               className={cn(
-                "relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border bg-soft",
-                index === active ? "border-primary ring-1 ring-primary" : "border-border",
+                "relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border bg-white",
+                index === active
+                  ? "border-primary ring-1 ring-primary"
+                  : "border-border",
               )}
               onClick={() => goTo(index)}
               aria-label={`Show image ${index + 1}`}

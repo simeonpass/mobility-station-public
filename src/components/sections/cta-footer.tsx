@@ -10,13 +10,13 @@ export function CtaFooter({
   subtitle?: string;
 }) {
   return (
-    <section className="bg-primary py-14 text-primary-foreground md:py-16">
+    <section className="border-y border-border bg-primary-soft py-14 text-foreground md:py-16">
       <div className="container-site flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
         <div className="max-w-2xl">
-          <h2 className="text-3xl font-extrabold tracking-tight text-white md:text-4xl">
+          <h2 className="text-3xl font-extrabold tracking-tight text-primary md:text-4xl">
             {title}
           </h2>
-          <p className="mt-3 text-white/80">{subtitle}</p>
+          <p className="mt-3 text-muted">{subtitle}</p>
         </div>
         <div className="flex flex-wrap gap-3">
           <Link href="/book-a-demo" className={buttonVariants({ size: "lg" })}>
@@ -27,7 +27,7 @@ export function CtaFooter({
             className={buttonVariants({
               variant: "outline",
               size: "lg",
-              className: "border-white/40 text-white hover:bg-white/10",
+              className: "bg-white/60",
             })}
           >
             Call {SITE.phone}

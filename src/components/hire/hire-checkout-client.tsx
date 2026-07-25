@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Script from "next/script";
 import {
   CheckCircle2,
   CreditCard,
@@ -17,15 +16,6 @@ import { Input, Label } from "@/components/ui/input";
 import { HIRE_TERMS } from "@/lib/hire-terms";
 import { formatGBP } from "@/lib/products";
 import { lookupCoverage, type CoverageResult } from "@/lib/service-area";
-
-declare global {
-  interface Window {
-    DNAPayments?: {
-      openPaymentPage: (config: unknown) => void;
-      configure: (config: { isTestMode: boolean }) => void;
-    };
-  }
-}
 
 type Fulfilment = "branch" | "mobile" | "courier";
 
@@ -61,7 +51,6 @@ export function HireCheckoutClient({ bookingId }: { bookingId: string }) {
   const [booking, setBooking] = useState<HireBooking | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [dnaReady, setDnaReady] = useState(false);
 
   const [fulfilment, setFulfilment] = useState<Fulfilment>("branch");
   const [branch, setBranch] = useState("heathrow");
@@ -283,10 +272,6 @@ export function HireCheckoutClient({ bookingId }: { bookingId: string }) {
 
   const pay = async () => {
     setError(null);
-    if (!dnaReady || !window.DNAPayments) {
-      setError("Payment system loading — try again in a moment");
-      return;
-    }
     setPaying(true);
     try {
       const res = await fetch("/api/hire/pay", {
@@ -295,10 +280,10 @@ export function HireCheckoutClient({ bookingId }: { bookingId: string }) {
         body: JSON.stringify({ bookingId: booking.id }),
       });
       const data = await res.json();
-      if (!res.ok || !data.paymentData) {
-        throw new Error(data.error || "No payment data");
+      if (!res.ok || !data.url) {
+        throw new Error(data.error || "No Revolut checkout URL returned");
       }
-      window.DNAPayments.openPaymentPage(data.paymentData);
+      window.location.href = data.url;
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not start payment");
       setPaying(false);
@@ -314,16 +299,6 @@ export function HireCheckoutClient({ bookingId }: { bookingId: string }) {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <Script
-        id="dna-payments-sdk"
-        src="https://pay.dnapayments.com/checkout/payment-api.js"
-        strategy="afterInteractive"
-        onLoad={() => {
-          window.DNAPayments?.configure?.({ isTestMode: false });
-          setDnaReady(true);
-        }}
-      />
-
       <Link href="/hire" className="text-sm font-semibold text-muted hover:text-primary">
         ← Back to hire
       </Link>
@@ -513,15 +488,15 @@ export function HireCheckoutClient({ bookingId }: { bookingId: string }) {
               </p>
             </div>
             <p className="text-sm text-muted">
-              You&apos;ll be taken to DNA Payments to complete card payment.
+              You&apos;ll be taken to Revolut&apos;s secure checkout to pay.
             </p>
-            <Button className="w-full" onClick={() => void pay()} disabled={paying || !dnaReady}>
+            <Button className="w-full" onClick={() => void pay()} disabled={paying}>
               {paying ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Opening payment…
                 </>
               ) : (
-                "Pay now"
+                "Pay securely with Revolut"
               )}
             </Button>
           </div>

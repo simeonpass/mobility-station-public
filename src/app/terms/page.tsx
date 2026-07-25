@@ -31,8 +31,11 @@ export default function TermsPage() {
           <h2>2. Orders &amp; Pricing</h2>
           <ul>
             <li>
-              All prices are displayed in GBP (£) and include VAT at the
-              prevailing rate unless you qualify for VAT exemption
+              Catalogue prices are shown in GBP (£). For eligible mobility
+              products we display the VAT relief price (ex VAT) and the standard
+              price including 20% VAT. Second-hand items are sold under the
+              margin scheme (no VAT). See our{" "}
+              <Link href="/vat-relief">VAT Relief</Link> page for eligibility.
             </li>
             <li>We reserve the right to correct pricing errors before despatch</li>
             <li>
@@ -50,7 +53,8 @@ export default function TermsPage() {
             Customers who are chronically sick or disabled may be eligible to
             purchase certain products without paying VAT. You must complete a VAT
             exemption declaration at checkout. Making a false declaration is a
-            criminal offence.
+            criminal offence. Full details are on our{" "}
+            <Link href="/vat-relief">VAT Relief</Link> page.
           </p>
         </section>
 
@@ -141,7 +145,23 @@ export default function TermsPage() {
         </section>
 
         <section>
-          <h2>8. Limitation of Liability</h2>
+          <h2>8. Home Demonstrations</h2>
+          <p>
+            Branch demonstrations at Heathrow and Ferndown are free. Motability
+            scooter and wheelchair home demonstrations are also free.
+          </p>
+          <p className="mt-2">
+            Home demonstrations for vehicle adaptations and for private
+            (non-Motability) scooters and wheelchairs carry a £100 visit fee.
+            This fee is fully refundable if you proceed and place an order with
+            us. Full details are on our{" "}
+            <Link href="/book-a-demo#demo-terms">book a demonstration</Link>{" "}
+            page.
+          </p>
+        </section>
+
+        <section>
+          <h2>9. Limitation of Liability</h2>
           <p>
             Nothing in these terms limits our liability for death or personal
             injury caused by negligence, fraud, or any other liability that cannot
@@ -151,7 +171,7 @@ export default function TermsPage() {
         </section>
 
         <section>
-          <h2>9. Governing Law</h2>
+          <h2>10. Governing Law</h2>
           <p>
             These terms are governed by English law. Any disputes will be subject
             to the exclusive jurisdiction of the courts of England and Wales.
@@ -159,7 +179,7 @@ export default function TermsPage() {
         </section>
 
         <section>
-          <h2>10. Contact</h2>
+          <h2>11. Contact</h2>
           <p>
             Mobility Station
             <br />

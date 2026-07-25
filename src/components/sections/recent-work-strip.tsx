@@ -14,8 +14,11 @@ export function RecentWorkStrip({ items }: { items: PortfolioItem[] }) {
               From our workshop
             </p>
             <h2 className="mt-1 text-3xl font-extrabold tracking-tight text-primary md:text-4xl">
-              Recent work
+              Recent adaptation work
             </h2>
+            <p className="mt-2 max-w-lg text-sm text-muted">
+              Real fittings from Heathrow and Ferndown.
+            </p>
           </div>
           <Link
             href="/our-work"

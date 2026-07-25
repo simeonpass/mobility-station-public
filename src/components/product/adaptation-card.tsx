@@ -3,36 +3,39 @@ import { BrandLogo } from "@/components/product/brand-logo";
 import { CatalogImage } from "@/components/product/catalog-image";
 import { getBrandLogo } from "@/lib/brand-logos";
 import {
-  displayPrice,
   formatGBP,
   primaryImage,
   type ProductListItem,
 } from "@/lib/products";
+import { getVatPriceDisplay } from "@/lib/vat";
 
 export function AdaptationCard({ product }: { product: ProductListItem }) {
-  const price = displayPrice(product);
+  const vat = getVatPriceDisplay(product);
   const img = primaryImage(product);
   const freeMotability = product.motability_price === 0;
   const hasMotability =
     freeMotability ||
     (product.motability_price != null && product.motability_price > 0);
+  const headline = vat.mode === "always-inc" ? vat.gross : vat.net;
 
   return (
     <Link
       href={`/products/${product.slug}`}
       className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-white transition-shadow hover:shadow-lg"
     >
-      <div className="relative aspect-[4/3] bg-soft">
+      <div className="relative aspect-[4/3] border-b border-border bg-white">
         <CatalogImage
           src={img}
           alt={product.name}
           fill
           sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
-          className="object-contain p-4 transition-transform group-hover:scale-[1.03]"
+          className="object-contain p-2 transition-transform group-hover:scale-[1.03]"
         />
-        <span className="absolute left-3 top-3 rounded bg-primary px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-primary-foreground">
-          Supplied &amp; fitted
-        </span>
+        <div className="absolute left-3 top-3 flex flex-col gap-1.5">
+          <span className="rounded bg-primary px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-primary-foreground">
+            Supplied &amp; fitted
+          </span>
+        </div>
       </div>
       <div className="flex flex-1 flex-col p-4">
         {getBrandLogo(product.manufacturer) ? (
@@ -53,16 +56,20 @@ export function AdaptationCard({ product }: { product: ProductListItem }) {
         ) : null}
 
         <div className="mt-auto border-t border-border/70 pt-3">
-          {price.current != null ? (
+          {headline != null ? (
             <>
               <p className="text-[10px] font-medium uppercase tracking-wider text-muted">
                 From
               </p>
               <p className="text-xl font-bold text-primary">
-                {formatGBP(price.current)}
+                {formatGBP(headline)}
               </p>
               <p className="mt-0.5 text-[11px] text-muted">
-                Indicative supplied &amp; fitted price
+                {vat.mode === "relief"
+                  ? "ex VAT"
+                  : vat.mode === "always-inc"
+                    ? "inc. VAT"
+                    : "Indicative supplied & fitted price"}
               </p>
             </>
           ) : (

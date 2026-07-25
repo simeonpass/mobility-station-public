@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 const nav = [
   { href: "/vehicle-adaptations", label: "Vehicle Adaptations" },
   { href: "/shop", label: "Scooters & Wheelchairs" },
-  { href: "/mobility-scooter-hire", label: "Hire" },
+  { href: "/motability", label: "Motability" },
   { href: "/locations", label: "Locations" },
   { href: "/blog", label: "Blog" },
 ];
@@ -24,14 +24,19 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 border-b border-border bg-soft/95 backdrop-blur">
       <div className="bg-primary text-primary-foreground">
         <div className="container-site flex flex-wrap items-center justify-center gap-x-4 gap-y-1 py-2 text-center text-xs font-medium sm:justify-between sm:text-left">
-          <p>Heathrow &amp; Ferndown Branches | Free home demonstrations</p>
+          <p>
+            Heathrow &amp; Ferndown Branches |{" "}
+            <Link
+              href="/book-a-demo#demo-terms"
+              className="hover:text-accent"
+            >
+              Free home demonstrations*
+            </Link>
+          </p>
           <div className="flex items-center gap-3">
             <a href={SITE.phoneHref} className="hover:text-accent">
               {SITE.phone}
             </a>
-            <Link href="/book-a-demo" className="font-semibold text-accent hover:text-accent-hover">
-              Book a Demo
-            </Link>
           </div>
         </div>
       </div>
@@ -42,9 +47,9 @@ export function SiteHeader() {
             src="/brand/logo-header.png"
             alt="Mobility Station"
             width={240}
-            height={46}
+            height={98}
             priority
-            className="h-10 w-auto md:h-11"
+            className="h-11 w-auto md:h-12"
           />
         </Link>
 

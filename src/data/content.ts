@@ -553,8 +553,8 @@ export const SOLUTIONS = [
 ] as const;
 
 export const TRUST_ITEMS = [
-  "Free Home Demonstrations",
-  "Mobility Credit Expert Advice",
+  "Vehicle Adaptations",
+  "Scooters & Wheelchairs",
   "Motability Accredited",
-  "7-Day Support",
+  "Free Home Demonstrations",
 ] as const;

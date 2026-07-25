@@ -12,6 +12,7 @@ function getSupabaseConfig() {
 export async function invokeCheckoutFunction(
   functionName:
     | "website-stripe-checkout"
+    | "website-revolut-checkout"
     | "website-paypal-checkout"
     | "website-paypal-capture",
   body: CheckoutPayload | { orderNumber: string },

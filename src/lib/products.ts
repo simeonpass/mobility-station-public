@@ -192,6 +192,87 @@ export async function getAdaptationProducts(
   );
 }
 
+export async function getRelatedProducts(
+  product: {
+    id: string;
+    category: string | null;
+    manufacturer: string | null;
+    product_type: string | null;
+  },
+  limit = 4,
+): Promise<ProductListItem[]> {
+  const adaptation = isAdaptationProduct(product);
+  const seen = new Set<string>([product.id]);
+  const results: ProductListItem[] = [];
+
+  const take = (items: ProductListItem[]) => {
+    for (const item of items) {
+      if (seen.has(item.id)) continue;
+      seen.add(item.id);
+      results.push(item);
+      if (results.length >= limit) break;
+    }
+  };
+
+  try {
+    if (product.category) {
+      if (adaptation) {
+        take(
+          await getAdaptationProducts({
+            category: product.category,
+            limit: limit + 4,
+          }),
+        );
+      } else {
+        take(
+          await getPublishedProducts({
+            category: product.category,
+            limit: limit + 4,
+            shopOnly: true,
+          }),
+        );
+      }
+    }
+
+    if (results.length < limit && product.manufacturer) {
+      const supabase = getClient();
+      let q = supabase
+        .from("stock_items")
+        .select(LIST_COLUMNS)
+        .eq("published_to_website", true)
+        .eq("website_visible", true)
+        .eq("manufacturer", product.manufacturer)
+        .neq("product_type", "archived")
+        .not("slug", "is", null)
+        .order("is_featured", { ascending: false })
+        .limit(limit + 6);
+
+      if (adaptation) {
+        q = q.eq("product_type", "vehicle_adaptation");
+      } else {
+        q = q.neq("product_type", "vehicle_adaptation");
+      }
+
+      const { data, error } = await q;
+      if (!error) {
+        take((data ?? []).map((row) => mapListItem(row as Record<string, unknown>)));
+      }
+    }
+
+    if (results.length < limit) {
+      if (adaptation) {
+        take(await getAdaptationProducts({ limit: limit + 6 }));
+      } else {
+        take(await getFeaturedProducts(limit + 6));
+      }
+    }
+  } catch {
+    return results.slice(0, limit);
+  }
+
+  return results.slice(0, limit);
+}
+
 export async function getFeaturedProducts(limit = 8): Promise<ProductListItem[]> {
   const supabase = getClient();
   const { data, error } = await supabase

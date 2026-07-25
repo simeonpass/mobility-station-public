@@ -11,7 +11,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "bookingId required" }, { status: 400 });
     }
     const data = await invokeHireFunction(
-      "hire-checkout-pay",
+      "hire-revolut-checkout",
       { bookingId: body.bookingId },
       resolveReturnOrigin(request),
     );

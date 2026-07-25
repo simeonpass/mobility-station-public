@@ -42,6 +42,7 @@ export default async function LegacyProductSlugPage({ params }: Props) {
     "service-area",
     "find-my-scooter",
     "our-work",
+    "vat-relief",
   ]);
   if (reserved.has(slug.toLowerCase())) notFound();
 

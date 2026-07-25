@@ -45,12 +45,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     },
     {
-      url: `${SITE.url}/hire`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.7,
-    },
-    {
       url: `${SITE.url}/delivery`,
       lastModified: now,
       changeFrequency: "monthly",
@@ -76,12 +70,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     {
       url: `${SITE.url}/lightweight-folding-mobility`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.6,
-    },
-    {
-      url: `${SITE.url}/mobility-scooter-hire`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.6,
@@ -115,6 +103,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.6,
+    },
+    {
+      url: `${SITE.url}/vat-relief`,
+      lastModified: now,
+      changeFrequency: "yearly",
+      priority: 0.5,
     },
     {
       url: `${SITE.url}/privacy-policy`,

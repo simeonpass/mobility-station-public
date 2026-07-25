@@ -1,11 +1,12 @@
+import Link from "next/link";
 import { EnquiryForm } from "@/components/forms/enquiry-form";
 import { Hero } from "@/components/sections/hero";
 import { createMetadata } from "@/lib/seo";
 
 export const metadata = createMetadata({
-  title: "Book a Demo | Free Home Demonstrations",
+  title: "Book a Demo | Home Demonstrations",
   description:
-    "Book a free branch demo or mobile home demonstration. Mobile demos £99 — refunded for adaptations, deducted or free for Motability.",
+    "Book a home or branch demonstration for scooters, wheelchairs or vehicle adaptations. Motability demos free; private & adaptation home visits £100 — fully refundable if you place an order.",
   path: "/book-a-demo",
 });
 
@@ -21,12 +22,12 @@ export default async function BookADemoPage({
     <>
       <Hero
         compact
-        title="Book a free demonstration"
+        title="Book a demonstration"
         subtitle="Try scooters, wheelchairs or adaptations at home or at our Heathrow and Ferndown branches."
         primaryHref="#form"
         primaryLabel="Start booking"
       />
-      <section id="form" className="pb-16 md:pb-20">
+      <section id="form" className="pb-10 md:pb-12">
         <div className="container-site grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
             <h2 className="text-2xl font-extrabold">Demo options</h2>
@@ -36,10 +37,24 @@ export default async function BookADemoPage({
                 always free at Heathrow or Ferndown.
               </li>
               <li>
-                <strong className="text-primary">Mobile home demonstration:</strong>{" "}
-                £99 visit fee. Refunded when you proceed with vehicle adaptations;
-                deducted from private scooter/wheelchair purchases; free for
-                Motability scooter/wheelchair packages.
+                <strong className="text-primary">
+                  Motability home demonstration:
+                </strong>{" "}
+                free for Motability scooter and wheelchair packages.
+              </li>
+              <li>
+                <strong className="text-primary">
+                  Private / adaptation home demonstration:
+                </strong>{" "}
+                £100 visit fee
+                <a
+                  href="#demo-terms"
+                  className="font-semibold text-primary"
+                  aria-describedby="demo-terms"
+                >
+                  *
+                </a>
+                , fully refundable if you go ahead and place an order.
               </li>
               <li>
                 We come to you so you can try equipment where you live, park and
@@ -51,9 +66,53 @@ export default async function BookADemoPage({
             <EnquiryForm
               enquiryType="demo"
               title="Request your demonstration"
-              defaultInterest={productSlug ? productSlug.replace(/-/g, " ") : ""}
+              defaultInterest={
+                productSlug ? productSlug.replace(/-/g, " ") : ""
+              }
               productSlug={productSlug}
             />
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="demo-terms"
+        className="border-t border-border bg-soft py-10 md:py-12"
+      >
+        <div className="container-site max-w-3xl">
+          <h2 className="text-lg font-extrabold text-primary">
+            * Home demonstration terms
+          </h2>
+          <div className="mt-4 space-y-3 text-sm leading-relaxed text-muted">
+            <p>
+              <strong className="text-foreground">Free home demonstrations</strong>{" "}
+              apply to Motability scooter and wheelchair assessments.
+            </p>
+            <p>
+              Home demonstrations for{" "}
+              <strong className="text-foreground">vehicle adaptations</strong>{" "}
+              and{" "}
+              <strong className="text-foreground">
+                private (non-Motability) scooters and wheelchairs
+              </strong>{" "}
+              carry a <strong className="text-foreground">£100</strong> visit
+              fee. This is fully refundable if you proceed and place an order
+              with us.
+            </p>
+            <p>
+              Branch demonstrations at Heathrow and Ferndown remain free.
+              We&apos;ll confirm the right option when we book your visit.
+            </p>
+            <p>
+              See also our{" "}
+              <Link
+                href="/terms"
+                className="font-semibold text-primary underline underline-offset-2"
+              >
+                Terms &amp; Conditions
+              </Link>
+              .
+            </p>
           </div>
         </div>
       </section>
