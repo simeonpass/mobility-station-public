@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import {
   Accessibility,
@@ -9,6 +8,10 @@ import {
   MapPinned,
   Wrench,
 } from "lucide-react";
+import {
+  ImageCollage,
+  type CollageTile,
+} from "@/components/sections/image-collage";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -40,76 +43,34 @@ const TRUST = [
   { icon: Wrench, label: "Expert support" },
 ] as const;
 
-const TILES = [
+/** Jigsaw tiles: large service shot + four supporting scenes */
+const HOME_TILES: CollageTile[] = [
   {
     src: "/images/hero-options/06-customer-handover.png",
     alt: "Mobility Station adviser with a customer in an adapted car",
-    className: "col-span-7 row-span-2",
     object: "object-[50%_35%]",
   },
   {
+    src: "/images/hero-options/05-hand-controls.png",
+    alt: "Steering knob and hand controls fitted in a car",
+    object: "object-center",
+  },
+  {
     src: "/images/hero-options/03-scooter-handover.png",
-    alt: "Home demonstration handover of a mobility scooter",
-    className: "col-span-5 row-span-2",
+    alt: "Home demonstration of a mobility scooter",
     object: "object-[55%_40%]",
   },
   {
     src: "/images/hero-options/02-wav-powerchair.png",
     alt: "Wheelchair accessible vehicle with ramp and powerchair",
-    className: "col-span-5 row-span-2",
     object: "object-[42%_45%]",
   },
   {
-    src: "/images/hero-options/05-hand-controls.png",
-    alt: "Steering knob and hand controls fitted in a car",
-    className: "col-span-7 row-span-2",
-    object: "object-center",
+    src: "/images/hero-options/07-swivel-seat.png",
+    alt: "Vehicle access adaptation with wheelchair transfer",
+    object: "object-[45%_40%]",
   },
-  {
-    src: "/images/hero-options/16-van-adaptations-mobility-v3.png",
-    alt: "Mobility Station van with scooter, wheelchair and home visit",
-    className: "col-span-12 row-span-2",
-    object: "object-[50%_55%]",
-  },
-] as const;
-
-function HeroTile({
-  src,
-  alt,
-  className,
-  object,
-  delay,
-}: {
-  src: string;
-  alt: string;
-  className?: string;
-  object: string;
-  delay: string;
-}) {
-  return (
-    <div
-      className={cn(
-        "hero-tile relative min-h-0 overflow-hidden rounded-2xl bg-soft shadow-[0_10px_28px_rgb(0_63_67_/_0.08)]",
-        className,
-      )}
-      style={{ animationDelay: delay }}
-    >
-      <div className="hero-tile-media absolute inset-0">
-        <Image
-          src={src}
-          alt={alt}
-          fill
-          sizes="(max-width: 1024px) 50vw, 28vw"
-          className={cn(
-            "object-cover transition-transform duration-700 ease-out hover:scale-[1.05]",
-            object,
-          )}
-          priority
-        />
-      </div>
-    </div>
-  );
-}
+];
 
 export function HomeHero() {
   return (
@@ -184,50 +145,8 @@ export function HomeHero() {
           </ul>
         </div>
 
-        {/* Collage — desktop / tablet */}
-        <div className="relative hidden h-[28rem] animate-[fadeRise_900ms_ease-out] sm:block md:h-[34rem] lg:h-[38rem]">
-          {/* Accent parallelograms */}
-          <div
-            className="absolute -right-2 top-6 z-0 h-24 w-16 -skew-x-12 rounded-xl bg-accent/90 md:h-28 md:w-20"
-            aria-hidden
-          />
-          <div
-            className="absolute bottom-10 left-2 z-0 h-20 w-14 -skew-x-12 rounded-xl bg-primary md:h-24 md:w-16"
-            aria-hidden
-          />
-          <div
-            className="absolute right-10 top-[42%] z-0 h-16 w-12 -skew-x-12 rounded-lg bg-primary/80"
-            aria-hidden
-          />
-
-          <div className="relative z-10 grid h-full grid-cols-12 grid-rows-6 gap-3 md:gap-3.5">
-            {TILES.map((tile, i) => (
-              <HeroTile
-                key={tile.src}
-                {...tile}
-                delay={`${120 + i * 90}ms`}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Collage — mobile strip */}
-        <div className="grid grid-cols-2 gap-2.5 sm:hidden">
-          {TILES.slice(0, 4).map((tile) => (
-            <div
-              key={tile.src}
-              className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-soft"
-            >
-              <Image
-                src={tile.src}
-                alt={tile.alt}
-                fill
-                sizes="50vw"
-                className={cn("object-cover", tile.object)}
-                priority
-              />
-            </div>
-          ))}
+        <div className="animate-[fadeRise_900ms_ease-out]">
+          <ImageCollage tiles={HOME_TILES} priority />
         </div>
       </div>
     </section>
