@@ -49,9 +49,10 @@ export function jsonLdScript(data: Record<string, unknown> | Record<string, unkn
 
 export const SITE = {
   name: "Mobility Station",
-  legalName: "Mobility Station Ltd",
+  legalName: "Adaptation Station Ltd",
   phone: "0800 772 3870",
   phoneHref: "tel:08007723870",
+  smsHref: "sms:+441895520361",
   email: "hello@mobilitystation.co.uk",
   url: "https://mobilitystation.co.uk",
   lightweightUrl: "https://lightweightmobility.co.uk",

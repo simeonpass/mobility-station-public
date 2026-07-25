@@ -181,7 +181,7 @@ export default function TermsPage() {
         <section>
           <h2>11. Contact</h2>
           <p>
-            Mobility Station
+            Mobility Station (a trading name of Adaptation Station Ltd)
             <br />
             1-2 Horton Close, West Drayton, UB7 8EB
             <br />

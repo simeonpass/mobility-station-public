@@ -90,7 +90,12 @@ const TRUST = [
   { icon: FileCheck2, label: "Free quotation" },
 ] as const;
 
-const HOW_IT_WORKS = [
+const HOW_IT_WORKS: {
+  step: string;
+  title: string;
+  body: string;
+  href?: string;
+}[] = [
   {
     step: "1",
     title: "Tell us what you need",
@@ -112,7 +117,7 @@ const HOW_IT_WORKS = [
     title: "Fitted by our team",
     body: "Fitted at Heathrow or Ferndown — or mobile where the product allows.",
   },
-] as const;
+];
 
 const WHY_US = [
   {

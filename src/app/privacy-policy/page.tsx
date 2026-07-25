@@ -21,10 +21,10 @@ export default function PrivacyPolicyPage() {
           <h2>1. Who We Are</h2>
           <p>
             Mobility Station (&quot;we&quot;, &quot;our&quot;, &quot;us&quot;) is
-            a UK-based supplier of mobility equipment and vehicle adaptations.
-            Our registered address is 1-2 Horton Close, West Drayton, UB7 8EB. We
-            are the data controller for the personal data we collect via this
-            website.
+            a trading name of Adaptation Station Ltd, a UK-based supplier of
+            mobility equipment and vehicle adaptations. Our registered address is
+            1-2 Horton Close, West Drayton, UB7 8EB. We are the data controller
+            for the personal data we collect via this website.
           </p>
         </section>
 

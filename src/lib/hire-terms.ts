@@ -14,7 +14,7 @@ export interface HireTerm {
 export const HIRE_TERMS: HireTerm[] = [
   {
     heading: '1. The Agreement',
-    body: 'This is a hire agreement between Mobility Station Ltd ("we", "us") and the named hirer ("you"). It applies to the equipment described in your booking confirmation for the dates shown. By signing, you agree to be bound by these terms.',
+    body: 'This is a hire agreement between Adaptation Station Ltd, trading as Mobility Station ("we", "us"), and the named hirer ("you"). It applies to the equipment described in your booking confirmation for the dates shown. By signing, you agree to be bound by these terms.',
   },
   {
     heading: '2. Identification, billing address & delivery',

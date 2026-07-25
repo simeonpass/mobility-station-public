@@ -67,7 +67,7 @@ export function EnquiryForm({
             ) : null}
           </div>
         ) : (
-          <input type="hidden" name="postcode" value="UB11 1FE" />
+          <input type="hidden" name="postcode" value="UB7 8EB" />
         )}
       </div>
 

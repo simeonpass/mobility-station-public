@@ -37,14 +37,14 @@ export function cartIsAllSmallItems(
 export const BRANCH_LOCATIONS = [
   {
     name: "Heathrow (West Drayton)",
-    lat: 51.4975,
-    lng: -0.4659,
+    lat: 51.510494,
+    lng: -0.459042,
     radiusMiles: 30,
   },
   {
     name: "Ferndown (Wimborne)",
-    lat: 50.8101,
-    lng: -1.8986,
+    lat: 50.806106,
+    lng: -1.918664,
     radiusMiles: 60,
   },
 ] as const;
