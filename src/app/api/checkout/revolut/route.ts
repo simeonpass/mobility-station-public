@@ -9,12 +9,13 @@ export async function POST(request: Request) {
   try {
     const body = (await request.json()) as CheckoutPayload;
     const data = await invokeCheckoutFunction(
-      "website-revolut-checkout",
+      "website-checkout",
       body,
       resolveReturnOrigin(request),
     );
 
-    if (!data.url) {
+    const url = data.checkoutUrl ?? data.url;
+    if (!url) {
       return NextResponse.json(
         { error: data.error || "No Revolut checkout URL returned" },
         { status: 500 },
@@ -22,7 +23,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({
-      url: data.url,
+      url,
       orderNumber: data.orderNumber,
     });
   } catch (error) {

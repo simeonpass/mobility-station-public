@@ -16,7 +16,7 @@ import {
 import { formatGBP } from "@/lib/products";
 
 export function CheckoutForm() {
-  const { items, subtotal, clearCart } = useCart();
+  const { items, subtotal } = useCart();
   const [loading, setLoading] = useState<"revolut" | "paypal" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [declarationConfirmed, setDeclarationConfirmed] = useState(false);
@@ -154,7 +154,8 @@ export function CheckoutForm() {
       if (!res.ok || !data.url) {
         throw new Error(data.error || "Checkout failed");
       }
-      clearCart();
+      // Keep the cart until order confirmation clears it after a successful return.
+      // Clearing before redirect loses the basket if the shopper abandons Revolut/PayPal.
       window.location.href = data.url;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Checkout failed");

@@ -118,7 +118,7 @@ export function OrderConfirmationClient() {
               Order confirmation
             </h1>
             <p className="mt-4 text-sm text-muted">
-              Open this page from a completed Stripe or PayPal checkout to see
+              Open this page from a completed Revolut or PayPal checkout to see
               your order status.
             </p>
           </>

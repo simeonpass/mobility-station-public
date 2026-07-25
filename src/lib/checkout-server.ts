@@ -11,8 +11,8 @@ function getSupabaseConfig() {
 
 export async function invokeCheckoutFunction(
   functionName:
+    | "website-checkout"
     | "website-stripe-checkout"
-    | "website-revolut-checkout"
     | "website-paypal-checkout"
     | "website-paypal-capture",
   body: CheckoutPayload | { orderNumber: string },
@@ -34,6 +34,7 @@ export async function invokeCheckoutFunction(
   const data = (await res.json().catch(() => ({}))) as {
     success?: boolean;
     url?: string;
+    checkoutUrl?: string;
     orderNumber?: string;
     error?: string;
     status?: string;
