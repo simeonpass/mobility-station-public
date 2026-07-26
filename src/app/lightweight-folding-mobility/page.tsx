@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { EnquiryForm } from "@/components/forms/enquiry-form";
 import { Hero } from "@/components/sections/hero";
+import { CtaFooter } from "@/components/sections/cta-footer";
 import { buttonVariants } from "@/components/ui/button";
 import { createMetadata, SITE } from "@/lib/seo";
 
@@ -17,54 +17,60 @@ export default function LightweightPage() {
       <Hero
         compact
         title="Lightweight folding mobility"
-        subtitle="Portable folding wheelchairs and scooters for travel, holidays and easy boot storage — with free home demonstrations."
+        subtitle="Portable folding wheelchairs and scooters for travel, holidays and easy boot storage."
+        primaryHref="/shop?sub=wheelchairs"
+        primaryLabel="Browse folding wheelchairs"
+        secondaryHref="/shop?sub=scooters"
+        secondaryLabel="Browse folding scooters"
       />
       <section className="pb-16 md:pb-20">
-        <div className="container-site grid gap-10 lg:grid-cols-2">
-          <div>
-            <h2 className="text-2xl font-extrabold">Travel-ready independence</h2>
-            <p className="mt-4 leading-relaxed text-foreground/85">
-              When weight and foldability matter, the right lightweight solution
-              can make holidays, family visits and everyday journeys far easier.
-              We help you compare folding wheelchairs and scooters at home, then
-              point you to the best fit.
+        <div className="container-site max-w-3xl">
+          <p className="text-lg leading-relaxed text-foreground/85">
+            When weight and foldability matter, the right lightweight model makes
+            holidays, family visits and everyday journeys far easier. We can
+            bring options to you so you can lift, fold and load them yourself
+            before deciding.
+          </p>
+          <div className="mt-8 rounded-2xl border border-border bg-soft p-6">
+            <h2 className="text-xl font-extrabold text-primary">
+              Our dedicated lightweight store
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-muted">
+              For the widest ultra-lightweight range and a specialist checkout,
+              visit lightweightmobility.co.uk.
             </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link href="/shop" className={buttonVariants()}>
-                Browse our shop
-              </Link>
-              <a
-                href={SITE.lightweightUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={buttonVariants({ variant: "outline" })}
-              >
-                Visit our dedicated lightweight store
-              </a>
-            </div>
-            <p className="mt-6 text-sm text-muted">
-              For the widest ultra-lightweight range and specialist checkout,
-              visit{" "}
-              <a
-                href={SITE.lightweightUrl}
-                className="font-semibold text-primary"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                lightweightmobility.co.uk
-              </a>
-              .
-            </p>
+            <a
+              href={SITE.lightweightUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={buttonVariants({ className: "mt-5" })}
+            >
+              Visit lightweightmobility.co.uk
+            </a>
           </div>
-          <div className="rounded-lg bg-soft p-6 md:p-8">
-            <EnquiryForm
-              enquiryType="demo"
-              title="Ask about lightweight options"
-              defaultInterest="Lightweight folding mobility"
-            />
-          </div>
+          <p className="mt-6 text-sm text-muted">
+            Not sure which is right?{" "}
+            <Link
+              href="/find-my-scooter"
+              className="font-semibold text-primary underline underline-offset-2"
+            >
+              Answer three questions
+            </Link>{" "}
+            or{" "}
+            <Link
+              href="/contact"
+              className="font-semibold text-primary underline underline-offset-2"
+            >
+              ask our team
+            </Link>
+            .
+          </p>
         </div>
       </section>
+      <CtaFooter
+        title="Try a folding model at home"
+        subtitle="We bring lightweight options to you so you can test the fold, weight and boot fit for yourself."
+      />
     </>
   );
 }

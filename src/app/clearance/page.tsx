@@ -9,7 +9,7 @@ export const revalidate = 300;
 export const metadata = createMetadata({
   title: "Clearance scooters & wheelchairs",
   description:
-    "Ex-demo, refurbished and pre-owned mobility scooters and wheelchairs. Free home demonstrations from Heathrow & Ferndown.",
+    "Ex-demo, refurbished and pre-owned mobility scooters and wheelchairs, graded and prepared by our team at Heathrow & Ferndown.",
   path: "/clearance",
 });
 
@@ -35,7 +35,9 @@ export default async function ClearancePage() {
       <Hero
         compact
         title="Clearance & pre-owned"
-        subtitle="Ex-demo, refurbished and pre-owned mobility products — checked by our team, with free home demonstrations available."
+        subtitle="Ex-demo, refurbished and pre-owned mobility products — graded and prepared by our own engineers before sale."
+        primaryHref="/shop"
+        primaryLabel="Browse the full shop"
       />
       <section className="pb-16 md:pb-20">
         <div className="container-site">

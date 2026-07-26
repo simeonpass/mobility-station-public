@@ -61,6 +61,23 @@ export default async function BookADemoPage({
                 get around every day.
               </li>
             </ul>
+            <p className="mt-6 text-sm text-muted">
+              Need something else?{" "}
+              <Link
+                href="/contact"
+                className="font-semibold text-primary underline underline-offset-2"
+              >
+                Contact the team
+              </Link>{" "}
+              or{" "}
+              <Link
+                href="/book-a-service"
+                className="font-semibold text-primary underline underline-offset-2"
+              >
+                book a service
+              </Link>
+              .
+            </p>
           </div>
           <div className="rounded-lg bg-soft p-6 md:p-8">
             <EnquiryForm

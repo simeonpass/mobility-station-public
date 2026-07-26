@@ -37,25 +37,17 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       { source: "/about", destination: "/about-us", permanent: true },
-      // Hire paused for now — keep code in place for a possible Flex Hire relaunch.
-      {
-        source: "/hire",
-        destination: "/",
-        permanent: false,
-      },
-      {
-        source: "/hire/:path*",
-        destination: "/",
-        permanent: false,
-      },
+      // Portfolio gallery merged into the blog hub.
+      { source: "/our-work", destination: "/blog", permanent: true },
+      // Legacy hire URL → unified hire hub (short-term + Flex).
       {
         source: "/mobility-scooter-hire",
-        destination: "/",
-        permanent: false,
+        destination: "/hire",
+        permanent: true,
       },
       {
-        source: "/website/hire/:path*",
-        destination: "/",
+        source: "/website/hire/checkout/:id",
+        destination: "/hire/checkout/:id",
         permanent: false,
       },
       { source: "/privacy", destination: "/privacy-policy", permanent: true },

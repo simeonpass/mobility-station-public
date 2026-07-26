@@ -21,7 +21,7 @@ export function RecentWorkStrip({ items }: { items: PortfolioItem[] }) {
             </p>
           </div>
           <Link
-            href="/our-work"
+            href="/blog#gallery"
             className="font-semibold text-primary underline underline-offset-4 hover:text-primary-dark"
           >
             See all →
@@ -31,7 +31,7 @@ export function RecentWorkStrip({ items }: { items: PortfolioItem[] }) {
           {items.slice(0, 6).map((item) => (
             <Link
               key={item.id}
-              href="/our-work"
+              href="/blog#gallery"
               className="group relative aspect-square overflow-hidden rounded-xl bg-soft"
             >
               <Image

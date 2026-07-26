@@ -1,34 +1,51 @@
+import Link from "next/link";
 import { CtaFooter } from "@/components/sections/cta-footer";
 import { Hero } from "@/components/sections/hero";
 import { createMetadata, jsonLdScript } from "@/lib/seo";
 
-const faqs = [
+const faqs: { q: string; a: string; href?: string; hrefLabel?: string }[] = [
   {
-    q: "Do you offer free home demonstrations?",
-    a: "Yes. Branch demonstrations are free, and we also offer mobile home demonstrations across our Heathrow and Ferndown service areas.",
+    q: "Do you offer home demonstrations?",
+    a: "Yes. Branch demonstrations at Heathrow and Ferndown are always free, and we bring equipment to your home across our service area.",
+    href: "/book-a-demo",
+    hrefLabel: "Book a demonstration",
   },
   {
-    q: "What does a mobile demonstration cost?",
-    a: "Mobile demos are £99. That fee is refunded for vehicle adaptations, deducted from private scooter/wheelchair purchases, and free for Motability scooter/wheelchair packages.",
+    q: "What does a home demonstration cost?",
+    a: "Motability scooter and wheelchair home demos are free. Private scooter, wheelchair and vehicle adaptation home visits carry a £100 fee, fully refundable if you place an order.",
+    href: "/book-a-demo#demo-terms",
+    hrefLabel: "Full demo terms",
   },
   {
-    q: "Where are your branches?",
-    a: "We have branches serving Heathrow and Ferndown. Postal addresses use West Drayton and Wimborne localities respectively.",
+    q: "Do you cover my area?",
+    a: "Check your postcode to see which workshop covers you, the local call-out band and whether we can deliver locally. Large equipment ships nationwide on a pallet.",
+    href: "/service-area",
+    hrefLabel: "Check your postcode",
+  },
+  {
+    q: "Can I buy adaptations online?",
+    a: "No — every adaptation is checked against your vehicle first, so we quote before any work is booked. Prices shown are indicative supplied and fitted figures.",
+    href: "/contact?interest=adaptation",
+    hrefLabel: "Request a quotation",
   },
   {
     q: "Do you supply Motability scooters and wheelchairs?",
-    a: "Yes. We are Motability accredited and can guide you through suitable scooter and wheelchair options.",
+    a: "Yes. We are a Motability Scheme accredited dealer, with live weekly prices on our Motability catalogue and free home demonstrations.",
+    href: "/motability",
+    hrefLabel: "See Motability options",
   },
   {
-    q: "What is an Adaptation ID?",
-    a: "An Adaptation ID is how we reference a vehicle adaptation setup so servicing and support stay clear and consistent.",
+    q: "Can I claim VAT relief?",
+    a: "Many customers with a long-term illness or disability can buy eligible products without VAT. You declare eligibility at checkout.",
+    href: "/vat-relief",
+    hrefLabel: "How VAT relief works",
   },
 ];
 
 export const metadata = createMetadata({
   title: "FAQ | Mobility Station",
   description:
-    "Answers about free home demonstrations, Motability, branches, Adaptation IDs and booking with Mobility Station.",
+    "Answers about home demonstrations and fees, Motability, service area, adaptation quotes and VAT relief.",
   path: "/faq",
 });
 
@@ -60,6 +77,14 @@ export default function FaqPage() {
             <div key={faq.q} className="border-t border-border pt-5">
               <h2 className="text-xl font-bold">{faq.q}</h2>
               <p className="mt-2 leading-relaxed text-foreground/85">{faq.a}</p>
+              {faq.href ? (
+                <Link
+                  href={faq.href}
+                  className="mt-2 inline-block text-sm font-semibold text-primary underline underline-offset-4 hover:text-primary-dark"
+                >
+                  {faq.hrefLabel} →
+                </Link>
+              ) : null}
             </div>
           ))}
         </div>

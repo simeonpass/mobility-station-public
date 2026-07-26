@@ -499,7 +499,7 @@ export default async function VehicleAdaptationsPage() {
 
       <CtaFooter
         title="Get a free adaptation quotation"
-        subtitle="Tell us about your vehicle and needs — or call us to book a home demonstration. Adaptation home visits are £100, refundable if you place an order."
+        subtitle="Tell us your vehicle and what you need — we’ll confirm compatibility, Motability options and a firm fitted price."
       />
     </>
   );

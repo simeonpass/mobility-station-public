@@ -15,32 +15,37 @@ const columns = [
     title: "Vehicle adaptations",
     links: [
       { href: "/vehicle-adaptations", label: "All Adaptations" },
-      { href: "/our-work", label: "Our Work" },
+      { href: "/contact?interest=adaptation", label: "Get a Quotation" },
       { href: "/book-a-demo", label: "Book a Home Visit" },
-      { href: "/service-area", label: "Service Area" },
     ],
   },
   {
     title: "Scooters & wheelchairs",
     links: [
-      { href: "/shop", label: "Shop" },
-      { href: "/find-my-scooter", label: "Find My Scooter" },
+      { href: "/shop", label: "Shop All" },
+      { href: "/hire", label: "Hire & Flex Hire" },
+      { href: "/motability", label: "Motability" },
       { href: "/clearance", label: "Clearance" },
-      { href: "/lightweight-folding-mobility", label: "Lightweight Mobility" },
+      { href: "/find-my-scooter", label: "Find My Scooter" },
       { href: "/trade-in", label: "Trade-In" },
+    ],
+  },
+  {
+    title: "Visit & help",
+    links: [
+      { href: "/locations", label: "Locations" },
       { href: "/delivery", label: "Delivery" },
+      { href: "/vat-relief", label: "VAT Relief" },
+      { href: "/book-a-service", label: "Book a Service" },
+      { href: "/faq", label: "FAQ" },
     ],
   },
   {
     title: "Company",
     links: [
       { href: "/about-us", label: "About Us" },
-      { href: "/locations", label: "Locations" },
-      { href: "/blog", label: "Blog" },
-      { href: "/faq", label: "FAQ" },
-      { href: "/vat-relief", label: "VAT Relief" },
+      { href: "/blog", label: "Recent Work & Stories" },
       { href: "/contact", label: "Contact" },
-      { href: "/book-a-service", label: "Book a Service" },
     ],
   },
 ];
@@ -56,8 +61,8 @@ const PAYMENT_ICONS = [
 export function SiteFooter() {
   return (
     <footer className="mt-auto bg-footer text-footer-foreground">
-      <div className="container-site grid gap-x-8 gap-y-6 py-7 md:grid-cols-2 lg:grid-cols-4">
-        <div>
+      <div className="container-site grid gap-x-8 gap-y-6 py-7 sm:grid-cols-2 lg:grid-cols-6">
+        <div className="sm:col-span-2">
           <Image
             src="/brand/logo-footer-v6.png"
             alt="Mobility Station"

@@ -3,7 +3,11 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { CtaFooter } from "@/components/sections/cta-footer";
-import { getBlogPost, getBlogPosts } from "@/lib/data";
+import {
+  getBlogPost,
+  getBlogPosts,
+  getRelatedBlogPosts,
+} from "@/lib/data";
 import { plainTextToHtml, sanitizeBlogHtml } from "@/lib/sanitize-html";
 import { createMetadata, jsonLdScript, SITE } from "@/lib/seo";
 import { truncate } from "@/lib/utils";
@@ -12,7 +16,7 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
   const posts = await getBlogPosts();
-  return posts.map((p) => ({ slug: p.slug }));
+  return posts.slice(0, 40).map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: Props) {
@@ -23,13 +27,18 @@ export async function generateMetadata({ params }: Props) {
       title: "Article not found",
       description: "This blog post could not be found.",
       path: `/blog/${slug}`,
+      noIndex: true,
     });
   }
   return createMetadata({
-    title: truncate(post.title, 50),
+    title: truncate(post.title, 55),
     description: truncate(post.excerpt || post.title, 160),
     path: `/blog/${post.slug}`,
     type: "article",
+    image: post.image,
+    publishedTime: post.publishedAt,
+    modifiedTime: post.updatedAt,
+    tags: post.tags,
   });
 }
 
@@ -40,24 +49,57 @@ export default async function BlogPostPage({ params }: Props) {
   const post = await getBlogPost(slug);
   if (!post) notFound();
 
+  const related = await getRelatedBlogPosts(post, 3);
+
   const html = sanitizeBlogHtml(
     post.contentHtml?.trim()
       ? post.contentHtml
       : plainTextToHtml(post.content),
   );
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: post.title,
-    description: post.excerpt,
-    datePublished: post.publishedAt,
-    author: { "@type": "Organization", name: post.author },
-    publisher: { "@type": "Organization", name: SITE.name },
-    mainEntityOfPage: `${SITE.url}/blog/${post.slug}`,
-    ...(post.image ? { image: post.image } : {}),
-    ...(post.tags?.length ? { keywords: post.tags.join(", ") } : {}),
-  };
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: post.title,
+      description: post.excerpt,
+      datePublished: post.publishedAt,
+      dateModified: post.updatedAt || post.publishedAt,
+      author: { "@type": "Organization", name: post.author },
+      publisher: {
+        "@type": "Organization",
+        name: SITE.name,
+        url: SITE.url,
+      },
+      mainEntityOfPage: `${SITE.url}/blog/${post.slug}`,
+      ...(post.image ? { image: [post.image] } : {}),
+      ...(post.tags?.length ? { keywords: post.tags.join(", ") } : {}),
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: SITE.url,
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Blog",
+          item: `${SITE.url}/blog`,
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: post.title,
+          item: `${SITE.url}/blog/${post.slug}`,
+        },
+      ],
+    },
+  ];
 
   return (
     <>
@@ -65,55 +107,64 @@ export default async function BlogPostPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLdScript(jsonLd)}
       />
-      <article className="container-site py-10 md:py-14">
-        <Breadcrumbs
-          items={[
-            { label: "Home", href: "/" },
-            { label: "Blog", href: "/blog" },
-            { label: post.title },
-          ]}
-        />
-        <div className="grid gap-10 lg:grid-cols-[1fr_280px]">
+      <article className="pb-4 md:pb-8">
+        <div className="container-site pt-6 md:pt-10">
+          <Breadcrumbs
+            items={[
+              { label: "Home", href: "/" },
+              { label: "Blog", href: "/blog" },
+              { label: post.title },
+            ]}
+          />
+        </div>
+
+        <header className="container-site mt-4 max-w-3xl md:mt-6">
+          <p className="text-sm font-semibold uppercase tracking-wide text-muted">
+            {new Date(post.publishedAt).toLocaleDateString("en-GB", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            })}
+          </p>
+          <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-primary sm:text-4xl md:text-5xl">
+            {post.title}
+          </h1>
+          {post.excerpt ? (
+            <p className="mt-4 text-lg text-muted">{post.excerpt}</p>
+          ) : null}
+          {post.tags?.length ? (
+            <ul className="mt-4 flex flex-wrap gap-2">
+              {post.tags.map((tag) => (
+                <li
+                  key={tag}
+                  className="rounded-full bg-soft px-3 py-1 text-xs font-medium text-primary"
+                >
+                  {tag}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </header>
+
+        {post.image ? (
+          <div className="container-site mt-8 md:mt-10">
+            <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-soft md:aspect-[21/9]">
+              <Image
+                src={post.image}
+                alt={post.imageAlt || post.title}
+                fill
+                priority
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 1100px"
+              />
+            </div>
+          </div>
+        ) : null}
+
+        <div className="container-site mt-8 grid gap-10 md:mt-10 lg:grid-cols-[minmax(0,1fr)_260px] lg:gap-14">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-muted">
-              {new Date(post.publishedAt).toLocaleDateString("en-GB", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })}
-            </p>
-            <h1 className="mt-3 max-w-3xl text-4xl font-extrabold tracking-tight md:text-5xl">
-              {post.title}
-            </h1>
-            {post.excerpt ? (
-              <p className="mt-4 max-w-3xl text-lg text-muted">{post.excerpt}</p>
-            ) : null}
-            {post.tags?.length ? (
-              <div className="mt-4 flex flex-wrap gap-2">
-                {post.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="rounded-full bg-soft px-3 py-1 text-xs font-medium text-muted"
-                  >
-                    #{tag}
-                  </span>
-                ))}
-              </div>
-            ) : null}
-            {post.image ? (
-              <div className="relative mt-8 aspect-[3/4] max-w-md overflow-hidden bg-soft">
-                <Image
-                  src={post.image}
-                  alt={post.imageAlt || post.title}
-                  fill
-                  priority
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 400px"
-                />
-              </div>
-            ) : null}
             <div
-              className="blog-article mt-8 max-w-3xl"
+              className="blog-article max-w-3xl"
               dangerouslySetInnerHTML={{ __html: html }}
             />
             {post.slug.includes("lightweight") ? (
@@ -131,42 +182,85 @@ export default async function BlogPostPage({ params }: Props) {
               </p>
             ) : null}
           </div>
-          <aside className="lg:pt-16">
-            <p className="text-sm font-bold uppercase tracking-wide text-primary">
-              Related
-            </p>
-            <ul className="mt-3 space-y-2 text-sm">
-              <li>
-                <Link
-                  href="/lightweight-folding-mobility"
-                  className="hover:text-primary-dark"
-                >
-                  Lightweight folding mobility
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/vehicle-adaptations"
-                  className="hover:text-primary-dark"
-                >
-                  Vehicle adaptations
-                </Link>
-              </li>
-              <li>
-                <Link href="/motability" className="hover:text-primary-dark">
-                  Motability
-                </Link>
-              </li>
-              <li>
-                <Link href="/shop" className="hover:text-primary-dark">
-                  Shop scooters &amp; wheelchairs
-                </Link>
-              </li>
-            </ul>
+
+          <aside className="space-y-8 lg:pt-2">
+            <div>
+              <p className="text-sm font-bold uppercase tracking-wide text-primary">
+                Explore
+              </p>
+              <ul className="mt-3 space-y-2 text-sm">
+                <li>
+                  <Link
+                    href="/vehicle-adaptations"
+                    className="font-medium text-foreground hover:text-primary"
+                  >
+                    Vehicle adaptations
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/motability"
+                    className="font-medium text-foreground hover:text-primary"
+                  >
+                    Motability
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/shop"
+                    className="font-medium text-foreground hover:text-primary"
+                  >
+                    Scooters &amp; wheelchairs
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/blog#gallery"
+                    className="font-medium text-foreground hover:text-primary"
+                  >
+                    Photo gallery
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {related.length ? (
+              <div>
+                <p className="text-sm font-bold uppercase tracking-wide text-primary">
+                  More stories
+                </p>
+                <ul className="mt-3 space-y-4">
+                  {related.map((item) => (
+                    <li key={item.id}>
+                      <Link
+                        href={`/blog/${item.slug}`}
+                        className="group block"
+                      >
+                        <div className="relative mb-2 aspect-[4/3] overflow-hidden rounded-lg bg-soft">
+                          <Image
+                            src={item.image}
+                            alt={item.imageAlt || item.title}
+                            fill
+                            className="object-cover transition-transform group-hover:scale-[1.03]"
+                            sizes="260px"
+                          />
+                        </div>
+                        <p className="text-sm font-semibold leading-snug text-primary group-hover:underline">
+                          {item.title}
+                        </p>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
           </aside>
         </div>
       </article>
-      <CtaFooter />
+      <CtaFooter
+        title="Planning a similar adaptation?"
+        subtitle="Tell us about your vehicle and needs — we’ll confirm compatibility and a firm quotation."
+      />
     </>
   );
 }

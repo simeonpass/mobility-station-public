@@ -63,6 +63,8 @@ export interface Workshop {
   lon: number;
   /** Max one-way distance in miles we will collect from for this branch */
   maxRadiusMiles: number;
+  /** Flex Hire free-delivery / free call-out zone (tighter than sale coverage) */
+  flexRadiusMiles: number;
   /** One-line explanation of why this branch's bands look the way they do */
   bandRationale: string;
   /** Pricing bands for this branch (sorted ascending by upTo) */
@@ -78,6 +80,7 @@ export const WORKSHOPS: Workshop[] = [
     lat: 51.510494,
     lon: -0.459042,
     maxRadiusMiles: 30,
+    flexRadiusMiles: 10,
     bandRationale:
       'In London every mile costs more in time, fuel and parking — so there is no free band and the prices step up quickly. The same £200 ceiling applies as Ferndown at the outer edge so the rings line up where they meet.',
     bands: [
@@ -96,6 +99,7 @@ export const WORKSHOPS: Workshop[] = [
     lat: 50.806106,
     lon: -1.918664,
     maxRadiusMiles: 60,
+    flexRadiusMiles: 20,
     bandRationale:
       'Rural Dorset and Hampshire roads flow freely, so each step on the ladder buys roughly twice the distance of London — and the first five miles are on us.',
     bands: [
@@ -222,6 +226,77 @@ export async function lookupCoverage(
   } catch (err) {
     if ((err as Error).name === 'AbortError') return { kind: 'error' };
     console.error('[adaptationServiceArea] lookup failed', err);
+    return { kind: 'error' };
+  }
+}
+
+export type FlexCoverageResult =
+  | {
+      kind: 'in-zone';
+      postcode: string;
+      miles: number;
+      workshop: Workshop;
+    }
+  | {
+      kind: 'out-of-zone';
+      postcode: string;
+      miles: number;
+      workshop: Workshop;
+      /** True if still inside short-term / sale call-out coverage */
+      shortTermAvailable: boolean;
+    }
+  | { kind: 'not-found' }
+  | { kind: 'error' };
+
+/** Flex Hire zone check — Heathrow 10 mi / Ferndown 20 mi. */
+export async function lookupFlexCoverage(
+  rawPostcode: string,
+  signal?: AbortSignal,
+): Promise<FlexCoverageResult> {
+  const cleaned = rawPostcode.trim().toUpperCase().replace(/\s+/g, ' ');
+  if (cleaned.length < 5) return { kind: 'not-found' };
+
+  try {
+    const url = `https://api.postcodes.io/postcodes/${encodeURIComponent(cleaned)}`;
+    const res = await fetch(url, { signal });
+    if (res.status === 404) return { kind: 'not-found' };
+    if (!res.ok) return { kind: 'error' };
+    const json = await res.json();
+    const lat = json?.result?.latitude;
+    const lon = json?.result?.longitude;
+    if (typeof lat !== 'number' || typeof lon !== 'number') {
+      return { kind: 'not-found' };
+    }
+
+    const distances = WORKSHOPS.map((w) => ({
+      workshop: w,
+      miles: haversineMiles(lat, lon, w.lat, w.lon),
+    })).sort((a, b) => a.miles - b.miles);
+
+    const inFlex = distances
+      .filter((d) => d.miles <= d.workshop.flexRadiusMiles)
+      .sort((a, b) => a.miles - b.miles);
+
+    if (inFlex.length) {
+      return {
+        kind: 'in-zone',
+        postcode: cleaned,
+        miles: inFlex[0].miles,
+        workshop: inFlex[0].workshop,
+      };
+    }
+
+    const nearest = distances[0];
+    return {
+      kind: 'out-of-zone',
+      postcode: cleaned,
+      miles: nearest.miles,
+      workshop: nearest.workshop,
+      shortTermAvailable: nearest.miles <= nearest.workshop.maxRadiusMiles,
+    };
+  } catch (err) {
+    if ((err as Error).name === 'AbortError') return { kind: 'error' };
+    console.error('[flexCoverage] lookup failed', err);
     return { kind: 'error' };
   }
 }

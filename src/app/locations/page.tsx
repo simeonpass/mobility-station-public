@@ -1,13 +1,15 @@
+import Link from "next/link";
 import { BranchMap } from "@/components/sections/branch-map";
 import { CtaFooter } from "@/components/sections/cta-footer";
 import { Hero } from "@/components/sections/hero";
+import { ServiceAreaChecker } from "@/components/service-area/service-area-checker";
 import { getBranches } from "@/lib/data";
 import { createMetadata, jsonLdScript, SITE } from "@/lib/seo";
 
 export const metadata = createMetadata({
   title: "Locations | Heathrow & Ferndown",
   description:
-    "Visit Mobility Station in Heathrow or Ferndown, or book a free home demonstration. Opening hours, addresses and phone numbers.",
+    "Visit Mobility Station in Heathrow or Ferndown, or book a home demonstration. Opening hours, addresses, phone numbers and postcode coverage.",
   path: "/locations",
 });
 
@@ -61,7 +63,7 @@ export default async function LocationsPage() {
       <Hero
         compact
         title="Heathrow & Ferndown branches"
-        subtitle="Two convenient locations — or we come to you for a free home demonstration."
+        subtitle="Two workshops with parking and step-free access — or we come to you for a home demonstration."
       />
       <section className="pb-8">
         <div className="container-site grid gap-8 md:grid-cols-2">
@@ -90,6 +92,39 @@ export default async function LocationsPage() {
         </div>
       </section>
       <BranchMap branches={branches} />
+
+      <section className="border-t border-border bg-soft py-14 md:py-16">
+        <div className="container-site max-w-3xl">
+          <h2 className="text-3xl font-extrabold tracking-tight text-primary md:text-4xl">
+            Do we cover you?
+          </h2>
+          <p className="mt-3 text-muted">
+            Check your postcode for home demonstrations, local delivery and
+            collection. Large equipment ships nationwide on a pallet.
+          </p>
+          <div className="mt-8">
+            <ServiceAreaChecker />
+          </div>
+          <p className="mt-6 text-sm text-muted">
+            See{" "}
+            <Link
+              href="/service-area"
+              className="font-semibold text-primary underline underline-offset-2"
+            >
+              call-out bands and the towns we cover
+            </Link>
+            , or read our{" "}
+            <Link
+              href="/delivery"
+              className="font-semibold text-primary underline underline-offset-2"
+            >
+              delivery information
+            </Link>
+            .
+          </p>
+        </div>
+      </section>
+
       <CtaFooter />
     </>
   );

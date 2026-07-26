@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { EnquiryForm } from "@/components/forms/enquiry-form";
 import { Hero } from "@/components/sections/hero";
 import { createMetadata } from "@/lib/seo";
@@ -20,12 +21,31 @@ export default function BookAServicePage() {
         primaryLabel="Book service"
       />
       <section id="form" className="pb-16 md:pb-20">
-        <div className="container-site max-w-3xl rounded-lg bg-soft p-6 md:p-8">
-          <EnquiryForm
-            enquiryType="service"
-            title="Service booking request"
-            defaultInterest="Service / repair"
-          />
+        <div className="container-site max-w-3xl">
+          <div className="rounded-2xl bg-soft p-6 md:p-8">
+            <EnquiryForm
+              enquiryType="service"
+              title="Service booking request"
+              defaultInterest="Service / repair"
+            />
+          </div>
+          <p className="mt-6 text-sm text-muted">
+            Not a service enquiry?{" "}
+            <Link
+              href="/contact"
+              className="font-semibold text-primary underline underline-offset-2"
+            >
+              Contact the team
+            </Link>{" "}
+            or{" "}
+            <Link
+              href="/book-a-demo"
+              className="font-semibold text-primary underline underline-offset-2"
+            >
+              book a demonstration
+            </Link>
+            .
+          </p>
         </div>
       </section>
     </>

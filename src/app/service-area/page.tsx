@@ -7,9 +7,9 @@ import { WORKSHOPS } from "@/lib/service-area";
 import { createMetadata } from "@/lib/seo";
 
 export const metadata = createMetadata({
-  title: "Service area — Heathrow & Ferndown",
+  title: "Service area, call-out bands & towns",
   description:
-    "Check if we cover your postcode for local delivery, home demonstrations and vehicle adaptation collections from Heathrow or Ferndown.",
+    "Check if we cover your postcode, see local call-out bands and browse the towns served by our Heathrow and Ferndown workshops.",
   path: "/service-area",
 });
 
@@ -21,8 +21,12 @@ export default function ServiceAreaPage() {
     <>
       <Hero
         compact
-        title="Our service area"
-        subtitle="Free home demonstrations and local delivery around Heathrow and Ferndown — plus nationwide pallet delivery on large equipment."
+        title="Coverage, call-out bands & towns"
+        subtitle="Check your postcode, see the local call-out band for your area, and find your nearest workshop."
+        primaryHref="/contact"
+        primaryLabel="Ask about your area"
+        secondaryHref="/locations"
+        secondaryLabel="Branch addresses & hours"
       />
       <section className="pb-16 md:pb-20">
         <div className="container-site max-w-4xl space-y-10">

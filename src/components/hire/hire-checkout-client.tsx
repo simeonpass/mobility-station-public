@@ -17,7 +17,7 @@ import { HIRE_TERMS } from "@/lib/hire-terms";
 import { formatGBP } from "@/lib/products";
 import { lookupCoverage, type CoverageResult } from "@/lib/service-area";
 
-type Fulfilment = "branch" | "mobile" | "courier";
+type Fulfilment = "branch" | "mobile";
 
 type HireBooking = {
   id: string;
@@ -44,6 +44,7 @@ type HireBooking = {
   billing_address_line1: string | null;
   billing_address_city: string | null;
   billing_address_postcode: string | null;
+  notes?: string | null;
 };
 
 export function HireCheckoutClient({ bookingId }: { bookingId: string }) {
@@ -208,9 +209,8 @@ export function HireCheckoutClient({ bookingId }: { bookingId: string }) {
     setSavingAddr(true);
     try {
       const billingFull = `${billLine1.trim()}, ${billCity.trim()}, ${billPostcode.trim().toUpperCase()}`;
-      let delivery: string | null = null;
-      if (fulfilment === "courier") delivery = billingFull;
-      else if (fulfilment === "mobile") delivery = deliveryAddr.trim() || billingFull;
+      const delivery =
+        fulfilment === "mobile" ? deliveryAddr.trim() || billingFull : null;
 
       const res = await fetch("/api/hire/address", {
         method: "POST",
@@ -297,15 +297,26 @@ export function HireCheckoutClient({ bookingId }: { bookingId: string }) {
     { n: 4, label: "Pay", icon: CreditCard },
   ];
 
+  const isFlex =
+    Boolean(booking.notes?.includes("FLEX:")) ||
+    (Number(booking.hire_days) >= 60 &&
+      Number(booking.callout_fee) === 0 &&
+      Number(booking.hire_subtotal) > 0);
+
   return (
     <div className="mx-auto max-w-3xl">
       <Link href="/hire" className="text-sm font-semibold text-muted hover:text-primary">
         ← Back to hire
       </Link>
-      <h1 className="mt-4 text-3xl font-extrabold text-primary">Complete your hire</h1>
+      <h1 className="mt-4 text-3xl font-extrabold text-primary">
+        {isFlex ? "Complete your Flex Hire" : "Complete your hire"}
+      </h1>
       <p className="mt-1 text-muted">
-        {booking.product_name} · {booking.hire_days} days · Booking{" "}
-        {booking.booking_number}
+        {booking.product_name}
+        {isFlex
+          ? ` · Flex monthly · ${booking.start_date} → ${booking.end_date}`
+          : ` · ${booking.hire_days} days`}{" "}
+        · Booking {booking.booking_number}
       </p>
 
       <div className="my-6 flex flex-wrap gap-2">
@@ -331,29 +342,47 @@ export function HireCheckoutClient({ bookingId }: { bookingId: string }) {
       <div className="rounded-2xl border border-border bg-white p-5 md:p-8">
         {step === 1 ? (
           <div className="space-y-4">
-            <h2 className="text-xl font-bold text-primary">How would you like to receive it?</h2>
-            {(
-              [
-                ["branch", "Collect from a branch", "Free — Heathrow or Ferndown"],
-                ["mobile", "Local delivery by our team", "Banded call-out by distance"],
-                ["courier", "Nationwide courier", "Delivered to card billing address only"],
-              ] as const
-            ).map(([value, title, sub]) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => setFulfilment(value)}
-                className={`block w-full rounded-xl border p-4 text-left ${
-                  fulfilment === value
-                    ? "border-primary bg-primary-soft"
-                    : "border-border"
-                }`}
-              >
-                <p className="font-semibold text-primary">{title}</p>
-                <p className="text-sm text-muted">{sub}</p>
-              </button>
-            ))}
-            {fulfilment === "branch" ? (
+            <h2 className="text-xl font-bold text-primary">
+              {isFlex ? "Delivery" : "How would you like to receive it?"}
+            </h2>
+            {isFlex ? (
+              <div className="rounded-xl border border-primary/30 bg-primary-soft p-4 text-sm">
+                <p className="font-semibold text-primary">
+                  Flex delivery included
+                </p>
+                <p className="mt-1 text-muted">
+                  We’ll deliver to your address inside the Flex zone. Collection
+                  is free when you end the hire. Postcode on this booking:{" "}
+                  <strong>{booking.postcode || "—"}</strong>
+                </p>
+              </div>
+            ) : (
+              (
+                [
+                  ["branch", "Collect from a branch", "Free — Heathrow or Ferndown"],
+                  [
+                    "mobile",
+                    "Deliver & collect by our team",
+                    "Call-out band charged both ways",
+                  ],
+                ] as const
+              ).map(([value, title, sub]) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setFulfilment(value)}
+                  className={`block w-full rounded-xl border p-4 text-left ${
+                    fulfilment === value
+                      ? "border-primary bg-primary-soft"
+                      : "border-border"
+                  }`}
+                >
+                  <p className="font-semibold text-primary">{title}</p>
+                  <p className="text-sm text-muted">{sub}</p>
+                </button>
+              ))
+            )}
+            {!isFlex && fulfilment === "branch" ? (
               <div className="grid grid-cols-2 gap-2">
                 {["heathrow", "ferndown"].map((b) => (
                   <button
@@ -361,7 +390,9 @@ export function HireCheckoutClient({ bookingId }: { bookingId: string }) {
                     type="button"
                     onClick={() => setBranch(b)}
                     className={`rounded-md border px-3 py-2 text-sm font-medium capitalize ${
-                      branch === b ? "border-primary bg-primary-soft text-primary" : "border-border"
+                      branch === b
+                        ? "border-primary bg-primary-soft text-primary"
+                        : "border-border"
                     }`}
                   >
                     {b}
@@ -369,13 +400,15 @@ export function HireCheckoutClient({ bookingId }: { bookingId: string }) {
                 ))}
               </div>
             ) : null}
-            {fulfilment === "mobile" ? (
+            {!isFlex && fulfilment === "mobile" ? (
               <div>
                 <Label htmlFor="mobile-pc">Delivery postcode</Label>
                 <Input
                   id="mobile-pc"
                   value={mobilePostcode}
-                  onChange={(e) => setMobilePostcode(e.target.value.toUpperCase())}
+                  onChange={(e) =>
+                    setMobilePostcode(e.target.value.toUpperCase())
+                  }
                   className="uppercase"
                 />
                 {coverageLoading ? (
@@ -383,13 +416,25 @@ export function HireCheckoutClient({ bookingId }: { bookingId: string }) {
                 ) : null}
                 {coverage?.kind === "covered" ? (
                   <p className="mt-1 text-xs text-success">
-                    {coverage.workshop.name} —{" "}
-                    {coverage.fee === 0 ? "free" : formatGBP(coverage.fee)}
+                    {coverage.workshop.name} — deliver &amp; collect{" "}
+                    {coverage.fee === 0
+                      ? "free locally"
+                      : formatGBP(coverage.fee * 2)}
                   </p>
                 ) : null}
               </div>
             ) : null}
-            <Button className="w-full" onClick={() => void saveFulfilment()} disabled={savingFulfilment}>
+            <Button
+              className="w-full"
+              onClick={() => {
+                if (isFlex) {
+                  setStep(2);
+                  return;
+                }
+                void saveFulfilment();
+              }}
+              disabled={savingFulfilment}
+            >
               {savingFulfilment ? "Saving…" : "Continue"}
             </Button>
           </div>
@@ -473,19 +518,30 @@ export function HireCheckoutClient({ bookingId }: { bookingId: string }) {
           <div className="space-y-4">
             <h2 className="text-xl font-bold text-primary">Pay securely</h2>
             <div className="rounded-xl bg-soft px-4 py-3 text-sm">
-              <p>Hire: {formatGBP(Number(booking.hire_subtotal))}</p>
+              <p>
+                {isFlex ? "Month 1 Flex" : "Hire"}:{" "}
+                {formatGBP(Number(booking.hire_subtotal))}
+              </p>
               {Number(booking.callout_fee) > 0 ? (
-                <p>Local delivery: {formatGBP(Number(booking.callout_fee))}</p>
-              ) : null}
-              {Number(booking.courier_fee) > 0 ? (
-                <p>Courier: {formatGBP(Number(booking.courier_fee))}</p>
+                <p>
+                  Deliver &amp; collect:{" "}
+                  {formatGBP(Number(booking.callout_fee))}
+                </p>
+              ) : isFlex ? (
+                <p>Delivery &amp; collection: included</p>
               ) : null}
               {Number(booking.deposit_amount) > 0 ? (
                 <p>Deposit: {formatGBP(Number(booking.deposit_amount))}</p>
               ) : null}
               <p className="mt-2 text-lg font-bold text-primary">
-                Total: {formatGBP(Number(booking.total_amount))}
+                Due today: {formatGBP(Number(booking.total_amount))}
               </p>
+              {isFlex ? (
+                <p className="mt-2 text-xs text-muted">
+                  After this payment we’ll bill the same monthly fee each month.
+                  Three-month minimum, then cancel with 14 days’ notice.
+                </p>
+              ) : null}
             </div>
             <p className="text-sm text-muted">
               You&apos;ll be taken to Revolut&apos;s secure checkout to pay.

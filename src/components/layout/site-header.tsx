@@ -13,9 +13,10 @@ import { cn } from "@/lib/utils";
 const nav = [
   { href: "/vehicle-adaptations", label: "Vehicle Adaptations" },
   { href: "/shop", label: "Scooters & Wheelchairs" },
+  { href: "/hire", label: "Hire" },
   { href: "/motability", label: "Motability" },
   { href: "/locations", label: "Locations" },
-  { href: "/blog", label: "Blog" },
+  { href: "/blog", label: "Recent Work" },
 ];
 
 export function SiteHeader() {
@@ -138,6 +139,13 @@ export function SiteHeader() {
                 onClick={() => setOpen(false)}
               >
                 Book a Demo
+              </Link>
+              <Link
+                href="/contact"
+                className="rounded-md px-3 py-3 text-sm font-semibold text-primary hover:bg-white/70"
+                onClick={() => setOpen(false)}
+              >
+                Contact
               </Link>
               <a
                 href={SITE.phoneHref}

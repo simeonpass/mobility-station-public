@@ -49,6 +49,7 @@ export type BlogPost = {
   image: string;
   imageAlt?: string;
   publishedAt: string;
+  updatedAt?: string;
   author: string;
   tags?: string[];
 };

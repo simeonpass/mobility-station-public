@@ -3,8 +3,8 @@ import { buttonVariants } from "@/components/ui/button";
 import { SITE } from "@/lib/seo";
 
 export function CtaFooter({
-  title = "Ready for a free home demonstration?",
-  subtitle = "Tell us what you need and we will come to you — or visit our Heathrow or Ferndown branch.",
+  title = "Ready to try before you buy?",
+  subtitle = "Tell us what you need and we will bring it to you — or visit our Heathrow or Ferndown branch.",
 }: {
   title?: string;
   subtitle?: string;

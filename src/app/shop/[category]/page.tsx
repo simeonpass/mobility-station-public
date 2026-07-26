@@ -76,8 +76,7 @@ export default async function ShopCategoryPage({ params }: Props) {
           {category}
         </h1>
         <p className="mt-3 max-w-2xl text-muted">
-          Free home demonstrations available from our Heathrow and Ferndown
-          branches.
+          Home demonstrations available from our Heathrow and Ferndown branches.
         </p>
       </header>
 

@@ -1,7 +1,18 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { ShopBrowser } from "@/components/product/shop-browser";
 import { getCategories, getPublishedProducts } from "@/lib/products";
 import { createMetadata } from "@/lib/seo";
+
+const QUICK_LINKS = [
+  { href: "/hire", label: "Hire & Flex Hire" },
+  { href: "/motability", label: "Motability" },
+  { href: "/clearance", label: "Clearance & ex-demo" },
+  { href: "/find-my-scooter", label: "Find my scooter" },
+  { href: "/lightweight-folding-mobility", label: "Lightweight & folding" },
+  { href: "/trade-in", label: "Trade-in" },
+  { href: "/delivery", label: "Delivery" },
+];
 
 export const revalidate = 300;
 
@@ -46,6 +57,17 @@ export default async function ShopPage({ searchParams }: Props) {
           Filter by type, Motability or clearance — then book a free home
           demonstration from Heathrow or Ferndown.
         </p>
+        <nav className="mt-5 flex flex-wrap gap-2" aria-label="Shop shortcuts">
+          {QUICK_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="rounded-full border border-border bg-white px-3 py-1.5 text-xs font-semibold text-primary hover:border-primary"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
       </header>
 
       {errorMessage ? (

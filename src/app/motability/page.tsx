@@ -41,10 +41,6 @@ const FAQS = [
     a: "Yes. Mobility Station is a Motability Scheme accredited dealer. We guide you through scooter and wheelchair options in plain English.",
   },
   {
-    q: "Can I try Motability products at home?",
-    a: "Yes. Motability scooter and wheelchair home demonstrations are free, so you can try suitable models where you live.",
-  },
-  {
     q: "What do the weekly prices mean?",
     a: "Weekly figures shown are from our live catalogue. Final eligibility, allowance and payments are confirmed during your Motability assessment.",
   },

@@ -9,6 +9,11 @@ type PageSeo = {
   absoluteTitle?: boolean;
   /** Search/result pages should stay out of the index. */
   noIndex?: boolean;
+  /** Absolute or site-relative image URL for Open Graph / Twitter. */
+  image?: string | null;
+  publishedTime?: string;
+  modifiedTime?: string;
+  tags?: string[];
 };
 
 export function createMetadata({
@@ -18,11 +23,20 @@ export function createMetadata({
   type = "website",
   absoluteTitle = false,
   noIndex = false,
+  image,
+  publishedTime,
+  modifiedTime,
+  tags,
 }: PageSeo): Metadata {
   const safeTitle = title.length > 60 ? `${title.slice(0, 57)}…` : title;
   const safeDescription =
     description.length > 160 ? `${description.slice(0, 157)}…` : description;
   const url = absoluteUrl(path);
+  const imageUrl = image
+    ? image.startsWith("http")
+      ? image
+      : absoluteUrl(image)
+    : undefined;
 
   return {
     title: absoluteTitle ? { absolute: safeTitle } : safeTitle,
@@ -36,11 +50,16 @@ export function createMetadata({
       url,
       siteName: "Mobility Station",
       locale: "en_GB",
+      ...(imageUrl ? { images: [{ url: imageUrl }] } : {}),
+      ...(publishedTime ? { publishedTime } : {}),
+      ...(modifiedTime ? { modifiedTime } : {}),
+      ...(tags?.length ? { tags } : {}),
     },
     twitter: {
-      card: "summary",
+      card: imageUrl ? "summary_large_image" : "summary",
       title: safeTitle,
       description: safeDescription,
+      ...(imageUrl ? { images: [imageUrl] } : {}),
     },
   };
 }

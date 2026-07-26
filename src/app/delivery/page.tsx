@@ -176,7 +176,7 @@ export default function DeliveryPage() {
           </div>
         </div>
       </section>
-      <CtaFooter title="Book a free home demonstration" />
+      <CtaFooter title="Book a home demonstration" />
     </>
   );
 }

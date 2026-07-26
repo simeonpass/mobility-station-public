@@ -652,6 +652,7 @@ export type HireProduct = {
   name: string;
   slug: string;
   image_url: string | null;
+  category: string | null;
   hire_daily_rate: number | null;
   hire_weekly_rate: number | null;
   hire_monthly_rate: number | null;
@@ -666,7 +667,7 @@ export async function getHireProducts(): Promise<HireProduct[]> {
   const { data, error } = await supabase
     .from("stock_items")
     .select(
-      `id, name, slug, image_url, hire_daily_rate, hire_weekly_rate,
+      `id, name, slug, image_url, category, hire_daily_rate, hire_weekly_rate,
        hire_monthly_rate, hire_deposit, hire_nationwide, hire_courier_fee,
        hire_min_days`,
     )
@@ -678,7 +679,8 @@ export async function getHireProducts(): Promise<HireProduct[]> {
   if (error) throw error;
   return (data ?? []).map((row) => ({
     ...(row as unknown as HireProduct),
-    hire_nationwide: Boolean(row.hire_nationwide),
+    category: row.category ? String(row.category) : null,
+    hire_nationwide: false, // Coverage-area hire only for this relaunch
   }));
 }
 

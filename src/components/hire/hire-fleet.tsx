@@ -1,72 +1,128 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import { HireBookingForm } from "@/components/hire/hire-booking-form";
+import {
+  rateCardForProduct,
+  type HireMode,
+} from "@/lib/hire";
 import { formatGBP, type HireProduct } from "@/lib/products";
 
-export function HireFleet({ products }: { products: HireProduct[] }) {
+export function HireFleet({
+  products,
+  initialMode = "short",
+}: {
+  products: HireProduct[];
+  initialMode?: HireMode;
+}) {
+  const [mode, setMode] = useState<HireMode>(initialMode);
   const [selected, setSelected] = useState<HireProduct | null>(
     products[0] ?? null,
+  );
+
+  const priced = useMemo(
+    () =>
+      products.map((p) => ({
+        product: p,
+        rates: rateCardForProduct(p),
+      })),
+    [products],
   );
 
   if (!products.length) {
     return (
       <p className="rounded-xl bg-soft px-4 py-6 text-sm text-muted">
-        No hire scooters are listed online right now. Call{" "}
+        The hire fleet is being prepared. Call{" "}
         <a href="tel:08007723870" className="font-semibold text-primary">
           0800 772 3870
         </a>{" "}
-        and we&apos;ll help you book.
+        and we&apos;ll help you book, or check back once units are listed.
       </p>
     );
   }
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
-      <div className="grid gap-4 sm:grid-cols-2">
-        {products.map((p) => (
+    <div>
+      <div className="mb-8 flex flex-wrap gap-2">
+        {(
+          [
+            ["short", "Short-term hire"],
+            ["flex", "Flex Hire (monthly)"],
+          ] as const
+        ).map(([value, label]) => (
           <button
-            key={p.id}
+            key={value}
             type="button"
-            onClick={() => setSelected(p)}
-            className={`rounded-2xl border p-4 text-left transition ${
-              selected?.id === p.id
-                ? "border-primary bg-primary-soft ring-1 ring-primary"
-                : "border-border bg-white hover:border-primary/40"
+            onClick={() => setMode(value)}
+            className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+              mode === value
+                ? "bg-primary text-primary-foreground"
+                : "border border-border bg-white text-primary hover:border-primary"
             }`}
           >
-            <div className="relative mb-3 aspect-[4/3] overflow-hidden rounded-xl bg-soft">
-              <Image
-                src={p.image_url || "/placeholder-product.svg"}
-                alt={p.name}
-                fill
-                className="object-contain p-2"
-                sizes="(max-width: 768px) 50vw, 280px"
-              />
-            </div>
-            <p className="font-bold text-primary">{p.name}</p>
-            <p className="mt-1 text-sm text-muted">
-              From{" "}
-              {formatGBP(
-                Number(p.hire_daily_rate || p.hire_weekly_rate || 0),
-              )}
-              {p.hire_daily_rate ? " / day" : " / week"}
-            </p>
-            {p.hire_deposit ? (
-              <p className="text-xs text-muted">
-                Deposit {formatGBP(Number(p.hire_deposit))}
-              </p>
-            ) : null}
+            {label}
           </button>
         ))}
       </div>
 
-      <div className="h-fit rounded-2xl border border-border bg-white p-5 lg:sticky lg:top-28">
-        <h2 className="mb-4 text-xl font-extrabold text-primary">
-          Book {selected?.name}
-        </h2>
-        {selected ? <HireBookingForm key={selected.id} product={selected} /> : null}
+      <div className="grid gap-8 lg:grid-cols-[1fr_400px]">
+        <div className="grid gap-4 sm:grid-cols-2">
+          {priced.map(({ product: p, rates }) => (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => setSelected(p)}
+              className={`rounded-2xl border p-4 text-left transition ${
+                selected?.id === p.id
+                  ? "border-primary bg-primary-soft ring-1 ring-primary"
+                  : "border-border bg-white hover:border-primary/40"
+              }`}
+            >
+              <div className="relative mb-3 aspect-[4/3] overflow-hidden rounded-xl bg-soft">
+                <Image
+                  src={p.image_url || "/images/products/placeholder-scooter.svg"}
+                  alt={p.name}
+                  fill
+                  className="object-contain p-2"
+                  sizes="(max-width: 768px) 50vw, 280px"
+                />
+              </div>
+              <p className="font-bold text-primary">{p.name}</p>
+              <p className="mt-0.5 text-xs text-muted">{rates.label}</p>
+              <p className="mt-2 text-sm font-semibold text-primary">
+                {mode === "flex" ? (
+                  <>
+                    {formatGBP(rates.monthly)}
+                    <span className="font-medium text-muted"> / month</span>
+                  </>
+                ) : (
+                  <>
+                    From {formatGBP(rates.weekly)}
+                    <span className="font-medium text-muted"> / week</span>
+                  </>
+                )}
+              </p>
+              <p className="text-xs text-muted">
+                Deposit {formatGBP(rates.deposit)}
+              </p>
+            </button>
+          ))}
+        </div>
+
+        <div className="h-fit rounded-2xl border border-border bg-white p-5 lg:sticky lg:top-28">
+          <h2 className="mb-1 text-xl font-extrabold text-primary">
+            {mode === "flex" ? "Start Flex Hire" : "Book short-term"}
+          </h2>
+          <p className="mb-4 text-sm text-muted">{selected?.name}</p>
+          {selected ? (
+            <HireBookingForm
+              key={`${selected.id}-${mode}`}
+              product={selected}
+              mode={mode}
+            />
+          ) : null}
+        </div>
       </div>
     </div>
   );

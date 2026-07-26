@@ -38,12 +38,21 @@ export function Hero({
           <Link href={primaryHref} className={buttonVariants({ size: "lg" })}>
             {primaryLabel}
           </Link>
-          <a
-            href={secondaryHref}
-            className={buttonVariants({ variant: "outline", size: "lg" })}
-          >
-            {secondaryLabel}
-          </a>
+          {secondaryHref.startsWith("/") ? (
+            <Link
+              href={secondaryHref}
+              className={buttonVariants({ variant: "outline", size: "lg" })}
+            >
+              {secondaryLabel}
+            </Link>
+          ) : (
+            <a
+              href={secondaryHref}
+              className={buttonVariants({ variant: "outline", size: "lg" })}
+            >
+              {secondaryLabel}
+            </a>
+          )}
         </div>
       </div>
     </section>
