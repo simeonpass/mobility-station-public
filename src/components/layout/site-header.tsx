@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Menu, Phone, X } from "lucide-react";
 import { CartButton } from "@/components/cart/cart-drawer";
+import { HeaderSearch } from "@/components/layout/header-search";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { SITE } from "@/lib/seo";
 import { cn } from "@/lib/utils";
@@ -41,7 +42,7 @@ export function SiteHeader() {
         </div>
       </div>
 
-      <div className="container-site flex h-[4.25rem] items-center justify-between gap-4">
+      <div className="container-site flex h-[4.25rem] items-center justify-between gap-3 md:gap-4">
         <Link href="/" className="flex shrink-0 items-center" onClick={() => setOpen(false)}>
           <Image
             src="/brand/logo-header-v6.png"
@@ -53,12 +54,14 @@ export function SiteHeader() {
           />
         </Link>
 
-        <nav className="hidden items-center gap-6 lg:flex" aria-label="Primary">
+        <HeaderSearch className="mx-1 hidden max-w-xs flex-1 lg:mx-2 lg:block xl:max-w-sm" />
+
+        <nav className="hidden items-center gap-5 xl:flex" aria-label="Primary">
           {nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="text-sm font-semibold text-primary/90 transition-colors hover:text-primary"
+              className="whitespace-nowrap text-sm font-semibold text-primary/90 transition-colors hover:text-primary"
             >
               {item.label}
             </Link>
@@ -72,7 +75,8 @@ export function SiteHeader() {
             className={cn(buttonVariants({ variant: "phone", size: "sm" }), "rounded-full")}
           >
             <Phone className="h-4 w-4" aria-hidden />
-            {SITE.phone}
+            <span className="hidden lg:inline">{SITE.phone}</span>
+            <span className="lg:hidden">Call</span>
           </a>
           <Link href="/book-a-demo" className={buttonVariants({ size: "sm" })}>
             Book a Demo
@@ -94,12 +98,12 @@ export function SiteHeader() {
           </Button>
         </div>
 
-        {/* Tablet: hamburger without duplicating cart (cart is in md:flex cluster) */}
+        {/* Below xl: menu (search + links) — cart stays in md cluster */}
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          className="hidden md:inline-flex lg:hidden"
+          className="hidden md:inline-flex xl:hidden"
           aria-expanded={open}
           aria-controls="mobile-nav"
           aria-label={open ? "Close menu" : "Open menu"}
@@ -110,32 +114,39 @@ export function SiteHeader() {
       </div>
 
       {open ? (
-        <div id="mobile-nav" className="border-t border-border bg-soft lg:hidden">
-          <nav className="container-site flex flex-col gap-1 py-4" aria-label="Mobile">
-            {nav.map((item) => (
+        <div id="mobile-nav" className="border-t border-border bg-soft xl:hidden">
+          <div className="container-site py-4">
+            <HeaderSearch
+              size="sm"
+              className="mb-3 w-full"
+              onSubmitExtra={() => setOpen(false)}
+            />
+            <nav className="flex flex-col gap-1" aria-label="Mobile">
+              {nav.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="rounded-md px-3 py-3 text-sm font-semibold text-primary hover:bg-white/70"
+                  onClick={() => setOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ))}
               <Link
-                key={item.href}
-                href={item.href}
+                href="/book-a-demo"
                 className="rounded-md px-3 py-3 text-sm font-semibold text-primary hover:bg-white/70"
                 onClick={() => setOpen(false)}
               >
-                {item.label}
+                Book a Demo
               </Link>
-            ))}
-            <Link
-              href="/book-a-demo"
-              className="rounded-md px-3 py-3 text-sm font-semibold text-primary hover:bg-white/70"
-              onClick={() => setOpen(false)}
-            >
-              Book a Demo
-            </Link>
-            <a
-              href={SITE.phoneHref}
-              className="rounded-md px-3 py-3 text-sm font-semibold text-primary hover:bg-white/70"
-            >
-              Call {SITE.phone}
-            </a>
-          </nav>
+              <a
+                href={SITE.phoneHref}
+                className="rounded-md px-3 py-3 text-sm font-semibold text-primary hover:bg-white/70"
+              >
+                Call {SITE.phone}
+              </a>
+            </nav>
+          </div>
         </div>
       ) : null}
     </header>

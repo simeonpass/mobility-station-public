@@ -65,6 +65,88 @@ const nextConfig: NextConfig = {
         destination: "/terms",
         permanent: true,
       },
+      // Adaptation variants were split into standalone products; old parent
+      // product URLs redirect to the matching category catalogue.
+      {
+        source: "/products/jeff-gosling-push-pull-hand-controls",
+        destination: "/vehicle-adaptations/mechanical-hand-controls",
+        permanent: true,
+      },
+      {
+        source: "/products/cowal-push-pull-hand-controls",
+        destination: "/vehicle-adaptations/mechanical-hand-controls",
+        permanent: true,
+      },
+      {
+        source: "/products/brig-ayd-push-pull-hand-controls",
+        destination: "/vehicle-adaptations/mechanical-hand-controls",
+        permanent: true,
+      },
+      {
+        source: "/products/jeff-gosling-apex-assist-boot-hoist",
+        destination: "/vehicle-adaptations/boot-hoists",
+        permanent: true,
+      },
+      {
+        source: "/products/smart-lifter-lc-compact-hoist",
+        destination: "/vehicle-adaptations/boot-hoists",
+        permanent: true,
+      },
+      {
+        source: "/products/smartlifter-lm-mini-boot-hoist",
+        destination: "/vehicle-adaptations/boot-hoists",
+        permanent: true,
+      },
+      {
+        source: "/products/smart-lifter-lp-olympian-hoist",
+        destination: "/vehicle-adaptations/boot-hoists",
+        permanent: true,
+      },
+      {
+        source: "/products/brig-ayd-80kg-150kg-evotech-4-way-hoist",
+        destination: "/vehicle-adaptations/boot-hoists",
+        permanent: true,
+      },
+      {
+        source: "/products/smartsteer-wireless-secondary-controls",
+        destination: "/vehicle-adaptations/secondary-controls",
+        permanent: true,
+      },
+      {
+        source: "/products/lodgesons-wireless-secondary-controls",
+        destination: "/vehicle-adaptations/secondary-controls",
+        permanent: true,
+      },
+      {
+        source: "/products/pedal-extensions",
+        destination: "/vehicle-adaptations/pedal-extensions",
+        permanent: true,
+      },
+      {
+        source: "/products/menox-mini-stamp-pedal-extensions",
+        destination: "/vehicle-adaptations/pedal-extensions",
+        permanent: true,
+      },
+      {
+        source: "/products/jeff-gosling-easy-release-handbrake",
+        destination: "/vehicle-adaptations/easy-release",
+        permanent: true,
+      },
+      {
+        source: "/products/grab-handles",
+        destination: "/vehicle-adaptations/grab-handles",
+        permanent: true,
+      },
+      {
+        source: "/products/electric-cassette-step",
+        destination: "/vehicle-adaptations/side-steps",
+        permanent: true,
+      },
+      {
+        source: "/products/perspex-driver-protection-screens",
+        destination: "/vehicle-adaptations/protective-screens",
+        permanent: true,
+      },
     ];
   },
 };

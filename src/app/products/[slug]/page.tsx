@@ -100,7 +100,6 @@ export default async function ProductPage({ params }: Props) {
   }
   if (galleryUrls.length === 0) galleryUrls.push("/placeholder-product.svg");
 
-  const optionVariants = product.variants.filter((v) => !v.is_addon);
   const videoEmbed = product.video_url ? youtubeEmbed(product.video_url) : null;
 
   const specs =
@@ -145,6 +144,7 @@ export default async function ProductPage({ params }: Props) {
     !adaptation && price.current != null
       ? {
           id: product.id,
+          stockItemId: product.id,
           name: product.name,
           slug: product.slug,
           image_url: primaryImage(product),
@@ -248,18 +248,7 @@ export default async function ProductPage({ params }: Props) {
           deliveryEstimate={product.delivery_estimate}
           weight={product.weight}
           colourOptions={product.colour_options ?? []}
-          optionVariants={optionVariants.map((variant) => {
-            const variantPrice = displayPrice({
-              unit_price: variant.unit_price,
-              sale_price: variant.sale_price,
-            });
-            return {
-              id: variant.id,
-              label: variant.label || variant.colour || "Option",
-              priceLabel: formatGBP(variantPrice.current),
-              outOfStock: variant.track_stock && (variant.quantity ?? 0) <= 0,
-            };
-          })}
+          variants={product.variants}
           cartProduct={cartProduct}
           discontinuedMessage={
             product.is_discontinued ? product.discontinued_message : null

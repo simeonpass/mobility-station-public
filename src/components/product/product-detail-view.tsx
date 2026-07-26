@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, type ReactNode } from "react";
+import { useMemo, useRef, useState, type ReactNode } from "react";
 import {
   AddToCartButton,
   StickyBuyBar,
@@ -11,10 +11,23 @@ import { DeliveryChecker } from "@/components/product/delivery-checker";
 import { ProductAccordion } from "@/components/product/product-accordion";
 import { ProductGallery } from "@/components/product/product-gallery";
 import { MotabilityLogo } from "@/components/product/motability-logo";
+import { ProductOptionsSelector } from "@/components/product/product-options-selector";
 import { VatReliefDialog } from "@/components/product/vat-relief-dialog";
-import type { CartProduct } from "@/lib/cart";
+import { useCart } from "@/components/cart/cart-provider";
+import { Button } from "@/components/ui/button";
+import {
+  addonCartLineId,
+  configuredCartLineId,
+  type CartProduct,
+} from "@/lib/cart";
 import { getBrandLogo } from "@/lib/brand-logos";
-import { formatGBP, type ProductListItem } from "@/lib/products";
+import {
+  addonLinePrice,
+  formatGBP,
+  priceWithVariants,
+  type ProductListItem,
+  type ProductVariant,
+} from "@/lib/products";
 import { getVatPriceDisplay } from "@/lib/vat";
 
 export type ProductDetailViewProps = {
@@ -39,12 +52,8 @@ export type ProductDetailViewProps = {
   deliveryEstimate: string | null;
   weight: number | null;
   colourOptions: string[];
-  optionVariants: Array<{
-    id: string;
-    label: string;
-    priceLabel: string;
-    outOfStock: boolean;
-  }>;
+  variants: ProductVariant[];
+  /** Base cart product without option configuration. */
   cartProduct: CartProduct | null;
   discontinuedMessage: string | null;
   description: string | null;
@@ -56,20 +65,53 @@ export type ProductDetailViewProps = {
 
 export function ProductDetailView(props: ProductDetailViewProps) {
   const buyRef = useRef<HTMLDivElement | null>(null);
+  const { addItem } = useCart();
+  const [selectedByGroup, setSelectedByGroup] = useState<
+    Record<string, ProductVariant>
+  >({});
+  const [selectedAddons, setSelectedAddons] = useState<ProductVariant[]>([]);
+  const [galleryOverride, setGalleryOverride] = useState<string | null>(null);
+  const [cartMessage, setCartMessage] = useState<string | null>(null);
+
+  const selectedOptions = useMemo(
+    () => Object.values(selectedByGroup),
+    [selectedByGroup],
+  );
+
+  const configuredPrice = useMemo(() => {
+    if (!selectedOptions.length) {
+      return { current: props.priceCurrent, was: props.priceWas };
+    }
+    return priceWithVariants(
+      {
+        unit_price: props.priceWas ?? props.priceCurrent,
+        sale_price:
+          props.priceWas != null ? props.priceCurrent : null,
+      },
+      selectedOptions,
+    );
+  }, [props.priceCurrent, props.priceWas, selectedOptions]);
+
+  const addonTotal = useMemo(
+    () => selectedAddons.reduce((sum, a) => sum + addonLinePrice(a), 0),
+    [selectedAddons],
+  );
+
   const vat = getVatPriceDisplay({
     unit_price:
-      props.priceWas != null ? props.priceWas : props.priceCurrent,
-    sale_price: props.priceWas != null ? props.priceCurrent : null,
+      configuredPrice.was != null
+        ? configuredPrice.was
+        : configuredPrice.current,
+    sale_price:
+      configuredPrice.was != null ? configuredPrice.current : null,
     category: props.category,
     name: props.name,
     condition: props.condition,
   });
-  const net = props.priceCurrent ?? vat.net;
-  const wasNet = props.priceWas ?? vat.wasNet;
+  const net = configuredPrice.current ?? vat.net;
+  const wasNet = configuredPrice.was ?? vat.wasNet;
   const gross =
-    net != null && vat.mode !== "no-vat"
-      ? (vat.gross ?? net)
-      : net;
+    net != null && vat.mode !== "no-vat" ? (vat.gross ?? net) : net;
   const wasGross =
     wasNet != null && vat.mode !== "no-vat"
       ? (vat.wasGross ?? wasNet)
@@ -77,8 +119,107 @@ export function ProductDetailView(props: ProductDetailViewProps) {
 
   const headline = vat.mode === "always-inc" ? gross : net;
   const wasHeadline = vat.mode === "always-inc" ? wasGross : wasNet;
-
   const priceLabel = headline == null ? "POA" : formatGBP(headline);
+
+  const motabilityFromVariant = selectedOptions.find(
+    (v) => v.motability_weekly_price != null || v.motability_price != null,
+  );
+  const motabilityWeekly =
+    motabilityFromVariant?.motability_weekly_price ?? props.motabilityWeekly;
+  const motabilityPrice =
+    motabilityFromVariant?.motability_price ?? props.motabilityPrice;
+  const adaptationId =
+    motabilityFromVariant?.adaptation_id ||
+    motabilityFromVariant?.motability_crn ||
+    selectedOptions.find((v) => v.adaptation_id || v.motability_crn)
+      ?.adaptation_id ||
+    selectedOptions.find((v) => v.motability_crn)?.motability_crn ||
+    props.adaptationId;
+
+  const trackedVariant = selectedOptions.find((v) => v.track_stock);
+  const optionsOutOfStock = selectedOptions.some(
+    (v) => v.track_stock && (v.quantity ?? 0) <= 0,
+  );
+  const stockAvailable =
+    props.stockAvailable &&
+    !optionsOutOfStock &&
+    (trackedVariant
+      ? !trackedVariant.track_stock || (trackedVariant.quantity ?? 0) > 0
+      : true);
+
+  const gallery = useMemo(() => {
+    if (!galleryOverride) return props.gallery;
+    if (props.gallery.includes(galleryOverride)) return props.gallery;
+    return [galleryOverride, ...props.gallery];
+  }, [galleryOverride, props.gallery]);
+
+  const optionSummary = selectedOptions
+    .map((v) => v.label)
+    .filter(Boolean)
+    .join(", ");
+
+  const configuredCartProduct = useMemo((): CartProduct | null => {
+    if (!props.cartProduct || net == null || net <= 0) return null;
+    const variantIds = selectedOptions.map((v) => v.id);
+    const id = configuredCartLineId(props.cartProduct.stockItemId, variantIds);
+    return {
+      ...props.cartProduct,
+      id,
+      name: optionSummary
+        ? `${props.name} — ${optionSummary}`
+        : props.name,
+      unit_price:
+        configuredPrice.was != null
+          ? configuredPrice.was
+          : configuredPrice.current ?? props.cartProduct.unit_price,
+      sale_price:
+        configuredPrice.was != null ? configuredPrice.current : null,
+      image_url: galleryOverride || props.cartProduct.image_url,
+      variantIds: variantIds.length ? variantIds : undefined,
+      optionSummary: optionSummary || undefined,
+      addonVariantId: undefined,
+    };
+  }, [
+    props.cartProduct,
+    props.name,
+    net,
+    selectedOptions,
+    optionSummary,
+    configuredPrice,
+    galleryOverride,
+  ]);
+
+  function handleAddConfigured() {
+    if (!configuredCartProduct) return;
+    const result = addItem(configuredCartProduct, 1);
+    if (!result.ok) {
+      setCartMessage(result.message || "Could not add to cart");
+      return;
+    }
+
+    for (const addon of selectedAddons) {
+      const amount = addonLinePrice(addon);
+      if (amount <= 0 && !addon.unit_price && !addon.sale_price) {
+        // Still allow £0 / included extras as £0 lines if labelled
+      }
+      const parent = props.cartProduct!;
+      const addonProduct: CartProduct = {
+        ...parent,
+        id: addonCartLineId(parent.stockItemId, addon.id),
+        stockItemId: parent.stockItemId,
+        name: addon.label || "Optional extra",
+        unit_price: amount,
+        sale_price: null,
+        image_url: addon.image_url || parent.image_url,
+        variantIds: undefined,
+        addonVariantId: addon.id,
+        optionSummary: undefined,
+      };
+      addItem(addonProduct, 1);
+    }
+
+    setCartMessage("Added to cart");
+  }
 
   const sections = [
     props.description
@@ -143,30 +284,6 @@ export function ProductDetailView(props: ProductDetailViewProps) {
           ),
         }
       : null,
-    props.optionVariants.length
-      ? {
-          id: "options",
-          title: "Options & pricing",
-          content: (
-            <ul className="space-y-2">
-              {props.optionVariants.map((variant) => (
-                <li
-                  key={variant.id}
-                  className="flex items-center justify-between border-b border-border py-2"
-                >
-                  <span>
-                    {variant.label}
-                    {variant.outOfStock ? (
-                      <span className="ml-2 text-muted">(out of stock)</span>
-                    ) : null}
-                  </span>
-                  <span className="font-semibold">{variant.priceLabel}</span>
-                </li>
-              ))}
-            </ul>
-          ),
-        }
-      : null,
     props.videoEmbed
       ? {
           id: "video",
@@ -191,10 +308,17 @@ export function ProductDetailView(props: ProductDetailViewProps) {
     defaultOpen?: boolean;
   }>;
 
+  const hasConfigurableOptions = props.variants.length > 0;
+  const canBuy =
+    !props.isAdaptation &&
+    configuredCartProduct &&
+    stockAvailable &&
+    headline != null;
+
   return (
     <>
       <div className="grid items-start gap-6 md:grid-cols-2 md:gap-10 lg:gap-12">
-        <ProductGallery images={props.gallery} name={props.name} />
+        <ProductGallery images={gallery} name={props.name} />
 
         <div className="min-w-0">
           <div className="mb-3 flex flex-wrap gap-2">
@@ -235,17 +359,19 @@ export function ProductDetailView(props: ProductDetailViewProps) {
 
           <p
             className={`mt-2 text-sm font-medium ${
-              props.stockAvailable ? "text-success" : "text-error"
+              stockAvailable ? "text-success" : "text-error"
             }`}
           >
-            {props.stockLabel}
+            {optionsOutOfStock ? "Selected option out of stock" : props.stockLabel}
           </p>
 
           <div className="mt-4 space-y-2">
             <div className="flex flex-wrap items-baseline gap-2">
               {headline != null ? (
                 <>
-                  <span className="text-sm text-muted">From</span>
+                  {!hasConfigurableOptions ? (
+                    <span className="text-sm text-muted">From</span>
+                  ) : null}
                   <span className="text-3xl font-bold text-primary">
                     {formatGBP(headline)}
                   </span>
@@ -259,6 +385,12 @@ export function ProductDetailView(props: ProductDetailViewProps) {
                 </span>
               ) : null}
             </div>
+
+            {addonTotal > 0 ? (
+              <p className="text-sm text-muted">
+                + {formatGBP(addonTotal)} optional extras
+              </p>
+            ) : null}
 
             {vat.mode === "relief" && net != null && gross != null ? (
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
@@ -287,27 +419,26 @@ export function ProductDetailView(props: ProductDetailViewProps) {
             ) : null}
           </div>
 
-          {(props.motabilityWeekly != null && props.motabilityWeekly >= 0) ||
-          props.motabilityPrice != null ? (
+          {(motabilityWeekly != null && motabilityWeekly >= 0) ||
+          motabilityPrice != null ? (
             <div className="mt-4 flex items-center justify-between gap-3 rounded-xl bg-primary px-4 py-3 text-primary-foreground">
               <div>
                 <MotabilityLogo variant="white" height={24} className="mb-2" />
-                {props.motabilityWeekly != null && props.motabilityWeekly > 0 ? (
+                {motabilityWeekly != null && motabilityWeekly > 0 ? (
                   <p className="text-base font-bold">
-                    {formatGBP(props.motabilityWeekly)}/week
+                    {formatGBP(motabilityWeekly)}/week
                   </p>
-                ) : props.motabilityWeekly === 0 ||
-                  props.motabilityPrice === 0 ? (
+                ) : motabilityWeekly === 0 || motabilityPrice === 0 ? (
                   <p className="text-base font-bold">Free of charge</p>
-                ) : props.motabilityPrice != null ? (
+                ) : motabilityPrice != null ? (
                   <p className="text-base font-bold">
-                    {formatGBP(props.motabilityPrice)}{" "}
+                    {formatGBP(motabilityPrice)}{" "}
                     {props.isAdaptation ? "advance payment" : "contribution"}
                   </p>
                 ) : null}
-                {props.adaptationId ? (
+                {adaptationId ? (
                   <p className="mt-0.5 text-[11px] opacity-80">
-                    Code: {props.adaptationId}
+                    Code: {adaptationId}
                   </p>
                 ) : null}
               </div>
@@ -324,7 +455,9 @@ export function ProductDetailView(props: ProductDetailViewProps) {
             <div className="mt-4 grid gap-2 rounded-xl border border-border bg-soft p-4 text-sm sm:grid-cols-3">
               <div>
                 <p className="font-semibold text-primary">Workshop fitting</p>
-                <p className="mt-0.5 text-xs text-muted">Included at Heathrow or Ferndown</p>
+                <p className="mt-0.5 text-xs text-muted">
+                  Included at Heathrow or Ferndown
+                </p>
               </div>
               <div>
                 <p className="font-semibold text-primary">Mobile fitting</p>
@@ -332,7 +465,9 @@ export function ProductDetailView(props: ProductDetailViewProps) {
               </div>
               <div>
                 <p className="font-semibold text-primary">Vehicle collection</p>
-                <p className="mt-0.5 text-xs text-muted">Available at reasonable cost</p>
+                <p className="mt-0.5 text-xs text-muted">
+                  Available at reasonable cost
+                </p>
               </div>
             </div>
           ) : null}
@@ -354,7 +489,26 @@ export function ProductDetailView(props: ProductDetailViewProps) {
             </div>
           ) : null}
 
-          {props.colourOptions.length > 0 ? (
+          {!props.isAdaptation && hasConfigurableOptions ? (
+            <div className="mt-5">
+              <ProductOptionsSelector
+                variants={props.variants}
+                selectedByGroup={selectedByGroup}
+                onSelectVariant={(group, variant) =>
+                  setSelectedByGroup((prev) => ({ ...prev, [group]: variant }))
+                }
+                selectedAddons={selectedAddons}
+                onToggleAddon={(addon) =>
+                  setSelectedAddons((prev) =>
+                    prev.some((a) => a.id === addon.id)
+                      ? prev.filter((a) => a.id !== addon.id)
+                      : [...prev, addon],
+                  )
+                }
+                onImageChange={setGalleryOverride}
+              />
+            </div>
+          ) : props.colourOptions.length > 0 ? (
             <div className="mt-5">
               <p className="mb-2 text-sm font-semibold text-primary">Colours</p>
               <ul className="flex flex-wrap gap-2">
@@ -391,8 +545,54 @@ export function ProductDetailView(props: ProductDetailViewProps) {
                   compatibility and a firm price before any work starts.
                 </p>
               </>
-            ) : props.cartProduct && props.stockAvailable ? (
-              <AddToCartButton product={props.cartProduct} layout="stack" />
+            ) : canBuy && hasConfigurableOptions ? (
+              <div className="space-y-2">
+                <div className="flex flex-col gap-3">
+                  <Button
+                    type="button"
+                    variant="buy"
+                    className="w-full rounded-xl"
+                    onClick={handleAddConfigured}
+                  >
+                    Add to cart
+                  </Button>
+                  <Link
+                    href={`/book-a-demo?product=${encodeURIComponent(props.slug)}`}
+                    className="flex w-full items-center justify-center rounded-xl border border-primary px-6 py-3 text-center font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+                  >
+                    Book a home demo
+                  </Link>
+                </div>
+                {cartMessage ? (
+                  <p className="text-sm text-muted">
+                    {cartMessage}
+                    {cartMessage === "Added to cart" ? (
+                      <>
+                        {" "}
+                        ·{" "}
+                        <Link
+                          href="/checkout"
+                          className="font-semibold text-primary underline"
+                        >
+                          Checkout
+                        </Link>
+                      </>
+                    ) : null}
+                  </p>
+                ) : null}
+              </div>
+            ) : canBuy && configuredCartProduct ? (
+              <AddToCartButton
+                product={configuredCartProduct}
+                layout="stack"
+              />
+            ) : headline == null && !props.isAdaptation ? (
+              <Link
+                href={`/contact?interest=quote&product=${encodeURIComponent(props.slug)}`}
+                className="flex w-full items-center justify-center rounded-xl bg-accent px-6 py-3 text-center font-semibold text-accent-foreground hover:bg-accent-hover"
+              >
+                Request a quote
+              </Link>
             ) : null}
             <a
               href="tel:08007723870"
@@ -430,17 +630,16 @@ export function ProductDetailView(props: ProductDetailViewProps) {
         </div>
       </div>
 
-      {!props.isAdaptation && props.cartProduct && props.stockAvailable ? (
+      {canBuy && configuredCartProduct ? (
         <StickyBuyBar
-          product={props.cartProduct}
+          product={configuredCartProduct}
           priceLabel={priceLabel}
           observeRef={buyRef}
+          onAdd={hasConfigurableOptions ? handleAddConfigured : undefined}
         />
       ) : null}
 
-      {!props.isAdaptation && props.cartProduct && props.stockAvailable ? (
-        <div className="h-20 md:hidden" aria-hidden />
-      ) : null}
+      {canBuy ? <div className="h-20 md:hidden" aria-hidden /> : null}
     </>
   );
 }

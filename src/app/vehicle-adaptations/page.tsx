@@ -8,6 +8,7 @@ import {
   Wrench,
 } from "lucide-react";
 import { AdaptationCard } from "@/components/product/adaptation-card";
+import { MotabilityLogo } from "@/components/product/motability-logo";
 import {
   ImageCollage,
   type CollageTile,
@@ -343,19 +344,67 @@ export default async function VehicleAdaptationsPage() {
           </p>
         ) : (
           <>
+            <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <h2 className="text-2xl font-extrabold text-primary md:text-3xl">
+                  Adaptation catalogue
+                </h2>
+                <p className="mt-1 text-sm text-muted">
+                  {products.length} products · indicative supplied &amp; fitted
+                  prices
+                </p>
+              </div>
+              <nav
+                className="flex flex-wrap gap-2"
+                aria-label="Jump to adaptation type"
+              >
+                {freeOnMotability.length ? (
+                  <a
+                    href="#free-motability"
+                    className="rounded-full border border-border bg-white px-3 py-1.5 text-xs font-semibold text-primary hover:border-primary"
+                  >
+                    Free on Motability ({freeOnMotability.length})
+                  </a>
+                ) : null}
+                {ADAPTATION_SECTIONS.map((section) => {
+                  const count = section.categories.reduce(
+                    (sum, cat) => sum + (byCategory.get(cat)?.length ?? 0),
+                    0,
+                  );
+                  if (!count) return null;
+                  return (
+                    <a
+                      key={section.id}
+                      href={`#${section.id}`}
+                      className="rounded-full border border-border bg-white px-3 py-1.5 text-xs font-semibold text-primary hover:border-primary"
+                    >
+                      {section.title} ({count})
+                    </a>
+                  );
+                })}
+              </nav>
+            </div>
+
             {freeOnMotability.length > 0 ? (
-              <section className="mb-14">
-                <div className="mb-6">
-                  <h2 className="text-2xl font-extrabold text-primary">
-                    Free on Motability
-                  </h2>
-                  <p className="mt-1 text-sm text-muted">
-                    £0 advance payment on the scheme — subject to eligibility and
-                    assessment.
-                  </p>
+              <section id="free-motability" className="mb-14 scroll-mt-28">
+                <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+                  <div>
+                    <div className="mb-2 flex flex-wrap items-center gap-2">
+                      <MotabilityLogo height={22} />
+                      <span className="text-xs font-semibold uppercase tracking-wide text-muted">
+                        £0 advance payment
+                      </span>
+                    </div>
+                    <h3 className="text-2xl font-extrabold text-primary">
+                      Free on Motability
+                    </h3>
+                    <p className="mt-1 text-sm text-muted">
+                      Subject to eligibility and assessment.
+                    </p>
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-                  {freeOnMotability.slice(0, 8).map((p) => (
+                  {freeOnMotability.slice(0, 12).map((p) => (
                     <AdaptationCard key={p.id} product={p} />
                   ))}
                 </div>
@@ -367,6 +416,8 @@ export default async function VehicleAdaptationsPage() {
                 (cat) => byCategory.get(cat) ?? [],
               );
               if (!sectionProducts.length) return null;
+              const preview = sectionProducts.slice(0, 12);
+              const hasMore = sectionProducts.length > preview.length;
 
               return (
                 <section
@@ -374,16 +425,13 @@ export default async function VehicleAdaptationsPage() {
                   id={section.id}
                   className="mb-16 scroll-mt-28"
                 >
-                  <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-                    <h2 className="text-2xl font-extrabold text-primary">
+                  <div className="mb-3">
+                    <h3 className="text-2xl font-extrabold text-primary">
                       {section.title}
-                    </h2>
-                    <Link
-                      href={sectionHref(section.id)}
-                      className="text-sm font-semibold text-primary underline-offset-4 hover:underline"
-                    >
-                      View all →
-                    </Link>
+                    </h3>
+                    <p className="mt-1 max-w-2xl text-sm text-muted">
+                      {section.description}
+                    </p>
                   </div>
 
                   <div className="mb-5 flex flex-wrap gap-2">
@@ -403,10 +451,21 @@ export default async function VehicleAdaptationsPage() {
                   </div>
 
                   <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-                    {sectionProducts.slice(0, 8).map((p) => (
+                    {preview.map((p) => (
                       <AdaptationCard key={p.id} product={p} />
                     ))}
                   </div>
+
+                  {hasMore ? (
+                    <div className="mt-6 text-center">
+                      <Link
+                        href={sectionHref(section.id)}
+                        className="inline-flex rounded-xl border border-primary px-5 py-2.5 text-sm font-semibold text-primary hover:bg-primary hover:text-primary-foreground"
+                      >
+                        View all {sectionProducts.length} in {section.title}
+                      </Link>
+                    </div>
+                  ) : null}
                 </section>
               );
             })}

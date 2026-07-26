@@ -37,7 +37,18 @@ function loadCart(): CartItem[] {
     const raw = localStorage.getItem(CART_STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw) as CartItem[];
-    return Array.isArray(parsed) ? parsed : [];
+    if (!Array.isArray(parsed)) return [];
+    return parsed.map((item) => {
+      const product = item.product as CartProduct & { stockItemId?: string };
+      const stockItemId =
+        product.stockItemId ||
+        product.id.split("__")[0] ||
+        product.id;
+      return {
+        ...item,
+        product: { ...product, stockItemId },
+      };
+    });
   } catch {
     return [];
   }

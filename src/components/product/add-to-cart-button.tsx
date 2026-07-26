@@ -77,10 +77,12 @@ export function StickyBuyBar({
   product,
   priceLabel,
   observeRef,
+  onAdd,
 }: {
   product: CartProduct;
   priceLabel: string;
   observeRef: React.RefObject<HTMLElement | null>;
+  onAdd?: () => void;
 }) {
   const [visible, setVisible] = useState(false);
   const { addItem } = useCart();
@@ -110,7 +112,7 @@ export function StickyBuyBar({
           type="button"
           variant="buy"
           className="shrink-0 rounded-xl"
-          onClick={() => addItem(product, 1)}
+          onClick={() => (onAdd ? onAdd() : addItem(product, 1))}
         >
           Add to cart
         </Button>

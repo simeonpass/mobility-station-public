@@ -1,5 +1,8 @@
 export type CartProduct = {
+  /** Unique cart line key (may include option/add-on config). */
   id: string;
+  /** Always the parent stock_items UUID (for order FK / server price lookup). */
+  stockItemId: string;
   name: string;
   slug: string;
   image_url: string | null;
@@ -10,6 +13,12 @@ export type CartProduct = {
   condition: "new" | "ex-demo" | "refurbished" | "pre-owned" | null;
   product_type: string | null;
   pre_order_enabled?: boolean;
+  /** Selected option variant UUIDs (not add-ons). */
+  variantIds?: string[];
+  /** When this line is an optional extra. */
+  addonVariantId?: string;
+  /** Human-readable options summary for display. */
+  optionSummary?: string;
 };
 
 export type CartItem = {
@@ -75,6 +84,34 @@ export function isAdaptationProduct(product: CartProduct) {
   );
 }
 
+/** Cart line id for a configured parent product (options only). */
+export function configuredCartLineId(
+  stockItemId: string,
+  variantIds: string[],
+) {
+  if (!variantIds.length) return stockItemId;
+  const sorted = [...variantIds].sort();
+  return `${stockItemId}__opts__${sorted.join("_")}`;
+}
+
+/** Cart line id for an add-on (matches live site). */
+export function addonCartLineId(stockItemId: string, addonVariantId: string) {
+  return `${stockItemId}__addon__${addonVariantId}`;
+}
+
+export function parseAddonCartId(id: string): {
+  stockItemId: string;
+  addonVariantId: string;
+} | null {
+  const marker = "__addon__";
+  const idx = id.indexOf(marker);
+  if (idx <= 0) return null;
+  return {
+    stockItemId: id.slice(0, idx),
+    addonVariantId: id.slice(idx + marker.length),
+  };
+}
+
 export type CheckoutPayload = {
   customer: {
     email: string;
@@ -89,6 +126,8 @@ export type CheckoutPayload = {
     quantity: number;
     unitPrice: number;
     isUsed?: boolean;
+    variantIds?: string[];
+    addonVariantId?: string;
   }>;
   fulfillmentMethod: "delivery" | "collection";
   deliveryType?: string;

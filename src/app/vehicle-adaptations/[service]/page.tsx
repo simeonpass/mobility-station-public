@@ -157,7 +157,7 @@ export default async function AdaptationCategoryPage({ params }: Props) {
               href="/book-a-demo?type=adaptation"
               className="rounded-xl border border-primary px-5 py-3 text-center font-semibold text-primary hover:bg-primary hover:text-primary-foreground"
             >
-              Book a free demo
+              Book a home demo
             </Link>
           </div>
         </header>

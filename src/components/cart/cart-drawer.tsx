@@ -87,6 +87,13 @@ export function CartDrawer() {
                     >
                       {item.product.name}
                     </Link>
+                    {item.product.optionSummary ? (
+                      <p className="mt-0.5 text-xs text-muted">
+                        {item.product.optionSummary}
+                      </p>
+                    ) : item.product.addonVariantId ? (
+                      <p className="mt-0.5 text-xs text-muted">Optional extra</p>
+                    ) : null}
                     <p className="mt-1 text-sm font-bold text-primary">
                       {formatGBP(linePrice(item.product))}
                     </p>

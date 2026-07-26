@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard";
 import { Input, Select } from "@/components/ui/input";
 import { categoryToSlug, displayPrice, type ProductListItem } from "@/lib/products";
@@ -22,22 +23,36 @@ const WHEELCHAIR_CATS = [
   "Wheelchairs",
 ];
 
+function chipClass(active: boolean) {
+  return active
+    ? "rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
+    : "rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold text-primary hover:border-primary";
+}
+
 export function ShopBrowser({
   products,
   categories,
   initialSub,
+  initialQuery = "",
 }: {
   products: ProductListItem[];
   categories: { category: string; count: number }[];
   initialSub?: string;
+  initialQuery?: string;
 }) {
-  const [query, setQuery] = useState("");
+  const searchParams = useSearchParams();
+  const [query, setQuery] = useState(initialQuery);
   const [category, setCategory] = useState("");
   const [manufacturer, setManufacturer] = useState("");
   const [sort, setSort] = useState<SortKey>("featured");
   const [motabilityOnly, setMotabilityOnly] = useState(false);
   const [clearanceOnly, setClearanceOnly] = useState(false);
   const [sub, setSub] = useState(initialSub ?? "");
+
+  useEffect(() => {
+    const q = searchParams.get("q");
+    if (q != null) setQuery(q);
+  }, [searchParams]);
 
   const manufacturers = useMemo(() => {
     const set = new Set<string>();
@@ -46,6 +61,16 @@ export function ShopBrowser({
     }
     return [...set].sort((a, b) => a.localeCompare(b));
   }, [products]);
+
+  const visibleCategories = useMemo(() => {
+    if (sub === "scooters") {
+      return categories.filter((c) => SCOOTER_CATS.includes(c.category));
+    }
+    if (sub === "wheelchairs") {
+      return categories.filter((c) => WHEELCHAIR_CATS.includes(c.category));
+    }
+    return categories;
+  }, [categories, sub]);
 
   const filtered = useMemo(() => {
     let list = [...products];
@@ -101,7 +126,6 @@ export function ShopBrowser({
         const mb = b.motability_weekly_price ?? b.motability_price ?? 99999;
         return ma - mb;
       }
-      // featured
       if (a.is_featured !== b.is_featured) return a.is_featured ? -1 : 1;
       return a.name.localeCompare(b.name);
     });
@@ -118,9 +142,76 @@ export function ShopBrowser({
     sub,
   ]);
 
+  const activeFilters: { key: string; label: string; clear: () => void }[] = [];
+  if (sub === "scooters") {
+    activeFilters.push({
+      key: "sub",
+      label: "Scooters",
+      clear: () => {
+        setSub("");
+        setCategory("");
+      },
+    });
+  }
+  if (sub === "wheelchairs") {
+    activeFilters.push({
+      key: "sub",
+      label: "Wheelchairs",
+      clear: () => {
+        setSub("");
+        setCategory("");
+      },
+    });
+  }
+  if (category) {
+    activeFilters.push({
+      key: "category",
+      label: category,
+      clear: () => setCategory(""),
+    });
+  }
+  if (manufacturer) {
+    activeFilters.push({
+      key: "brand",
+      label: manufacturer,
+      clear: () => setManufacturer(""),
+    });
+  }
+  if (query.trim()) {
+    activeFilters.push({
+      key: "query",
+      label: `“${query.trim()}”`,
+      clear: () => setQuery(""),
+    });
+  }
+  if (motabilityOnly) {
+    activeFilters.push({
+      key: "motability",
+      label: "Motability",
+      clear: () => setMotabilityOnly(false),
+    });
+  }
+  if (clearanceOnly) {
+    activeFilters.push({
+      key: "clearance",
+      label: "Clearance",
+      clear: () => setClearanceOnly(false),
+    });
+  }
+
+  function clearAll() {
+    setQuery("");
+    setCategory("");
+    setManufacturer("");
+    setMotabilityOnly(false);
+    setClearanceOnly(false);
+    setSub("");
+    setSort("featured");
+  }
+
   return (
     <div>
-      <div className="mb-6 flex flex-wrap gap-2">
+      <div className="mb-5 flex flex-wrap gap-2">
         {[
           { id: "", label: "All" },
           { id: "scooters", label: "Scooters" },
@@ -133,27 +224,25 @@ export function ShopBrowser({
               setSub(item.id);
               setCategory("");
             }}
-            className={`rounded-full px-4 py-2 text-sm font-semibold ${
-              sub === item.id
-                ? "bg-primary text-primary-foreground"
-                : "border border-border bg-white text-primary"
-            }`}
+            className={chipClass(sub === item.id)}
           >
             {item.label}
           </button>
         ))}
-        <Link
-          href="/clearance"
-          className="rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold text-primary hover:border-primary"
-        >
-          Clearance
-        </Link>
-        <Link
-          href="/motability"
-          className="rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold text-primary hover:border-primary"
+        <button
+          type="button"
+          onClick={() => setMotabilityOnly((v) => !v)}
+          className={chipClass(motabilityOnly)}
         >
           Motability
-        </Link>
+        </button>
+        <button
+          type="button"
+          onClick={() => setClearanceOnly((v) => !v)}
+          className={chipClass(clearanceOnly)}
+        >
+          Clearance
+        </button>
         <Link
           href="/find-my-scooter"
           className="rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold text-primary hover:border-primary"
@@ -162,7 +251,39 @@ export function ShopBrowser({
         </Link>
       </div>
 
-      <div className="mb-6 grid gap-3 rounded-2xl border border-border bg-white p-4 md:grid-cols-2 lg:grid-cols-4">
+      {visibleCategories.length > 1 ? (
+        <div className="mb-5 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => setCategory("")}
+            className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
+              !category
+                ? "bg-primary-soft text-primary"
+                : "border border-border bg-white text-muted hover:text-primary"
+            }`}
+          >
+            All types
+          </button>
+          {visibleCategories.map((c) => (
+            <button
+              key={c.category}
+              type="button"
+              onClick={() =>
+                setCategory((prev) => (prev === c.category ? "" : c.category))
+              }
+              className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
+                category === c.category
+                  ? "bg-primary-soft text-primary"
+                  : "border border-border bg-white text-muted hover:text-primary"
+              }`}
+            >
+              {c.category} ({c.count})
+            </button>
+          ))}
+        </div>
+      ) : null}
+
+      <div className="mb-5 grid gap-3 rounded-2xl border border-border bg-white p-4 md:grid-cols-2 lg:grid-cols-4">
         <div className="lg:col-span-2">
           <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-muted">
             Search
@@ -172,22 +293,6 @@ export function ShopBrowser({
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search scooters, wheelchairs, brands…"
           />
-        </div>
-        <div>
-          <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-muted">
-            Category
-          </label>
-          <Select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            <option value="">All categories</option>
-            {categories.map((c) => (
-              <option key={c.category} value={c.category}>
-                {c.category} ({c.count})
-              </option>
-            ))}
-          </Select>
         </div>
         <div>
           <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-muted">
@@ -220,46 +325,37 @@ export function ShopBrowser({
             <option value="motability">Motability first</option>
           </Select>
         </div>
-        <div className="flex flex-wrap items-end gap-4 lg:col-span-3">
-          <label className="flex items-center gap-2 text-sm font-medium text-primary">
-            <input
-              type="checkbox"
-              checked={motabilityOnly}
-              onChange={(e) => setMotabilityOnly(e.target.checked)}
-            />
-            Motability only
-          </label>
-          <label className="flex items-center gap-2 text-sm font-medium text-primary">
-            <input
-              type="checkbox"
-              checked={clearanceOnly}
-              onChange={(e) => setClearanceOnly(e.target.checked)}
-            />
-            Clearance / used only
-          </label>
-          {(query || category || manufacturer || motabilityOnly || clearanceOnly || sub) && (
-            <button
-              type="button"
-              className="text-sm font-semibold text-muted underline"
-              onClick={() => {
-                setQuery("");
-                setCategory("");
-                setManufacturer("");
-                setMotabilityOnly(false);
-                setClearanceOnly(false);
-                setSub("");
-                setSort("featured");
-              }}
-            >
-              Clear filters
-            </button>
-          )}
-        </div>
       </div>
 
-      <p className="mb-4 text-sm text-muted">
-        Showing {filtered.length} of {products.length} products
-      </p>
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-muted">
+          <span className="font-semibold text-primary">{filtered.length}</span>{" "}
+          of {products.length} products
+        </p>
+        {activeFilters.length ? (
+          <div className="flex flex-wrap items-center gap-2">
+            {activeFilters.map((f) => (
+              <button
+                key={f.key + f.label}
+                type="button"
+                onClick={f.clear}
+                className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary"
+                aria-label={`Remove ${f.label} filter`}
+              >
+                {f.label}
+                <span aria-hidden>×</span>
+              </button>
+            ))}
+            <button
+              type="button"
+              className="text-xs font-semibold text-muted underline underline-offset-2"
+              onClick={clearAll}
+            >
+              Clear all
+            </button>
+          </div>
+        ) : null}
+      </div>
 
       {filtered.length ? (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
@@ -268,16 +364,52 @@ export function ShopBrowser({
           ))}
         </div>
       ) : (
-        <p className="rounded-xl bg-soft px-4 py-6 text-sm text-muted">
-          No products match these filters.{" "}
-          <Link href="/contact" className="font-semibold text-primary underline">
-            Contact us
-          </Link>{" "}
-          and we&apos;ll help you find the right model.
-        </p>
+        <div className="rounded-2xl border border-border bg-soft px-5 py-8 text-center">
+          <p className="font-semibold text-primary">No products match these filters</p>
+          <p className="mt-2 text-sm text-muted">
+            This page only covers scooters and wheelchairs.
+            {query.trim() ? (
+              <>
+                {" "}
+                <Link
+                  href={`/search?q=${encodeURIComponent(query.trim())}`}
+                  className="font-semibold text-primary underline"
+                >
+                  Search all products &amp; vehicle adaptations for “
+                  {query.trim()}”
+                </Link>
+              </>
+            ) : (
+              <>
+                {" "}
+                Looking for hand controls or hoists? Browse{" "}
+                <Link
+                  href="/vehicle-adaptations"
+                  className="font-semibold text-primary underline"
+                >
+                  vehicle adaptations
+                </Link>
+                .
+              </>
+            )}
+          </p>
+          <p className="mt-2 text-sm text-muted">
+            Or{" "}
+            <Link href="/contact" className="font-semibold text-primary underline">
+              contact us
+            </Link>{" "}
+            and we&apos;ll help you find the right model.
+          </p>
+          <button
+            type="button"
+            onClick={clearAll}
+            className="mt-4 text-sm font-semibold text-primary underline underline-offset-2"
+          >
+            Clear all filters
+          </button>
+        </div>
       )}
 
-      {/* Keep category deep-links crawlable */}
       <nav className="mt-10 flex flex-wrap gap-2" aria-label="Category links">
         {categories.slice(0, 16).map((c) => (
           <Link

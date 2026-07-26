@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { ShopBrowser } from "@/components/product/shop-browser";
 import { getCategories, getPublishedProducts } from "@/lib/products";
 import { createMetadata } from "@/lib/seo";
@@ -12,11 +13,11 @@ export const metadata = createMetadata({
 });
 
 type Props = {
-  searchParams: Promise<{ sub?: string }>;
+  searchParams: Promise<{ sub?: string; q?: string }>;
 };
 
 export default async function ShopPage({ searchParams }: Props) {
-  const { sub } = await searchParams;
+  const { sub, q } = await searchParams;
   let products: Awaited<ReturnType<typeof getPublishedProducts>> = [];
   let categories: Awaited<ReturnType<typeof getCategories>> = [];
   let errorMessage: string | null = null;
@@ -42,8 +43,8 @@ export default async function ShopPage({ searchParams }: Props) {
           Scooters &amp; Wheelchairs
         </h1>
         <p className="mt-3 max-w-2xl text-muted">
-          Search and filter our catalogue, then book a free home demonstration
-          from Heathrow or Ferndown.
+          Filter by type, Motability or clearance — then book a free home
+          demonstration from Heathrow or Ferndown.
         </p>
       </header>
 
@@ -52,11 +53,16 @@ export default async function ShopPage({ searchParams }: Props) {
           {errorMessage}
         </p>
       ) : (
-        <ShopBrowser
-          products={products}
-          categories={categories}
-          initialSub={sub === "scooters" || sub === "wheelchairs" ? sub : ""}
-        />
+        <Suspense
+          fallback={<p className="text-sm text-muted">Loading products…</p>}
+        >
+          <ShopBrowser
+            products={products}
+            categories={categories}
+            initialSub={sub === "scooters" || sub === "wheelchairs" ? sub : ""}
+            initialQuery={typeof q === "string" ? q : ""}
+          />
+        </Suspense>
       )}
     </div>
   );

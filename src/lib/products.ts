@@ -54,6 +54,14 @@ export type ProductVariant = {
   quantity: number;
   track_stock: boolean;
   is_addon: boolean;
+  is_default: boolean;
+  variant_group: string | null;
+  price_adjustment: number;
+  description: string | null;
+  motability_price: number | null;
+  motability_weekly_price: number | null;
+  adaptation_id: string | null;
+  motability_crn: string | null;
 };
 
 export type ProductDetail = ProductListItem & {
@@ -373,7 +381,10 @@ export async function getProductBySlug(
     supabase
       .from("product_variants")
       .select(
-        "id, label, unit_price, sale_price, image_url, colour, quantity, track_stock, is_addon",
+        `id, label, unit_price, sale_price, image_url, colour, quantity,
+         track_stock, is_addon, is_default, variant_group, price_adjustment,
+         description, motability_price, motability_weekly_price,
+         adaptation_id, motability_crn`,
       )
       .eq("stock_item_id", productId)
       .order("sort_order", { ascending: true }),
@@ -394,8 +405,140 @@ export async function getProductBySlug(
       ...v,
       track_stock: v.track_stock !== false,
       is_addon: Boolean(v.is_addon),
+      is_default: Boolean(v.is_default),
       quantity: v.quantity ?? 0,
+      price_adjustment: Number(v.price_adjustment) || 0,
+      variant_group: v.variant_group ?? null,
+      description: v.description ?? null,
+      motability_price: v.motability_price ?? null,
+      motability_weekly_price: v.motability_weekly_price ?? null,
+      adaptation_id: v.adaptation_id ?? null,
+      motability_crn: v.motability_crn ?? null,
     })),
+  };
+}
+
+/** Match live site: absolute variant price wins, otherwise base + adjustments. */
+export function priceWithVariants(
+  base: Pick<ProductListItem, "unit_price" | "sale_price">,
+  selected: Pick<
+    ProductVariant,
+    "unit_price" | "sale_price" | "price_adjustment"
+  >[],
+) {
+  const adjustment = selected.reduce(
+    (sum, v) => sum + (Number(v.price_adjustment) || 0),
+    0,
+  );
+  const absolute = selected.find(
+    (v) => v.unit_price != null && Number(v.unit_price) > 0,
+  );
+  if (absolute) {
+    return displayPrice({
+      unit_price: absolute.unit_price,
+      sale_price: absolute.sale_price,
+    });
+  }
+  const unit =
+    base.unit_price != null && Number(base.unit_price) > 0
+      ? Number(base.unit_price) + adjustment
+      : null;
+  const sale =
+    base.sale_price != null && Number(base.sale_price) > 0
+      ? Number(base.sale_price) + adjustment
+      : null;
+  return displayPrice({ unit_price: unit, sale_price: sale });
+}
+
+export function addonLinePrice(
+  addon: Pick<
+    ProductVariant,
+    "unit_price" | "sale_price" | "price_adjustment"
+  >,
+) {
+  if (addon.sale_price != null && Number(addon.sale_price) > 0) {
+    return Number(addon.sale_price);
+  }
+  if (addon.unit_price != null && Number(addon.unit_price) > 0) {
+    return Number(addon.unit_price);
+  }
+  return Number(addon.price_adjustment) || 0;
+}
+
+export type SearchResults = {
+  query: string;
+  shop: ProductListItem[];
+  adaptations: ProductListItem[];
+  total: number;
+};
+
+/**
+ * Site-wide search across BOTH catalogues (shop + vehicle adaptations).
+ * Matches name, manufacturer, category and SKU so brand searches like
+ * "Jeff Gosling" surface hand controls as well as scooters.
+ */
+export async function searchProducts(
+  rawQuery: string,
+  opts: { limit?: number } = {},
+): Promise<SearchResults> {
+  const query = rawQuery.trim();
+  if (!query) {
+    return { query: "", shop: [], adaptations: [], total: 0 };
+  }
+
+  const limit = opts.limit ?? 300;
+  const supabase = getClient();
+  // Escape PostgREST reserved characters in the or() filter value.
+  const safe = query.replace(/[%,()]/g, " ").trim();
+  const pattern = `%${safe}%`;
+
+  const { data, error } = await supabase
+    .from("stock_items")
+    .select(`${LIST_COLUMNS}, sku`)
+    .eq("published_to_website", true)
+    .eq("website_visible", true)
+    .neq("product_type", "archived")
+    .not("slug", "is", null)
+    .or(
+      [
+        `name.ilike.${pattern}`,
+        `manufacturer.ilike.${pattern}`,
+        `category.ilike.${pattern}`,
+        `sku.ilike.${pattern}`,
+      ].join(","),
+    )
+    .order("is_featured", { ascending: false })
+    .order("name", { ascending: true })
+    .limit(limit);
+
+  if (error) throw error;
+
+  const items = (data ?? []).map((row) =>
+    mapListItem(row as Record<string, unknown>),
+  );
+
+  const lower = safe.toLowerCase();
+  const score = (p: ProductListItem) => {
+    const name = p.name.toLowerCase();
+    const manufacturer = (p.manufacturer || "").toLowerCase();
+    if (name.startsWith(lower)) return 0;
+    if (manufacturer === lower) return 1;
+    if (name.includes(lower)) return 2;
+    if (manufacturer.includes(lower)) return 3;
+    return 4;
+  };
+  items.sort((a, b) => {
+    const diff = score(a) - score(b);
+    if (diff !== 0) return diff;
+    if (a.is_featured !== b.is_featured) return a.is_featured ? -1 : 1;
+    return a.name.localeCompare(b.name);
+  });
+
+  return {
+    query,
+    shop: items.filter((p) => !isAdaptationProduct(p)),
+    adaptations: items.filter((p) => isAdaptationProduct(p)),
+    total: items.length,
   };
 }
 

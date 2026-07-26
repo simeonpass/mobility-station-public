@@ -7,6 +7,8 @@ type PageSeo = {
   path: string;
   type?: "website" | "article";
   absoluteTitle?: boolean;
+  /** Search/result pages should stay out of the index. */
+  noIndex?: boolean;
 };
 
 export function createMetadata({
@@ -15,6 +17,7 @@ export function createMetadata({
   path,
   type = "website",
   absoluteTitle = false,
+  noIndex = false,
 }: PageSeo): Metadata {
   const safeTitle = title.length > 60 ? `${title.slice(0, 57)}…` : title;
   const safeDescription =
@@ -25,6 +28,7 @@ export function createMetadata({
     title: absoluteTitle ? { absolute: safeTitle } : safeTitle,
     description: safeDescription,
     alternates: { canonical: url },
+    ...(noIndex ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       title: safeTitle,
       description: safeDescription,

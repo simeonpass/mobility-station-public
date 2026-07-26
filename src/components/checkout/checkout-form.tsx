@@ -87,12 +87,14 @@ export function CheckoutForm() {
         phone: form.phone.trim(),
       },
       items: items.map((i) => ({
-        stockItemId: i.product.id,
+        stockItemId: i.product.stockItemId || i.product.id.split("__")[0],
         productName: i.product.name,
         productImageUrl: i.product.image_url || undefined,
         quantity: i.quantity,
         unitPrice: linePrice(i.product),
         isUsed: isUsedCartProduct(i.product),
+        variantIds: i.product.variantIds,
+        addonVariantId: i.product.addonVariantId,
       })),
       fulfillmentMethod: form.fulfillment,
       collectionBranch:
@@ -387,6 +389,9 @@ export function CheckoutForm() {
                 <p className="line-clamp-2 text-sm font-medium text-primary">
                   {item.product.name}
                 </p>
+                {item.product.optionSummary ? (
+                  <p className="text-xs text-muted">{item.product.optionSummary}</p>
+                ) : null}
                 <p className="text-xs text-muted">Qty {item.quantity}</p>
               </div>
               <p className="text-sm font-semibold">
