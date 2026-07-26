@@ -27,7 +27,7 @@ export function AddToCartButton({
 
   if (layout === "compact") {
     return (
-      <Button type="button" className="rounded-xl px-5" onClick={handleAdd}>
+      <Button type="button" className="rounded-xl px-5" variant="buy" onClick={handleAdd}>
         Add to cart
       </Button>
     );
@@ -42,7 +42,7 @@ export function AddToCartButton({
             : "flex flex-col gap-3 sm:flex-row"
         }
       >
-        <Button type="button" className="flex-1 rounded-xl" onClick={handleAdd}>
+        <Button type="button" className="flex-1 rounded-xl" variant="buy" onClick={handleAdd}>
           Add to cart
         </Button>
         <Link
@@ -108,6 +108,7 @@ export function StickyBuyBar({
         </div>
         <Button
           type="button"
+          variant="buy"
           className="shrink-0 rounded-xl"
           onClick={() => addItem(product, 1)}
         >

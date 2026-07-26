@@ -44,10 +44,10 @@ export function SiteHeader() {
       <div className="container-site flex h-[4.25rem] items-center justify-between gap-4">
         <Link href="/" className="flex shrink-0 items-center" onClick={() => setOpen(false)}>
           <Image
-            src="/brand/logo-header-v4.png"
+            src="/brand/logo-header-v6.png"
             alt="Mobility Station"
-            width={240}
-            height={98}
+            width={800}
+            height={300}
             priority
             className="h-11 w-auto md:h-12"
           />

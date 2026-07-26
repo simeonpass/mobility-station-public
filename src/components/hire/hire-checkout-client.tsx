@@ -490,7 +490,7 @@ export function HireCheckoutClient({ bookingId }: { bookingId: string }) {
             <p className="text-sm text-muted">
               You&apos;ll be taken to Revolut&apos;s secure checkout to pay.
             </p>
-            <Button className="w-full" onClick={() => void pay()} disabled={paying}>
+            <Button className="w-full" variant="buy" onClick={() => void pay()} disabled={paying}>
               {paying ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Opening payment…

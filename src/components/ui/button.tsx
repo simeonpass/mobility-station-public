@@ -8,6 +8,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-accent text-accent-foreground hover:bg-accent-hover",
+        buy: "bg-buy text-buy-foreground hover:bg-buy-hover",
         primary: "bg-primary text-primary-foreground hover:bg-primary-dark",
         outline:
           "border border-primary bg-transparent text-primary hover:bg-soft",

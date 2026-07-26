@@ -59,10 +59,10 @@ export function SiteFooter() {
       <div className="container-site grid gap-x-8 gap-y-6 py-7 md:grid-cols-2 lg:grid-cols-4">
         <div>
           <Image
-            src="/brand/logo-footer-v4.png"
+            src="/brand/logo-footer-v6.png"
             alt="Mobility Station"
-            width={240}
-            height={98}
+            width={800}
+            height={300}
             className="h-8 w-auto"
           />
           <a

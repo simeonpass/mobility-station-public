@@ -429,6 +429,7 @@ export function CheckoutForm() {
         <div className="mt-6 space-y-3">
           <Button
             type="button"
+            variant="buy"
             className="w-full rounded-xl"
             disabled={loading !== null}
             onClick={() => pay("revolut")}

@@ -139,7 +139,7 @@ export function CartDrawer() {
             </div>
             <Link
               href="/checkout"
-              className="flex w-full items-center justify-center rounded-xl bg-accent px-4 py-3 font-semibold text-accent-foreground hover:bg-accent-hover"
+              className="flex w-full items-center justify-center rounded-xl bg-buy px-4 py-3 font-semibold text-buy-foreground hover:bg-buy-hover"
               onClick={() => setIsOpen(false)}
             >
               Checkout
