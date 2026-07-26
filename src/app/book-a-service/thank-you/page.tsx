@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
-import { createMetadata, SITE } from "@/lib/seo";
+import { createMetadata } from "@/lib/seo";
 
 export const metadata = createMetadata({
   title: "Thank You | Service Booking Received",
@@ -18,10 +18,13 @@ export default function ServiceThankYouPage() {
         arrange the next step.
       </p>
       <p className="mt-3 text-muted">
-        Urgent help? Call{" "}
-        <a href={SITE.phoneHref} className="font-semibold text-primary">
-          {SITE.phone}
-        </a>
+        Urgent help?{" "}
+        <Link
+          href="/contact?interest=callback#callback"
+          className="font-semibold text-primary underline"
+        >
+          Request a callback
+        </Link>
       </p>
       <Link href="/" className={buttonVariants({ className: "mt-8" })}>
         Back to homepage

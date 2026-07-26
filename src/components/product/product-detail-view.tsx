@@ -594,12 +594,12 @@ export function ProductDetailView(props: ProductDetailViewProps) {
                 Request a quote
               </Link>
             ) : null}
-            <a
-              href="tel:08007723870"
+            <Link
+              href="/contact?interest=callback#callback"
               className="flex w-full rounded-xl border border-primary px-6 py-3 text-center font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
             >
-              Call 0800 772 3870
-            </a>
+              Request a callback
+            </Link>
           </div>
 
           <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">

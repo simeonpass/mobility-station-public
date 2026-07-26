@@ -41,9 +41,12 @@ function toInputDate(d: Date) {
 export function HireBookingForm({
   product,
   mode,
+  preview = false,
 }: {
   product: HireProduct;
   mode: HireMode;
+  /** Sample fleet only — form is visible for layout, checkout is disabled. */
+  preview?: boolean;
 }) {
   const router = useRouter();
   const rates = useMemo(() => rateCardForProduct(product), [product]);
@@ -203,6 +206,13 @@ export function HireBookingForm({
       }
     }
 
+    if (preview) {
+      setError(
+        "This is a layout preview with sample fleet items. Live booking will open once real stock is listed.",
+      );
+      return;
+    }
+
     setSubmitting(true);
     try {
       const resolvedEnd =
@@ -300,8 +310,8 @@ export function HireBookingForm({
         </div>
       ) : (
         <p className="rounded-lg bg-soft px-3 py-2 text-xs text-muted">
-          Flex includes free delivery and collection inside the Flex zone.
-          Servicing and fault call-outs are included. Punctures are extra.
+          Flex includes free delivery and collection inside the Flex zone, plus
+          servicing and fault call-outs.
         </p>
       )}
 
@@ -497,13 +507,21 @@ export function HireBookingForm({
         </div>
       ) : null}
 
+      {preview ? (
+        <p className="rounded-lg bg-soft px-3 py-2 text-xs text-muted">
+          Sample listing — checkout is off so you can review the layout.
+        </p>
+      ) : null}
+
       {error ? <p className="text-sm text-error">{error}</p> : null}
 
-      <Button type="submit" className="w-full" disabled={submitting}>
+      <Button type="submit" className="w-full" disabled={submitting || preview}>
         {submitting ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Starting booking…
           </>
+        ) : preview ? (
+          "Preview only"
         ) : (
           "Continue to checkout"
         )}

@@ -37,7 +37,7 @@ export default async function SearchPage({ searchParams }: Props) {
     } catch (error) {
       console.error("Search error:", error);
       errorMessage =
-        "We could not run that search right now. Please try again shortly or call 0800 772 3870.";
+        "We could not run that search right now. Please try again shortly or request a callback.";
     }
   }
 
@@ -117,12 +117,12 @@ export default async function SearchPage({ searchParams }: Props) {
             >
               Browse vehicle adaptations
             </Link>
-            <a
-              href="tel:08007723870"
+            <Link
+              href="/contact?interest=callback#callback"
               className="rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-primary hover:border-primary"
             >
-              Call 0800 772 3870
-            </a>
+              Request a callback
+            </Link>
           </div>
         </div>
       ) : (

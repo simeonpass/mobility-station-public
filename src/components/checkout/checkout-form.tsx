@@ -14,12 +14,17 @@ import {
   type CheckoutPayload,
 } from "@/lib/cart";
 import { formatGBP } from "@/lib/products";
+import {
+  isTakeawayEligibleProduct,
+  takeawayCreditForCart,
+} from "@/lib/takeaway-credit";
 
 export function CheckoutForm() {
   const { items, subtotal } = useCart();
   const [loading, setLoading] = useState<"revolut" | "paypal" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [declarationConfirmed, setDeclarationConfirmed] = useState(false);
+  const [takeawayRequested, setTakeawayRequested] = useState(false);
   const [form, setForm] = useState({
     email: "",
     firstName: "",
@@ -64,7 +69,32 @@ export function CheckoutForm() {
   const vatRate = form.isVatExempt && !batteryVatBlocked ? 0 : 20;
   const vatAmount = vatableSubtotal * (vatRate / 100);
   const deliveryFee = 0;
-  const total = subtotal + vatAmount + deliveryFee;
+  const takeawayEligible = useMemo(
+    () =>
+      items.some((item) =>
+        isTakeawayEligibleProduct({
+          category: item.product.category,
+          name: item.product.name,
+          product_type: item.product.product_type,
+        }),
+      ),
+    [items],
+  );
+  const availableTakeawayCredit = useMemo(
+    () =>
+      takeawayCreditForCart(
+        items.map((item) => ({
+          unitPrice: linePrice(item.product),
+          category: item.product.category,
+          name: item.product.name,
+          product_type: item.product.product_type,
+        })),
+      ),
+    [items],
+  );
+  const takeawayCredit =
+    takeawayRequested && takeawayEligible ? availableTakeawayCredit : 0;
+  const total = Math.max(0, subtotal + vatAmount + deliveryFee - takeawayCredit);
 
   const update = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
     setForm((prev) => {
@@ -115,6 +145,7 @@ export function CheckoutForm() {
       vatExemptionDeclaration:
         form.isVatExempt && !batteryVatBlocked ? VAT_DECLARATION : undefined,
       notes: form.notes.trim() || undefined,
+      takeawayRequested: takeawayRequested && takeawayCredit > 0,
     };
   }
 
@@ -359,13 +390,56 @@ export function CheckoutForm() {
         </section>
 
         <section className="rounded-2xl border border-border bg-white p-6">
-          <h2 className="text-lg font-bold text-primary">4. Notes</h2>
+          <h2 className="text-lg font-bold text-primary">4. Old scooter takeaway</h2>
+          {takeawayEligible ? (
+            <>
+              <p className="mt-2 text-sm text-muted">
+                Fixed credit off this order when we collect and dispose of (or
+                keep) your old scooter or wheelchair — not a trade-in valuation.{" "}
+                <Link href="/trade-in" className="font-semibold text-primary underline">
+                  See the credit bands
+                </Link>
+                .
+              </p>
+              <label className="mt-4 flex items-start gap-3 text-sm">
+                <input
+                  type="checkbox"
+                  className="mt-1"
+                  checked={takeawayRequested}
+                  onChange={(e) => setTakeawayRequested(e.target.checked)}
+                />
+                <span>
+                  Yes — take my old scooter or wheelchair away
+                  {availableTakeawayCredit > 0
+                    ? ` and knock ${formatGBP(availableTakeawayCredit)} off this order`
+                    : ""}
+                </span>
+              </label>
+            </>
+          ) : (
+            <p className="mt-2 text-sm text-muted">
+              Add a scooter or wheelchair to your basket to unlock the takeaway
+              credit.{" "}
+              <Link href="/trade-in" className="font-semibold text-primary underline">
+                How it works
+              </Link>
+            </p>
+          )}
+        </section>
+
+        <section className="rounded-2xl border border-border bg-white p-6">
+          <h2 className="text-lg font-bold text-primary">5. Notes</h2>
           <div className="mt-4">
             <Label htmlFor="notes">Order notes (optional)</Label>
             <Textarea
               id="notes"
               value={form.notes}
               onChange={(e) => update("notes", e.target.value)}
+              placeholder={
+                takeawayRequested
+                  ? "e.g. old scooter make/model, or access notes for collection"
+                  : undefined
+              }
             />
           </div>
         </section>
@@ -421,6 +495,12 @@ export function CheckoutForm() {
             <dt className="text-muted">Delivery</dt>
             <dd className="font-medium">Free</dd>
           </div>
+          {takeawayCredit > 0 ? (
+            <div className="flex justify-between text-accent-foreground">
+              <dt>Old scooter takeaway</dt>
+              <dd className="font-semibold">−{formatGBP(takeawayCredit)}</dd>
+            </div>
+          ) : null}
           <div className="flex justify-between border-t border-border pt-2 text-base">
             <dt className="font-bold text-primary">
               Total {form.isVatExempt && !batteryVatBlocked ? "(ex VAT)" : "(inc VAT)"}

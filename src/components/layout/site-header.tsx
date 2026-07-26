@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, Phone, X } from "lucide-react";
+import { Menu, PhoneCall, X } from "lucide-react";
 import { CartButton } from "@/components/cart/cart-drawer";
 import { HeaderSearch } from "@/components/layout/header-search";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -71,14 +71,14 @@ export function SiteHeader() {
 
         <div className="hidden items-center gap-2 md:flex">
           <CartButton />
-          <a
-            href={SITE.phoneHref}
+          <Link
+            href="/contact?interest=callback#callback"
             className={cn(buttonVariants({ variant: "phone", size: "sm" }), "rounded-full")}
           >
-            <Phone className="h-4 w-4" aria-hidden />
-            <span className="hidden lg:inline">{SITE.phone}</span>
-            <span className="lg:hidden">Call</span>
-          </a>
+            <PhoneCall className="h-4 w-4" aria-hidden />
+            <span className="hidden lg:inline">Request a callback</span>
+            <span className="lg:hidden">Callback</span>
+          </Link>
           <Link href="/book-a-demo" className={buttonVariants({ size: "sm" })}>
             Book a Demo
           </Link>
@@ -99,7 +99,6 @@ export function SiteHeader() {
           </Button>
         </div>
 
-        {/* Below xl: menu (search + links) — cart stays in md cluster */}
         <Button
           type="button"
           variant="ghost"
@@ -141,18 +140,19 @@ export function SiteHeader() {
                 Book a Demo
               </Link>
               <Link
+                href="/contact?interest=callback#callback"
+                className="rounded-md px-3 py-3 text-sm font-semibold text-primary hover:bg-white/70"
+                onClick={() => setOpen(false)}
+              >
+                Request a callback
+              </Link>
+              <Link
                 href="/contact"
                 className="rounded-md px-3 py-3 text-sm font-semibold text-primary hover:bg-white/70"
                 onClick={() => setOpen(false)}
               >
                 Contact
               </Link>
-              <a
-                href={SITE.phoneHref}
-                className="rounded-md px-3 py-3 text-sm font-semibold text-primary hover:bg-white/70"
-              >
-                Call {SITE.phone}
-              </a>
             </nav>
           </div>
         </div>

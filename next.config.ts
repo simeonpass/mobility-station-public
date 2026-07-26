@@ -39,6 +39,12 @@ const nextConfig: NextConfig = {
       { source: "/about", destination: "/about-us", permanent: true },
       // Portfolio gallery merged into the blog hub.
       { source: "/our-work", destination: "/blog", permanent: true },
+      // Quiz removed — send people to the shop instead.
+      {
+        source: "/find-my-scooter",
+        destination: "/shop",
+        permanent: true,
+      },
       // Legacy hire URL → unified hire hub (short-term + Flex).
       {
         source: "/mobility-scooter-hire",

@@ -88,9 +88,12 @@ export function OrderConfirmationClient() {
               </p>
             ) : null}
             <p className="mt-4 text-sm text-muted">
-              We’ll email you a confirmation shortly. If you need anything, call{" "}
-              <a href="tel:08007723870" className="font-semibold text-primary">
-                0800 772 3870
+              We’ll email you a confirmation shortly. If you need anything,{" "}
+              <a
+                href="/contact?interest=callback#callback"
+                className="font-semibold text-primary underline"
+              >
+                request a callback
               </a>
               .
             </p>

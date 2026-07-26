@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
-import { SITE } from "@/lib/seo";
 
 export function CtaFooter({
   title = "Ready to try before you buy?",
@@ -22,16 +21,16 @@ export function CtaFooter({
           <Link href="/book-a-demo" className={buttonVariants({ size: "lg" })}>
             Book a Demo
           </Link>
-          <a
-            href={SITE.phoneHref}
+          <Link
+            href="/contact?interest=callback#callback"
             className={buttonVariants({
               variant: "outline",
               size: "lg",
               className: "bg-white/60",
             })}
           >
-            Call {SITE.phone}
-          </a>
+            Request a callback
+          </Link>
         </div>
       </div>
     </section>

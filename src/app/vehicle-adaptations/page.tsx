@@ -147,7 +147,7 @@ export default async function VehicleAdaptationsPage() {
   } catch (error) {
     console.error("Adaptations catalogue error:", error);
     errorMessage =
-      "We could not load adaptations right now. Please call 0800 772 3870.";
+      "We could not load adaptations right now. Please request a callback or try again shortly.";
   }
 
   const byCategory = new Map<string, typeof products>();

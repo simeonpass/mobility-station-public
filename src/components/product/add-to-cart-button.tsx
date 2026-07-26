@@ -117,10 +117,10 @@ export function StickyBuyBar({
           Add to cart
         </Button>
         <a
-          href="tel:08007723870"
+          href="/contact?interest=callback#callback"
           className="shrink-0 rounded-xl border border-primary px-3 py-2.5 text-sm font-semibold text-primary"
         >
-          Call
+          Callback
         </a>
       </div>
     </div>

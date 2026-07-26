@@ -139,6 +139,8 @@ export type CheckoutPayload = {
   vatExemptionDeclaration?: string;
   notes?: string;
   deliveryFee?: number;
+  /** Old scooter takeaway gesture — credit recalculated server-side. */
+  takeawayRequested?: boolean;
 };
 
 export const VAT_CONDITIONS = [

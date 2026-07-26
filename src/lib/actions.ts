@@ -27,6 +27,8 @@ export async function submitEnquiry(
 
   const payload = {
     ...parsed.data,
+    email: parsed.data.email?.trim() || "",
+    postcode: parsed.data.postcode?.trim() || "",
     source: "public-website",
     created_at: new Date().toISOString(),
   };
@@ -36,7 +38,7 @@ export async function submitEnquiry(
     if (!supabase) {
       return {
         success: false,
-        message: "Unable to submit right now. Please call 0800 772 3870.",
+        message: "Unable to submit right now. Please try again shortly.",
       };
     }
 
@@ -58,13 +60,13 @@ export async function submitEnquiry(
       console.error("Enquiry insert failed", error);
       return {
         success: false,
-        message: "Something went wrong. Please call 0800 772 3870.",
+        message: "Something went wrong. Please try again or use the contact form.",
       };
     }
   } else if (process.env.NODE_ENV === "production") {
     return {
       success: false,
-      message: "Enquiry service is not configured. Please call 0800 772 3870.",
+      message: "Enquiry service is not configured. Please try again shortly.",
     };
   } else {
     console.info("Enquiry (dev fallback):", payload);
@@ -76,6 +78,7 @@ export async function submitEnquiry(
     contact: "/contact?sent=1",
     hire: "/contact?sent=1",
     "trade-in": "/contact?sent=1",
+    callback: "/contact?sent=callback#callback",
   };
 
   redirect(thankYouPaths[payload.enquiry_type]);

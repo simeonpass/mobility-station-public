@@ -5,7 +5,7 @@ import { MotabilityLogo } from "@/components/product/motability-logo";
 import { CtaFooter } from "@/components/sections/cta-footer";
 import { buttonVariants } from "@/components/ui/button";
 import { getPublishedProducts, type ProductListItem } from "@/lib/products";
-import { createMetadata, jsonLdScript, SITE } from "@/lib/seo";
+import { createMetadata, jsonLdScript } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
 export const revalidate = 300;
@@ -107,15 +107,15 @@ export default async function MotabilityPage() {
               >
                 Book a free Motability demo
               </Link>
-              <a
-                href={SITE.phoneHref}
+              <Link
+                href="/contact?interest=callback#callback"
                 className={cn(
                   buttonVariants({ variant: "outline", size: "lg" }),
                   "rounded-xl",
                 )}
               >
-                Call {SITE.phone}
-              </a>
+                Request a callback
+              </Link>
             </div>
             <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm font-semibold text-primary/90">
               <li className="flex items-center gap-2">
@@ -242,10 +242,13 @@ export default async function MotabilityPage() {
             </>
           ) : (
             <p className="rounded-xl bg-soft px-4 py-6 text-sm text-muted">
-              Motability products will appear here when available. Call{" "}
-              <a href={SITE.phoneHref} className="font-semibold text-primary">
-                {SITE.phone}
-              </a>{" "}
+              Motability products will appear here when available.{" "}
+              <Link
+                href="/contact?interest=callback#callback"
+                className="font-semibold text-primary underline"
+              >
+                Request a callback
+              </Link>{" "}
               for advice.
             </p>
           )}

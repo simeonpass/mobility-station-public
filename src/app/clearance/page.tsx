@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ProductCard } from "@/components/ProductCard";
 import { CtaFooter } from "@/components/sections/cta-footer";
 import { Hero } from "@/components/sections/hero";
@@ -54,8 +55,14 @@ export default async function ClearancePage() {
             </div>
           ) : (
             <p className="text-muted">
-              No clearance items are listed right now. Check back soon or call
-              0800 772 3870.
+              No clearance items are listed right now. Check back soon or{" "}
+              <Link
+                href="/contact?interest=callback#callback"
+                className="font-semibold text-primary underline"
+              >
+                request a callback
+              </Link>
+              .
             </p>
           )}
         </div>

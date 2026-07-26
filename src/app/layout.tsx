@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     template: "%s | Mobility Station",
   },
   description:
-    "Free home demonstrations for scooters, wheelchairs and vehicle adaptations. Heathrow & Ferndown. Motability accredited. Call 0800 772 3870.",
+    "Free home demonstrations for scooters, wheelchairs and vehicle adaptations. Heathrow & Ferndown. Motability accredited.",
   alternates: {
     canonical: SITE.url,
   },

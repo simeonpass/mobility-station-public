@@ -99,7 +99,14 @@ export default async function AdaptationCategoryPage({ params }: Props) {
       <div className="container-site py-16">
         <h1 className="text-3xl font-extrabold text-primary">{title}</h1>
         <p className="mt-4 text-muted">
-          We could not load this category right now. Please call 0800 772 3870 or{" "}
+          We could not load this category right now. Please{" "}
+          <Link
+            href="/contact?interest=callback#callback"
+            className="font-semibold text-primary underline"
+          >
+            request a callback
+          </Link>{" "}
+          or{" "}
           <Link href="/contact" className="font-semibold text-primary underline">
             contact us
           </Link>

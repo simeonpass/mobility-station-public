@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
-import { createMetadata, SITE } from "@/lib/seo";
+import { createMetadata } from "@/lib/seo";
 
 export const metadata = createMetadata({
   title: "Thank You | Demo Booking Received",
@@ -18,10 +18,13 @@ export default function DemoThankYouPage() {
         to confirm timing with Heathrow or Ferndown.
       </p>
       <p className="mt-3 text-muted">
-        Need us sooner? Call{" "}
-        <a href={SITE.phoneHref} className="font-semibold text-primary">
-          {SITE.phone}
-        </a>
+        Need us sooner?{" "}
+        <Link
+          href="/contact?interest=callback#callback"
+          className="font-semibold text-primary underline"
+        >
+          Request a callback
+        </Link>
       </p>
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         <Link href="/" className={buttonVariants()}>

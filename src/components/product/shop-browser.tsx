@@ -244,7 +244,7 @@ export function ShopBrowser({
           Clearance
         </button>
         <Link
-          href="/find-my-scooter"
+          href="/contact?interest=callback#callback"
           className="rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold text-primary hover:border-primary"
         >
           Help me choose

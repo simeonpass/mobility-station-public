@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { CalendarCheck, MessageSquare, Wrench } from "lucide-react";
+import { CalendarCheck, MessageSquare, PhoneCall, Wrench } from "lucide-react";
+import { CallbackForm } from "@/components/forms/callback-form";
 import { EnquiryForm } from "@/components/forms/enquiry-form";
 import { Hero } from "@/components/sections/hero";
 import { BRANCHES } from "@/data/content";
@@ -8,7 +9,7 @@ import { createMetadata, jsonLdScript, SITE } from "@/lib/seo";
 export const metadata = createMetadata({
   title: "Contact Mobility Station",
   description:
-    "Contact Mobility Station for scooters, wheelchairs and vehicle adaptations. Call 0800 772 3870 or message Heathrow & Ferndown.",
+    "Contact Mobility Station for scooters, wheelchairs and vehicle adaptations. Request a callback, message the team, or visit Heathrow & Ferndown.",
   path: "/contact",
 });
 
@@ -20,14 +21,23 @@ const INTEREST_PRESETS: Record<string, string> = {
   wheelchair: "Wheelchair",
   motability: "Motability enquiry",
   service: "Service / repair",
-  "trade-in": "Trade-in valuation",
+  "trade-in": "Old scooter takeaway",
+  callback: "Request a callback",
+  hire: "Hire / Flex Hire",
 };
 
 const ROUTES = [
   {
+    icon: PhoneCall,
+    title: "Request a callback",
+    body: "Prefer us to ring you? Leave your number and a good time — we’ll call back.",
+    href: "#callback",
+    label: "Request a callback",
+  },
+  {
     icon: MessageSquare,
     title: "Send an enquiry",
-    body: "Questions, quotations and product advice — we reply by phone or email.",
+    body: "Questions, quotations and product advice — we reply by email or phone.",
     href: "#enquire",
     label: "Use the form below",
   },
@@ -53,8 +63,11 @@ export default async function ContactPage({
   searchParams: Promise<{ sent?: string; interest?: string }>;
 }) {
   const { sent, interest } = await searchParams;
+  const interestKey = interest?.toLowerCase() ?? "";
+  const isCallback =
+    interestKey === "callback" || sent === "callback";
   const presetInterest = interest
-    ? INTEREST_PRESETS[interest.toLowerCase()] ?? interest
+    ? INTEREST_PRESETS[interestKey] ?? interest
     : "General enquiry";
 
   const jsonLd = {
@@ -80,14 +93,16 @@ export default async function ContactPage({
       <Hero
         compact
         title="Contact us"
-        subtitle="Call us, message the team, or book a demonstration or service — whichever suits you best."
-        primaryHref="#enquire"
-        primaryLabel="Send a message"
+        subtitle="Request a callback, send a message, or book a demonstration or service — whichever suits you best."
+        primaryHref="#callback"
+        primaryLabel="Request a callback"
+        secondaryHref="#enquire"
+        secondaryLabel="Send a message"
       />
 
       <section className="py-12 md:py-14">
         <div className="container-site">
-          <ul className="grid gap-6 md:grid-cols-3">
+          <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {ROUTES.map(({ icon: Icon, title, body, href, label }) => (
               <li
                 key={title}
@@ -124,23 +139,57 @@ export default async function ContactPage({
         </div>
       </section>
 
-      <section id="enquire" className="scroll-mt-24 pb-16 md:pb-20">
+      <section
+        id="callback"
+        className="scroll-mt-24 border-y border-border bg-soft py-12 md:py-14"
+      >
         <div className="container-site grid gap-10 lg:grid-cols-[0.85fr_1.15fr]">
           <div>
             <h2 className="text-2xl font-extrabold text-primary">
-              Branches &amp; phone
+              We’ll call you back
             </h2>
-            <p className="mt-3 text-lg font-semibold text-primary">
+            <p className="mt-3 text-sm leading-relaxed text-foreground/85">
+              Leave your number and what you need help with. Our team will call
+              you at a time that suits you — no need to sit on hold.
+            </p>
+            <p className="mt-4 text-sm text-muted">
+              Freephone is also in the site header and footer if you prefer to
+              dial us:{" "}
               <a
                 href={SITE.phoneHref}
-                className="text-accent hover:text-accent-hover"
+                className="font-semibold text-primary underline underline-offset-2"
               >
                 {SITE.phone}
               </a>
+              .
             </p>
+          </div>
+          <div className="rounded-2xl border border-border bg-white p-6 md:p-8">
+            {sent === "callback" ? (
+              <p className="mb-6 rounded-md bg-soft px-4 py-3 text-sm font-medium text-primary">
+                Thanks — we’ve got your callback request and will ring you soon.
+              </p>
+            ) : null}
+            <CallbackForm
+              defaultTopic={
+                isCallback && presetInterest !== "Request a callback"
+                  ? presetInterest
+                  : ""
+              }
+            />
+          </div>
+        </div>
+      </section>
+
+      <section id="enquire" className="scroll-mt-24 pb-16 md:pb-20 pt-12 md:pt-14">
+        <div className="container-site grid gap-10 lg:grid-cols-[0.85fr_1.15fr]">
+          <div>
+            <h2 className="text-2xl font-extrabold text-primary">
+              Branches &amp; email
+            </h2>
             <a
               href={`mailto:${SITE.email}`}
-              className="mt-1 inline-block text-sm font-medium text-primary hover:text-primary-dark"
+              className="mt-3 inline-block text-sm font-medium text-primary hover:text-primary-dark"
             >
               {SITE.email}
             </a>
@@ -176,7 +225,7 @@ export default async function ContactPage({
           </div>
 
           <div className="rounded-2xl bg-soft p-6 md:p-8">
-            {sent ? (
+            {sent === "1" ? (
               <p className="mb-6 rounded-md bg-white px-4 py-3 text-sm font-medium text-primary">
                 Thanks — your message has been sent. We will reply shortly.
               </p>
@@ -184,7 +233,9 @@ export default async function ContactPage({
             <EnquiryForm
               enquiryType="contact"
               title="Send a message"
-              defaultInterest={presetInterest}
+              defaultInterest={
+                isCallback ? "General enquiry" : presetInterest
+              }
             />
           </div>
         </div>

@@ -9,7 +9,7 @@ import {
 import { CtaFooter } from "@/components/sections/cta-footer";
 import { Hero } from "@/components/sections/hero";
 import { VAT_DECLARATION } from "@/lib/cart";
-import { createMetadata, jsonLdScript, SITE } from "@/lib/seo";
+import { createMetadata, jsonLdScript } from "@/lib/seo";
 
 export const metadata = createMetadata({
   title: "VAT Relief on Mobility Products",
@@ -229,10 +229,13 @@ export default function VatReliefPage() {
             <Link href="/shop" className="font-semibold text-primary underline">
               scooters &amp; wheelchairs
             </Link>{" "}
-            or call{" "}
-            <a href={SITE.phoneHref} className="font-semibold text-primary">
-              {SITE.phone}
-            </a>
+            or{" "}
+            <Link
+              href="/contact?interest=callback#callback"
+              className="font-semibold text-primary underline"
+            >
+              request a callback
+            </Link>
             .
           </p>
         </div>

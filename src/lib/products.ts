@@ -662,6 +662,84 @@ export type HireProduct = {
   hire_min_days: number | null;
 };
 
+/** Layout-preview fleet when live hire stock isn't listed yet. */
+export const DUMMY_HIRE_PRODUCTS: HireProduct[] = [
+  {
+    id: "dummy-travel-scooter",
+    name: "Compact travel scooter",
+    slug: "dummy-travel-scooter",
+    image_url: "/images/products/placeholder-folding-scooter.svg",
+    category: "Folding Mobility Scooters",
+    hire_daily_rate: null,
+    hire_weekly_rate: null,
+    hire_monthly_rate: null,
+    hire_deposit: null,
+    hire_nationwide: false,
+    hire_courier_fee: null,
+    hire_min_days: null,
+  },
+  {
+    id: "dummy-mid-scooter",
+    name: "Mid-size mobility scooter",
+    slug: "dummy-mid-scooter",
+    image_url: "/images/products/placeholder-scooter.svg",
+    category: "Mid Size Scooters",
+    hire_daily_rate: null,
+    hire_weekly_rate: null,
+    hire_monthly_rate: null,
+    hire_deposit: null,
+    hire_nationwide: false,
+    hire_courier_fee: null,
+    hire_min_days: null,
+  },
+  {
+    id: "dummy-large-scooter",
+    name: "Large road scooter",
+    slug: "dummy-large-scooter",
+    image_url: "/images/products/placeholder-scooter.svg",
+    category: "Large Mobility Scooters",
+    hire_daily_rate: null,
+    hire_weekly_rate: null,
+    hire_monthly_rate: null,
+    hire_deposit: null,
+    hire_nationwide: false,
+    hire_courier_fee: null,
+    hire_min_days: null,
+  },
+  {
+    id: "dummy-manual-wheelchair",
+    name: "Manual wheelchair",
+    slug: "dummy-manual-wheelchair",
+    image_url: "/images/products/placeholder-wheelchair.svg",
+    category: "Manual Wheelchairs",
+    hire_daily_rate: null,
+    hire_weekly_rate: null,
+    hire_monthly_rate: null,
+    hire_deposit: null,
+    hire_nationwide: false,
+    hire_courier_fee: null,
+    hire_min_days: null,
+  },
+  {
+    id: "dummy-powered-wheelchair",
+    name: "Powered wheelchair",
+    slug: "dummy-powered-wheelchair",
+    image_url: "/images/products/placeholder-powerchair.svg",
+    category: "Powered Wheelchairs",
+    hire_daily_rate: null,
+    hire_weekly_rate: null,
+    hire_monthly_rate: null,
+    hire_deposit: null,
+    hire_nationwide: false,
+    hire_courier_fee: null,
+    hire_min_days: null,
+  },
+];
+
+export function isDummyHireProduct(product: Pick<HireProduct, "id">) {
+  return product.id.startsWith("dummy-");
+}
+
 export async function getHireProducts(): Promise<HireProduct[]> {
   const supabase = getClient();
   const { data, error } = await supabase
@@ -676,45 +754,16 @@ export async function getHireProducts(): Promise<HireProduct[]> {
     .neq("product_type", "archived")
     .order("name", { ascending: true });
 
-  if (error) throw error;
+  // Hire columns were removed from live stock until the Flex relaunch lands —
+  // treat missing schema / empty fleet as "use layout dummies".
+  if (error) {
+    console.error("Hire fleet query:", error.message);
+    return [];
+  }
   return (data ?? []).map((row) => ({
     ...(row as unknown as HireProduct),
     category: row.category ? String(row.category) : null,
     hire_nationwide: false, // Coverage-area hire only for this relaunch
-  }));
-}
-
-export type QuizProduct = ProductListItem & {
-  description: string | null;
-  specifications: Record<string, unknown> | null;
-};
-
-export async function getScooterQuizProducts(): Promise<QuizProduct[]> {
-  const supabase = getClient();
-  const { data, error } = await supabase
-    .from("stock_items")
-    .select(`${LIST_COLUMNS}, description, specifications`)
-    .eq("published_to_website", true)
-    .eq("website_visible", true)
-    .neq("product_type", "archived")
-    .neq("product_type", "vehicle_adaptation")
-    .not("slug", "is", null)
-    .in("category", [
-      "Mobility Scooters",
-      "Small Scooters",
-      "Mid Size Scooters",
-      "Large Mobility Scooters",
-      "Folding Mobility Scooters",
-    ])
-    .order("is_featured", { ascending: false })
-    .limit(200);
-
-  if (error) throw error;
-  return (data ?? []).map((row) => ({
-    ...mapListItem(row as Record<string, unknown>),
-    description: (row.description as string | null) ?? null,
-    specifications:
-      (row.specifications as Record<string, unknown> | null) ?? null,
   }));
 }
 

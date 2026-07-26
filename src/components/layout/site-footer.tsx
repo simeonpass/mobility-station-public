@@ -26,8 +26,7 @@ const columns = [
       { href: "/hire", label: "Hire & Flex Hire" },
       { href: "/motability", label: "Motability" },
       { href: "/clearance", label: "Clearance" },
-      { href: "/find-my-scooter", label: "Find My Scooter" },
-      { href: "/trade-in", label: "Trade-In" },
+      { href: "/trade-in", label: "Old scooter takeaway" },
     ],
   },
   {

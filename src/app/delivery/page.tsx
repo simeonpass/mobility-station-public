@@ -167,12 +167,12 @@ export default function DeliveryPage() {
           <div className="rounded-xl bg-soft p-6 text-center">
             <Phone className="mx-auto mb-2 h-6 w-6 text-primary" />
             <p className="font-semibold text-primary">Questions about delivery?</p>
-            <a
-              href="tel:08007723870"
+            <Link
+              href="/contact?interest=callback#callback"
               className="mt-1 inline-block text-lg font-bold text-accent-foreground hover:underline"
             >
-              0800 772 3870
-            </a>
+              Request a callback
+            </Link>
           </div>
         </div>
       </section>

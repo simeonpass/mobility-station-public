@@ -39,6 +39,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
+      url: `${SITE.url}/hire/terms`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.4,
+    },
+    {
       url: `${SITE.url}/blog`,
       lastModified: now,
       changeFrequency: "weekly",
@@ -61,12 +67,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.7,
-    },
-    {
-      url: `${SITE.url}/find-my-scooter`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.6,
     },
     {
       url: `${SITE.url}/lightweight-folding-mobility`,

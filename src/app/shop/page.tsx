@@ -8,9 +8,8 @@ const QUICK_LINKS = [
   { href: "/hire", label: "Hire & Flex Hire" },
   { href: "/motability", label: "Motability" },
   { href: "/clearance", label: "Clearance & ex-demo" },
-  { href: "/find-my-scooter", label: "Find my scooter" },
   { href: "/lightweight-folding-mobility", label: "Lightweight & folding" },
-  { href: "/trade-in", label: "Trade-in" },
+  { href: "/trade-in", label: "Old scooter takeaway" },
   { href: "/delivery", label: "Delivery" },
 ];
 
@@ -41,7 +40,7 @@ export default async function ShopPage({ searchParams }: Props) {
   } catch (error) {
     console.error("Shop catalog error:", error);
     errorMessage =
-      "We could not load the product catalogue right now. Please try again shortly or call 0800 772 3870.";
+      "We could not load the product catalogue right now. Please try again shortly or request a callback.";
   }
 
   return (

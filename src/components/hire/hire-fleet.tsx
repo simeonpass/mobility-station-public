@@ -12,9 +12,12 @@ import { formatGBP, type HireProduct } from "@/lib/products";
 export function HireFleet({
   products,
   initialMode = "short",
+  preview = false,
 }: {
   products: HireProduct[];
   initialMode?: HireMode;
+  /** True when showing sample fleet for layout review. */
+  preview?: boolean;
 }) {
   const [mode, setMode] = useState<HireMode>(initialMode);
   const [selected, setSelected] = useState<HireProduct | null>(
@@ -33,9 +36,12 @@ export function HireFleet({
   if (!products.length) {
     return (
       <p className="rounded-xl bg-soft px-4 py-6 text-sm text-muted">
-        The hire fleet is being prepared. Call{" "}
-        <a href="tel:08007723870" className="font-semibold text-primary">
-          0800 772 3870
+        The hire fleet is being prepared.{" "}
+        <a
+          href="/contact?interest=callback#callback"
+          className="font-semibold text-primary underline"
+        >
+          Request a callback
         </a>{" "}
         and we&apos;ll help you book, or check back once units are listed.
       </p>
@@ -44,6 +50,13 @@ export function HireFleet({
 
   return (
     <div>
+      {preview ? (
+        <p className="mb-6 rounded-xl border border-dashed border-border bg-soft px-4 py-3 text-sm text-muted">
+          Sample fleet for layout — replace these with real hire stock when
+          you&apos;re ready. Pricing follows the published rate card by tier.
+        </p>
+      ) : null}
+
       <div className="mb-8 flex flex-wrap gap-2">
         {(
           [
@@ -120,6 +133,7 @@ export function HireFleet({
               key={`${selected.id}-${mode}`}
               product={selected}
               mode={mode}
+              preview={preview}
             />
           ) : null}
         </div>

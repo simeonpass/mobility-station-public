@@ -51,19 +51,12 @@ export default function LightweightPage() {
           <p className="mt-6 text-sm text-muted">
             Not sure which is right?{" "}
             <Link
-              href="/find-my-scooter"
+              href="/contact?interest=callback#callback"
               className="font-semibold text-primary underline underline-offset-2"
             >
-              Answer three questions
+              Request a callback
             </Link>{" "}
-            or{" "}
-            <Link
-              href="/contact"
-              className="font-semibold text-primary underline underline-offset-2"
-            >
-              ask our team
-            </Link>
-            .
+            and we&apos;ll help you choose.
           </p>
         </div>
       </section>

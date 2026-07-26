@@ -4,7 +4,7 @@
  * confirmation email so wording can never drift between them.
  */
 
-export const HIRE_TERMS_VERSION = "2026-07-v3";
+export const HIRE_TERMS_VERSION = "2026-07-v4";
 
 export interface HireTerm {
   heading: string;
@@ -26,7 +26,7 @@ export const HIRE_TERMS: HireTerm[] = [
   },
   {
     heading: "4. Flex zone, delivery & servicing",
-    body: "Flex Hire is only available inside our Flex zone: within 10 miles of our Heathrow branch or 20 miles of our Ferndown branch. Inside that zone, delivery, collection and genuine fault / servicing call-outs are included in the monthly fee. Punctures are not included (unless the unit has solid / puncture-proof tyres fitted). No-fault call-outs and damage from misuse may be charged. Short-term local delivery and collection are charged at our published call-out band for both legs unless you collect and return at a branch.",
+    body: "Flex Hire is only available inside our Flex zone: within 10 miles of our Heathrow branch or 20 miles of our Ferndown branch. Inside that zone, delivery, collection and genuine fault / servicing call-outs are included in the monthly fee. Damage from misuse and no-fault call-outs may be charged. Short-term local delivery and collection are charged at our published call-out band for both legs unless you collect and return at a branch.",
   },
   {
     heading: "5. Your responsibilities",

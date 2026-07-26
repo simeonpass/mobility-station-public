@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
-import { SITE } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
 type HeroProps = {
@@ -18,8 +17,8 @@ export function Hero({
   subtitle,
   primaryHref = "/book-a-demo",
   primaryLabel = "Book a Demo",
-  secondaryHref = SITE.phoneHref,
-  secondaryLabel = `Call ${SITE.phone}`,
+  secondaryHref = "/contact?interest=callback#callback",
+  secondaryLabel = "Request a callback",
   compact = false,
 }: HeroProps) {
   return (
