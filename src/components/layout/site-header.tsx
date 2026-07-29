@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Menu, PhoneCall, X } from "lucide-react";
+import { MapPin, Menu, Phone, PhoneCall, X } from "lucide-react";
 import { CartButton } from "@/components/cart/cart-drawer";
 import { HeaderSearch } from "@/components/layout/header-search";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -19,6 +19,12 @@ const nav = [
   { href: "/locations", label: "Locations" },
   { href: "/blog", label: "Recent Work" },
 ];
+
+function isActivePath(pathname: string, href: string) {
+  return (
+    pathname === href || (href !== "/" && pathname.startsWith(`${href}/`))
+  );
+}
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
@@ -38,20 +44,24 @@ export function SiteHeader() {
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-soft/95 backdrop-blur">
+    <header className="sticky top-0 z-50 bg-white shadow-[0_8px_28px_-12px_rgba(0,63,67,0.28)]">
       {/* Utility bar */}
-      <div className="bg-primary text-primary-foreground">
+      <div className="relative bg-primary text-primary-foreground">
         <div className="container-site flex h-8 items-center justify-between gap-3 text-xs font-medium">
-          <p className="min-w-0 truncate">
+          <p className="flex min-w-0 items-center gap-1.5 truncate">
+            <MapPin
+              className="hidden h-3.5 w-3.5 shrink-0 text-accent sm:block"
+              aria-hidden
+            />
             <span className="sm:hidden">Heathrow &amp; Ferndown</span>
             <span className="hidden sm:inline">
               Heathrow &amp; Ferndown Branches
-              <span className="mx-1.5 text-primary-foreground/40" aria-hidden>
-                |
+              <span className="mx-1.5 text-primary-foreground/35" aria-hidden>
+                ·
               </span>
               <Link
                 href="/book-a-demo#demo-terms"
-                className="hover:text-accent-on-dark"
+                className="text-accent-on-dark transition-colors hover:text-accent-on-dark-hover"
               >
                 Free home demonstrations*
               </Link>
@@ -59,94 +69,117 @@ export function SiteHeader() {
           </p>
           <a
             href={SITE.phoneHref}
-            className="shrink-0 tabular-nums hover:text-accent-on-dark"
+            className="inline-flex shrink-0 items-center gap-1.5 tabular-nums transition-colors hover:text-accent-on-dark"
           >
+            <Phone className="hidden h-3.5 w-3.5 sm:block" aria-hidden />
             {SITE.phone}
           </a>
         </div>
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-accent/80 to-transparent"
+          aria-hidden
+        />
       </div>
 
       {/* Brand row: logo · search · actions */}
-      <div className="container-site flex h-16 items-center gap-3 md:h-[4.25rem] md:gap-5">
-        <Link href="/" className="flex shrink-0 items-center" onClick={() => setOpen(false)}>
-          <Image
-            src="/brand/logo-header-v6.png"
-            alt="Mobility Station"
-            width={800}
-            height={300}
-            priority
-            className="h-10 w-auto md:h-11"
-          />
-        </Link>
-
-        <HeaderSearch className="mx-auto hidden min-w-0 max-w-xl flex-1 md:block" />
-
-        <div className="ml-auto flex shrink-0 items-center gap-2">
-          <div className="hidden items-center gap-2 sm:flex">
-            <Link
-              href="/contact?interest=callback#callback"
-              className={cn(
-                buttonVariants({ variant: "phone", size: "sm" }),
-                "rounded-full",
-              )}
-            >
-              <PhoneCall className="h-4 w-4" aria-hidden />
-              <span className="hidden lg:inline">Request a callback</span>
-              <span className="lg:hidden">Callback</span>
-            </Link>
-            <Link
-              href="/book-a-demo"
-              className={cn(
-                buttonVariants({ size: "sm" }),
-                "hidden rounded-full sm:inline-flex",
-              )}
-            >
-              <span className="lg:hidden">Demo</span>
-              <span className="hidden lg:inline">Book a Demo</span>
-            </Link>
-          </div>
-          <CartButton />
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="lg:hidden"
-            aria-expanded={open}
-            aria-controls="mobile-nav"
-            aria-label={open ? "Close menu" : "Open menu"}
-            onClick={() => setOpen((v) => !v)}
+      <div className="border-b border-border/60 bg-white">
+        <div className="container-site flex h-16 items-center gap-3 md:h-[4.5rem] md:gap-6">
+          <Link
+            href="/"
+            className="flex shrink-0 items-center"
+            onClick={() => setOpen(false)}
           >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </Button>
+            <Image
+              src="/brand/logo-header-v6.png"
+              alt="Mobility Station"
+              width={800}
+              height={300}
+              priority
+              className="h-10 w-auto md:h-11"
+            />
+          </Link>
+
+          <HeaderSearch className="mx-auto hidden min-w-0 max-w-xl flex-1 md:block" />
+
+          <div className="ml-auto flex shrink-0 items-center gap-2.5">
+            <div className="hidden items-center gap-2 sm:flex">
+              <Link
+                href="/contact?interest=callback#callback"
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "sm" }),
+                  "rounded-full border-primary/20 bg-white text-primary hover:border-primary hover:bg-primary-soft",
+                )}
+              >
+                <PhoneCall className="h-4 w-4" aria-hidden />
+                <span className="hidden lg:inline">Request a callback</span>
+                <span className="lg:hidden">Callback</span>
+              </Link>
+              <Link
+                href="/book-a-demo"
+                className={cn(
+                  buttonVariants({ size: "sm" }),
+                  "hidden rounded-full shadow-[0_6px_16px_-8px_rgba(140,214,63,0.9)] sm:inline-flex",
+                )}
+              >
+                <span className="lg:hidden">Demo</span>
+                <span className="hidden lg:inline">Book a Demo</span>
+              </Link>
+            </div>
+            <CartButton />
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="lg:hidden"
+              aria-expanded={open}
+              aria-controls="mobile-nav"
+              aria-label={open ? "Close menu" : "Open menu"}
+              onClick={() => setOpen((v) => !v)}
+            >
+              {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
+          </div>
         </div>
       </div>
 
-      {/* Desktop category nav — own row so it never collides with search */}
+      {/* Desktop category nav — deep teal strip */}
       <nav
-        className="hidden border-t border-border/70 lg:block"
+        className="hidden bg-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] lg:block"
         aria-label="Primary"
       >
-        <div className="container-site flex items-stretch justify-between gap-1">
-          {nav.map((item) => {
-            const active =
-              pathname === item.href ||
-              (item.href !== "/" && pathname.startsWith(`${item.href}/`));
+        <div className="container-site flex items-stretch">
+          {nav.map((item, index) => {
+            const active = isActivePath(pathname, item.href);
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "relative flex-1 whitespace-nowrap px-2 py-3 text-center text-sm font-semibold transition-colors",
+                  "group relative flex flex-1 items-center justify-center px-2 py-3.5 text-center text-[13px] font-semibold tracking-wide transition-colors",
+                  index > 0 && "border-l border-white/10",
                   active
-                    ? "text-primary after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:rounded-full after:bg-accent"
-                    : "text-primary/80 hover:bg-white/50 hover:text-primary",
+                    ? "bg-white/10 text-white"
+                    : "text-white/80 hover:bg-white/10 hover:text-white",
                 )}
               >
-                {item.label}
+                <span className="relative">
+                  {item.label}
+                  <span
+                    className={cn(
+                      "absolute -bottom-2 left-1/2 h-0.5 w-0 -translate-x-1/2 rounded-full bg-accent transition-all duration-200",
+                      active ? "w-full" : "group-hover:w-3/4",
+                    )}
+                    aria-hidden
+                  />
+                </span>
               </Link>
             );
           })}
         </div>
+        <div
+          className="h-0.5 bg-gradient-to-r from-accent/40 via-accent to-accent/40"
+          aria-hidden
+        />
       </nav>
 
       {/* Mobile / tablet drawer */}
@@ -161,19 +194,17 @@ export function SiteHeader() {
               className="w-full md:hidden"
               onSubmitExtra={() => setOpen(false)}
             />
-            <nav className="flex flex-col" aria-label="Mobile">
+            <nav className="flex flex-col gap-0.5" aria-label="Mobile">
               {nav.map((item) => {
-                const active =
-                  pathname === item.href ||
-                  (item.href !== "/" && pathname.startsWith(`${item.href}/`));
+                const active = isActivePath(pathname, item.href);
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "rounded-lg px-3 py-3 text-sm font-semibold",
+                      "rounded-xl px-3.5 py-3 text-sm font-semibold transition-colors",
                       active
-                        ? "bg-primary-soft text-primary"
+                        ? "bg-primary text-primary-foreground"
                         : "text-primary hover:bg-soft",
                     )}
                     onClick={() => setOpen(false)}
@@ -186,7 +217,10 @@ export function SiteHeader() {
             <div className="grid gap-2 border-t border-border pt-4 sm:hidden">
               <Link
                 href="/contact?interest=callback#callback"
-                className={cn(buttonVariants({ variant: "phone" }), "w-full")}
+                className={cn(
+                  buttonVariants({ variant: "outline" }),
+                  "w-full rounded-full",
+                )}
                 onClick={() => setOpen(false)}
               >
                 <PhoneCall className="h-4 w-4" aria-hidden />
@@ -194,7 +228,7 @@ export function SiteHeader() {
               </Link>
               <Link
                 href="/book-a-demo"
-                className={cn(buttonVariants(), "w-full")}
+                className={cn(buttonVariants(), "w-full rounded-full")}
                 onClick={() => setOpen(false)}
               >
                 Book a Demo
