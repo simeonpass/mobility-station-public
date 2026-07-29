@@ -43,10 +43,10 @@ export function HeaderSearch({
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search products & adaptations"
         aria-label="Search products and vehicle adaptations"
-        className={`w-full rounded-full border border-border bg-white text-foreground placeholder:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+        className={`w-full rounded-full border border-border bg-white text-foreground shadow-sm placeholder:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
           compact
-            ? "h-9 py-1.5 pl-8 pr-3 text-sm"
-            : "h-10 py-2 pl-9 pr-3 text-sm"
+            ? "h-10 py-2 pl-8 pr-3 text-sm"
+            : "h-10 py-2 pl-9 pr-4 text-sm"
         }`}
       />
     </form>
