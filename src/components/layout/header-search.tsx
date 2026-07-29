@@ -33,7 +33,7 @@ export function HeaderSearch({
     >
       <Search
         className={`pointer-events-none absolute top-1/2 -translate-y-1/2 text-muted ${
-          compact ? "left-3 h-3.5 w-3.5" : "left-4 h-4 w-4"
+          compact ? "left-3 h-3.5 w-3.5" : "left-3.5 h-4 w-4"
         }`}
         aria-hidden
       />
@@ -46,7 +46,7 @@ export function HeaderSearch({
         className={`w-full rounded-full border border-[#d7e0dd] bg-white text-foreground placeholder:text-muted/80 transition-[border-color,box-shadow] focus-visible:border-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 ${
           compact
             ? "h-10 py-2 pl-9 pr-3 text-sm"
-            : "h-12 py-2.5 pl-11 pr-5 text-sm"
+            : "h-10 py-2 pl-10 pr-4 text-sm"
         }`}
       />
     </form>
