@@ -164,16 +164,15 @@ export function CartButton() {
   return (
     <Button
       type="button"
-      variant="outline"
-      size="sm"
-      className="relative rounded-full"
+      variant="ghost"
+      size="icon"
+      className="relative rounded-full text-primary hover:bg-soft"
       aria-label={`Open cart${itemCount ? `, ${itemCount} items` : ""}`}
       onClick={() => setIsOpen(true)}
     >
-      <ShoppingBag className="h-4 w-4" aria-hidden />
-      <span className="hidden sm:inline">Cart</span>
+      <ShoppingBag className="h-5 w-5" aria-hidden />
       {itemCount > 0 ? (
-        <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground">
+        <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold leading-none text-accent-foreground">
           {itemCount}
         </span>
       ) : null}
