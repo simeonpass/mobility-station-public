@@ -63,13 +63,20 @@ export function ServiceAreaChecker() {
       ) : null}
       {result?.kind === "out-of-range" ? (
         <p className="mt-3 rounded-xl bg-warning/10 px-4 py-3 text-sm text-primary">
-          Outside local rings ({result.miles.toFixed(0)} mi from{" "}
-          {result.workshop.name}). Free UK pallet delivery still applies for
-          shop orders — see{" "}
+          Outside our local service area ({result.miles.toFixed(0)} mi from{" "}
+          {result.workshop.name}). Equipment over 30 kg stays local — lightweight
+          items under 30 kg can still ship UK-wide. See{" "}
           <Link href="/delivery" className="font-semibold underline">
             delivery
           </Link>
-          .
+          , or{" "}
+          <Link
+            href="/contact?interest=callback#callback"
+            className="font-semibold underline"
+          >
+            request a callback
+          </Link>{" "}
+          if you&apos;re near the boundary.
         </p>
       ) : null}
       {result?.kind === "not-found" ? (

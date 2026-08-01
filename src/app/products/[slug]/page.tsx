@@ -222,7 +222,7 @@ export default async function ProductPage({ params }: Props) {
           priceWas={price.was}
           stockLabel={
             adaptation
-              ? "Available to order — quotation required"
+              ? "Quotation required"
               : [
                   stock.label,
                   product.pre_order_enabled && product.pre_order_message

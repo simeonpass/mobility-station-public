@@ -4,9 +4,17 @@ import { buttonVariants } from "@/components/ui/button";
 export function CtaFooter({
   title = "Ready to try before you buy?",
   subtitle = "Tell us what you need and we will bring it to you — or visit our Heathrow or Ferndown branch.",
+  primaryHref = "/book-a-demo",
+  primaryLabel = "Book a Demo",
+  secondaryHref = "/contact?interest=callback#callback",
+  secondaryLabel = "Request a callback",
 }: {
   title?: string;
   subtitle?: string;
+  primaryHref?: string;
+  primaryLabel?: string;
+  secondaryHref?: string;
+  secondaryLabel?: string;
 }) {
   return (
     <section className="border-y border-border bg-primary-soft py-14 text-foreground md:py-16">
@@ -18,18 +26,18 @@ export function CtaFooter({
           <p className="mt-3 text-muted">{subtitle}</p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <Link href="/book-a-demo" className={buttonVariants({ size: "lg" })}>
-            Book a Demo
+          <Link href={primaryHref} className={buttonVariants({ size: "lg" })}>
+            {primaryLabel}
           </Link>
           <Link
-            href="/contact?interest=callback#callback"
+            href={secondaryHref}
             className={buttonVariants({
               variant: "outline",
               size: "lg",
               className: "bg-white/60",
             })}
           >
-            Request a callback
+            {secondaryLabel}
           </Link>
         </div>
       </div>

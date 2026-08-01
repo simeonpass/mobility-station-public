@@ -20,11 +20,11 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: {
-    default: "Mobility Station | Free Home Demonstrations",
+    default: "Mobility Station | Greater London & the South",
     template: "%s | Mobility Station",
   },
   description:
-    "Free home demonstrations for scooters, wheelchairs and vehicle adaptations. Heathrow & Ferndown. Motability accredited.",
+    "Vehicle adaptations, scooters and wheelchairs from Heathrow and Ferndown. Motability & private. Local service across Greater London and the South / South West.",
   alternates: {
     canonical: SITE.url,
   },
@@ -32,9 +32,9 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_GB",
     siteName: "Mobility Station",
-    title: "Mobility Station | Free Home Demonstrations",
+    title: "Mobility Station | Greater London & the South",
     description:
-      "We come to you with scooters, wheelchairs and vehicle adaptations. Heathrow & Ferndown branches.",
+      "Scooters, wheelchairs and vehicle adaptations — local demos, delivery and fitting from Heathrow and Ferndown.",
   },
 };
 

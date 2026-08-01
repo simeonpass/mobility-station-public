@@ -1,7 +1,7 @@
-/** Weight threshold in kg above which items require local or pallet delivery */
+/** Weight threshold in kg above which items need in-person delivery / setup */
 export const HEAVY_ITEM_THRESHOLD_KG = 30;
 
-/** Items below this weight are classed as 'small' and ship via standard courier */
+/** Items below this weight are classed as 'small' (hand-carry / light van) */
 export const SMALL_ITEM_THRESHOLD_KG = 10;
 
 export const SMALL_ITEM_DELIVERY_COST = 0;
@@ -34,6 +34,7 @@ export function cartIsAllSmallItems(
   return items.every((i) => isSmallItem(i.product.weight));
 }
 
+/** Local delivery / demo rings — Heathrow & Ferndown only (no nationwide shipping). */
 export const BRANCH_LOCATIONS = [
   {
     name: "Heathrow (West Drayton)",
@@ -72,7 +73,7 @@ function haversineDistanceMiles(
 
 export type DeliveryCheckResult =
   | { status: "local"; branch: string; distanceMiles: number }
-  | { status: "pallet" }
+  | { status: "out_of_area" }
   | { status: "error"; message: string }
   | { status: "loading" };
 
@@ -126,7 +127,7 @@ export async function checkDeliveryZone(
         distanceMiles: Math.round(coveringBranch.dist),
       };
     }
-    return { status: "pallet" };
+    return { status: "out_of_area" };
   } catch {
     return {
       status: "error",

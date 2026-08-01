@@ -155,13 +155,13 @@ export default async function AdaptationCategoryPage({ params }: Props) {
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <Link
-              href="/contact?interest=adaptation"
+              href={`/quote?interest=adaptation&category=${encodeURIComponent(title)}`}
               className="rounded-xl bg-accent px-5 py-3 text-center font-semibold text-accent-foreground hover:bg-accent-hover"
             >
               Request a quotation
             </Link>
             <Link
-              href="/book-a-demo?type=adaptation"
+              href={`/book-a-demo?type=adaptation&interest=${encodeURIComponent(title)}`}
               className="rounded-xl border border-primary px-5 py-3 text-center font-semibold text-primary hover:bg-primary hover:text-primary-foreground"
             >
               Book a home demo
@@ -210,6 +210,8 @@ export default async function AdaptationCategoryPage({ params }: Props) {
       <CtaFooter
         title={`Get a quote for ${title.toLowerCase()}`}
         subtitle="We’ll check your vehicle, confirm Motability options if relevant, and arrange fitting."
+        primaryHref={`/quote?interest=adaptation&category=${encodeURIComponent(title)}`}
+        primaryLabel="Request a quotation"
       />
     </>
   );

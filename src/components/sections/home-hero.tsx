@@ -1,154 +1,150 @@
+"use client";
+
 import Link from "next/link";
-import {
-  Accessibility,
-  ArrowRight,
-  BadgeCheck,
-  CarFront,
-  Home,
-  MapPinned,
-  Wrench,
-} from "lucide-react";
-import {
-  ImageCollage,
-  type CollageTile,
-} from "@/components/sections/image-collage";
-import { buttonVariants } from "@/components/ui/button";
+import { useEffect, useRef } from "react";
+import { ArrowRight } from "lucide-react";
+import { writeBusinessLane, type BusinessLane } from "@/lib/business-lane";
 import { cn } from "@/lib/utils";
 
-const FEATURES = [
+const PATHS: Array<{
+  lane: BusinessLane;
+  href: string;
+  title: string;
+  detail: string;
+  video: string;
+  poster: string;
+  accent: "teal" | "lime";
+}> = [
   {
+    lane: "adaptations",
     href: "/vehicle-adaptations",
-    icon: CarFront,
     title: "Vehicle adaptations",
-    description: "Hand controls, access fittings and safer, easier driving.",
+    detail: "Quotation · supplied & fitted · Motability cars",
+    video: "/images/home/hero-adaptations-hand-controls.mp4",
+    poster: "/images/hero-options/05-hand-controls.png",
+    accent: "teal",
   },
   {
+    lane: "mobility",
     href: "/shop",
-    icon: Accessibility,
     title: "Scooters & wheelchairs",
-    description: "Powerchairs, scooters and daily living aids ready to try.",
-  },
-  {
-    href: "/book-a-service",
-    icon: Wrench,
-    title: "Servicing & support",
-    description: "Reliable aftercare from our Heathrow and Ferndown teams.",
-  },
-] as const;
-
-const TRUST = [
-  { icon: BadgeCheck, label: "Motability accredited" },
-  { icon: Home, label: "Home visits available" },
-  { icon: MapPinned, label: "Heathrow & Ferndown" },
-  { icon: Wrench, label: "Expert support" },
-] as const;
-
-/** Jigsaw tiles: large service shot + four supporting scenes */
-const HOME_TILES: CollageTile[] = [
-  {
-    src: "/images/hero-options/06-customer-handover.png",
-    alt: "Mobility Station adviser with a customer in an adapted car",
-    object: "object-[50%_35%]",
-  },
-  {
-    src: "/images/hero-options/05-hand-controls.png",
-    alt: "Steering knob and hand controls fitted in a car",
-    object: "object-center",
-  },
-  {
-    src: "/images/hero-options/03-scooter-handover.png",
-    alt: "Home demonstration of a mobility scooter",
-    object: "object-[55%_40%]",
-  },
-  {
-    src: "/images/hero-options/02-wav-powerchair.png",
-    alt: "Wheelchair accessible vehicle with ramp and powerchair",
-    object: "object-[42%_45%]",
-  },
-  {
-    src: "/images/hero-options/07-swivel-seat.png",
-    alt: "Vehicle access adaptation with wheelchair transfer",
-    object: "object-[45%_40%]",
+    detail: "Home demos · Motability prices · shop online",
+    video: "/images/home/hero-mobility.mp4",
+    poster: "/images/hero-options/10-workshop-overview.png",
+    accent: "lime",
   },
 ];
 
+function HeroVideo({
+  src,
+  poster,
+}: {
+  src: string;
+  poster: string;
+}) {
+  const ref = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.load();
+    const play = el.play();
+    if (play) {
+      play.catch(() => {
+        // Autoplay can be blocked; muted + playsInline usually works.
+      });
+    }
+  }, [src]);
+
+  return (
+    <video
+      key={src}
+      ref={ref}
+      className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="auto"
+      poster={poster}
+      aria-hidden
+    >
+      <source src={src} type="video/mp4" />
+    </video>
+  );
+}
+
 export function HomeHero() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-soft via-white to-primary-soft">
-      <div
-        className="pointer-events-none absolute -left-24 top-24 h-72 w-72 rounded-full bg-accent/15 blur-3xl"
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute -right-16 bottom-10 h-80 w-80 rounded-full bg-primary/10 blur-3xl"
-        aria-hidden
-      />
-
-      <div className="container-site relative grid items-center gap-10 py-12 md:gap-12 md:py-16 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-14 lg:py-20">
-        <div className="animate-[fadeRise_700ms_ease-out]">
-          <h1 className="text-balance text-4xl font-extrabold tracking-tight text-primary md:text-5xl lg:text-[3.25rem] lg:leading-[1.08]">
-            Mobility solutions that{" "}
-            <span className="text-accent">fit your life.</span>
-          </h1>
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-muted md:text-lg">
-            Expert advice, high-quality mobility products and professional
-            vehicle adaptations — designed around you, from Heathrow &amp;
-            Ferndown.
-          </p>
-
-          <ul className="mt-8 space-y-4">
-            {FEATURES.map(({ href, icon: Icon, title, description }) => (
-              <li key={href}>
-                <Link
-                  href={href}
-                  className="group flex items-start gap-3 rounded-xl p-1 transition-colors hover:bg-white/70"
-                >
-                  <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent/15 text-primary">
-                    <Icon className="h-5 w-5" aria-hidden />
-                  </span>
-                  <span>
-                    <span className="block font-bold text-primary group-hover:text-primary-dark">
-                      {title}
-                    </span>
-                    <span className="mt-0.5 block text-sm text-muted">
-                      {description}
-                    </span>
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-
-          <div className="mt-8">
-            <Link
-              href="#what-we-do"
-              className={cn(
-                buttonVariants({ variant: "primary", size: "lg" }),
-                "rounded-xl shadow-sm",
-              )}
-            >
-              Explore our services
-              <ArrowRight className="h-4 w-4" aria-hidden />
-            </Link>
-          </div>
-
-          <ul className="mt-10 grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4">
-            {TRUST.map(({ icon: Icon, label }) => (
-              <li
-                key={label}
-                className="flex items-center gap-2 text-xs font-semibold text-primary/85"
-              >
-                <Icon className="h-4 w-4 shrink-0 text-accent" aria-hidden />
-                <span>{label}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="animate-[fadeRise_900ms_ease-out]">
-          <ImageCollage tiles={HOME_TILES} priority />
-        </div>
+    <section className="bg-white">
+      <div className="container-site max-w-4xl py-12 text-center md:py-16 lg:py-20">
+        <p className="text-sm font-semibold tracking-wide text-primary/65">
+          Motability accredited · Heathrow &amp; Ferndown
+        </p>
+        <h1 className="mt-4 text-balance text-4xl font-extrabold tracking-tight text-primary md:text-5xl lg:text-[3.4rem] lg:leading-[1.08]">
+          Help with your car — or getting around
+        </h1>
+        <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-muted md:text-lg">
+          Two clear sides of the business from the same workshops: vehicle
+          adaptations, or scooters &amp; wheelchairs. Pick the one that matches
+          what you need.
+        </p>
       </div>
+
+      <div className="grid border-y border-border md:grid-cols-2">
+        {PATHS.map((path) => (
+          <Link
+            key={path.lane}
+            href={path.href}
+            onClick={() => writeBusinessLane(path.lane)}
+            className={cn(
+              "group relative flex min-h-[22rem] flex-col overflow-hidden sm:min-h-[26rem] md:min-h-[32rem] lg:min-h-[36rem]",
+              path.accent === "lime" && "md:border-l md:border-border",
+            )}
+          >
+            <div className="relative min-h-0 flex-1 bg-soft">
+              <HeroVideo src={path.video} poster={path.poster} />
+            </div>
+
+            <div className="relative z-10 border-t border-border bg-white px-6 py-6 sm:px-8 sm:py-7">
+              <span
+                className={cn(
+                  "mb-3 block h-1 w-10",
+                  path.accent === "lime" ? "bg-accent" : "bg-primary",
+                )}
+                aria-hidden
+              />
+              <span className="flex items-end justify-between gap-4">
+                <span>
+                  <span className="block text-xl font-extrabold tracking-tight text-primary group-hover:text-primary-dark sm:text-2xl">
+                    {path.title}
+                  </span>
+                  <span className="mt-1.5 block text-sm text-muted">
+                    {path.detail}
+                  </span>
+                </span>
+                <span className="mb-0.5 inline-flex shrink-0 items-center gap-1.5 text-sm font-bold text-primary">
+                  Continue
+                  <ArrowRight
+                    className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
+                    aria-hidden
+                  />
+                </span>
+              </span>
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      <p className="container-site py-5 text-center text-sm text-muted">
+        On Motability?{" "}
+        <Link
+          href="/motability"
+          className="font-semibold text-primary underline underline-offset-2"
+        >
+          Scooters &amp; chairs or car adaptations
+        </Link>
+      </p>
     </section>
   );
 }

@@ -69,7 +69,7 @@ export const LOCATION_PAGES: LocationPage[] = [
     postcodes: ['TW3', 'TW4', 'TW5'],
     lat: 51.468, lng: -0.361,
     metaTitle: 'Mobility Scooters & Vehicle Adaptations Hounslow | Mobility Station',
-    metaDescription: 'Mobility scooters, wheelchair services and vehicle adaptations in Hounslow. Free delivery, Motability accredited. Call 01895 520361.',
+    metaDescription: 'Mobility scooters, wheelchair services and vehicle adaptations in Hounslow. Local delivery & Motability accredited. Call 01895 520361.',
     heroHeading: 'Mobility Solutions in Hounslow',
     heroSubheading: 'Serving the Hounslow area from our nearby Heathrow branch with expert fitting and free home demonstrations.',
     services: ['Vehicle Adaptations', 'Mobility Scooters', 'Powered Wheelchairs', 'Swivel Seats', 'Hand Controls', 'Motability'],

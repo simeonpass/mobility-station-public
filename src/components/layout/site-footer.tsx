@@ -9,14 +9,16 @@ import {
 } from "react-icons/si";
 import { SITE } from "@/lib/seo";
 import { BRANCHES } from "@/data/content";
+import { FooterLaneSwitch } from "@/components/layout/footer-lane-switch";
 
 const columns = [
   {
     title: "Vehicle adaptations",
     links: [
       { href: "/vehicle-adaptations", label: "All Adaptations" },
-      { href: "/contact?interest=adaptation", label: "Get a Quotation" },
-      { href: "/book-a-demo", label: "Book a Home Visit" },
+      { href: "/motability/vehicle-adaptations", label: "Motability adaptations" },
+      { href: "/quote?interest=adaptation", label: "Get a Quotation" },
+      { href: "/book-a-demo?type=adaptation", label: "Book a Home Visit" },
     ],
   },
   {
@@ -24,7 +26,7 @@ const columns = [
     links: [
       { href: "/shop", label: "Shop All" },
       { href: "/hire", label: "Hire & Flex Hire" },
-      { href: "/motability", label: "Motability" },
+      { href: "/motability/scooters-wheelchairs", label: "Motability scooters" },
       { href: "/clearance", label: "Clearance" },
       { href: "/trade-in", label: "Old scooter takeaway" },
     ],
@@ -45,6 +47,7 @@ const columns = [
       { href: "/about-us", label: "About Us" },
       { href: "/blog", label: "Recent Work & Stories" },
       { href: "/contact", label: "Contact" },
+      { href: "/motability", label: "Motability hub" },
     ],
   },
 ];
@@ -96,6 +99,8 @@ export function SiteFooter() {
               </li>
             ))}
           </ul>
+
+          <FooterLaneSwitch />
 
           <Link
             href="/motability"

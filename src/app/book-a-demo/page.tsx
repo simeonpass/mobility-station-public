@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { EnquiryForm } from "@/components/forms/enquiry-form";
+import { CatalogImage } from "@/components/product/catalog-image";
 import { Hero } from "@/components/sections/hero";
+import {
+  getProductBySlug,
+  primaryImage,
+  type ProductListItem,
+} from "@/lib/products";
 import { createMetadata } from "@/lib/seo";
 
 export const metadata = createMetadata({
@@ -10,26 +16,73 @@ export const metadata = createMetadata({
   path: "/book-a-demo",
 });
 
+export const revalidate = 300;
+
 export default async function BookADemoPage({
   searchParams,
 }: {
-  searchParams: Promise<{ product?: string }>;
+  searchParams: Promise<{ product?: string; type?: string; interest?: string }>;
 }) {
-  const { product } = await searchParams;
-  const productSlug = product?.trim() || undefined;
+  const { product: productParam, type, interest } = await searchParams;
+  const productSlug = productParam?.trim() || undefined;
+
+  let product: ProductListItem | null = null;
+  if (productSlug) {
+    try {
+      product = await getProductBySlug(productSlug);
+    } catch (error) {
+      console.error("Demo product lookup failed", error);
+    }
+  }
+
+  const defaultInterest = product
+    ? `Demo: ${product.name}`
+    : interest?.trim()
+      ? `Demo: ${interest.trim()}`
+      : type === "adaptation"
+        ? "Vehicle adaptation demonstration"
+        : "";
 
   return (
     <>
       <Hero
         compact
         title="Book a demonstration"
-        subtitle="Try scooters, wheelchairs or adaptations at home or at our Heathrow and Ferndown branches."
+        subtitle={
+          product
+            ? `Book a demo for ${product.name} — at home or at Heathrow / Ferndown.`
+            : "Try scooters, wheelchairs or adaptations at home or at our Heathrow and Ferndown branches."
+        }
         primaryHref="#form"
         primaryLabel="Start booking"
       />
       <section id="form" className="pb-10 md:pb-12">
         <div className="container-site grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
+            {product ? (
+              <div className="mb-8 overflow-hidden rounded-2xl border border-border bg-white">
+                <div className="relative aspect-[16/10] bg-soft">
+                  <CatalogImage
+                    src={primaryImage(product)}
+                    alt={product.name}
+                    fill
+                    className="object-contain p-4"
+                    sizes="(min-width: 1024px) 30vw, 90vw"
+                  />
+                </div>
+                <div className="border-t border-border p-4">
+                  <h2 className="text-lg font-extrabold text-primary">
+                    {product.name}
+                  </h2>
+                  <Link
+                    href={`/products/${product.slug}`}
+                    className="mt-2 inline-flex text-sm font-semibold text-primary underline underline-offset-2"
+                  >
+                    View product details
+                  </Link>
+                </div>
+              </div>
+            ) : null}
             <h2 className="text-2xl font-extrabold">Demo options</h2>
             <ul className="mt-4 space-y-4 text-sm leading-relaxed text-foreground/85">
               <li>
@@ -62,12 +115,23 @@ export default async function BookADemoPage({
               </li>
             </ul>
             <p className="mt-6 text-sm text-muted">
-              Need something else?{" "}
+              Need a price instead?{" "}
+              <Link
+                href={
+                  product
+                    ? `/quote?product=${encodeURIComponent(product.slug)}`
+                    : "/quote"
+                }
+                className="font-semibold text-primary underline underline-offset-2"
+              >
+                Request a quotation
+              </Link>
+              ,{" "}
               <Link
                 href="/contact"
                 className="font-semibold text-primary underline underline-offset-2"
               >
-                Contact the team
+                contact the team
               </Link>{" "}
               or{" "}
               <Link
@@ -83,10 +147,8 @@ export default async function BookADemoPage({
             <EnquiryForm
               enquiryType="demo"
               title="Request your demonstration"
-              defaultInterest={
-                productSlug ? productSlug.replace(/-/g, " ") : ""
-              }
-              productSlug={productSlug}
+              defaultInterest={defaultInterest}
+              productSlug={product?.slug ?? productSlug}
             />
           </div>
         </div>

@@ -7,9 +7,9 @@ import { WORKSHOPS } from "@/lib/service-area";
 import { createMetadata } from "@/lib/seo";
 
 export const metadata = createMetadata({
-  title: "Service area, call-out bands & towns",
+  title: "Service area — Greater London & the South",
   description:
-    "Check if we cover your postcode, see local call-out bands and browse the towns served by our Heathrow and Ferndown workshops.",
+    "Check if we cover your postcode. Local delivery, demos and fitting from Heathrow and Ferndown across Greater London and the South / South West.",
   path: "/service-area",
 });
 
@@ -21,8 +21,8 @@ export default function ServiceAreaPage() {
     <>
       <Hero
         compact
-        title="Coverage, call-out bands & towns"
-        subtitle="Check your postcode, see the local call-out band for your area, and find your nearest workshop."
+        title="Our local service area"
+        subtitle="Greater London and the South / South West from Heathrow and Ferndown — for demos, fitting and equipment over 30 kg. Lightweight items under 30 kg can ship UK-wide."
         primaryHref="/contact"
         primaryLabel="Ask about your area"
         secondaryHref="/locations"

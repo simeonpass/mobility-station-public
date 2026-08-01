@@ -8,13 +8,17 @@ import { Button } from "@/components/ui/button";
 const initial: ActionState = { success: false };
 
 type EnquiryFormProps = {
-  enquiryType: "demo" | "service" | "contact" | "hire" | "trade-in";
+  enquiryType: "demo" | "service" | "contact" | "hire" | "trade-in" | "quote";
   title?: string;
   defaultInterest?: string;
   productSlug?: string;
   showBranch?: boolean;
   showDate?: boolean;
   showPostcode?: boolean;
+  messagePlaceholder?: string;
+  messageLabel?: string;
+  messageRequired?: boolean;
+  submitLabel?: string;
 };
 
 export function EnquiryForm({
@@ -25,12 +29,31 @@ export function EnquiryForm({
   showBranch = true,
   showDate = true,
   showPostcode = true,
+  messagePlaceholder,
+  messageLabel = "Message (optional)",
+  messageRequired = false,
+  submitLabel,
 }: EnquiryFormProps) {
   const [state, action, pending] = useActionState(submitEnquiry, initial);
 
+  const interestLabel =
+    enquiryType === "service"
+      ? "Service needed"
+      : enquiryType === "quote"
+        ? "What you’re quoting for"
+        : "Product / interest";
+
+  const buttonLabel =
+    submitLabel ??
+    (enquiryType === "quote"
+      ? "Request quotation"
+      : enquiryType === "demo"
+        ? "Request demonstration"
+        : "Submit enquiry");
+
   return (
     <form action={action} className="space-y-4">
-      {title ? <h2 className="text-2xl font-extrabold">{title}</h2> : null}
+      {title ? <h2 className="text-2xl font-extrabold text-primary">{title}</h2> : null}
       <input type="hidden" name="enquiry_type" value={enquiryType} />
       {productSlug ? (
         <input type="hidden" name="product_slug" value={productSlug} />
@@ -72,15 +95,19 @@ export function EnquiryForm({
       </div>
 
       <div>
-        <Label htmlFor="interest">
-          {enquiryType === "service" ? "Service needed" : "Product / interest"}
-        </Label>
+        <Label htmlFor="interest">{interestLabel}</Label>
         <Input
           id="interest"
           name="interest"
           required
           defaultValue={defaultInterest}
         />
+        {productSlug && defaultInterest ? (
+          <p className="mt-1.5 text-xs text-muted">
+            Prefills from the product you selected so our team knows exactly
+            what you&apos;re asking about.
+          </p>
+        ) : null}
         {state.errors?.interest ? (
           <p className="mt-1 text-xs text-error">{state.errors.interest[0]}</p>
         ) : null}
@@ -93,7 +120,7 @@ export function EnquiryForm({
             <option value="either">Either / not sure</option>
             <option value="heathrow">Heathrow</option>
             <option value="ferndown">Ferndown</option>
-            <option value="mobile">Mobile demo (we come to you)</option>
+            <option value="mobile">Mobile visit (we come to you)</option>
           </Select>
         </div>
       ) : (
@@ -108,8 +135,17 @@ export function EnquiryForm({
       ) : null}
 
       <div>
-        <Label htmlFor="message">Message (optional)</Label>
-        <Textarea id="message" name="message" rows={4} />
+        <Label htmlFor="message">{messageLabel}</Label>
+        <Textarea
+          id="message"
+          name="message"
+          rows={4}
+          required={messageRequired}
+          placeholder={messagePlaceholder}
+        />
+        {state.errors?.message ? (
+          <p className="mt-1 text-xs text-error">{state.errors.message[0]}</p>
+        ) : null}
       </div>
 
       {state.message && !state.success ? (
@@ -117,7 +153,7 @@ export function EnquiryForm({
       ) : null}
 
       <Button type="submit" size="lg" disabled={pending}>
-        {pending ? "Sending…" : "Submit enquiry"}
+        {pending ? "Sending…" : buttonLabel}
       </Button>
     </form>
   );

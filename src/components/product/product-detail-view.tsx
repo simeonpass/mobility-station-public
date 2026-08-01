@@ -21,6 +21,7 @@ import {
   type CartProduct,
 } from "@/lib/cart";
 import { getBrandLogo } from "@/lib/brand-logos";
+import { quoteHref } from "@/lib/quote";
 import {
   addonLinePrice,
   formatGBP,
@@ -62,6 +63,41 @@ export type ProductDetailViewProps = {
   specs: Array<[string, string]>;
   videoEmbed: string | null;
 };
+
+function deliveryTimescale(opts: {
+  estimate: string | null;
+  stockLabel: string;
+  isAdaptation: boolean;
+}): string {
+  if (opts.isAdaptation) {
+    return "We'll confirm fitting timescale with your quote";
+  }
+  const custom = opts.estimate?.trim();
+  if (custom) return custom;
+  const label = opts.stockLabel.toLowerCase();
+  if (label.includes("in stock") || label.startsWith("only ")) {
+    return "Local delivery — usually 3–5 working days";
+  }
+  if (label.includes("pre-order")) {
+    return "We'll confirm a local delivery date when you order";
+  }
+  return "Local delivery — usually 1–2 weeks once ordered";
+}
+
+function TrustBadge({
+  title,
+  detail,
+}: {
+  title: string;
+  detail: string;
+}) {
+  return (
+    <div className="rounded-xl border border-border/80 bg-soft/60 px-3 py-2.5">
+      <p className="text-xs font-semibold text-primary">{title}</p>
+      <p className="mt-0.5 text-[11px] leading-snug text-muted">{detail}</p>
+    </div>
+  );
+}
 
 export function ProductDetailView(props: ProductDetailViewProps) {
   const buyRef = useRef<HTMLDivElement | null>(null);
@@ -315,6 +351,17 @@ export function ProductDetailView(props: ProductDetailViewProps) {
     stockAvailable &&
     headline != null;
 
+  const deliveryLabel = deliveryTimescale({
+    estimate: props.deliveryEstimate,
+    stockLabel: props.stockLabel,
+    isAdaptation: props.isAdaptation,
+  });
+
+  const demoHref = props.isAdaptation
+    ? `/book-a-demo?type=adaptation&product=${encodeURIComponent(props.slug)}`
+    : `/book-a-demo?product=${encodeURIComponent(props.slug)}`;
+  const productQuoteHref = quoteHref({ productSlug: props.slug });
+
   return (
     <>
       <div className="grid items-start gap-6 md:grid-cols-2 md:gap-10 lg:gap-12">
@@ -345,8 +392,8 @@ export function ProductDetailView(props: ProductDetailViewProps) {
           </div>
 
           {getBrandLogo(props.manufacturer) ? (
-            <div className="mb-3">
-              <BrandLogo manufacturer={props.manufacturer} height={36} />
+            <div className="mb-4">
+              <BrandLogo manufacturer={props.manufacturer} height={52} />
             </div>
           ) : props.manufacturer ? (
             <p className="text-sm font-semibold uppercase tracking-wider text-muted">
@@ -443,7 +490,11 @@ export function ProductDetailView(props: ProductDetailViewProps) {
                 ) : null}
               </div>
               <Link
-                href="/motability"
+                href={
+                  props.isAdaptation
+                    ? "/motability/vehicle-adaptations"
+                    : "/motability/scooters-wheelchairs"
+                }
                 className="shrink-0 text-xs font-semibold underline opacity-90"
               >
                 Learn more
@@ -472,22 +523,35 @@ export function ProductDetailView(props: ProductDetailViewProps) {
             </div>
           ) : null}
 
-          {!props.isAdaptation && props.deliveryEstimate ? (
-            <p className="mt-3 text-sm text-muted">
-              Delivery: {props.deliveryEstimate}
-            </p>
-          ) : null}
-
           {!props.isAdaptation ? (
-            <div className="mt-5">
+            <div className="mt-5 space-y-3">
+              <div className="rounded-xl border border-border bg-soft/70 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted">
+                  Delivery timescale
+                </p>
+                <p className="mt-1 text-sm font-semibold text-primary">
+                  {deliveryLabel}
+                </p>
+                <p className="mt-1 text-xs text-muted">
+                  Over 30 kg: local delivery from Heathrow &amp; Ferndown only.
+                  Under 30 kg: free tracked UK shipping.{" "}
+                  <Link href="/delivery" className="underline hover:text-primary">
+                    Delivery policy
+                  </Link>
+                </p>
+              </div>
               <DeliveryChecker weight={props.weight} compact />
-              <p className="mt-2 text-xs text-muted">
-                <Link href="/delivery" className="underline hover:text-primary">
-                  Delivery &amp; returns information
-                </Link>
+            </div>
+          ) : (
+            <div className="mt-5 rounded-xl border border-border bg-soft/70 px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted">
+                Fitting timescale
+              </p>
+              <p className="mt-1 text-sm font-semibold text-primary">
+                {deliveryLabel}
               </p>
             </div>
-          ) : null}
+          )}
 
           {!props.isAdaptation && hasConfigurableOptions ? (
             <div className="mt-5">
@@ -528,17 +592,25 @@ export function ProductDetailView(props: ProductDetailViewProps) {
             {props.isAdaptation ? (
               <>
                 <Link
-                  href={`/contact?interest=adaptation&product=${encodeURIComponent(props.slug)}`}
+                  href={productQuoteHref}
                   className="flex w-full items-center justify-center rounded-xl bg-accent px-6 py-3 text-center font-semibold text-accent-foreground hover:bg-accent-hover"
                 >
                   Get a free quotation
                 </Link>
                 <Link
-                  href={`/book-a-demo?type=adaptation&product=${encodeURIComponent(props.slug)}`}
+                  href={demoHref}
                   className="flex w-full items-center justify-center rounded-xl border border-primary px-6 py-3 text-center font-semibold text-primary hover:bg-primary hover:text-primary-foreground"
                 >
                   Book a home demo
                 </Link>
+                <p className="text-center text-sm text-muted">
+                  <Link
+                    href="/contact?interest=callback#callback"
+                    className="font-medium underline hover:text-primary"
+                  >
+                    Request a callback
+                  </Link>
+                </p>
                 <p className="text-xs leading-relaxed text-muted">
                   Adaptations aren&apos;t available for online checkout because
                   fitting depends on your vehicle. We&apos;ll confirm
@@ -547,22 +619,37 @@ export function ProductDetailView(props: ProductDetailViewProps) {
               </>
             ) : canBuy && hasConfigurableOptions ? (
               <div className="space-y-2">
-                <div className="flex flex-col gap-3">
-                  <Button
-                    type="button"
-                    variant="buy"
-                    className="w-full rounded-xl"
-                    onClick={handleAddConfigured}
-                  >
-                    Add to cart
-                  </Button>
+                <Button
+                  type="button"
+                  variant="buy"
+                  className="w-full rounded-xl"
+                  onClick={handleAddConfigured}
+                >
+                  Add to cart
+                </Button>
+                <Link
+                  href={demoHref}
+                  className="flex w-full items-center justify-center rounded-xl border border-primary px-6 py-3 text-center font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+                >
+                  Book a home demo
+                </Link>
+                <p className="text-center text-sm text-muted">
                   <Link
-                    href={`/book-a-demo?product=${encodeURIComponent(props.slug)}`}
-                    className="flex w-full items-center justify-center rounded-xl border border-primary px-6 py-3 text-center font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+                    href={productQuoteHref}
+                    className="font-medium underline hover:text-primary"
                   >
-                    Book a home demo
+                    Get a quote
                   </Link>
-                </div>
+                  <span className="mx-2 text-border" aria-hidden>
+                    ·
+                  </span>
+                  <Link
+                    href="/contact?interest=callback#callback"
+                    className="font-medium underline hover:text-primary"
+                  >
+                    Request a callback
+                  </Link>
+                </p>
                 {cartMessage ? (
                   <p className="text-sm text-muted">
                     {cartMessage}
@@ -582,41 +669,102 @@ export function ProductDetailView(props: ProductDetailViewProps) {
                 ) : null}
               </div>
             ) : canBuy && configuredCartProduct ? (
-              <AddToCartButton
-                product={configuredCartProduct}
-                layout="stack"
-              />
+              <div className="space-y-3">
+                <AddToCartButton
+                  product={configuredCartProduct}
+                  layout="stack"
+                />
+                <Link
+                  href={demoHref}
+                  className="flex w-full items-center justify-center rounded-xl border border-primary px-6 py-3 text-center font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+                >
+                  Book a home demo
+                </Link>
+                <p className="text-center text-sm text-muted">
+                  <Link
+                    href={productQuoteHref}
+                    className="font-medium underline hover:text-primary"
+                  >
+                    Get a quote
+                  </Link>
+                  <span className="mx-2 text-border" aria-hidden>
+                    ·
+                  </span>
+                  <Link
+                    href="/contact?interest=callback#callback"
+                    className="font-medium underline hover:text-primary"
+                  >
+                    Request a callback
+                  </Link>
+                </p>
+              </div>
             ) : headline == null && !props.isAdaptation ? (
-              <Link
-                href={`/contact?interest=quote&product=${encodeURIComponent(props.slug)}`}
-                className="flex w-full items-center justify-center rounded-xl bg-accent px-6 py-3 text-center font-semibold text-accent-foreground hover:bg-accent-hover"
-              >
-                Request a quote
-              </Link>
+              <>
+                <Link
+                  href={productQuoteHref}
+                  className="flex w-full items-center justify-center rounded-xl bg-accent px-6 py-3 text-center font-semibold text-accent-foreground hover:bg-accent-hover"
+                >
+                  Request a quote
+                </Link>
+                <Link
+                  href={demoHref}
+                  className="flex w-full items-center justify-center rounded-xl border border-primary px-6 py-3 text-center font-semibold text-primary hover:bg-primary hover:text-primary-foreground"
+                >
+                  Book a home demo
+                </Link>
+                <p className="text-center text-sm text-muted">
+                  <Link
+                    href="/contact?interest=callback#callback"
+                    className="font-medium underline hover:text-primary"
+                  >
+                    Request a callback
+                  </Link>
+                </p>
+              </>
             ) : null}
-            <Link
-              href="/contact?interest=callback#callback"
-              className="flex w-full rounded-xl border border-primary px-6 py-3 text-center font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
-            >
-              Request a callback
-            </Link>
           </div>
 
-          <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">
+          <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
             {props.isAdaptation ? (
               <>
-                <li>Workshop fitting included</li>
-                <li>Motability accredited</li>
-                <li>Home visit available</li>
+                <TrustBadge
+                  title="Workshop fitting"
+                  detail="Included at Heathrow or Ferndown"
+                />
+                <TrustBadge
+                  title="Motability"
+                  detail="Accredited installer"
+                />
+                <TrustBadge
+                  title="Home visit"
+                  detail="Available where needed"
+                />
+                <TrustBadge
+                  title="Firm quote first"
+                  detail="No work until you approve"
+                />
               </>
             ) : (
               <>
-                <li>Free UK delivery</li>
-                <li>Motability options</li>
-                <li>Home demonstration</li>
+                <TrustBadge
+                  title="Delivery"
+                  detail="Under 30 kg UK-wide · over 30 kg local"
+                />
+                <TrustBadge
+                  title="Motability"
+                  detail="Accredited retailer"
+                />
+                <TrustBadge
+                  title="Home demo"
+                  detail="Try before you buy"
+                />
+                <TrustBadge
+                  title="Aftercare"
+                  detail="Our two local workshops"
+                />
               </>
             )}
-          </ul>
+          </div>
 
           {props.discontinuedMessage ? (
             <p className="mt-4 rounded-lg bg-soft p-3 text-sm text-muted">

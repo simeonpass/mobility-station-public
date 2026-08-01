@@ -31,7 +31,8 @@
  * minimum £150 call-out because of the Congestion Charge / ULEZ window.
  *
  * Beyond either branch's max we treat as out of range — customer can drop
- * the vehicle off, or we ship pallet-only items nationwide by courier.
+ * the vehicle off at a workshop, or request a callback if near the boundary.
+ * This site does not offer nationwide shipping.
  */
 
 /** Minimum call-out fee for central London postcodes (Congestion Charge / ULEZ) */
