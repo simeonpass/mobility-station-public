@@ -32,7 +32,7 @@ export function HeaderSearch({
       className={`relative min-w-0 ${className}`}
     >
       <Search
-        className={`pointer-events-none absolute top-1/2 -translate-y-1/2 text-muted ${
+        className={`pointer-events-none absolute top-1/2 -translate-y-1/2 text-primary/45 ${
           compact ? "left-3 h-3.5 w-3.5" : "left-3.5 h-4 w-4"
         }`}
         aria-hidden
@@ -41,12 +41,12 @@ export function HeaderSearch({
         type="search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search Mobility Station"
+        placeholder="Search products & adaptations"
         aria-label="Search products and vehicle adaptations"
-        className={`w-full rounded-full border border-[#d7e0dd] bg-white text-foreground placeholder:text-muted/80 transition-[border-color,box-shadow] focus-visible:border-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 ${
+        className={`w-full rounded-full border border-border/80 bg-soft/70 text-foreground placeholder:text-muted transition-[box-shadow,border-color,background-color] focus-visible:border-primary/25 focus-visible:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 ${
           compact
             ? "h-10 py-2 pl-9 pr-3 text-sm"
-            : "h-10 py-2 pl-10 pr-4 text-sm"
+            : "h-11 py-2 pl-10 pr-4 text-sm shadow-[inset_0_1px_2px_rgba(0,63,67,0.04)]"
         }`}
       />
     </form>
