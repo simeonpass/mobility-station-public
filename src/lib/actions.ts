@@ -79,7 +79,6 @@ export async function submitEnquiry(
     hire: "/contact?sent=1",
     "trade-in": "/contact?sent=1",
     callback: "/contact?sent=callback#callback",
-    quote: "/quote/thank-you",
   };
 
   redirect(thankYouPaths[payload.enquiry_type]);

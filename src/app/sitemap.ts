@@ -33,12 +33,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
-      url: `${SITE.url}/quote`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
       url: `${SITE.url}/hire`,
       lastModified: now,
       changeFrequency: "weekly",
@@ -96,19 +90,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${SITE.url}/motability`,
       lastModified: now,
       changeFrequency: "weekly",
-      priority: 0.75,
-    },
-    {
-      url: `${SITE.url}/motability/scooters-wheelchairs`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    {
-      url: `${SITE.url}/motability/vehicle-adaptations`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.8,
+      priority: 0.7,
     },
     {
       url: `${SITE.url}/faq`,

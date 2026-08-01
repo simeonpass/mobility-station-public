@@ -3,39 +3,17 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { MapPin, Menu, Phone, PhoneCall, X } from "lucide-react";
 import { CartButton } from "@/components/cart/cart-drawer";
 import { HeaderSearch } from "@/components/layout/header-search";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { useBusinessLane } from "@/hooks/use-business-lane";
-import { clearBusinessLane, writeBusinessLane } from "@/lib/business-lane";
 import { SITE } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
-type NavItem = { href: string; label: string; laneHint?: "adaptations" | "mobility" };
-
-const NAV_ADAPTATIONS: NavItem[] = [
-  { href: "/vehicle-adaptations", label: "Adaptations" },
-  { href: "/quote?interest=adaptation", label: "Get a Quote" },
-  { href: "/motability/vehicle-adaptations", label: "Motability" },
-  { href: "/locations", label: "Locations" },
-  { href: "/blog", label: "Recent Work" },
-  { href: "/shop", label: "Scooters & Wheelchairs", laneHint: "mobility" },
-];
-
-const NAV_MOBILITY: NavItem[] = [
-  { href: "/shop", label: "Shop" },
-  { href: "/hire", label: "Hire" },
-  { href: "/motability/scooters-wheelchairs", label: "Motability" },
-  { href: "/delivery", label: "Delivery" },
-  { href: "/locations", label: "Locations" },
-  { href: "/vehicle-adaptations", label: "Vehicle Adaptations", laneHint: "adaptations" },
-];
-
-const NAV_DEFAULT: NavItem[] = [
-  { href: "/vehicle-adaptations", label: "Vehicle Adaptations", laneHint: "adaptations" },
-  { href: "/shop", label: "Scooters & Wheelchairs", laneHint: "mobility" },
+const nav = [
+  { href: "/vehicle-adaptations", label: "Vehicle Adaptations" },
+  { href: "/shop", label: "Scooters & Wheelchairs" },
   { href: "/hire", label: "Hire" },
   { href: "/motability", label: "Motability" },
   { href: "/locations", label: "Locations" },
@@ -43,30 +21,14 @@ const NAV_DEFAULT: NavItem[] = [
 ];
 
 function isActivePath(pathname: string, href: string) {
-  const pathOnly = href.split("?")[0] || href;
   return (
-    pathname === pathOnly ||
-    (pathOnly !== "/" && pathname.startsWith(`${pathOnly}/`))
+    pathname === href || (href !== "/" && pathname.startsWith(`${href}/`))
   );
 }
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const lane = useBusinessLane();
-
-  const nav = useMemo(() => {
-    if (lane === "adaptations") return NAV_ADAPTATIONS;
-    if (lane === "mobility") return NAV_MOBILITY;
-    return NAV_DEFAULT;
-  }, [lane]);
-
-  const primaryCta =
-    lane === "adaptations"
-      ? { href: "/quote?interest=adaptation", label: "Get a Quote" }
-      : { href: "/book-a-demo", label: "Book a Demo" };
-
-  const showCart = lane !== "adaptations";
 
   useEffect(() => {
     setOpen(false);
@@ -82,8 +44,9 @@ export function SiteHeader() {
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-50 bg-white shadow-[0_1px_0_rgba(0,63,67,0.06),0_10px_28px_-18px_rgba(0,63,67,0.28)]">
-      <div className="bg-[#0d6b70] text-white">
+    <header className="sticky top-0 z-50 bg-white shadow-[0_1px_0_rgba(0,63,67,0.07),0_8px_24px_-16px_rgba(0,63,67,0.35)]">
+      {/* Bar 1 — thin utility */}
+      <div className="bg-primary text-primary-foreground">
         <div className="container-site flex h-8 items-center justify-between gap-3 text-[12px] font-medium">
           <div className="flex min-w-0 items-center gap-3 overflow-hidden">
             <a
@@ -93,7 +56,7 @@ export function SiteHeader() {
               <Phone className="h-3.5 w-3.5" aria-hidden />
               {SITE.phone}
             </a>
-            <span className="hidden text-white/30 sm:inline" aria-hidden>
+            <span className="hidden text-white/25 sm:inline" aria-hidden>
               |
             </span>
             <Link
@@ -103,41 +66,29 @@ export function SiteHeader() {
               <MapPin className="h-3.5 w-3.5 text-accent" aria-hidden />
               Heathrow &amp; Ferndown
             </Link>
-            {lane === "adaptations" ? (
-              <span className="hidden truncate text-white/80 md:inline">
-                Vehicle adaptations · quote &amp; fitting
-              </span>
-            ) : lane === "mobility" ? (
-              <span className="hidden truncate text-white/80 md:inline">
-                Scooters &amp; wheelchairs · local demos
-              </span>
-            ) : (
-              <Link
-                href="/book-a-demo#demo-terms"
-                className="hidden truncate transition-colors hover:text-accent-on-dark md:inline"
-              >
-                Free home demonstrations*
-              </Link>
-            )}
+            <Link
+              href="/book-a-demo#demo-terms"
+              className="hidden truncate transition-colors hover:text-accent-on-dark md:inline"
+            >
+              Free home demonstrations*
+            </Link>
           </div>
           <Link
-            href={primaryCta.href}
+            href="/book-a-demo"
             className="inline-flex shrink-0 items-center rounded-full bg-accent px-3 py-1 text-[11px] font-bold leading-none text-accent-foreground transition-colors hover:bg-accent-hover"
           >
-            {primaryCta.label}
+            Book a Demo
           </Link>
         </div>
       </div>
 
+      {/* Bar 2 — one white block: brand + nav together */}
       <div className="bg-white">
         <div className="container-site flex h-14 items-center gap-3 md:h-16 md:gap-5">
           <Link
             href="/"
             className="flex shrink-0 items-center"
-            onClick={() => {
-              clearBusinessLane();
-              setOpen(false);
-            }}
+            onClick={() => setOpen(false)}
           >
             <Image
               src="/brand/logo-header-v6.png"
@@ -149,13 +100,7 @@ export function SiteHeader() {
             />
           </Link>
 
-          {showCart ? (
-            <HeaderSearch className="mx-auto hidden min-w-0 max-w-lg flex-1 md:block" />
-          ) : (
-            <p className="mx-auto hidden min-w-0 flex-1 text-center text-sm text-muted md:block">
-              Adaptations — quotation &amp; workshop fitting
-            </p>
-          )}
+          <HeaderSearch className="mx-auto hidden min-w-0 max-w-lg flex-1 md:block" />
 
           <div className="ml-auto flex shrink-0 items-center gap-1.5">
             <Link
@@ -169,7 +114,7 @@ export function SiteHeader() {
               <span className="hidden lg:inline">Request a callback</span>
               <span className="lg:hidden">Callback</span>
             </Link>
-            {showCart ? <CartButton /> : null}
+            <CartButton />
             <Button
               type="button"
               variant="ghost"
@@ -184,109 +129,85 @@ export function SiteHeader() {
             </Button>
           </div>
         </div>
+
+        {/* Nav sits inside the same white surface — not a third bar */}
+        <nav className="hidden lg:block" aria-label="Primary">
+          <div className="container-site flex items-center justify-center gap-0.5 pb-1">
+            {nav.map((item) => {
+              const active = isActivePath(pathname, item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "group relative px-3.5 py-2 text-[13px] font-semibold tracking-wide transition-colors xl:px-4",
+                    active
+                      ? "text-primary"
+                      : "text-primary/65 hover:text-primary",
+                  )}
+                >
+                  {item.label}
+                  <span
+                    className={cn(
+                      "absolute inset-x-3.5 bottom-0.5 h-[2px] origin-center rounded-full bg-accent transition-transform duration-200 xl:inset-x-4",
+                      active
+                        ? "scale-x-100"
+                        : "scale-x-0 group-hover:scale-x-100",
+                    )}
+                    aria-hidden
+                  />
+                </Link>
+              );
+            })}
+          </div>
+        </nav>
       </div>
 
-      <nav
-        className="hidden border-y border-[#c5d9d4] bg-[#e7f2ef] lg:block"
-        aria-label="Primary"
-      >
-        <div className="container-site flex items-center justify-center gap-0.5">
-          {nav.map((item) => {
-            const active = isActivePath(pathname, item.href);
-            const isOtherLane = Boolean(item.laneHint && item.laneHint !== lane);
-            return (
-              <Link
-                key={`${item.href}-${item.label}`}
-                href={item.href}
-                onClick={() => {
-                  if (item.laneHint) writeBusinessLane(item.laneHint);
-                }}
-                className={cn(
-                  "group relative px-3.5 py-2.5 text-[13px] font-semibold tracking-wide transition-colors xl:px-4",
-                  isOtherLane
-                    ? "text-primary/45 hover:text-primary"
-                    : active
-                      ? "text-primary"
-                      : "text-primary/70 hover:text-primary",
-                )}
-              >
-                {isOtherLane ? `Also: ${item.label}` : item.label}
-                <span
-                  className={cn(
-                    "absolute inset-x-3.5 bottom-0 h-[2px] origin-center rounded-full bg-accent transition-transform duration-200 xl:inset-x-4",
-                    active && !isOtherLane
-                      ? "scale-x-100"
-                      : "scale-x-0 group-hover:scale-x-100",
-                  )}
-                  aria-hidden
-                />
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
-
+      {/* Mobile / tablet drawer */}
       {open ? (
         <div
           id="mobile-nav"
-          className="border-t border-border bg-[#e7f2ef] shadow-lg lg:hidden"
+          className="border-t border-border bg-white shadow-lg lg:hidden"
         >
           <div className="container-site space-y-4 py-4">
-            {showCart ? (
-              <HeaderSearch
-                size="sm"
-                className="w-full md:hidden"
-                onSubmitExtra={() => setOpen(false)}
-              />
-            ) : null}
-            {lane ? (
-              <p className="px-1 text-xs font-semibold uppercase tracking-wide text-primary/60">
-                {lane === "adaptations"
-                  ? "You’re in vehicle adaptations"
-                  : "You’re in scooters & wheelchairs"}
-              </p>
-            ) : null}
+            <HeaderSearch
+              size="sm"
+              className="w-full md:hidden"
+              onSubmitExtra={() => setOpen(false)}
+            />
             <nav className="flex flex-col gap-0.5" aria-label="Mobile">
               {nav.map((item) => {
                 const active = isActivePath(pathname, item.href);
-                const isOtherLane = Boolean(
-                  item.laneHint && item.laneHint !== lane,
-                );
                 return (
                   <Link
-                    key={`${item.href}-${item.label}`}
+                    key={item.href}
                     href={item.href}
                     className={cn(
                       "rounded-xl px-3.5 py-3 text-sm font-semibold transition-colors",
-                      isOtherLane
-                        ? "text-primary/55 hover:bg-white/70"
-                        : active
-                          ? "bg-primary text-primary-foreground"
-                          : "text-primary hover:bg-white/70",
+                      active
+                        ? "bg-primary text-primary-foreground"
+                        : "text-primary hover:bg-soft",
                     )}
-                    onClick={() => {
-                      if (item.laneHint) writeBusinessLane(item.laneHint);
-                      setOpen(false);
-                    }}
+                    onClick={() => setOpen(false)}
                   >
-                    {isOtherLane ? `Also: ${item.label}` : item.label}
+                    {item.label}
                   </Link>
                 );
               })}
             </nav>
-            <div className="grid gap-2 border-t border-[#c5d9d4] pt-4 sm:hidden">
+            <div className="grid gap-2 border-t border-border pt-4 sm:hidden">
               <Link
-                href={primaryCta.href}
+                href="/book-a-demo"
                 className={cn(buttonVariants(), "w-full rounded-full")}
                 onClick={() => setOpen(false)}
               >
-                {primaryCta.label}
+                Book a Demo
               </Link>
               <Link
                 href="/contact?interest=callback#callback"
                 className={cn(
                   buttonVariants({ variant: "outline" }),
-                  "w-full rounded-full bg-white",
+                  "w-full rounded-full",
                 )}
                 onClick={() => setOpen(false)}
               >
@@ -295,7 +216,7 @@ export function SiteHeader() {
               </Link>
               <Link
                 href="/contact"
-                className="block rounded-lg px-3 py-3 text-center text-sm font-semibold text-primary hover:bg-white/70"
+                className="block rounded-lg px-3 py-3 text-center text-sm font-semibold text-primary hover:bg-soft"
                 onClick={() => setOpen(false)}
               >
                 Contact

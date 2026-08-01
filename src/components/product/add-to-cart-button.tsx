@@ -35,14 +35,23 @@ export function AddToCartButton({
 
   return (
     <div className="space-y-2">
-      <Button
-        type="button"
-        className={layout === "stack" ? "w-full rounded-xl" : "w-full rounded-xl sm:w-auto sm:min-w-[12rem]"}
-        variant="buy"
-        onClick={handleAdd}
+      <div
+        className={
+          layout === "stack"
+            ? "flex flex-col gap-3"
+            : "flex flex-col gap-3 sm:flex-row"
+        }
       >
-        Add to cart
-      </Button>
+        <Button type="button" className="flex-1 rounded-xl" variant="buy" onClick={handleAdd}>
+          Add to cart
+        </Button>
+        <Link
+          href={`/book-a-demo?product=${encodeURIComponent(product.slug)}`}
+          className="flex-1 rounded-xl border border-primary px-6 py-3 text-center font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+        >
+          Book a home demo
+        </Link>
+      </div>
       {message ? (
         <p className="text-sm text-muted">
           {message}
@@ -108,10 +117,10 @@ export function StickyBuyBar({
           Add to cart
         </Button>
         <a
-          href={`/book-a-demo?product=${encodeURIComponent(product.slug)}`}
+          href="/contact?interest=callback#callback"
           className="shrink-0 rounded-xl border border-primary px-3 py-2.5 text-sm font-semibold text-primary"
         >
-          Demo
+          Callback
         </a>
       </div>
     </div>

@@ -99,9 +99,8 @@ export default async function LocationsPage() {
             Do we cover you?
           </h2>
           <p className="mt-3 text-muted">
-            Check your postcode for home demonstrations, local heavy delivery and
-            collection. Lightweight items under 30 kg can ship UK-wide; equipment
-            over 30 kg stays within our Heathrow and Ferndown rings.
+            Check your postcode for home demonstrations, local delivery and
+            collection. Large equipment ships nationwide on a pallet.
           </p>
           <div className="mt-8">
             <ServiceAreaChecker />
@@ -119,7 +118,7 @@ export default async function LocationsPage() {
               href="/delivery"
               className="font-semibold text-primary underline underline-offset-2"
             >
-              local delivery &amp; coverage
+              delivery information
             </Link>
             .
           </p>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useCart } from "@/components/cart/cart-provider";
 import { CatalogImage } from "@/components/product/catalog-image";
 import { Button } from "@/components/ui/button";
@@ -13,12 +13,6 @@ import {
   linePrice,
   type CheckoutPayload,
 } from "@/lib/cart";
-import {
-  cartHasHeavyItem,
-  checkDeliveryZone,
-  isHeavyItem,
-  type DeliveryCheckResult,
-} from "@/lib/delivery-zone";
 import { formatGBP } from "@/lib/products";
 import {
   isTakeawayEligibleProduct,
@@ -31,8 +25,6 @@ export function CheckoutForm() {
   const [error, setError] = useState<string | null>(null);
   const [declarationConfirmed, setDeclarationConfirmed] = useState(false);
   const [takeawayRequested, setTakeawayRequested] = useState(false);
-  const [zoneCheck, setZoneCheck] = useState<DeliveryCheckResult | null>(null);
-  const [zoneChecking, setZoneChecking] = useState(false);
   const [form, setForm] = useState({
     email: "",
     firstName: "",
@@ -46,15 +38,6 @@ export function CheckoutForm() {
     vatConditionId: "",
     notes: "",
   });
-
-  const hasHeavyItem = useMemo(() => cartHasHeavyItem(items), [items]);
-  const heavyItemNames = useMemo(
-    () =>
-      items
-        .filter((item) => isHeavyItem(item.product.weight))
-        .map((item) => item.product.name),
-    [items],
-  );
 
   const hasBatteryOrCharger = useMemo(
     () =>
@@ -112,50 +95,6 @@ export function CheckoutForm() {
   const takeawayCredit =
     takeawayRequested && takeawayEligible ? availableTakeawayCredit : 0;
   const total = Math.max(0, subtotal + vatAmount + deliveryFee - takeawayCredit);
-
-  /** Heavy items (30 kg+) can only be delivered inside the local service area. */
-  const heavyNeedsLocalCheck =
-    hasHeavyItem && form.fulfillment === "delivery";
-  const heavyOutOfArea =
-    heavyNeedsLocalCheck && zoneCheck?.status === "out_of_area";
-  const heavyLocalOk =
-    heavyNeedsLocalCheck && zoneCheck?.status === "local";
-  const heavyPaymentBlocked =
-    heavyNeedsLocalCheck &&
-    (zoneChecking ||
-      heavyOutOfArea ||
-      zoneCheck?.status === "error" ||
-      !heavyLocalOk);
-
-  useEffect(() => {
-    if (!heavyNeedsLocalCheck) {
-      setZoneCheck(null);
-      setZoneChecking(false);
-      return;
-    }
-
-    const cleaned = form.postcode.trim();
-    if (cleaned.length < 5) {
-      setZoneCheck(null);
-      setZoneChecking(false);
-      return;
-    }
-
-    let cancelled = false;
-    setZoneChecking(true);
-    const timer = window.setTimeout(() => {
-      void checkDeliveryZone(cleaned).then((result) => {
-        if (cancelled) return;
-        setZoneCheck(result);
-        setZoneChecking(false);
-      });
-    }, 400);
-
-    return () => {
-      cancelled = true;
-      window.clearTimeout(timer);
-    };
-  }, [form.postcode, heavyNeedsLocalCheck]);
 
   const update = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
     setForm((prev) => {
@@ -219,23 +158,6 @@ export function CheckoutForm() {
     }
     if (form.fulfillment === "collection" && !form.collectionBranch) {
       return "Please select a collection branch";
-    }
-    if (heavyNeedsLocalCheck) {
-      if (form.postcode.trim().length < 5) {
-        return "Please enter a full postcode so we can check local delivery for items over 30 kg";
-      }
-      if (zoneChecking) {
-        return "Checking your postcode for local delivery — please wait a moment";
-      }
-      if (zoneCheck?.status === "out_of_area") {
-        return "Items over 30 kg can only be delivered within our Heathrow & Ferndown service area. Choose collection, or remove the heavy item to continue.";
-      }
-      if (zoneCheck?.status === "error") {
-        return zoneCheck.message || "We couldn't verify this postcode";
-      }
-      if (zoneCheck?.status !== "local") {
-        return "Please enter a valid postcode in our local service area for items over 30 kg";
-      }
     }
     if (form.isVatExempt && !batteryVatBlocked && !form.vatConditionId) {
       return "Please select your qualifying condition for VAT relief";
@@ -363,35 +285,6 @@ export function CheckoutForm() {
             </button>
           </div>
 
-          {hasHeavyItem ? (
-            <div className="mt-4 rounded-xl border border-warning/30 bg-warning/10 px-4 py-3 text-sm text-primary">
-              <p className="font-semibold">Items over 30 kg — local delivery only</p>
-              <p className="mt-1 text-muted">
-                {heavyItemNames.length === 1 ? (
-                  <>
-                    <strong className="text-primary">{heavyItemNames[0]}</strong>{" "}
-                    is over 30 kg.
-                  </>
-                ) : (
-                  <>Your basket includes equipment over 30 kg.</>
-                )}{" "}
-                We don&apos;t ship these nationwide — they&apos;re too heavy to
-                handle by courier, and too difficult to bring back if there&apos;s
-                a problem. Delivery must be inside our Heathrow or Ferndown
-                service area, or you can collect from a branch.
-              </p>
-              <p className="mt-2 text-xs text-muted">
-                <Link href="/service-area" className="font-semibold underline">
-                  Check service area
-                </Link>
-                {" · "}
-                <Link href="/delivery" className="font-semibold underline">
-                  Delivery policy
-                </Link>
-              </p>
-            </div>
-          ) : null}
-
           {form.fulfillment === "delivery" ? (
             <div className="mt-4 space-y-4">
               <div>
@@ -410,80 +303,25 @@ export function CheckoutForm() {
                   value={form.postcode}
                   onChange={(e) => update("postcode", e.target.value)}
                   required
-                  className="uppercase"
                 />
               </div>
-
-              {heavyNeedsLocalCheck ? (
-                <div className="space-y-2">
-                  {zoneChecking ? (
-                    <p className="text-sm text-muted">
-                      Checking if we can deliver this heavy item to your
-                      postcode…
-                    </p>
-                  ) : null}
-                  {heavyLocalOk && zoneCheck?.status === "local" ? (
-                    <p className="rounded-xl border border-success/30 bg-success/10 px-4 py-3 text-sm text-primary">
-                      Good news — you&apos;re about{" "}
-                      <strong>{zoneCheck.distanceMiles} miles</strong> from{" "}
-                      <strong>{zoneCheck.branch}</strong>. We can deliver this
-                      locally.
-                    </p>
-                  ) : null}
-                  {heavyOutOfArea ? (
-                    <div className="rounded-xl border border-error/30 bg-error/10 px-4 py-3 text-sm text-primary">
-                      <p className="font-semibold text-error">
-                        Outside our local delivery area
-                      </p>
-                      <p className="mt-1 text-muted">
-                        We can&apos;t deliver items over 30 kg to this postcode.
-                        Switch to <strong>collection</strong> at Heathrow or
-                        Ferndown, remove the heavy item, or{" "}
-                        <Link
-                          href="/contact?interest=callback#callback"
-                          className="font-semibold underline"
-                        >
-                          request a callback
-                        </Link>{" "}
-                        if you&apos;re near the boundary.
-                      </p>
-                    </div>
-                  ) : null}
-                  {zoneCheck?.status === "error" ? (
-                    <p className="rounded-xl border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">
-                      {zoneCheck.message}
-                    </p>
-                  ) : null}
-                </div>
-              ) : (
-                <p className="text-sm text-muted">
-                  Lightweight items (under 30 kg) ship free by tracked courier
-                  nationwide. Equipment over 30 kg is local delivery only from
-                  Heathrow &amp; Ferndown.
-                </p>
-              )}
+              <p className="text-sm text-muted">
+                Delivery is currently free across the UK for eligible orders.
+              </p>
             </div>
           ) : (
-            <div className="mt-4 space-y-3">
-              <div>
-                <Label htmlFor="branch">Collection branch *</Label>
-                <Select
-                  id="branch"
-                  value={form.collectionBranch}
-                  onChange={(e) => update("collectionBranch", e.target.value)}
-                  required
-                >
-                  <option value="">Select a branch</option>
-                  <option value="Heathrow">Heathrow (West Drayton)</option>
-                  <option value="Ferndown">Ferndown (Wimborne)</option>
-                </Select>
-              </div>
-              {hasHeavyItem ? (
-                <p className="text-sm text-muted">
-                  Collection is available for heavy equipment from either
-                  workshop — no postcode restriction.
-                </p>
-              ) : null}
+            <div className="mt-4">
+              <Label htmlFor="branch">Collection branch *</Label>
+              <Select
+                id="branch"
+                value={form.collectionBranch}
+                onChange={(e) => update("collectionBranch", e.target.value)}
+                required
+              >
+                <option value="">Select a branch</option>
+                <option value="Heathrow">Heathrow (West Drayton)</option>
+                <option value="Ferndown">Ferndown (Wimborne)</option>
+              </Select>
             </div>
           )}
         </section>
@@ -628,14 +466,7 @@ export function CheckoutForm() {
                 {item.product.optionSummary ? (
                   <p className="text-xs text-muted">{item.product.optionSummary}</p>
                 ) : null}
-                <p className="text-xs text-muted">
-                  Qty {item.quantity}
-                  {isHeavyItem(item.product.weight) ? (
-                    <span className="ml-1 font-medium text-warning">
-                      · Over 30 kg
-                    </span>
-                  ) : null}
-                </p>
+                <p className="text-xs text-muted">Qty {item.quantity}</p>
               </div>
               <p className="text-sm font-semibold">
                 {formatGBP(linePrice(item.product) * item.quantity)}
@@ -679,32 +510,24 @@ export function CheckoutForm() {
         </dl>
 
         {error ? <p className="mt-4 text-sm text-error">{error}</p> : null}
-        {heavyOutOfArea ? (
-          <p className="mt-4 text-sm text-error">
-            Payment is blocked until you choose collection or a postcode in our
-            local service area.
-          </p>
-        ) : null}
 
         <div className="mt-6 space-y-3">
           <Button
             type="button"
             variant="buy"
             className="w-full rounded-xl"
-            disabled={loading !== null || heavyPaymentBlocked}
+            disabled={loading !== null}
             onClick={() => pay("revolut")}
           >
             {loading === "revolut"
               ? "Redirecting to Revolut…"
-              : zoneChecking && heavyNeedsLocalCheck
-                ? "Checking postcode…"
-                : "Pay securely with Revolut"}
+              : "Pay securely with Revolut"}
           </Button>
           <Button
             type="button"
             variant="outline"
             className="w-full rounded-xl"
-            disabled={loading !== null || heavyPaymentBlocked}
+            disabled={loading !== null}
             onClick={() => pay("paypal")}
           >
             {loading === "paypal" ? "Redirecting to PayPal…" : "Pay with PayPal"}

@@ -61,18 +61,14 @@ export default function TermsPage() {
         <section>
           <h2>4. Delivery</h2>
           <p>
-            <strong>Lightweight items under 30 kg</strong> may be shipped free by
-            tracked courier to mainland UK addresses.{" "}
-            <strong>Items over 30 kg</strong> (typically scooters and powered
-            wheelchairs) are delivered only within our local service area around
-            Heathrow (West Drayton) and Ferndown (Wimborne), or collected from a
-            branch. We do not ship heavy equipment nationwide because it is
-            difficult to handle by courier and difficult to collect if there is a
-            problem. Please check your postcode on our{" "}
-            <Link href="/service-area">service area</Link> or{" "}
-            <Link href="/delivery">delivery</Link> pages before ordering.
-            Delivery dates are estimates and will be confirmed with you;
-            you&apos;ll be notified of any significant delays.
+            We offer <strong>free delivery on every order to mainland UK</strong>
+            . Small and medium items are sent via tracked courier; large items are
+            shipped on a kerbside pallet. Pallet deliveries require a signature,
+            and you must be able to accept a pallet at the delivery address.
+            Highlands &amp; Islands, Northern Ireland, Isle of Man and Channel
+            Islands may incur an additional surcharge — please contact us for a
+            quote before ordering. Estimates are not guaranteed; you&apos;ll be
+            notified of any significant delays.
           </p>
         </section>
 

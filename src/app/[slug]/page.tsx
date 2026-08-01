@@ -32,7 +32,6 @@ export default async function LegacyProductSlugPage({ params }: Props) {
     "about-us",
     "book-a-demo",
     "book-a-service",
-    "quote",
     "vehicle-adaptations",
     "order-confirmation",
     "trade-in",

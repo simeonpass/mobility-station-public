@@ -6,19 +6,19 @@ import { createMetadata } from "@/lib/seo";
 
 const QUICK_LINKS = [
   { href: "/hire", label: "Hire & Flex Hire" },
-  { href: "/motability/scooters-wheelchairs", label: "Motability" },
+  { href: "/motability", label: "Motability" },
   { href: "/clearance", label: "Clearance & ex-demo" },
   { href: "/lightweight-folding-mobility", label: "Lightweight & folding" },
   { href: "/trade-in", label: "Old scooter takeaway" },
-  { href: "/delivery", label: "Local delivery" },
+  { href: "/delivery", label: "Delivery" },
 ];
 
 export const revalidate = 300;
 
 export const metadata = createMetadata({
-  title: "Shop scooters & wheelchairs — Greater London & the South",
+  title: "Shop scooters, wheelchairs & more",
   description:
-    "Browse mobility scooters and powered wheelchairs for local delivery and home demos from Heathrow and Ferndown. Motability & private.",
+    "Browse mobility scooters, powered wheelchairs and more. Free home demonstrations from Heathrow and Ferndown branches.",
   path: "/shop",
 });
 

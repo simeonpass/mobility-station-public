@@ -203,7 +203,7 @@ export default async function VehicleAdaptationsPage() {
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
-                href="/quote?interest=adaptation"
+                href="/contact?interest=adaptation"
                 className={cn(
                   buttonVariants({ variant: "primary", size: "lg" }),
                   "rounded-xl",
@@ -500,8 +500,6 @@ export default async function VehicleAdaptationsPage() {
       <CtaFooter
         title="Get a free adaptation quotation"
         subtitle="Tell us your vehicle and what you need — we’ll confirm compatibility, Motability options and a firm fitted price."
-        primaryHref="/quote?interest=adaptation"
-        primaryLabel="Request a quotation"
       />
     </>
   );

@@ -33,7 +33,6 @@ export const enquirySchema = z
       "hire",
       "trade-in",
       "callback",
-      "quote",
     ]),
   })
   .superRefine((data, ctx) => {

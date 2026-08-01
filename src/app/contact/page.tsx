@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { CalendarCheck, MessageSquare, PhoneCall, Wrench } from "lucide-react";
 import { CallbackForm } from "@/components/forms/callback-form";
 import { EnquiryForm } from "@/components/forms/enquiry-form";
@@ -10,7 +9,7 @@ import { createMetadata, jsonLdScript, SITE } from "@/lib/seo";
 export const metadata = createMetadata({
   title: "Contact Mobility Station",
   description:
-    "Contact Mobility Station for scooters, wheelchairs and vehicle adaptations across Greater London and the South. Request a callback or visit Heathrow & Ferndown.",
+    "Contact Mobility Station for scooters, wheelchairs and vehicle adaptations. Request a callback, message the team, or visit Heathrow & Ferndown.",
   path: "/contact",
 });
 
@@ -25,7 +24,6 @@ const INTEREST_PRESETS: Record<string, string> = {
   "trade-in": "Old scooter takeaway",
   callback: "Request a callback",
   hire: "Hire / Flex Hire",
-  quote: "Product quotation",
 };
 
 const ROUTES = [
@@ -62,35 +60,14 @@ const ROUTES = [
 export default async function ContactPage({
   searchParams,
 }: {
-  searchParams: Promise<{
-    sent?: string;
-    interest?: string;
-    product?: string;
-  }>;
+  searchParams: Promise<{ sent?: string; interest?: string }>;
 }) {
-  const { sent, interest, product } = await searchParams;
-
-  // Product-linked quotes go to the dedicated quotation flow
-  if (product?.trim()) {
-    const params = new URLSearchParams({ product: product.trim() });
-    if (interest) params.set("interest", interest);
-    redirect(`/quote?${params.toString()}`);
-  }
-
+  const { sent, interest } = await searchParams;
   const interestKey = interest?.toLowerCase() ?? "";
-  if (
-    interestKey === "adaptation" ||
-    interestKey === "adaptations" ||
-    interestKey === "quote"
-  ) {
-    const params = new URLSearchParams();
-    if (interest) params.set("interest", interest);
-    redirect(`/quote?${params.toString()}`);
-  }
-
-  const isCallback = interestKey === "callback" || sent === "callback";
+  const isCallback =
+    interestKey === "callback" || sent === "callback";
   const presetInterest = interest
-    ? (INTEREST_PRESETS[interestKey] ?? interest)
+    ? INTEREST_PRESETS[interestKey] ?? interest
     : "General enquiry";
 
   const jsonLd = {
@@ -148,16 +125,6 @@ export default async function ContactPage({
             ))}
           </ul>
           <p className="mt-6 text-sm text-muted">
-            Looking for a price on a specific product?{" "}
-            <Link
-              href="/quote"
-              className="font-semibold text-primary underline underline-offset-2"
-            >
-              Request a quotation
-            </Link>
-            , or open any product page and choose Get a quote.
-          </p>
-          <p className="mt-3 text-sm text-muted">
             Branch demonstrations are free. Home visits are free for Motability
             scooters and wheelchairs, and £100 for private or adaptation visits —
             refundable if you place an order.{" "}
@@ -214,10 +181,7 @@ export default async function ContactPage({
         </div>
       </section>
 
-      <section
-        id="enquire"
-        className="scroll-mt-24 pb-16 pt-12 md:pb-20 md:pt-14"
-      >
+      <section id="enquire" className="scroll-mt-24 pb-16 md:pb-20 pt-12 md:pt-14">
         <div className="container-site grid gap-10 lg:grid-cols-[0.85fr_1.15fr]">
           <div>
             <h2 className="text-2xl font-extrabold text-primary">

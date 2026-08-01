@@ -1,15 +1,20 @@
+import Link from "next/link";
+import { ProductCard } from "@/components/ProductCard";
 import { BranchMap } from "@/components/sections/branch-map";
 import { CtaFooter } from "@/components/sections/cta-footer";
 import { HomeHero } from "@/components/sections/home-hero";
+import { HomePaths } from "@/components/sections/home-paths";
 import { RecentWorkStrip } from "@/components/sections/recent-work-strip";
 import { Testimonials } from "@/components/sections/testimonials";
+import { TrustStrip } from "@/components/sections/trust-strip";
 import { getBranches, getPublicPortfolio, getReviews } from "@/lib/data";
+import { getFeaturedProducts } from "@/lib/products";
 import { createMetadata, jsonLdScript, SITE } from "@/lib/seo";
 
 export const metadata = createMetadata({
-  title: "Mobility Station | Adaptations & Mobility — Greater London & the South",
+  title: "Mobility Station | Vehicle Adaptations & Mobility",
   description:
-    "Vehicle adaptations or scooters & wheelchairs — choose your path. Motability & private from Heathrow and Ferndown across Greater London and the South.",
+    "Vehicle adaptations and mobility scooters & wheelchairs. Free home visits. Heathrow & Ferndown. Motability accredited.",
   path: "/",
   absoluteTitle: true,
 });
@@ -22,11 +27,15 @@ export default async function HomePage() {
     getReviews(),
   ]);
 
+  let featured: Awaited<ReturnType<typeof getFeaturedProducts>> = [];
   let portfolio: Awaited<ReturnType<typeof getPublicPortfolio>> = [];
   try {
-    portfolio = await getPublicPortfolio(6);
+    [featured, portfolio] = await Promise.all([
+      getFeaturedProducts(8),
+      getPublicPortfolio(6),
+    ]);
   } catch (error) {
-    console.error("Homepage portfolio error:", error);
+    console.error("Homepage catalogue error:", error);
   }
 
   const jsonLd = {
@@ -52,14 +61,44 @@ export default async function HomePage() {
         dangerouslySetInnerHTML={jsonLdScript(jsonLd)}
       />
       <HomeHero />
+      <TrustStrip />
+      <HomePaths />
+
+      {featured.length > 0 ? (
+        <section className="bg-soft py-16 md:py-20">
+          <div className="container-site">
+            <div className="mb-6 flex items-end justify-between gap-4">
+              <div>
+                <h2 className="text-3xl font-extrabold tracking-tight text-primary md:text-4xl">
+                  Scooters &amp; wheelchairs
+                </h2>
+                <p className="mt-2 text-muted">
+                  Popular models ready for a home demonstration.
+                </p>
+              </div>
+              <Link
+                href="/shop"
+                className="shrink-0 font-semibold text-primary underline underline-offset-4 hover:text-primary-dark"
+              >
+                See all →
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+              {featured.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       <RecentWorkStrip items={portfolio} />
 
       <BranchMap branches={branches} />
       <Testimonials reviews={reviews} />
       <CtaFooter
-        title="Not sure which side you need?"
-        subtitle="Request a callback — we’ll point you to vehicle adaptations or scooters & wheelchairs."
+        title="Book a home demonstration"
+        subtitle="Whether you need a vehicle adaptation or a scooter or wheelchair — we come to you from Heathrow or Ferndown."
       />
     </>
   );

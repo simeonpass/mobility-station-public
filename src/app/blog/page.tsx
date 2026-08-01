@@ -48,7 +48,7 @@ export default async function BlogPage() {
         compact
         title="Recent work & stories"
         subtitle="Real adaptations we’ve fitted, installations we’re proud of, and practical mobility advice from our Heathrow and Ferndown teams."
-        primaryHref="/quote?interest=adaptation"
+        primaryHref="/contact?interest=adaptation"
         primaryLabel="Request a quotation"
         {...(gallery.length
           ? {
@@ -99,7 +99,7 @@ export default async function BlogPage() {
             <p className="mt-10 text-center text-sm text-muted">
               Planning something similar?{" "}
               <Link
-                href="/quote?interest=adaptation"
+                href="/contact?interest=adaptation"
                 className="font-semibold text-primary underline"
               >
                 Ask us for a quotation
