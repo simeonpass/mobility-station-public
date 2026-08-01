@@ -6,6 +6,7 @@ import { useCart } from "@/components/cart/cart-provider";
 import { CatalogImage } from "@/components/product/catalog-image";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Textarea, Select } from "@/components/ui/input";
+import { useDnaPaymentsSdk } from "@/hooks/use-dna-payments-sdk";
 import {
   VAT_CONDITIONS,
   VAT_DECLARATION,
@@ -13,6 +14,7 @@ import {
   linePrice,
   type CheckoutPayload,
 } from "@/lib/cart";
+import { openDnaPaymentPage } from "@/lib/dna-payments";
 import { formatGBP } from "@/lib/products";
 import {
   isTakeawayEligibleProduct,
@@ -21,7 +23,8 @@ import {
 
 export function CheckoutForm() {
   const { items, subtotal } = useCart();
-  const [loading, setLoading] = useState<"revolut" | "paypal" | null>(null);
+  const { ready: dnaReady, failed: dnaFailed } = useDnaPaymentsSdk();
+  const [loading, setLoading] = useState<"dna" | "paypal" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [declarationConfirmed, setDeclarationConfirmed] = useState(false);
   const [takeawayRequested, setTakeawayRequested] = useState(false);
@@ -168,10 +171,19 @@ export function CheckoutForm() {
     return null;
   }
 
-  async function pay(provider: "revolut" | "paypal") {
+  async function pay(provider: "dna" | "paypal") {
     const validationError = validate();
     if (validationError) {
       setError(validationError);
+      return;
+    }
+
+    if (provider === "dna" && !dnaReady) {
+      setError(
+        dnaFailed
+          ? "Card payments could not load. Please try PayPal, or refresh the page."
+          : "Card payments are still loading — try again in a moment.",
+      );
       return;
     }
 
@@ -183,13 +195,27 @@ export function CheckoutForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(buildPayload()),
       });
-      const data = (await res.json()) as { url?: string; error?: string };
-      if (!res.ok || !data.url) {
+      const data = (await res.json()) as {
+        url?: string;
+        paymentData?: Record<string, unknown>;
+        error?: string;
+      };
+      if (!res.ok) {
         throw new Error(data.error || "Checkout failed");
       }
+
       // Keep the cart until order confirmation clears it after a successful return.
-      // Clearing before redirect loses the basket if the shopper abandons Revolut/PayPal.
-      window.location.href = data.url;
+      if (provider === "paypal") {
+        if (!data.url) throw new Error(data.error || "No PayPal checkout URL");
+        window.location.href = data.url;
+        return;
+      }
+
+      if (!data.paymentData) {
+        throw new Error(data.error || "No DNA payment data returned");
+      }
+      openDnaPaymentPage(data.paymentData);
+      setLoading(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Checkout failed");
       setLoading(null);
@@ -516,13 +542,20 @@ export function CheckoutForm() {
             type="button"
             variant="buy"
             className="w-full rounded-xl"
-            disabled={loading !== null}
-            onClick={() => pay("revolut")}
+            disabled={loading !== null || (!dnaReady && !dnaFailed)}
+            onClick={() => pay("dna")}
           >
-            {loading === "revolut"
-              ? "Redirecting to Revolut…"
-              : "Pay securely with Revolut"}
+            {loading === "dna"
+              ? "Opening DNA Payments…"
+              : !dnaReady && !dnaFailed
+                ? "Loading card payments…"
+                : "Pay by card (DNA Payments)"}
           </Button>
+          {dnaFailed ? (
+            <p className="text-xs text-error">
+              Card checkout could not load. You can still pay with PayPal below.
+            </p>
+          ) : null}
           <Button
             type="button"
             variant="outline"
@@ -534,7 +567,8 @@ export function CheckoutForm() {
           </Button>
         </div>
         <p className="mt-4 text-center text-xs text-muted">
-          Secure checkout. Prices are re-validated on the server before payment.
+          Secure DNA Payments checkout. Prices are re-validated on the server
+          before payment.
         </p>
       </aside>
     </div>

@@ -70,7 +70,6 @@ export function HireCheckoutClient({ bookingId }: { bookingId: string }) {
   const [signatureDataUrl, setSignatureDataUrl] = useState<string | null>(null);
   const [agree, setAgree] = useState(false);
   const [signing, setSigning] = useState(false);
-  const [paying, setPaying] = useState(false);
 
   const reload = async () => {
     const res = await fetch(`/api/hire/${bookingId}`);
@@ -267,26 +266,6 @@ export function HireCheckoutClient({ bookingId }: { bookingId: string }) {
       setError(e instanceof Error ? e.message : "Signing failed");
     } finally {
       setSigning(false);
-    }
-  };
-
-  const pay = async () => {
-    setError(null);
-    setPaying(true);
-    try {
-      const res = await fetch("/api/hire/pay", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bookingId: booking.id }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.url) {
-        throw new Error(data.error || "No Revolut checkout URL returned");
-      }
-      window.location.href = data.url;
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not start payment");
-      setPaying(false);
     }
   };
 
@@ -544,17 +523,15 @@ export function HireCheckoutClient({ bookingId }: { bookingId: string }) {
               ) : null}
             </div>
             <p className="text-sm text-muted">
-              You&apos;ll be taken to Revolut&apos;s secure checkout to pay.
+              Online hire card payment isn&apos;t live on this site yet. Call us
+              or request a callback and we&apos;ll take payment when we confirm
+              your booking.
             </p>
-            <Button className="w-full" variant="buy" onClick={() => void pay()} disabled={paying}>
-              {paying ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Opening payment…
-                </>
-              ) : (
-                "Pay securely with Revolut"
-              )}
-            </Button>
+            <Link href="/contact?interest=hire#callback">
+              <Button className="w-full" variant="buy" type="button">
+                Request a callback
+              </Button>
+            </Link>
           </div>
         ) : null}
 

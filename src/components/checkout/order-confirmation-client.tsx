@@ -121,8 +121,8 @@ export function OrderConfirmationClient() {
               Order confirmation
             </h1>
             <p className="mt-4 text-sm text-muted">
-              Open this page from a completed Revolut or PayPal checkout to see
-              your order status.
+              Open this page from a completed DNA Payments or PayPal checkout to
+              see your order status.
             </p>
           </>
         )}

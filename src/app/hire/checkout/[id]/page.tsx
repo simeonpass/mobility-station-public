@@ -3,7 +3,8 @@ import { createMetadata } from "@/lib/seo";
 
 export const metadata = createMetadata({
   title: "Complete your hire booking",
-  description: "Sign your hire agreement and pay securely with DNA Payments.",
+  description:
+    "Confirm fulfilment details and sign your hire agreement. We’ll take payment when we confirm your booking.",
   path: "/hire/checkout",
 });
 

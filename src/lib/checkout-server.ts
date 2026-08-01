@@ -35,6 +35,7 @@ export async function invokeCheckoutFunction(
     success?: boolean;
     url?: string;
     checkoutUrl?: string;
+    paymentData?: Record<string, unknown>;
     orderNumber?: string;
     error?: string;
     status?: string;
@@ -62,8 +63,9 @@ function isPublicOrigin(origin: string) {
 }
 
 /**
- * Origin passed to Supabase checkout functions for Revolut/PayPal return URLs.
- * Revolut rejects localhost hosts, so local/dev falls back to the public site URL.
+ * Origin passed to Supabase checkout functions for DNA/PayPal return URLs.
+ * DNA hosted checkout rejects localhost hosts, so local/dev falls back to the
+ * public site URL.
  */
 export function resolveReturnOrigin(request: Request) {
   const fromHeader = request.headers.get("origin");
