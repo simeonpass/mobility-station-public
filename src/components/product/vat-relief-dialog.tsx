@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { Info, X } from "lucide-react";
 import { formatGBP } from "@/lib/products";
@@ -25,8 +26,13 @@ export function VatReliefDialog({
   children,
 }: Props) {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const titleId = useId();
   const closeRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -73,91 +79,102 @@ export function VatReliefDialog({
       </button>
     );
 
+  const overlay =
+    open && mounted
+      ? createPortal(
+          <div
+            className="fixed inset-0 z-[200] overflow-y-auto overscroll-contain bg-black/50"
+            role="presentation"
+            onClick={() => setOpen(false)}
+          >
+            <div className="flex min-h-full items-end justify-center p-4 sm:items-center sm:p-6">
+              <div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby={titleId}
+                className="my-auto flex max-h-[min(92vh,calc(100dvh-2rem))] w-full max-w-md flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-2xl"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex shrink-0 items-start justify-between gap-3 border-b border-border/70 px-5 py-4 sm:px-6">
+                  <h2
+                    id={titleId}
+                    className="text-lg font-extrabold text-primary"
+                  >
+                    VAT relief for disabled customers
+                  </h2>
+                  <button
+                    ref={closeRef}
+                    type="button"
+                    onClick={() => setOpen(false)}
+                    className="rounded-full p-1 text-muted hover:bg-soft hover:text-primary"
+                    aria-label="Close"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+
+                <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-4 sm:px-6 sm:py-5">
+                  <p className="text-sm leading-relaxed text-muted">
+                    If you have a long-term illness or disability, you may buy
+                    qualifying mobility products without paying VAT — saving{" "}
+                    {UK_VAT_PERCENT}%. Claim at checkout with a short
+                    declaration.
+                  </p>
+
+                  {netPrice != null && grossPrice != null ? (
+                    <ul className="mt-4 space-y-3 rounded-xl bg-soft p-4 text-sm">
+                      <li>
+                        <p className="font-semibold text-primary">
+                          VAT relief · {formatGBP(netPrice)}
+                        </p>
+                        <p className="text-xs text-muted">
+                          Ex VAT — for eligible customers (declare at checkout).
+                        </p>
+                      </li>
+                      <li>
+                        <p className="font-semibold text-primary">
+                          Standard · {formatGBP(grossPrice)}
+                        </p>
+                        <p className="text-xs text-muted">
+                          Includes {UK_VAT_PERCENT}% UK VAT.
+                        </p>
+                      </li>
+                    </ul>
+                  ) : null}
+
+                  <p className="mt-4 text-xs leading-relaxed text-muted">
+                    Making a false declaration is a criminal offence. Goods must
+                    be for the personal use of the disabled person.
+                  </p>
+
+                  <div className="mt-5 flex flex-wrap gap-3">
+                    <Link
+                      href="/vat-relief"
+                      className="rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground"
+                      onClick={() => setOpen(false)}
+                    >
+                      Full VAT relief guide
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => setOpen(false)}
+                      className="rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-primary"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )
+      : null;
+
   return (
     <>
       {trigger}
-      {open ? (
-        <div
-          className="fixed inset-0 z-[80] flex items-end justify-center bg-black/50 p-4 sm:items-center"
-          role="presentation"
-          onClick={() => setOpen(false)}
-        >
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby={titleId}
-            className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl border border-border bg-white p-5 shadow-2xl sm:p-6"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-start justify-between gap-3">
-              <h2
-                id={titleId}
-                className="text-lg font-extrabold text-primary"
-              >
-                VAT relief for disabled customers
-              </h2>
-              <button
-                ref={closeRef}
-                type="button"
-                onClick={() => setOpen(false)}
-                className="rounded-full p-1 text-muted hover:bg-soft hover:text-primary"
-                aria-label="Close"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <p className="mt-3 text-sm leading-relaxed text-muted">
-              If you have a long-term illness or disability, you may buy
-              qualifying mobility products without paying VAT — saving{" "}
-              {UK_VAT_PERCENT}%. Claim at checkout with a short declaration.
-            </p>
-
-            {netPrice != null && grossPrice != null ? (
-              <ul className="mt-4 space-y-3 rounded-xl bg-soft p-4 text-sm">
-                <li>
-                  <p className="font-semibold text-primary">
-                    VAT relief · {formatGBP(netPrice)}
-                  </p>
-                  <p className="text-xs text-muted">
-                    Ex VAT — for eligible customers (declare at checkout).
-                  </p>
-                </li>
-                <li>
-                  <p className="font-semibold text-primary">
-                    Standard · {formatGBP(grossPrice)}
-                  </p>
-                  <p className="text-xs text-muted">
-                    Includes {UK_VAT_PERCENT}% UK VAT.
-                  </p>
-                </li>
-              </ul>
-            ) : null}
-
-            <p className="mt-4 text-xs leading-relaxed text-muted">
-              Making a false declaration is a criminal offence. Goods must be
-              for the personal use of the disabled person.
-            </p>
-
-            <div className="mt-5 flex flex-wrap gap-3">
-              <Link
-                href="/vat-relief"
-                className="rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground"
-                onClick={() => setOpen(false)}
-              >
-                Full VAT relief guide
-              </Link>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-primary"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      {overlay}
     </>
   );
 }
