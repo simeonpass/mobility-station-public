@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useCart } from "@/components/cart/cart-provider";
 import { CatalogImage } from "@/components/product/catalog-image";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,10 @@ import {
   linePrice,
   type CheckoutPayload,
 } from "@/lib/cart";
+import {
+  checkDeliveryZone,
+  type DeliveryCheckResult,
+} from "@/lib/delivery-zone";
 import { openDnaPaymentPage } from "@/lib/dna-payments";
 import { formatGBP } from "@/lib/products";
 import {
@@ -28,6 +32,10 @@ export function CheckoutForm() {
   const [error, setError] = useState<string | null>(null);
   const [declarationConfirmed, setDeclarationConfirmed] = useState(false);
   const [takeawayRequested, setTakeawayRequested] = useState(false);
+  const [deliveryZone, setDeliveryZone] = useState<DeliveryCheckResult | null>(
+    null,
+  );
+  const [zoneChecking, setZoneChecking] = useState(false);
   const [form, setForm] = useState({
     email: "",
     firstName: "",
@@ -95,8 +103,50 @@ export function CheckoutForm() {
       ),
     [items],
   );
+
+  // Takeaway credit only when collecting, or delivering inside our local zone.
+  useEffect(() => {
+    if (form.fulfillment === "collection") {
+      setDeliveryZone(null);
+      setZoneChecking(false);
+      return;
+    }
+    const pc = form.postcode.trim();
+    if (!pc || pc.length < 5) {
+      setDeliveryZone(null);
+      setZoneChecking(false);
+      return;
+    }
+    let cancelled = false;
+    setZoneChecking(true);
+    const timer = window.setTimeout(() => {
+      void checkDeliveryZone(pc).then((result) => {
+        if (cancelled) return;
+        setDeliveryZone(result);
+        setZoneChecking(false);
+      });
+    }, 450);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [form.fulfillment, form.postcode]);
+
+  const takeawayLocationOk =
+    form.fulfillment === "collection" ||
+    (form.fulfillment === "delivery" && deliveryZone?.status === "local");
+
+  const takeawayAvailable =
+    takeawayEligible && availableTakeawayCredit > 0 && takeawayLocationOk;
+
+  useEffect(() => {
+    if (takeawayRequested && !takeawayAvailable) {
+      setTakeawayRequested(false);
+    }
+  }, [takeawayRequested, takeawayAvailable]);
+
   const takeawayCredit =
-    takeawayRequested && takeawayEligible ? availableTakeawayCredit : 0;
+    takeawayRequested && takeawayAvailable ? availableTakeawayCredit : 0;
   const total = Math.max(0, subtotal + vatAmount + deliveryFee - takeawayCredit);
 
   const update = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
@@ -333,6 +383,8 @@ export function CheckoutForm() {
               </div>
               <p className="text-sm text-muted">
                 Delivery is currently free across the UK for eligible orders.
+                Old scooter takeaway credit applies only when we deliver in our
+                local service area (or you collect from a branch).
               </p>
             </div>
           ) : (
@@ -417,21 +469,87 @@ export function CheckoutForm() {
 
         <section className="rounded-2xl border border-border bg-white p-6">
           <h2 className="text-lg font-bold text-primary">4. Old scooter takeaway</h2>
-          {takeawayEligible ? (
+          {takeawayEligible && availableTakeawayCredit > 0 ? (
             <>
               <p className="mt-2 text-sm text-muted">
-                Fixed credit off this order when we collect and dispose of (or
-                keep) your old scooter or wheelchair — not a trade-in valuation.{" "}
+                Fixed credit of{" "}
+                <span className="font-semibold text-primary">
+                  {formatGBP(availableTakeawayCredit)}
+                </span>{" "}
+                off this order when we collect and dispose of (or keep) your old
+                scooter or wheelchair — available with{" "}
+                <span className="font-medium text-primary">branch collection</span>{" "}
+                or{" "}
+                <span className="font-medium text-primary">
+                  local delivery in our service area
+                </span>
+                .{" "}
                 <Link href="/trade-in" className="font-semibold text-primary underline">
                   See the credit bands
                 </Link>
                 .
               </p>
-              <label className="mt-4 flex items-start gap-3 text-sm">
+
+              {form.fulfillment === "delivery" && !form.postcode.trim() ? (
+                <p className="mt-3 rounded-lg bg-soft px-3 py-2 text-sm text-muted">
+                  Enter your delivery postcode above to check if takeaway credit
+                  is available — or switch to collection.
+                </p>
+              ) : null}
+
+              {form.fulfillment === "delivery" &&
+              form.postcode.trim() &&
+              zoneChecking ? (
+                <p className="mt-3 text-sm text-muted">
+                  Checking whether your postcode is in our service area…
+                </p>
+              ) : null}
+
+              {form.fulfillment === "delivery" &&
+              deliveryZone?.status === "pallet" ? (
+                <p className="mt-3 rounded-lg bg-soft px-3 py-2 text-sm text-muted">
+                  Your postcode is outside our local takeaway area. Choose{" "}
+                  <button
+                    type="button"
+                    className="font-semibold text-primary underline"
+                    onClick={() => update("fulfillment", "collection")}
+                  >
+                    branch collection
+                  </button>{" "}
+                  to unlock the {formatGBP(availableTakeawayCredit)} credit, or
+                  call us about a boxed return.
+                </p>
+              ) : null}
+
+              {form.fulfillment === "delivery" &&
+              deliveryZone?.status === "error" ? (
+                <p className="mt-3 text-sm text-error">{deliveryZone.message}</p>
+              ) : null}
+
+              {form.fulfillment === "delivery" &&
+              deliveryZone?.status === "local" ? (
+                <p className="mt-3 text-sm text-success">
+                  You’re in our {deliveryZone.branch} service area — takeaway
+                  credit is available with this delivery.
+                </p>
+              ) : null}
+
+              {form.fulfillment === "collection" ? (
+                <p className="mt-3 text-sm text-success">
+                  Branch collection selected — takeaway credit is available.
+                </p>
+              ) : null}
+
+              <label
+                className={`mt-4 flex items-start gap-3 text-sm ${
+                  takeawayAvailable ? "" : "opacity-50"
+                }`}
+              >
                 <input
                   type="checkbox"
                   className="mt-1"
                   checked={takeawayRequested}
+                  disabled={!takeawayAvailable}
                   onChange={(e) => setTakeawayRequested(e.target.checked)}
                 />
                 <span>

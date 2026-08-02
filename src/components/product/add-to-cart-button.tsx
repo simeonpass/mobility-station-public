@@ -61,7 +61,7 @@ export function AddToCartButton({
         </Button>
         <Link
           href={`/book-a-demo?product=${encodeURIComponent(product.slug)}`}
-          className={`${ctaClass} border border-primary text-primary transition-colors hover:bg-primary hover:text-primary-foreground`}
+          className={`${ctaClass} border border-primary/25 bg-white text-primary transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground`}
         >
           Book a demonstration
         </Link>

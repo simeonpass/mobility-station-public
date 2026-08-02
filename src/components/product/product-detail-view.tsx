@@ -2,18 +2,22 @@
 
 import Link from "next/link";
 import { useMemo, useRef, useState, type ReactNode } from "react";
+import { Check, Phone, Shield, Truck } from "lucide-react";
 import {
   AddToCartButton,
   StickyBuyBar,
 } from "@/components/product/add-to-cart-button";
 import { BrandLogo } from "@/components/product/brand-logo";
-import { DeliveryChecker } from "@/components/product/delivery-checker";
-import { ProductAccordion } from "@/components/product/product-accordion";
+import { ProductTabs } from "@/components/product/product-tabs";
 import { ProductGallery } from "@/components/product/product-gallery";
+import { FittedBadge } from "@/components/product/fitted-badge";
 import { MotabilityLogo } from "@/components/product/motability-logo";
 import { ProductOptionsSelector } from "@/components/product/product-options-selector";
 import { ProductPurchaseReassurance } from "@/components/product/product-purchase-reassurance";
+import { TakeawayCallout } from "@/components/product/takeaway-callout";
 import { VatReliefDialog } from "@/components/product/vat-relief-dialog";
+import { AdaptationFittingGuide } from "@/components/product/adaptation-fitting-guide";
+import { ShopBuyingGuide } from "@/components/product/shop-buying-guide";
 import { EnquiryDialog } from "@/components/forms/enquiry-dialog";
 import { useCart } from "@/components/cart/cart-provider";
 import { Button } from "@/components/ui/button";
@@ -31,6 +35,11 @@ import {
   type ProductListItem,
   type ProductVariant,
 } from "@/lib/products";
+import {
+  isTakeawayEligibleProduct,
+  takeawayCreditForPrice,
+} from "@/lib/takeaway-credit";
+import { cn } from "@/lib/utils";
 import { getVatPriceDisplay, UK_VAT_PERCENT } from "@/lib/vat";
 
 export type ProductDetailViewProps = {
@@ -53,6 +62,7 @@ export type ProductDetailViewProps = {
   adaptationId: string | null;
   isAdaptation: boolean;
   deliveryEstimate: string | null;
+  trackStock?: boolean;
   weight: number | null;
   colourOptions: string[];
   variants: ProductVariant[];
@@ -245,7 +255,17 @@ export function ProductDetailView(props: ProductDetailViewProps) {
           title: "Description",
           defaultOpen: true,
           content: (
-            <p className="whitespace-pre-line">{props.description}</p>
+            <div className="space-y-4 text-[15px] leading-7 text-foreground/90 sm:text-base sm:leading-8">
+              {props.description
+                .split(/\n{2,}/)
+                .map((para) => para.trim())
+                .filter(Boolean)
+                .map((para) => (
+                  <p key={para.slice(0, 48)} className="whitespace-pre-line">
+                    {para}
+                  </p>
+                ))}
+            </div>
           ),
         }
       : null,
@@ -254,10 +274,16 @@ export function ProductDetailView(props: ProductDetailViewProps) {
           id: "features",
           title: "Key features",
           content: (
-            <ul className="space-y-2">
+            <ul className="grid gap-3 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-3">
               {props.features.map((feature) => (
-                <li key={feature} className="flex gap-2">
-                  <span className="font-bold text-accent" aria-hidden>
+                <li
+                  key={feature}
+                  className="flex gap-3 rounded-xl bg-soft/70 px-3.5 py-3 text-[15px] leading-snug text-foreground/90"
+                >
+                  <span
+                    className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent/25 text-xs font-bold text-primary"
+                    aria-hidden
+                  >
                     ✓
                   </span>
                   <span>{feature}</span>
@@ -272,7 +298,7 @@ export function ProductDetailView(props: ProductDetailViewProps) {
           id: "suitability",
           title: "Who is it suitable for?",
           content: (
-            <div className="space-y-2">
+            <div className="space-y-3 rounded-xl border border-border/80 bg-soft/50 px-4 py-4 text-[15px] leading-7 text-foreground/90 sm:px-5 sm:py-5 sm:text-base sm:leading-8">
               {props.suitabilityInfo
                 .split("\n")
                 .filter(Boolean)
@@ -288,19 +314,41 @@ export function ProductDetailView(props: ProductDetailViewProps) {
           id: "specs",
           title: "Specifications",
           content: (
-            <dl className="grid grid-cols-2 gap-x-4 gap-y-1">
-              {props.specs.map(([key, value]) => (
-                <div key={key} className="border-b border-border py-2">
-                  <dt className="capitalize text-muted">
+            <dl className="overflow-hidden rounded-xl border border-border">
+              {props.specs.map(([key, value], index) => (
+                <div
+                  key={key}
+                  className={cn(
+                    "grid grid-cols-1 gap-1 px-4 py-3.5 sm:grid-cols-[minmax(0,11rem)_1fr] sm:items-baseline sm:gap-6 sm:px-5",
+                    index % 2 === 0 ? "bg-soft/60" : "bg-white",
+                    index > 0 ? "border-t border-border/70" : null,
+                  )}
+                >
+                  <dt className="text-xs font-semibold uppercase tracking-wide text-muted">
                     {key.replace(/_/g, " ")}
                   </dt>
-                  <dd className="font-medium text-foreground">{value}</dd>
+                  <dd className="text-[15px] font-semibold text-primary">
+                    {value}
+                  </dd>
                 </div>
               ))}
             </dl>
           ),
         }
       : null,
+    props.isAdaptation
+      ? {
+          id: "fitting",
+          title: "Fitting & coverage",
+          content: <AdaptationFittingGuide />,
+        }
+      : !props.motabilityMode
+        ? {
+            id: "buying",
+            title: "Delivery & buying",
+            content: <ShopBuyingGuide />,
+          }
+        : null,
     props.videoEmbed
       ? {
           id: "video",
@@ -334,197 +382,119 @@ export function ProductDetailView(props: ProductDetailViewProps) {
     stockAvailable &&
     headline != null;
 
+  const takeawayCredit =
+    !motabilityMode &&
+    !props.isAdaptation &&
+    isTakeawayEligibleProduct({
+      category: props.category,
+      name: props.name,
+    }) &&
+    props.priceCurrent != null
+      ? takeawayCreditForPrice(props.priceCurrent)
+      : 0;
+
+  const previewFeatures = !props.isAdaptation
+    ? props.features.slice(0, 4)
+    : [];
+
+  const panelClass =
+    "overflow-hidden rounded-2xl border border-border/70 bg-white shadow-[0_8px_32px_-12px_rgba(0,63,67,0.14)]";
+
+  const hasMotabilityFigure =
+    (motabilityWeekly != null && motabilityWeekly >= 0) ||
+    motabilityPrice != null;
+
   return (
     <>
-      <div className="grid items-start gap-6 md:grid-cols-2 md:gap-10 lg:gap-12">
-        <ProductGallery images={gallery} name={props.name} />
+      <div className="grid items-start gap-8 md:grid-cols-2 md:gap-10 lg:gap-14">
+        <div className="min-w-0 lg:sticky lg:top-24 lg:self-start">
+          <ProductGallery
+            images={gallery}
+            name={props.name}
+            showFittedMechanic={props.isAdaptation}
+          />
+        </div>
 
-        <div className="min-w-0">
-          <div className="mb-3 flex flex-wrap gap-2">
-            {motabilityMode ? (
-              <span className="inline-flex items-center rounded-full bg-white px-3 py-1 shadow-sm ring-1 ring-border">
-                <MotabilityLogo height={16} />
-              </span>
-            ) : null}
-            {props.isAdaptation ? (
-              <span className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
-                Supplied &amp; fitted
-              </span>
-            ) : null}
-            {props.used && props.conditionLabel && !motabilityMode ? (
-              <span className="rounded-full bg-error px-3 py-1 text-xs font-semibold text-white">
-                Clearance · {props.conditionLabel}
-              </span>
-            ) : null}
-            {props.conditionGrade && !motabilityMode ? (
-              <span className="rounded-full bg-soft px-3 py-1 text-xs font-semibold text-primary">
-                {props.conditionGrade}
-              </span>
-            ) : null}
-            {props.saleSaveLabel && !motabilityMode ? (
-              <span className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
-                {props.saleSaveLabel}
-              </span>
-            ) : null}
-          </div>
-
-          {getBrandLogo(props.manufacturer) ? (
-            <div className="mb-3">
-              <BrandLogo manufacturer={props.manufacturer} height={52} />
+        <div className="flex min-w-0 flex-col gap-5">
+          <div>
+            <div className="mb-3 flex flex-wrap gap-2">
+              {motabilityMode ? (
+                <span className="inline-flex items-center rounded-full bg-white px-3 py-1 shadow-sm ring-1 ring-border">
+                  <MotabilityLogo height={16} />
+                </span>
+              ) : null}
+              {props.isAdaptation ? <FittedBadge size="md" /> : null}
+              {props.used && props.conditionLabel && !motabilityMode ? (
+                <span className="rounded-full bg-error px-3 py-1 text-xs font-semibold text-white">
+                  Clearance · {props.conditionLabel}
+                </span>
+              ) : null}
+              {props.conditionGrade && !motabilityMode ? (
+                <span className="rounded-full bg-soft px-3 py-1 text-xs font-semibold text-primary">
+                  {props.conditionGrade}
+                </span>
+              ) : null}
+              {props.saleSaveLabel && !motabilityMode ? (
+                <span className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
+                  {props.saleSaveLabel}
+                </span>
+              ) : null}
+              {props.category && props.isAdaptation && !motabilityMode ? (
+                <span className="rounded-full bg-soft px-3 py-1 text-xs font-semibold text-primary">
+                  {props.category}
+                </span>
+              ) : null}
             </div>
-          ) : props.manufacturer ? (
-            <p className="text-sm font-semibold uppercase tracking-wider text-muted">
-              {props.manufacturer}
-            </p>
-          ) : null}
-          <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-primary sm:text-3xl md:text-4xl">
-            {props.name}
-          </h1>
 
-          {props.category && props.isAdaptation && !motabilityMode ? (
-            <p className="mt-2 text-sm text-muted">{props.category}</p>
-          ) : props.stockLabel ? (
-            <p
-              className={`mt-2 text-sm font-medium ${
-                stockAvailable ? "text-success" : "text-error"
-              }`}
-            >
-              {optionsOutOfStock
-                ? "Selected option out of stock"
-                : props.stockLabel}
-            </p>
-          ) : null}
+            {props.manufacturer && !props.isAdaptation ? (
+              <p className="text-sm font-medium capitalize text-primary">
+                {props.manufacturer}
+              </p>
+            ) : null}
+            <h1 className="mt-1 text-2xl font-extrabold leading-tight tracking-tight text-primary sm:text-3xl lg:text-[2.15rem]">
+              {props.name}
+            </h1>
 
-          <div className="mt-4 space-y-2">
-            {motabilityMode ? (
-              <>
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted">
-                  From your Motability allowance
-                </p>
-                <div className="flex flex-wrap items-baseline gap-2">
-                  {motabilityWeekly != null && motabilityWeekly > 0 ? (
-                    <>
-                      <span className="text-3xl font-extrabold tabular-nums text-primary">
-                        {formatGBP(motabilityWeekly)}
-                      </span>
-                      <span className="text-base font-semibold text-muted">
-                        / week
-                      </span>
-                    </>
-                  ) : motabilityWeekly === 0 || motabilityPrice === 0 ? (
-                    <span className="text-3xl font-extrabold text-primary">
-                      £0 / week
-                    </span>
-                  ) : (
-                    <span className="text-2xl font-extrabold text-primary">
-                      Weekly price on request
-                    </span>
-                  )}
-                </div>
-                <p className="text-sm text-muted">
-                  Indicative Motability weekly figure — not a retail purchase
-                  price. Confirmed at assessment.
-                </p>
-                {adaptationId ? (
-                  <p className="text-xs text-muted">Code: {adaptationId}</p>
-                ) : null}
-              </>
-            ) : (
-              <>
-                <div className="flex flex-wrap items-baseline gap-2">
-                  {headline != null ? (
-                    <>
-                      {!hasConfigurableOptions ? (
-                        <span className="text-sm text-muted">From</span>
-                      ) : null}
-                      <span className="text-3xl font-bold text-primary">
-                        {formatGBP(headline)}
-                      </span>
-                    </>
-                  ) : (
-                    <span className="text-3xl font-bold text-primary">POA</span>
-                  )}
-                  {wasHeadline ? (
-                    <span className="text-base text-muted line-through">
-                      RRP {formatGBP(wasHeadline)}
-                    </span>
-                  ) : null}
-                </div>
+            {getBrandLogo(props.manufacturer) ? (
+              <div className="mt-3">
+                <BrandLogo
+                  manufacturer={props.manufacturer}
+                  height={props.isAdaptation ? 48 : 36}
+                />
+              </div>
+            ) : props.manufacturer && props.isAdaptation ? (
+              <p className="mt-2 text-sm text-muted">{props.manufacturer}</p>
+            ) : null}
 
-                {addonTotal > 0 ? (
-                  <p className="text-sm text-muted">
-                    + {formatGBP(addonTotal)} optional extras
-                  </p>
-                ) : null}
-
-                {vat.mode === "relief" && net != null && gross != null ? (
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-                    <p className="text-sm text-muted">
-                      {showIncVat
-                        ? `inc. ${UK_VAT_PERCENT}% VAT`
-                        : "VAT relief price"}
-                    </p>
-                    <div className="flex items-center gap-2">
-                      <Switch
-                        id="vat-toggle"
-                        checked={showIncVat}
-                        onCheckedChange={setShowIncVat}
-                        label={`Show price including ${UK_VAT_PERCENT}% VAT`}
-                      />
-                      <label
-                        htmlFor="vat-toggle"
-                        className="cursor-pointer text-sm text-muted"
-                      >
-                        Show price inc. {UK_VAT_PERCENT}% VAT
-                      </label>
-                    </div>
-                    <VatReliefDialog
-                      netPrice={net}
-                      grossPrice={gross}
-                      variant="link"
-                    >
-                      About VAT
-                    </VatReliefDialog>
-                  </div>
-                ) : null}
-
-                {vat.mode === "always-inc" && headline != null ? (
-                  <p className="text-sm text-muted">
-                    inc. {UK_VAT_PERCENT}% VAT
-                  </p>
-                ) : null}
-
-                {vat.mode === "no-vat" && headline != null ? (
-                  <p className="text-sm text-muted">No VAT</p>
-                ) : null}
-
-                {props.isAdaptation && props.priceCurrent != null ? (
-                  <p className="text-sm text-muted">
-                    Indicative supplied &amp; fitted — final quote for your
-                    vehicle
-                  </p>
-                ) : null}
-              </>
-            )}
+            {previewFeatures.length > 0 ? (
+              <ul className="mt-4 grid gap-x-4 gap-y-2 sm:grid-cols-2">
+                {previewFeatures.map((feature) => (
+                  <li
+                    key={feature}
+                    className="flex items-start gap-2 text-sm leading-snug text-foreground/85"
+                  >
+                    <Check
+                      className="mt-0.5 h-4 w-4 shrink-0 text-primary"
+                      aria-hidden
+                    />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </div>
 
-          {!motabilityMode &&
-          props.isAdaptation &&
-          ((motabilityWeekly != null && motabilityWeekly >= 0) ||
-            motabilityPrice != null) ? (
-            <div className="mt-4 rounded-xl border border-primary/20 bg-primary-soft/60 px-4 py-4 sm:px-5 sm:py-5">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <MotabilityLogo height={20} />
-                    <p className="text-xs font-semibold uppercase tracking-wide text-muted">
-                      Motability reference
-                    </p>
-                  </div>
-                  <div className="mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+          {motabilityMode ? (
+            <div className={panelClass}>
+              <div className="space-y-4 px-5 py-5 sm:px-6">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted">
+                    Motability scheme price
+                  </p>
+                  <div className="mt-2 flex flex-wrap items-baseline gap-2">
                     {motabilityWeekly != null && motabilityWeekly > 0 ? (
                       <>
-                        <span className="text-3xl font-extrabold tabular-nums text-primary">
+                        <span className="text-4xl font-extrabold tabular-nums tracking-tight text-primary sm:text-5xl">
                           {formatGBP(motabilityWeekly)}
                         </span>
                         <span className="text-base font-semibold text-muted">
@@ -532,134 +502,24 @@ export function ProductDetailView(props: ProductDetailViewProps) {
                         </span>
                       </>
                     ) : motabilityWeekly === 0 || motabilityPrice === 0 ? (
-                      <span className="text-3xl font-extrabold text-primary">
-                        £0
+                      <span className="text-4xl font-extrabold tracking-tight text-primary sm:text-5xl">
+                        £0 / week
                       </span>
-                    ) : motabilityPrice != null ? (
-                      <span className="text-3xl font-extrabold tabular-nums text-primary">
-                        {formatGBP(motabilityPrice)}
+                    ) : (
+                      <span className="text-2xl font-extrabold text-primary">
+                        Weekly price on request
                       </span>
-                    ) : null}
+                    )}
                   </div>
-                  <p className="mt-1 text-sm text-muted">
-                    {motabilityWeekly != null && motabilityWeekly > 0
-                      ? "Indicative weekly Motability figure"
-                      : motabilityWeekly === 0 || motabilityPrice === 0
-                        ? "£0 advance payment on Motability"
-                        : "Indicative Motability advance payment"}
-                    {adaptationId ? ` · Code ${adaptationId}` : ""}
-                  </p>
-                </div>
-                <Link
-                  href="/motability/vehicle-adaptations"
-                  className="shrink-0 text-sm font-semibold text-primary underline-offset-2 hover:underline"
-                >
-                  Learn more
-                </Link>
-              </div>
-            </div>
-          ) : !motabilityMode &&
-            !props.isAdaptation &&
-            ((motabilityWeekly != null && motabilityWeekly >= 0) ||
-              motabilityPrice != null) ? (
-            <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-primary px-3.5 py-2.5 text-primary-foreground">
-              <div className="flex min-w-0 flex-wrap items-center gap-x-2.5 gap-y-1">
-                <MotabilityLogo variant="white" height={18} />
-                <p className="text-sm">
-                  {motabilityWeekly != null && motabilityWeekly > 0 ? (
-                    <>
-                      <span className="font-bold tabular-nums">
-                        {formatGBP(motabilityWeekly)}/week
-                      </span>
-                      <span className="text-primary-foreground/75">
-                        {" "}
-                        on Motability
-                      </span>
-                    </>
-                  ) : motabilityWeekly === 0 || motabilityPrice === 0 ? (
-                    <>
-                      <span className="font-bold">£0 / week</span>
-                      <span className="text-primary-foreground/75">
-                        {" "}
-                        on Motability
-                      </span>
-                    </>
-                  ) : motabilityPrice != null ? (
-                    <>
-                      <span className="font-bold tabular-nums">
-                        {formatGBP(motabilityPrice)}
-                      </span>
-                      <span className="text-primary-foreground/75">
-                        {" "}
-                        contribution on Motability
-                      </span>
-                    </>
+                  {adaptationId ? (
+                    <p className="mt-2 text-xs text-muted">Code {adaptationId}</p>
                   ) : null}
-                </p>
+                </div>
               </div>
-              <Link
-                href="/motability"
-                className="shrink-0 text-xs font-semibold text-accent-on-dark underline-offset-2 hover:underline"
-              >
-                Learn more
-              </Link>
-            </div>
-          ) : null}
-
-          {props.isAdaptation ? (
-            <p className="mt-3 text-sm text-muted">
-              Fitted at Heathrow or Ferndown · mobile where possible ·
-              collection available
-            </p>
-          ) : null}
-
-          {!motabilityMode && !props.isAdaptation ? (
-            <div className="mt-5">
-              <DeliveryChecker weight={props.weight} compact />
-            </div>
-          ) : null}
-
-          {!motabilityMode && !props.isAdaptation && hasConfigurableOptions ? (
-            <div className="mt-5">
-              <ProductOptionsSelector
-                variants={props.variants}
-                selectedByGroup={selectedByGroup}
-                onSelectVariant={(group, variant) =>
-                  setSelectedByGroup((prev) => ({ ...prev, [group]: variant }))
-                }
-                selectedAddons={selectedAddons}
-                onToggleAddon={(addon) =>
-                  setSelectedAddons((prev) =>
-                    prev.some((a) => a.id === addon.id)
-                      ? prev.filter((a) => a.id !== addon.id)
-                      : [...prev, addon],
-                  )
-                }
-                onImageChange={setGalleryOverride}
-              />
-            </div>
-          ) : props.colourOptions.length > 0 ? (
-            <div className="mt-5">
-              <p className="mb-2 text-sm font-semibold text-primary">Colours</p>
-              <ul className="flex flex-wrap gap-2">
-                {props.colourOptions.map((colour) => (
-                  <li
-                    key={colour}
-                    className="rounded-full border border-border px-3 py-1 text-sm"
-                  >
-                    {colour}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-
-          <div ref={buyRef} className="mt-6 space-y-3">
-            {motabilityMode ? (
-              <>
+              <div ref={buyRef} className="space-y-3 border-t border-border/60 bg-soft/50 px-5 py-5 sm:px-6">
                 <Link
                   href={`/book-a-demo?product=${encodeURIComponent(props.slug)}`}
-                  className="flex w-full items-center justify-center rounded-xl bg-accent px-6 py-3 text-center font-semibold text-accent-foreground hover:bg-accent-hover"
+                  className="flex h-12 w-full items-center justify-center rounded-xl bg-accent px-6 text-center text-base font-semibold text-accent-foreground hover:bg-accent-hover"
                 >
                   Book a Motability demonstration
                 </Link>
@@ -669,119 +529,393 @@ export function ProductDetailView(props: ProductDetailViewProps) {
                   defaultTopic="Motability"
                   productSlug={props.slug}
                   productLabel={props.name}
-                  triggerClassName="flex w-full items-center justify-center rounded-xl border border-primary px-6 py-3 text-center font-semibold text-primary hover:bg-primary hover:text-primary-foreground"
+                  triggerClassName="flex h-12 w-full items-center justify-center rounded-xl border border-primary/25 bg-white px-6 text-center font-semibold text-primary transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground"
                 >
                   Contact us about this model
                 </EnquiryDialog>
-                <p className="text-xs leading-relaxed text-muted">
-                  Motability models aren&apos;t sold through online checkout.
-                  Book a free demo or request a callback and we&apos;ll confirm
-                  weekly figures and eligibility with you.
+                <p className="text-center text-[11px] leading-relaxed text-muted">
+                  Not available through online checkout · Free Motability demos ·
+                  Accredited dealer
                 </p>
-              </>
-            ) : props.isAdaptation ? (
-              <>
+              </div>
+            </div>
+          ) : props.isAdaptation ? (
+            <div className={panelClass}>
+              <div className="space-y-5 border-b border-border/60 px-5 py-5 sm:px-6">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted">
+                    {headline != null ? "From" : "Price"}
+                  </p>
+                  <div className="mt-2 flex flex-wrap items-baseline gap-2">
+                    {headline != null ? (
+                      <span className="text-4xl font-bold tracking-tight text-primary sm:text-5xl">
+                        {formatGBP(headline)}
+                      </span>
+                    ) : (
+                      <span className="text-3xl font-bold tracking-tight text-primary">
+                        Quote on request
+                      </span>
+                    )}
+                    {wasHeadline ? (
+                      <span className="text-lg text-muted line-through">
+                        RRP {formatGBP(wasHeadline)}
+                      </span>
+                    ) : null}
+                  </div>
+                  <p className="mt-2 text-sm text-muted">
+                    Supplied &amp; fitted — final quote tailored to your vehicle
+                  </p>
+
+                  {vat.mode === "relief" && net != null && gross != null ? (
+                    <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+                      <div className="inline-flex items-center gap-2 rounded-full border border-border bg-soft/60 px-3 py-1.5">
+                        <Switch
+                          id="vat-toggle-adaptation"
+                          checked={showIncVat}
+                          onCheckedChange={setShowIncVat}
+                          label={`Show price including ${UK_VAT_PERCENT}% VAT`}
+                        />
+                        <label
+                          htmlFor="vat-toggle-adaptation"
+                          className="cursor-pointer text-xs font-medium text-foreground"
+                        >
+                          Show price inc. {UK_VAT_PERCENT}% VAT
+                        </label>
+                      </div>
+                      <VatReliefDialog
+                        netPrice={net}
+                        grossPrice={gross}
+                        variant="link"
+                      >
+                        About VAT
+                      </VatReliefDialog>
+                    </div>
+                  ) : null}
+                </div>
+
+                {hasMotabilityFigure ? (
+                  <div className="flex flex-wrap items-center gap-3 border-t border-border/60 pt-4">
+                    <MotabilityLogo height={24} />
+                    <p className="min-w-0 flex-1 text-lg font-bold tabular-nums text-primary">
+                      {motabilityWeekly != null && motabilityWeekly > 0
+                        ? `${formatGBP(motabilityWeekly)} / week`
+                        : motabilityWeekly === 0 || motabilityPrice === 0
+                          ? "£0"
+                          : motabilityPrice != null
+                            ? formatGBP(motabilityPrice)
+                            : null}
+                    </p>
+                    {adaptationId ? (
+                      <span className="rounded-md border border-border bg-soft/70 px-2 py-1 font-mono text-xs text-muted">
+                        {adaptationId}
+                      </span>
+                    ) : (
+                      <Link
+                        href="/motability/vehicle-adaptations"
+                        className="shrink-0 text-xs font-semibold text-primary underline-offset-2 hover:underline"
+                      >
+                        Learn more
+                      </Link>
+                    )}
+                  </div>
+                ) : null}
+              </div>
+
+              <div ref={buyRef} className="space-y-2.5 bg-soft/40 px-5 py-5 sm:px-6">
                 <EnquiryDialog
                   mode="enquiry"
                   enquiryType="contact"
                   title="Get a free quotation"
                   defaultInterest={`Vehicle adaptation quotation — ${props.name}`}
                   productSlug={props.slug}
-                  triggerClassName="flex h-12 w-full cursor-pointer items-center justify-center rounded-xl bg-accent px-6 text-center text-base font-semibold text-accent-foreground hover:bg-accent-hover"
+                  triggerClassName="flex h-12 w-full cursor-pointer items-center justify-center rounded-xl bg-accent px-6 text-center text-base font-semibold text-accent-foreground hover:bg-accent-hover sm:h-14"
                 >
                   Get a free quotation
                 </EnquiryDialog>
                 <Link
                   href={`/book-a-demo?type=adaptation&product=${encodeURIComponent(props.slug)}`}
-                  className="flex h-12 w-full cursor-pointer items-center justify-center rounded-xl border border-primary px-6 text-center text-base font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+                  className="flex h-12 w-full cursor-pointer items-center justify-center rounded-xl border border-primary/25 bg-white px-6 text-center text-sm font-semibold text-primary transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground"
                 >
                   Book a demonstration
                 </Link>
-                <p className="text-xs leading-relaxed text-muted">
-                  Quoted and fitted to your vehicle — not available for online
-                  checkout.
+                <p className="pt-1 text-center text-[11px] leading-relaxed text-muted">
+                  Free no-obligation quote · Fitted at Heathrow, Ferndown or
+                  mobile where possible
                 </p>
-              </>
-            ) : canBuy && hasConfigurableOptions ? (
-              <div className="space-y-2">
-                <div className="flex flex-col gap-3">
-                  <Button
-                    type="button"
-                    variant="buy"
-                    className="inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-6 text-base font-semibold"
-                    onClick={handleAddConfigured}
-                  >
-                    Add to cart
-                  </Button>
-                  <Link
-                    href={`/book-a-demo?product=${encodeURIComponent(props.slug)}`}
-                    className="inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-primary px-6 text-base font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
-                  >
-                    Book a demonstration
-                  </Link>
-                </div>
-                {cartMessage ? (
-                  <p className="text-sm text-muted">
-                    {cartMessage}
-                    {cartMessage === "Added to cart" ? (
-                      <>
-                        {" "}
-                        ·{" "}
-                        <Link
-                          href="/checkout"
-                          className="font-semibold text-primary underline"
-                        >
-                          Checkout
-                        </Link>
-                      </>
-                    ) : null}
-                  </p>
-                ) : null}
               </div>
-            ) : canBuy && configuredCartProduct ? (
-              <AddToCartButton
-                product={configuredCartProduct}
-                layout="stack"
+            </div>
+          ) : (
+            <>
+              <div className={panelClass}>
+                {(hasConfigurableOptions || props.colourOptions.length > 0) ? (
+                  <div className="space-y-3 border-b border-border/60 px-5 py-5 sm:px-6">
+                    {hasConfigurableOptions ? (
+                      <ProductOptionsSelector
+                        variants={props.variants}
+                        selectedByGroup={selectedByGroup}
+                        onSelectVariant={(group, variant) =>
+                          setSelectedByGroup((prev) => ({
+                            ...prev,
+                            [group]: variant,
+                          }))
+                        }
+                        selectedAddons={selectedAddons}
+                        onToggleAddon={(addon) =>
+                          setSelectedAddons((prev) =>
+                            prev.some((a) => a.id === addon.id)
+                              ? prev.filter((a) => a.id !== addon.id)
+                              : [...prev, addon],
+                          )
+                        }
+                        onImageChange={setGalleryOverride}
+                      />
+                    ) : (
+                      <div>
+                        <p className="mb-2 text-sm font-semibold text-primary">
+                          Colours
+                        </p>
+                        <ul className="flex flex-wrap gap-2">
+                          {props.colourOptions.map((colour) => (
+                            <li
+                              key={colour}
+                              className="rounded-full border border-border px-3 py-1 text-sm"
+                            >
+                              {colour}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                ) : null}
+
+                <div className="space-y-4 border-b border-border/60 px-5 py-5 sm:px-6">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0 space-y-2">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-muted">
+                        {headline != null && !hasConfigurableOptions
+                          ? "From"
+                          : "Price"}
+                      </p>
+                      <div className="flex flex-wrap items-baseline gap-3">
+                        {headline != null ? (
+                          <span className="text-4xl font-bold tracking-tight text-primary sm:text-5xl">
+                            {formatGBP(headline)}
+                          </span>
+                        ) : (
+                          <span className="text-4xl font-bold text-primary">
+                            POA
+                          </span>
+                        )}
+                        {wasHeadline ? (
+                          <span className="text-lg text-muted line-through">
+                            RRP {formatGBP(wasHeadline)}
+                          </span>
+                        ) : null}
+                      </div>
+
+                      {addonTotal > 0 ? (
+                        <p className="text-sm text-muted">
+                          + {formatGBP(addonTotal)} optional extras
+                        </p>
+                      ) : null}
+
+                      {vat.mode === "relief" && net != null && gross != null ? (
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                          <p className="text-sm text-muted">
+                            {showIncVat
+                              ? `inc. ${UK_VAT_PERCENT}% VAT`
+                              : "VAT relief price"}
+                          </p>
+                          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-soft/60 px-3 py-1.5">
+                            <Switch
+                              id="vat-toggle"
+                              checked={showIncVat}
+                              onCheckedChange={setShowIncVat}
+                              label={`Show price including ${UK_VAT_PERCENT}% VAT`}
+                            />
+                            <label
+                              htmlFor="vat-toggle"
+                              className="cursor-pointer text-xs font-medium text-foreground"
+                            >
+                              Show price inc. {UK_VAT_PERCENT}% VAT
+                            </label>
+                          </div>
+                          <VatReliefDialog
+                            netPrice={net}
+                            grossPrice={gross}
+                            variant="link"
+                          >
+                            About VAT
+                          </VatReliefDialog>
+                        </div>
+                      ) : null}
+
+                      {vat.mode === "always-inc" && headline != null ? (
+                        <p className="text-sm text-muted">
+                          inc. {UK_VAT_PERCENT}% VAT
+                        </p>
+                      ) : null}
+
+                      {vat.mode === "no-vat" && headline != null ? (
+                        <p className="text-sm text-muted">No VAT</p>
+                      ) : null}
+                    </div>
+
+                    {props.stockLabel ? (
+                      <span
+                        className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${
+                          stockAvailable
+                            ? "border border-primary/20 bg-primary/5 text-primary"
+                            : "border border-error/25 bg-error/10 text-error"
+                        }`}
+                      >
+                        {optionsOutOfStock
+                          ? "Selected option out of stock"
+                          : props.stockLabel}
+                      </span>
+                    ) : null}
+                  </div>
+
+                  {takeawayCredit > 0 ? (
+                    <TakeawayCallout credit={takeawayCredit} />
+                  ) : null}
+
+                  {hasMotabilityFigure ? (
+                    <Link
+                      href="/motability"
+                      className="flex flex-wrap items-center gap-3 rounded-xl bg-primary px-4 py-3 text-primary-foreground transition-opacity hover:opacity-95"
+                    >
+                      <MotabilityLogo variant="white" height={18} />
+                      <p className="min-w-0 flex-1 text-sm font-bold tabular-nums">
+                        {motabilityWeekly != null && motabilityWeekly > 0
+                          ? `${formatGBP(motabilityWeekly)} / week`
+                          : motabilityWeekly === 0 || motabilityPrice === 0
+                            ? "£0 / week"
+                            : motabilityPrice != null
+                              ? formatGBP(motabilityPrice)
+                              : null}
+                      </p>
+                      <span className="text-xs font-semibold text-accent-on-dark">
+                        Learn more →
+                      </span>
+                    </Link>
+                  ) : null}
+                </div>
+
+                <div ref={buyRef} className="space-y-3 bg-soft/40 px-5 py-5 sm:px-6">
+                  {canBuy && hasConfigurableOptions ? (
+                    <div className="space-y-2">
+                      <div className="flex flex-col gap-2.5">
+                        <Button
+                          type="button"
+                          variant="buy"
+                          className="inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-6 text-base font-semibold sm:h-14"
+                          onClick={handleAddConfigured}
+                        >
+                          Add to cart
+                        </Button>
+                        <Link
+                          href={`/book-a-demo?product=${encodeURIComponent(props.slug)}`}
+                          className="inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-primary/25 bg-white px-6 text-base font-semibold text-primary transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground"
+                        >
+                          Book a demonstration
+                        </Link>
+                      </div>
+                      {cartMessage ? (
+                        <p className="text-sm text-muted">
+                          {cartMessage}
+                          {cartMessage === "Added to cart" ? (
+                            <>
+                              {" "}
+                              ·{" "}
+                              <Link
+                                href="/checkout"
+                                className="font-semibold text-primary underline"
+                              >
+                                Checkout
+                              </Link>
+                            </>
+                          ) : null}
+                        </p>
+                      ) : null}
+                    </div>
+                  ) : canBuy && configuredCartProduct ? (
+                    <AddToCartButton
+                      product={configuredCartProduct}
+                      layout="stack"
+                    />
+                  ) : headline == null ? (
+                    <EnquiryDialog
+                      mode="enquiry"
+                      enquiryType="contact"
+                      title="Request a quote"
+                      defaultInterest={`Quote request — ${props.name}`}
+                      productSlug={props.slug}
+                      triggerClassName="flex h-12 w-full items-center justify-center rounded-xl bg-accent px-6 text-center font-semibold text-accent-foreground hover:bg-accent-hover"
+                    >
+                      Request a quote
+                    </EnquiryDialog>
+                  ) : null}
+
+                  {stockAvailable ? (
+                    <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 pt-1 text-xs text-muted">
+                      <span className="inline-flex items-center gap-1.5">
+                        <Shield
+                          className="h-3.5 w-3.5 text-primary"
+                          aria-hidden
+                        />
+                        UK warranty*
+                      </span>
+                      <span
+                        className="hidden h-3 w-px bg-border sm:block"
+                        aria-hidden
+                      />
+                      <span className="inline-flex items-center gap-1.5">
+                        <Truck
+                          className="h-3.5 w-3.5 text-primary"
+                          aria-hidden
+                        />
+                        Free UK delivery*
+                      </span>
+                      <span
+                        className="hidden h-3 w-px bg-border sm:block"
+                        aria-hidden
+                      />
+                      <span className="inline-flex items-center gap-1.5">
+                        <Phone
+                          className="h-3.5 w-3.5 text-primary"
+                          aria-hidden
+                        />
+                        UK support
+                      </span>
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+
+              <ProductPurchaseReassurance
+                deliveryEstimate={props.deliveryEstimate}
+                trackStock={props.trackStock ?? true}
+                manufacturer={props.manufacturer}
+                weight={props.weight}
               />
-            ) : headline == null && !props.isAdaptation ? (
-              <EnquiryDialog
-                mode="enquiry"
-                enquiryType="contact"
-                title="Request a quote"
-                defaultInterest={`Quote request — ${props.name}`}
-                productSlug={props.slug}
-                triggerClassName="flex w-full items-center justify-center rounded-xl bg-accent px-6 py-3 text-center font-semibold text-accent-foreground hover:bg-accent-hover"
-              >
-                Request a quote
-              </EnquiryDialog>
-            ) : null}
-          </div>
-
-          {!motabilityMode && !props.isAdaptation ? (
-            <ProductPurchaseReassurance
-              deliveryEstimate={props.deliveryEstimate}
-            />
-          ) : null}
-
-          {motabilityMode ? (
-            <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">
-              <li>Weekly Motability figures</li>
-              <li>Free Motability demonstrations</li>
-              <li>Accredited dealer</li>
-            </ul>
-          ) : null}
+            </>
+          )}
 
           {props.discontinuedMessage ? (
-            <p className="mt-4 rounded-lg bg-soft p-3 text-sm text-muted">
+            <p className="rounded-xl border border-border bg-soft p-4 text-sm text-muted">
               {props.discontinuedMessage}
             </p>
           ) : null}
-
-          <div className="mt-8 md:mt-10">
-            <ProductAccordion sections={sections} />
-          </div>
         </div>
       </div>
+
+      {sections.length > 0 ? (
+        <div className="mt-12 md:mt-16">
+          <ProductTabs sections={sections} />
+        </div>
+      ) : null}
 
       {canBuy && configuredCartProduct ? (
         <StickyBuyBar
@@ -795,4 +929,5 @@ export function ProductDetailView(props: ProductDetailViewProps) {
       {canBuy ? <div className="h-20 md:hidden" aria-hidden /> : null}
     </>
   );
+
 }

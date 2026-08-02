@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BrandLogo } from "@/components/product/brand-logo";
 import { CatalogImage } from "@/components/product/catalog-image";
+import { FittedMechanicCorner } from "@/components/product/fitted-badge";
 import { MotabilityLogo } from "@/components/product/motability-logo";
 import { getBrandLogo } from "@/lib/brand-logos";
 import {
@@ -38,66 +39,63 @@ export function AdaptationCard({ product }: { product: ProductListItem }) {
         >
           View product →
         </div>
-        <div className="absolute left-3 top-3">
-          <span className="rounded bg-primary px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-primary-foreground">
-            Supplied &amp; fitted
-          </span>
-        </div>
+        <FittedMechanicCorner size="card" />
       </div>
 
-      <div className="flex flex-1 flex-col p-4 pt-3.5">
-        {product.category ? (
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">
-            {product.category}
-          </p>
-        ) : null}
-        {getBrandLogo(product.manufacturer) ? (
-          <div className="mt-1">
-            <BrandLogo manufacturer={product.manufacturer} height={20} />
-          </div>
-        ) : null}
-        <h3 className="mt-1.5 line-clamp-2 min-h-[2.75rem] text-[15px] font-bold leading-snug text-primary">
-          {product.name}
-        </h3>
-        {product.manufacturer && !getBrandLogo(product.manufacturer) ? (
-          <p className="mt-1 text-xs text-muted">by {product.manufacturer}</p>
-        ) : null}
+      <div className="flex flex-1 flex-col gap-3.5 p-5 pb-5 pt-5">
+        <div className="space-y-2">
+          {product.category ? (
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">
+              {product.category}
+            </p>
+          ) : null}
+          {getBrandLogo(product.manufacturer) ? (
+            <BrandLogo manufacturer={product.manufacturer} height={24} />
+          ) : product.manufacturer ? (
+            <p className="text-xs font-medium text-muted">
+              {product.manufacturer}
+            </p>
+          ) : null}
+          <h3 className="line-clamp-2 min-h-[2.75rem] text-[15px] font-bold leading-snug text-primary">
+            {product.name}
+          </h3>
+        </div>
 
-        <div className="mt-3">
+        <div className="space-y-3">
           {headline != null ? (
-            <>
+            <div>
               <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
                 <span className="text-xs text-muted">From</span>
                 <span className="text-xl font-extrabold tabular-nums text-primary">
                   {formatGBP(headline)}
                 </span>
               </div>
-              <p className="mt-0.5 text-xs text-muted">
+              <p className="mt-1 text-xs text-muted">
                 {vat.mode === "relief"
-                  ? "ex VAT · indicative fitted"
+                  ? "ex VAT · supplied & fitted"
                   : vat.mode === "always-inc"
-                    ? "inc. VAT · indicative fitted"
-                    : "Indicative supplied & fitted"}
+                    ? "inc. VAT · supplied & fitted"
+                    : "Supplied & fitted"}
               </p>
-            </>
+            </div>
           ) : (
             <p className="text-sm font-semibold text-primary">
               Contact for pricing
             </p>
           )}
           {hasMotability ? (
-            <p className="mt-2 flex flex-wrap items-center gap-1.5 text-xs font-medium text-primary">
+            <p className="flex flex-wrap items-center gap-2.5 text-sm font-medium text-primary">
               <span>
                 {freeMotability
                   ? "Free on"
                   : `${formatGBP(product.motability_price)} on`}
               </span>
-              <MotabilityLogo height={16} />
+              <MotabilityLogo height={26} className="shrink-0" />
             </p>
           ) : null}
         </div>
 
-        <span className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-primary px-3 py-2.5 text-sm font-semibold text-primary-foreground transition-colors group-hover:bg-primary-dark">
+        <span className="mt-auto inline-flex w-full items-center justify-center rounded-xl bg-primary px-3 py-3 text-sm font-semibold text-primary-foreground transition-colors group-hover:bg-primary-dark">
           View details →
         </span>
       </div>

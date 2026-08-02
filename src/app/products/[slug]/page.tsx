@@ -232,17 +232,10 @@ export default async function ProductPage({ params, searchParams }: Props) {
           priceWas={price.was}
           stockLabel={
             motabilityMode
-              ? "Available on Motability — book a demonstration"
+              ? "Available on Motability"
               : adaptation
                 ? ""
-                : [
-                    stock.label,
-                    product.pre_order_enabled && product.pre_order_message
-                      ? product.pre_order_message
-                      : null,
-                  ]
-                    .filter(Boolean)
-                    .join(" — ")
+                : stock.label
           }
           stockAvailable={stock.available}
           used={used}
@@ -258,6 +251,7 @@ export default async function ProductPage({ params, searchParams }: Props) {
           adaptationId={product.adaptation_id}
           isAdaptation={adaptation}
           deliveryEstimate={product.delivery_estimate}
+          trackStock={product.track_stock}
           weight={product.weight}
           colourOptions={product.colour_options ?? []}
           variants={product.variants}

@@ -792,7 +792,7 @@ export function stockStatus(p: {
     return { label: "Discontinued", available: false } as const;
   }
   if (!p.track_stock) {
-    return { label: "Available to order", available: true } as const;
+    return { label: "Order online", available: true } as const;
   }
   const qty = p.quantity ?? 0;
   if (qty > 0) {

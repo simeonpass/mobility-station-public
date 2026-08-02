@@ -1,4 +1,5 @@
 import type { CheckoutPayload } from "@/lib/cart";
+import { checkDeliveryZone } from "@/lib/delivery-zone";
 
 function getSupabaseConfig() {
   const url = process.env.SUPABASE_URL;
@@ -7,6 +8,27 @@ function getSupabaseConfig() {
     throw new Error("Missing SUPABASE_URL or SUPABASE_PUBLIC_SITE_KEY");
   }
   return { url, key };
+}
+
+/**
+ * Takeaway credit only for branch collection or local-service-area delivery.
+ * Clears the flag when ineligible so the edge function never applies credit.
+ */
+export async function withTakeawayEligibility(
+  body: CheckoutPayload,
+): Promise<CheckoutPayload> {
+  if (!body.takeawayRequested) return body;
+
+  if (body.fulfillmentMethod === "collection") {
+    return body;
+  }
+
+  if (body.fulfillmentMethod === "delivery" && body.deliveryPostcode) {
+    const zone = await checkDeliveryZone(body.deliveryPostcode);
+    if (zone.status === "local") return body;
+  }
+
+  return { ...body, takeawayRequested: false };
 }
 
 export async function invokeCheckoutFunction(
@@ -19,6 +41,8 @@ export async function invokeCheckoutFunction(
   returnOrigin: string,
 ) {
   const { url, key } = getSupabaseConfig();
+  const payload =
+    "items" in body ? await withTakeawayEligibility(body) : body;
 
   const res = await fetch(`${url}/functions/v1/${functionName}`, {
     method: "POST",
@@ -28,7 +52,7 @@ export async function invokeCheckoutFunction(
       apikey: key,
       Origin: returnOrigin,
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify(payload),
   });
 
   const data = (await res.json().catch(() => ({}))) as {

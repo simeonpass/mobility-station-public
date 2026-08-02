@@ -83,32 +83,32 @@ export function ProductCard({ product }: { product: ProductListItem }) {
         ) : null}
       </div>
 
-      <div className="flex flex-1 flex-col p-4 pt-3.5">
-        {product.category ? (
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">
-            {product.category}
-          </p>
-        ) : getBrandLogo(product.manufacturer) ? (
-          <div className="mb-1">
-            <BrandLogo manufacturer={product.manufacturer} height={20} />
-          </div>
-        ) : product.manufacturer ? (
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">
-            {product.manufacturer}
-          </p>
-        ) : null}
+      <div className="flex flex-1 flex-col gap-3 p-5">
+        <div className="space-y-2">
+          {product.category ? (
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">
+              {product.category}
+            </p>
+          ) : getBrandLogo(product.manufacturer) ? (
+            <BrandLogo manufacturer={product.manufacturer} height={24} />
+          ) : product.manufacturer ? (
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">
+              {product.manufacturer}
+            </p>
+          ) : null}
 
-        {clearanceMeta ? (
-          <p className="mt-1 text-xs font-medium text-muted">{clearanceMeta}</p>
-        ) : null}
+          {clearanceMeta ? (
+            <p className="text-xs font-medium text-muted">{clearanceMeta}</p>
+          ) : null}
 
-        <h3 className="mt-1.5 line-clamp-2 min-h-[2.75rem] text-[15px] font-bold leading-snug text-primary">
-          {product.name}
-        </h3>
+          <h3 className="line-clamp-2 min-h-[2.75rem] text-[15px] font-bold leading-snug text-primary">
+            {product.name}
+          </h3>
+        </div>
 
-        <div className="mt-3">
+        <div className="space-y-3">
           {headline != null ? (
-            <>
+            <div>
               <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
                 <span className="text-xs text-muted">From</span>
                 <span className="text-xl font-extrabold tabular-nums text-primary">
@@ -121,39 +121,42 @@ export function ProductCard({ product }: { product: ProductListItem }) {
                 ) : null}
               </div>
               {vat.mode === "relief" ? (
-                <p className="mt-0.5 text-xs text-muted">ex VAT</p>
+                <p className="mt-1 text-xs text-muted">ex VAT</p>
               ) : null}
               {vat.mode === "always-inc" ? (
-                <p className="mt-0.5 text-xs text-muted">inc. VAT</p>
+                <p className="mt-1 text-xs text-muted">inc. VAT</p>
               ) : null}
               {vat.mode === "no-vat" ? (
-                <p className="mt-0.5 text-xs text-muted">No VAT</p>
+                <p className="mt-1 text-xs text-muted">No VAT</p>
               ) : null}
-            </>
+            </div>
           ) : (
             <span className="text-xl font-extrabold text-primary">POA</span>
           )}
+
+          {product.motability_weekly_price != null &&
+          product.motability_weekly_price > 0 ? (
+            <p className="flex flex-wrap items-center gap-2.5 text-sm text-muted">
+              <span>
+                or {formatGBP(product.motability_weekly_price)}/week on
+              </span>
+              <MotabilityLogo height={26} className="shrink-0" />
+            </p>
+          ) : product.motability_price === 0 ? (
+            <p className="flex flex-wrap items-center gap-2.5 text-sm text-muted">
+              <span>Free on</span>
+              <MotabilityLogo height={26} className="shrink-0" />
+            </p>
+          ) : product.motability_price != null &&
+            product.motability_price > 0 ? (
+            <p className="flex flex-wrap items-center gap-2.5 text-sm text-muted">
+              <span>{formatGBP(product.motability_price)} on</span>
+              <MotabilityLogo height={26} className="shrink-0" />
+            </p>
+          ) : null}
         </div>
 
-        {product.motability_weekly_price != null &&
-        product.motability_weekly_price > 0 ? (
-          <p className="mt-2 flex flex-wrap items-center gap-1.5 text-xs text-muted">
-            <span>or {formatGBP(product.motability_weekly_price)}/week on</span>
-            <MotabilityLogo height={16} />
-          </p>
-        ) : product.motability_price === 0 ? (
-          <p className="mt-2 flex flex-wrap items-center gap-1.5 text-xs text-muted">
-            <span>Free on</span>
-            <MotabilityLogo height={16} />
-          </p>
-        ) : product.motability_price != null && product.motability_price > 0 ? (
-          <p className="mt-2 flex flex-wrap items-center gap-1.5 text-xs text-muted">
-            <span>{formatGBP(product.motability_price)} on</span>
-            <MotabilityLogo height={16} />
-          </p>
-        ) : null}
-
-        <span className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-primary px-3 py-2.5 text-sm font-semibold text-primary-foreground transition-colors group-hover:bg-primary-dark">
+        <span className="mt-auto inline-flex w-full items-center justify-center rounded-xl bg-primary px-3 py-3 text-sm font-semibold text-primary-foreground transition-colors group-hover:bg-primary-dark">
           View &amp; Buy →
         </span>
       </div>

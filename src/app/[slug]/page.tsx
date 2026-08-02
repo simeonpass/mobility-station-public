@@ -53,7 +53,6 @@ export default async function LegacyProductSlugPage({ params }: Props) {
     "find-my-scooter",
     "our-work",
     "vat-relief",
-    "brochure",
     "collections",
     "pages",
     "policies",

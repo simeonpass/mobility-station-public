@@ -3,14 +3,18 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Expand, X } from "lucide-react";
 import { CatalogImage } from "@/components/product/catalog-image";
+import { FittedMechanicCorner } from "@/components/product/fitted-badge";
 import { cn } from "@/lib/utils";
 
 export function ProductGallery({
   images,
   name,
+  showFittedMechanic = false,
 }: {
   images: string[];
   name: string;
+  /** Adaptation products — larger mechanic in the image corner. */
+  showFittedMechanic?: boolean;
 }) {
   const [active, setActive] = useState(0);
   const [lightbox, setLightbox] = useState(false);
@@ -66,7 +70,7 @@ export function ProductGallery({
   }, [lightbox, active, goTo]);
 
   return (
-    <div className="min-w-0 md:sticky md:top-28">
+    <div className="min-w-0">
       <div className="relative w-full overflow-hidden rounded-2xl border border-border bg-white">
         <div
           ref={scrollerRef}
@@ -104,6 +108,8 @@ export function ProductGallery({
           })}
         </div>
 
+        {showFittedMechanic ? <FittedMechanicCorner size="gallery" /> : null}
+
         <button
           type="button"
           className="absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-2.5 py-1.5 text-xs font-semibold text-primary shadow-sm"
@@ -133,7 +139,7 @@ export function ProductGallery({
               <ChevronRight className="h-5 w-5" />
             </button>
 
-            <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 md:hidden">
+            <div className="absolute bottom-3 left-3 right-16 flex justify-start gap-1.5 md:hidden">
               {images.map((_, index) => (
                 <button
                   key={index}

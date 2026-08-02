@@ -51,7 +51,7 @@ export function MotabilityProductCard({
           </div>
           <div className="absolute left-3 top-3">
             <span className="inline-flex items-center rounded bg-white/95 px-2 py-1 shadow-sm">
-              <MotabilityLogo height={16} />
+              <MotabilityLogo height={22} />
             </span>
           </div>
         </div>
@@ -77,7 +77,7 @@ export function MotabilityProductCard({
             {weekly != null ? (
               <>
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted">
-                  From your allowance
+                  Motability scheme price
                 </p>
                 <p className="mt-0.5 flex flex-wrap items-baseline gap-1.5">
                   <span className="text-2xl font-extrabold tabular-nums text-primary">
@@ -87,32 +87,23 @@ export function MotabilityProductCard({
                     / week
                   </span>
                 </p>
-                <p className="mt-1 text-xs text-muted">
-                  Indicative weekly Motability figure — confirmed at assessment.
-                </p>
               </>
             ) : freeOnScheme ? (
               <>
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted">
-                  Motability
+                  Motability scheme price
                 </p>
                 <p className="mt-0.5 text-2xl font-extrabold text-primary">
                   £0 / week
-                </p>
-                <p className="mt-1 text-xs text-muted">
-                  £0 advance payment where eligible — subject to assessment.
                 </p>
               </>
             ) : (
               <>
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted">
-                  Motability
+                  Motability scheme price
                 </p>
                 <p className="mt-0.5 text-lg font-bold text-primary">
                   Weekly price on request
-                </p>
-                <p className="mt-1 text-xs text-muted">
-                  Contact us for the weekly figure on this model.
                 </p>
               </>
             )}

@@ -34,9 +34,16 @@ export default function TradeInPage() {
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-foreground/85">
               When you buy a scooter or wheelchair from us, tick the takeaway
-              option at checkout. We’ll collect your old machine with delivery
-              (or when you collect the new one) and knock the credit off your
-              bill there and then.
+              option at checkout. The credit is available when you{" "}
+              <strong className="font-semibold text-primary">
+                collect from Heathrow or Ferndown
+              </strong>
+              , or when we deliver in our{" "}
+              <strong className="font-semibold text-primary">
+                local service area
+              </strong>
+              . Outside that area, call us about a boxed return — the online
+              credit isn&apos;t available with nationwide courier alone.
             </p>
             <ul className="mt-5 space-y-3 text-sm leading-relaxed text-foreground/85">
               <li>

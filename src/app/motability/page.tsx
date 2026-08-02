@@ -59,7 +59,7 @@ const FAQS = [
   },
   {
     q: "What do the weekly prices mean?",
-    a: "Weekly figures shown are indicative Motability scheme amounts from our live catalogue — not a retail shop price. Final eligibility, allowance and payments are confirmed during your Motability assessment. Contact us to talk through any model.",
+    a: "Weekly figures shown are the Motability scheme amounts from our live catalogue — not a retail shop price. Eligibility and how the allowance applies are confirmed during your Motability assessment. Contact us to talk through any model.",
   },
   {
     q: "Why don’t you show a purchase price?",
