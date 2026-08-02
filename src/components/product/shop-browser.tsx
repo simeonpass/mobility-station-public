@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard";
 import { Input, Select } from "@/components/ui/input";
 import { categoryToSlug, displayPrice, type ProductListItem } from "@/lib/products";
+import { cn } from "@/lib/utils";
 
 type SortKey = "featured" | "name" | "price-low" | "price-high" | "motability";
 
@@ -23,11 +24,11 @@ const WHEELCHAIR_CATS = [
   "Wheelchairs",
 ];
 
-function chipClass(active: boolean) {
-  return active
-    ? "rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
-    : "rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold text-primary hover:border-primary";
-}
+const SUBS = [
+  { id: "", label: "All" },
+  { id: "scooters", label: "Scooters" },
+  { id: "wheelchairs", label: "Wheelchairs" },
+] as const;
 
 export function ShopBrowser({
   products,
@@ -88,13 +89,21 @@ export function ShopBrowser({
     }
 
     if (query.trim()) {
-      const q = query.trim().toLowerCase();
-      list = list.filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          (p.manufacturer || "").toLowerCase().includes(q) ||
-          (p.category || "").toLowerCase().includes(q),
-      );
+      const tokens = query
+        .trim()
+        .toLowerCase()
+        .split(/\s+/)
+        .filter((t) => t.length >= 2);
+      list = list.filter((p) => {
+        const haystack = [
+          p.name,
+          p.manufacturer || "",
+          p.category || "",
+        ]
+          .join(" ")
+          .toLowerCase();
+        return tokens.every((t) => haystack.includes(t));
+      });
     }
 
     if (motabilityOnly) {
@@ -211,96 +220,73 @@ export function ShopBrowser({
 
   return (
     <div>
-      <div className="mb-5 flex flex-wrap gap-2">
-        {[
-          { id: "", label: "All" },
-          { id: "scooters", label: "Scooters" },
-          { id: "wheelchairs", label: "Wheelchairs" },
-        ].map((item) => (
-          <button
-            key={item.id || "all"}
-            type="button"
-            onClick={() => {
-              setSub(item.id);
-              setCategory("");
-            }}
-            className={chipClass(sub === item.id)}
-          >
-            {item.label}
-          </button>
-        ))}
-        <button
-          type="button"
-          onClick={() => setMotabilityOnly((v) => !v)}
-          className={chipClass(motabilityOnly)}
-        >
-          Motability
-        </button>
-        <button
-          type="button"
-          onClick={() => setClearanceOnly((v) => !v)}
-          className={chipClass(clearanceOnly)}
-        >
-          Clearance
-        </button>
-        <Link
-          href="/contact?interest=callback#callback"
-          className="rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold text-primary hover:border-primary"
-        >
-          Help me choose
-        </Link>
+      <div
+        className="inline-flex rounded-full border border-border bg-white p-1 shadow-[0_1px_0_rgba(0,63,67,0.04)]"
+        role="tablist"
+        aria-label="Product type"
+      >
+        {SUBS.map((item) => {
+          const active = sub === item.id;
+          return (
+            <button
+              key={item.id || "all"}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => {
+                setSub(item.id);
+                setCategory("");
+              }}
+              className={cn(
+                "rounded-full px-4 py-2 text-sm font-semibold transition-colors",
+                active
+                  ? "bg-primary text-primary-foreground"
+                  : "text-primary hover:bg-soft",
+              )}
+            >
+              {item.label}
+            </button>
+          );
+        })}
       </div>
 
-      {visibleCategories.length > 1 ? (
-        <div className="mb-5 flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() => setCategory("")}
-            className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-              !category
-                ? "bg-primary-soft text-primary"
-                : "border border-border bg-white text-muted hover:text-primary"
-            }`}
-          >
-            All types
-          </button>
-          {visibleCategories.map((c) => (
-            <button
-              key={c.category}
-              type="button"
-              onClick={() =>
-                setCategory((prev) => (prev === c.category ? "" : c.category))
-              }
-              className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-                category === c.category
-                  ? "bg-primary-soft text-primary"
-                  : "border border-border bg-white text-muted hover:text-primary"
-              }`}
-            >
-              {c.category} ({c.count})
-            </button>
-          ))}
-        </div>
-      ) : null}
-
-      <div className="mb-5 grid gap-3 rounded-2xl border border-border bg-white p-4 md:grid-cols-2 lg:grid-cols-4">
-        <div className="lg:col-span-2">
-          <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-muted">
+      <div className="mt-5 grid gap-3 border-y border-border bg-soft/40 px-0 py-4 sm:grid-cols-2 lg:grid-cols-12 lg:items-end lg:gap-4 lg:py-5">
+        <div className="lg:col-span-4">
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted">
             Search
           </label>
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search scooters, wheelchairs, brands…"
+            placeholder="Name or brand…"
+            className="bg-white"
           />
         </div>
-        <div>
-          <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-muted">
+        <div className="lg:col-span-2">
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted">
+            Type
+          </label>
+          <Select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="bg-white"
+          >
+            <option value="">All types</option>
+            {visibleCategories.map((c) => (
+              <option key={c.category} value={c.category}>
+                {c.category} ({c.count})
+              </option>
+            ))}
+          </Select>
+        </div>
+        <div className="lg:col-span-2">
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted">
             Brand
           </label>
           <Select
             value={manufacturer}
             onChange={(e) => setManufacturer(e.target.value)}
+            className="bg-white"
           >
             <option value="">All brands</option>
             {manufacturers.map((m) => (
@@ -310,13 +296,14 @@ export function ShopBrowser({
             ))}
           </Select>
         </div>
-        <div>
-          <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-muted">
+        <div className="lg:col-span-2">
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted">
             Sort
           </label>
           <Select
             value={sort}
             onChange={(e) => setSort(e.target.value as SortKey)}
+            className="bg-white"
           >
             <option value="featured">Featured</option>
             <option value="name">Name A–Z</option>
@@ -325,12 +312,35 @@ export function ShopBrowser({
             <option value="motability">Motability first</option>
           </Select>
         </div>
+        <div className="flex flex-wrap gap-x-4 gap-y-2 pb-1 lg:col-span-2 lg:justify-end">
+          <label className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-primary">
+            <input
+              type="checkbox"
+              className="h-4 w-4 rounded border-border text-primary focus:ring-accent"
+              checked={motabilityOnly}
+              onChange={(e) => setMotabilityOnly(e.target.checked)}
+            />
+            Motability
+          </label>
+          <label className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-primary">
+            <input
+              type="checkbox"
+              className="h-4 w-4 rounded border-border text-primary focus:ring-accent"
+              checked={clearanceOnly}
+              onChange={(e) => setClearanceOnly(e.target.checked)}
+            />
+            Clearance
+          </label>
+        </div>
       </div>
 
-      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-muted">
           <span className="font-semibold text-primary">{filtered.length}</span>{" "}
-          of {products.length} products
+          product{filtered.length === 1 ? "" : "s"}
+          {filtered.length !== products.length ? (
+            <span> matching your filters</span>
+          ) : null}
         </p>
         {activeFilters.length ? (
           <div className="flex flex-wrap items-center gap-2">
@@ -358,14 +368,16 @@ export function ShopBrowser({
       </div>
 
       {filtered.length ? (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 lg:gap-6">
           {filtered.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
         </div>
       ) : (
-        <div className="rounded-2xl border border-border bg-soft px-5 py-8 text-center">
-          <p className="font-semibold text-primary">No products match these filters</p>
+        <div className="mt-8 border border-border bg-soft px-5 py-10 text-center">
+          <p className="font-semibold text-primary">
+            No products match these filters
+          </p>
           <p className="mt-2 text-sm text-muted">
             This page only covers scooters and wheelchairs.
             {query.trim() ? (
@@ -393,13 +405,6 @@ export function ShopBrowser({
               </>
             )}
           </p>
-          <p className="mt-2 text-sm text-muted">
-            Or{" "}
-            <Link href="/contact" className="font-semibold text-primary underline">
-              contact us
-            </Link>{" "}
-            and we&apos;ll help you find the right model.
-          </p>
           <button
             type="button"
             onClick={clearAll}
@@ -410,12 +415,15 @@ export function ShopBrowser({
         </div>
       )}
 
-      <nav className="mt-10 flex flex-wrap gap-2" aria-label="Category links">
+      <nav
+        className="mt-12 flex flex-wrap gap-x-4 gap-y-2 border-t border-border pt-6 text-sm text-muted"
+        aria-label="Category links"
+      >
         {categories.slice(0, 16).map((c) => (
           <Link
             key={c.category}
             href={`/shop/${categoryToSlug(c.category)}`}
-            className="text-xs text-muted underline hover:text-primary"
+            className="hover:text-primary hover:underline"
           >
             {c.category}
           </Link>

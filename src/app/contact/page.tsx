@@ -4,6 +4,7 @@ import { CallbackForm } from "@/components/forms/callback-form";
 import { EnquiryForm } from "@/components/forms/enquiry-form";
 import { Hero } from "@/components/sections/hero";
 import { BRANCHES } from "@/data/content";
+import { getProductBySlug } from "@/lib/products";
 import { createMetadata, jsonLdScript, SITE } from "@/lib/seo";
 
 export const metadata = createMetadata({
@@ -60,15 +61,46 @@ const ROUTES = [
 export default async function ContactPage({
   searchParams,
 }: {
-  searchParams: Promise<{ sent?: string; interest?: string }>;
+  searchParams: Promise<{
+    sent?: string;
+    interest?: string;
+    product?: string;
+  }>;
 }) {
-  const { sent, interest } = await searchParams;
+  const { sent, interest, product: productSlugParam } = await searchParams;
   const interestKey = interest?.toLowerCase() ?? "";
-  const isCallback =
-    interestKey === "callback" || sent === "callback";
-  const presetInterest = interest
-    ? INTEREST_PRESETS[interestKey] ?? interest
+  const isCallback = interestKey === "callback" || sent === "callback";
+  const productSlug = productSlugParam?.trim() || "";
+
+  let linkedProduct: Awaited<ReturnType<typeof getProductBySlug>> = null;
+  if (productSlug) {
+    try {
+      linkedProduct = await getProductBySlug(productSlug);
+    } catch {
+      linkedProduct = null;
+    }
+  }
+
+  const productLabel = linkedProduct?.name ?? null;
+  const resolvedSlug = linkedProduct?.slug ?? (productSlug || undefined);
+  const productHref = resolvedSlug ? `/products/${resolvedSlug}` : null;
+
+  const baseInterest = interest
+    ? (INTEREST_PRESETS[interestKey] ?? interest)
     : "General enquiry";
+
+  const presetInterest = productLabel
+    ? interestKey === "motability" ||
+      baseInterest.toLowerCase().includes("motability")
+      ? `Motability — ${productLabel}`
+      : `${baseInterest} — ${productLabel}`
+    : baseInterest;
+
+  const callbackTopic = productLabel
+    ? `Motability — ${productLabel}`
+    : isCallback && presetInterest !== "Request a callback"
+      ? presetInterest
+      : "";
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -99,6 +131,34 @@ export default async function ContactPage({
         secondaryHref="#enquire"
         secondaryLabel="Send a message"
       />
+
+      {productLabel || productSlug ? (
+        <div className="border-b border-border bg-primary-soft/70">
+          <div className="container-site flex flex-wrap items-center justify-between gap-3 py-4 text-sm">
+            <p className="text-primary">
+              <span className="font-semibold">Enquiring about:</span>{" "}
+              {productHref ? (
+                <Link
+                  href={productHref}
+                  className="font-bold underline underline-offset-2 hover:text-primary-dark"
+                >
+                  {productLabel ?? productSlug}
+                </Link>
+              ) : (
+                <span className="font-bold">{productLabel ?? productSlug}</span>
+              )}
+            </p>
+            {productHref ? (
+              <Link
+                href={productHref}
+                className="font-semibold text-primary underline-offset-2 hover:underline"
+              >
+                View product →
+              </Link>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
 
       <section className="py-12 md:py-14">
         <div className="container-site">
@@ -171,11 +231,9 @@ export default async function ContactPage({
               </p>
             ) : null}
             <CallbackForm
-              defaultTopic={
-                isCallback && presetInterest !== "Request a callback"
-                  ? presetInterest
-                  : ""
-              }
+              defaultTopic={callbackTopic}
+              productSlug={resolvedSlug}
+              productLabel={productLabel ?? undefined}
             />
           </div>
         </div>
@@ -234,8 +292,9 @@ export default async function ContactPage({
               enquiryType="contact"
               title="Send a message"
               defaultInterest={
-                isCallback ? "General enquiry" : presetInterest
+                isCallback && !productLabel ? "General enquiry" : presetInterest
               }
+              productSlug={resolvedSlug}
             />
           </div>
         </div>

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard";
+import { CtaFooter } from "@/components/sections/cta-footer";
+import { buttonVariants } from "@/components/ui/button";
 import { adaptationHref, isAdaptationCategory } from "@/lib/adaptations";
 import {
   categoryToSlug,
@@ -9,7 +11,7 @@ import {
   resolveCategoryFromSlug,
 } from "@/lib/products";
 import { createMetadata } from "@/lib/seo";
-import { truncate } from "@/lib/utils";
+import { cn, truncate } from "@/lib/utils";
 
 export const revalidate = 300;
 
@@ -66,55 +68,74 @@ export default async function ShopCategoryPage({ params }: Props) {
     getCategories({ shopOnly: true }),
   ]);
 
+  const related = categories
+    .filter((c) => c.category !== category)
+    .slice(0, 8);
+
   return (
-    <main className="container-site py-12 md:py-16">
-      <header className="mb-8">
-        <p className="mb-2 text-sm font-semibold uppercase tracking-wider text-accent">
-          Mobility Station
-        </p>
-        <h1 className="text-4xl font-extrabold tracking-tight text-primary md:text-5xl">
-          {category}
-        </h1>
-        <p className="mt-3 max-w-2xl text-muted">
-          Home demonstrations available from our Heathrow and Ferndown branches.
-        </p>
-      </header>
-
-      <nav className="mb-8 flex flex-wrap gap-2" aria-label="Product categories">
-        <Link
-          href="/shop"
-          className="rounded-full border border-border bg-white px-4 py-2 text-sm text-primary hover:border-primary"
-        >
-          All
-        </Link>
-        {categories.slice(0, 12).map((c) => {
-          const slug = categoryToSlug(c.category);
-          const active = slug === categorySlug;
-          return (
+    <>
+      <section className="border-b border-border bg-gradient-to-b from-primary-soft/80 to-white">
+        <div className="container-site py-10 md:py-14">
+          <Link
+            href="/shop"
+            className="text-sm font-semibold text-muted hover:text-primary"
+          >
+            ← All scooters &amp; wheelchairs
+          </Link>
+          <div className="mt-4 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div className="max-w-2xl">
+              <h1 className="text-4xl font-extrabold tracking-tight text-primary md:text-5xl">
+                {category}
+              </h1>
+              <p className="mt-3 text-base text-muted md:text-lg">
+                Free home demonstrations from Heathrow and Ferndown.
+              </p>
+            </div>
             <Link
-              key={c.category}
-              href={`/shop/${encodeURIComponent(slug)}`}
-              className={
-                active
-                  ? "rounded-full bg-primary px-4 py-2 text-sm text-primary-foreground"
-                  : "rounded-full border border-border bg-white px-4 py-2 text-sm text-primary hover:border-primary"
-              }
+              href="/book-a-demo"
+              className={cn(buttonVariants({ size: "lg" }), "rounded-full")}
             >
-              {c.category} ({c.count})
+              Book a Demo
             </Link>
-          );
-        })}
-      </nav>
-
-      {products.length ? (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {products.map((p) => (
-            <ProductCard key={p.id} product={p} />
-          ))}
+          </div>
         </div>
-      ) : (
-        <p className="text-muted">No products in this category yet.</p>
-      )}
-    </main>
+      </section>
+
+      <div className="container-site py-8 md:py-12">
+        <p className="mb-6 text-sm text-muted">
+          <span className="font-semibold text-primary">{products.length}</span>{" "}
+          product{products.length === 1 ? "" : "s"}
+        </p>
+
+        {products.length ? (
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 lg:gap-6">
+            {products.map((p) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+          </div>
+        ) : (
+          <p className="text-muted">No products in this category yet.</p>
+        )}
+
+        {related.length ? (
+          <nav
+            className="mt-12 flex flex-wrap gap-x-4 gap-y-2 border-t border-border pt-6 text-sm text-muted"
+            aria-label="Related categories"
+          >
+            {related.map((c) => (
+              <Link
+                key={c.category}
+                href={`/shop/${categoryToSlug(c.category)}`}
+                className="hover:text-primary hover:underline"
+              >
+                {c.category}
+              </Link>
+            ))}
+          </nav>
+        ) : null}
+      </div>
+
+      <CtaFooter />
+    </>
   );
 }

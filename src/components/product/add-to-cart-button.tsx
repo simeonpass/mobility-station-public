@@ -49,7 +49,7 @@ export function AddToCartButton({
           href={`/book-a-demo?product=${encodeURIComponent(product.slug)}`}
           className="flex-1 rounded-xl border border-primary px-6 py-3 text-center font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
         >
-          Book a home demo
+          Book a demonstration
         </Link>
       </div>
       {message ? (

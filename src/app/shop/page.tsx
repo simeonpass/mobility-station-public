@@ -1,17 +1,15 @@
 import { Suspense } from "react";
-import Link from "next/link";
+import { ProductCard } from "@/components/ProductCard";
 import { ShopBrowser } from "@/components/product/shop-browser";
-import { getCategories, getPublishedProducts } from "@/lib/products";
+import { CatalogIntro } from "@/components/sections/catalog-intro";
+import { CtaFooter } from "@/components/sections/cta-footer";
+import { ProductSpotlight } from "@/components/sections/product-spotlight";
+import {
+  getCategories,
+  getPublishedProducts,
+  getShopSpecialOffers,
+} from "@/lib/products";
 import { createMetadata } from "@/lib/seo";
-
-const QUICK_LINKS = [
-  { href: "/hire", label: "Hire & Flex Hire" },
-  { href: "/motability", label: "Motability" },
-  { href: "/clearance", label: "Clearance & ex-demo" },
-  { href: "/lightweight-folding-mobility", label: "Lightweight & folding" },
-  { href: "/trade-in", label: "Old scooter takeaway" },
-  { href: "/delivery", label: "Delivery" },
-];
 
 export const revalidate = 300;
 
@@ -30,12 +28,14 @@ export default async function ShopPage({ searchParams }: Props) {
   const { sub, q } = await searchParams;
   let products: Awaited<ReturnType<typeof getPublishedProducts>> = [];
   let categories: Awaited<ReturnType<typeof getCategories>> = [];
+  let specialOffers: Awaited<ReturnType<typeof getShopSpecialOffers>> = [];
   let errorMessage: string | null = null;
 
   try {
-    [products, categories] = await Promise.all([
+    [products, categories, specialOffers] = await Promise.all([
       getPublishedProducts({ limit: 500, shopOnly: true }),
       getCategories({ shopOnly: true }),
+      getShopSpecialOffers(8),
     ]);
   } catch (error) {
     console.error("Shop catalog error:", error);
@@ -44,47 +44,55 @@ export default async function ShopPage({ searchParams }: Props) {
   }
 
   return (
-    <div className="container-site py-12 md:py-16">
-      <header className="mb-8">
-        <p className="mb-2 text-sm font-semibold uppercase tracking-wider text-accent">
-          Mobility Station
-        </p>
-        <h1 className="text-4xl font-extrabold tracking-tight text-primary md:text-5xl">
-          Scooters &amp; Wheelchairs
-        </h1>
-        <p className="mt-3 max-w-2xl text-muted">
-          Filter by type, Motability or clearance — then book a free home
-          demonstration from Heathrow or Ferndown.
-        </p>
-        <nav className="mt-5 flex flex-wrap gap-2" aria-label="Shop shortcuts">
-          {QUICK_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="rounded-full border border-border bg-white px-3 py-1.5 text-xs font-semibold text-primary hover:border-primary"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-      </header>
+    <>
+      <CatalogIntro
+        title="Scooters & Wheelchairs"
+        subtitle="Browse our live catalogue, then book a free home demonstration from Heathrow or Ferndown."
+        primary={{ href: "/book-a-demo", label: "Book a Demo" }}
+        secondary={{
+          href: "/contact?interest=callback#callback",
+          label: "Help me choose",
+        }}
+      />
 
-      {errorMessage ? (
-        <p className="rounded-lg bg-soft px-4 py-3 text-sm text-primary">
-          {errorMessage}
-        </p>
-      ) : (
-        <Suspense
-          fallback={<p className="text-sm text-muted">Loading products…</p>}
+      {!errorMessage && specialOffers.length > 0 ? (
+        <ProductSpotlight
+          title="Special offers"
+          subtitle="Sale and featured scooters and wheelchairs from our live catalogue."
+          viewAllHref="/clearance"
+          viewAllLabel="View clearance"
         >
-          <ShopBrowser
-            products={products}
-            categories={categories}
-            initialSub={sub === "scooters" || sub === "wheelchairs" ? sub : ""}
-            initialQuery={typeof q === "string" ? q : ""}
-          />
-        </Suspense>
-      )}
-    </div>
+          {specialOffers.map((p) => (
+            <ProductCard key={p.id} product={p} />
+          ))}
+        </ProductSpotlight>
+      ) : null}
+
+      <div className="container-site py-8 md:py-12">
+        {errorMessage ? (
+          <p className="rounded-lg bg-soft px-4 py-3 text-sm text-primary">
+            {errorMessage}
+          </p>
+        ) : (
+          <Suspense
+            fallback={<p className="text-sm text-muted">Loading products…</p>}
+          >
+            <ShopBrowser
+              products={products}
+              categories={categories}
+              initialSub={
+                sub === "scooters" || sub === "wheelchairs" ? sub : ""
+              }
+              initialQuery={typeof q === "string" ? q : ""}
+            />
+          </Suspense>
+        )}
+      </div>
+
+      <CtaFooter
+        title="Not sure which model is right?"
+        subtitle="We’ll bring options to your home free of charge — or you can try them at Heathrow or Ferndown."
+      />
+    </>
   );
 }

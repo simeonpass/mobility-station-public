@@ -1,19 +1,18 @@
 import Link from "next/link";
-import { BadgeCheck, Home, Phone } from "lucide-react";
-import { ProductCard } from "@/components/ProductCard";
+import { BadgeCheck, Home, Phone, Wallet } from "lucide-react";
 import { MotabilityLogo } from "@/components/product/motability-logo";
+import { MotabilityProductCard } from "@/components/product/motability-product-card";
+import { CatalogIntro } from "@/components/sections/catalog-intro";
 import { CtaFooter } from "@/components/sections/cta-footer";
-import { buttonVariants } from "@/components/ui/button";
 import { getPublishedProducts, type ProductListItem } from "@/lib/products";
 import { createMetadata, jsonLdScript } from "@/lib/seo";
-import { cn } from "@/lib/utils";
 
 export const revalidate = 300;
 
 export const metadata = createMetadata({
   title: "Motability Scooters & Wheelchairs",
   description:
-    "Motability-accredited scooters and wheelchairs with weekly prices. Free home demonstrations from Heathrow & Ferndown.",
+    "Motability-accredited scooters and wheelchairs with weekly allowance prices. Free home demonstrations from Heathrow & Ferndown.",
   path: "/motability",
 });
 
@@ -35,6 +34,24 @@ function isWheelchair(p: ProductListItem) {
   return WHEELCHAIR_CATS.has(p.category || "");
 }
 
+const WEEKLY_BENEFITS = [
+  {
+    icon: Wallet,
+    title: "Pay weekly from your allowance",
+    body: "Exchange qualifying mobility allowance for a scooter or wheelchair package — no large retail purchase price.",
+  },
+  {
+    icon: BadgeCheck,
+    title: "Accredited Motability dealer",
+    body: "We guide you through eligibility, choice and paperwork in plain English.",
+  },
+  {
+    icon: Home,
+    title: "Free home demonstration",
+    body: "Try suitable models at home from Heathrow or Ferndown before you decide.",
+  },
+] as const;
+
 const FAQS = [
   {
     q: "Are you Motability accredited?",
@@ -42,7 +59,11 @@ const FAQS = [
   },
   {
     q: "What do the weekly prices mean?",
-    a: "Weekly figures shown are from our live catalogue. Final eligibility, allowance and payments are confirmed during your Motability assessment.",
+    a: "Weekly figures shown are indicative Motability scheme amounts from our live catalogue — not a retail shop price. Final eligibility, allowance and payments are confirmed during your Motability assessment. Contact us to talk through any model.",
+  },
+  {
+    q: "Why don’t you show a purchase price?",
+    a: "On Motability you typically exchange your mobility allowance rather than buying outright at a retail price. That’s why we highlight the weekly figure and ask you to contact us to arrange a demo or assessment.",
   },
   {
     q: "Do you also do Motability vehicle adaptations?",
@@ -57,8 +78,8 @@ export default async function MotabilityPage() {
     products = all
       .filter(isMotabilityProduct)
       .sort((a, b) => {
-        const aw = a.motability_weekly_price ?? a.motability_price ?? 999;
-        const bw = b.motability_weekly_price ?? b.motability_price ?? 999;
+        const aw = a.motability_weekly_price ?? (a.motability_price === 0 ? 0 : 999);
+        const bw = b.motability_weekly_price ?? (b.motability_price === 0 ? 0 : 999);
         return aw - bw;
       });
   } catch (error) {
@@ -88,101 +109,117 @@ export default async function MotabilityPage() {
         dangerouslySetInnerHTML={jsonLdScript(jsonLd)}
       />
 
-      {/* Hero */}
-      <section className="bg-hero-mesh">
-        <div className="container-site grid items-center gap-10 py-14 md:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] md:py-16 lg:gap-14 lg:py-20">
-          <div>
-            <MotabilityLogo height={36} className="mb-5" />
-            <h1 className="text-balance text-4xl font-extrabold tracking-tight text-primary md:text-5xl">
-              Motability scooters &amp; wheelchairs
-            </h1>
-            <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted">
-              Accredited advice, live weekly prices and free home demonstrations
-              from Heathrow and Ferndown.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                href="/book-a-demo"
-                className={cn(buttonVariants({ size: "lg" }), "rounded-xl")}
-              >
-                Book a free Motability demo
-              </Link>
-              <Link
-                href="/contact?interest=callback#callback"
-                className={cn(
-                  buttonVariants({ variant: "outline", size: "lg" }),
-                  "rounded-xl",
-                )}
-              >
-                Request a callback
-              </Link>
-            </div>
-            <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm font-semibold text-primary/90">
-              <li className="flex items-center gap-2">
-                <BadgeCheck className="h-4 w-4 text-accent" aria-hidden />
-                Accredited dealer
-              </li>
-              <li className="flex items-center gap-2">
-                <Home className="h-4 w-4 text-accent" aria-hidden />
-                Free home demos
-              </li>
-              <li className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-accent" aria-hidden />
-                Heathrow &amp; Ferndown
-              </li>
-            </ul>
-          </div>
+      <CatalogIntro
+        title="Motability scooters & wheelchairs"
+        subtitle="Weekly figures from your mobility allowance — not retail purchase prices. Free home demonstrations from Heathrow and Ferndown."
+        primary={{
+          href: "/book-a-demo",
+          label: "Book a free Motability demo",
+        }}
+        secondary={{
+          href: "/contact?interest=callback#callback",
+          label: "Request a callback",
+        }}
+      />
 
-          <div className="rounded-2xl border border-border bg-white p-6 shadow-[0_8px_24px_rgb(0_63_67_/_0.06)] md:p-8">
-            <h2 className="text-lg font-bold text-primary">How Motability works</h2>
-            <ol className="mt-5 space-y-4">
-              {[
-                {
-                  step: "1",
-                  title: "Check your allowance",
-                  body: "If you receive a qualifying mobility allowance, you may be able to exchange it for a scooter or wheelchair package.",
-                },
-                {
-                  step: "2",
-                  title: "Try before you decide",
-                  body: "Book a free Motability home demonstration and we’ll bring suitable models to you.",
-                },
-                {
-                  step: "3",
-                  title: "We handle the paperwork",
-                  body: "As an accredited dealer we guide you through assessment, choice and ongoing support.",
-                },
-              ].map((item) => (
-                <li key={item.step} className="flex gap-3">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-bold text-accent-foreground">
-                    {item.step}
-                  </span>
-                  <div>
-                    <p className="font-semibold text-primary">{item.title}</p>
-                    <p className="mt-0.5 text-sm leading-relaxed text-muted">
-                      {item.body}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-            <p className="mt-6 text-sm text-muted">
-              Looking for vehicle adaptations on Motability?{" "}
-              <Link
-                href="/vehicle-adaptations"
-                className="font-semibold text-primary underline underline-offset-2"
-              >
-                Browse adaptations
-              </Link>
-              .
+      <section className="border-b border-border bg-white">
+        <div className="container-site py-8 md:py-10">
+          <div className="mb-6 flex flex-wrap items-center gap-3">
+            <MotabilityLogo height={28} />
+            <p className="text-sm font-semibold text-primary">
+              Why weekly Motability pricing matters
             </p>
           </div>
+          <ul className="grid gap-6 md:grid-cols-3">
+            {WEEKLY_BENEFITS.map(({ icon: Icon, title, body }) => (
+              <li key={title} className="flex gap-3">
+                <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent/15 text-primary">
+                  <Icon className="h-5 w-5" aria-hidden />
+                </span>
+                <div>
+                  <h2 className="text-base font-bold text-primary">{title}</h2>
+                  <p className="mt-1.5 text-sm leading-relaxed text-muted">
+                    {body}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm font-semibold text-primary/90">
+            <li className="flex items-center gap-2">
+              <BadgeCheck className="h-4 w-4 text-accent" aria-hidden />
+              Accredited dealer
+            </li>
+            <li className="flex items-center gap-2">
+              <Home className="h-4 w-4 text-accent" aria-hidden />
+              Free home demos
+            </li>
+            <li className="flex items-center gap-2">
+              <Phone className="h-4 w-4 text-accent" aria-hidden />
+              Heathrow &amp; Ferndown
+            </li>
+          </ul>
         </div>
       </section>
 
-      {/* Catalogue */}
-      <section className="pb-16 md:pb-20">
+      <section className="border-b border-border bg-soft/40 py-10 md:py-12">
         <div className="container-site">
+          <div className="max-w-2xl">
+            <h2 className="text-2xl font-extrabold text-primary md:text-3xl">
+              How Motability works
+            </h2>
+            <p className="mt-2 text-sm text-muted md:text-base">
+              You don’t buy these models at a shop price on the scheme — you
+              exchange allowance for a weekly package. We help you choose and
+              handle the paperwork.
+            </p>
+          </div>
+          <ol className="mt-8 grid gap-6 sm:grid-cols-3">
+            {[
+              {
+                step: "1",
+                title: "Check your allowance",
+                body: "If you receive a qualifying mobility allowance, you may exchange it for a scooter or wheelchair package.",
+              },
+              {
+                step: "2",
+                title: "Try before you decide",
+                body: "Book a free Motability home demonstration and we’ll bring suitable models to you.",
+              },
+              {
+                step: "3",
+                title: "We handle the paperwork",
+                body: "As an accredited dealer we guide you through assessment, choice and ongoing support.",
+              },
+            ].map((item) => (
+              <li key={item.step} className="flex gap-3">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-bold text-accent-foreground">
+                  {item.step}
+                </span>
+                <div>
+                  <p className="font-semibold text-primary">{item.title}</p>
+                  <p className="mt-0.5 text-sm leading-relaxed text-muted">
+                    {item.body}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ol>
+          <p className="mt-6 text-sm text-muted">
+            Looking for vehicle adaptations on Motability?{" "}
+            <Link
+              href="/vehicle-adaptations"
+              className="font-semibold text-primary underline underline-offset-2"
+            >
+              Browse adaptations
+            </Link>
+            .
+          </p>
+        </div>
+      </section>
+
+      <section className="pb-16 md:pb-20">
+        <div className="container-site pt-10 md:pt-12">
           {products.length ? (
             <>
               <div className="mb-8 flex flex-wrap items-end justify-between gap-3">
@@ -191,7 +228,8 @@ export default async function MotabilityPage() {
                     Live Motability catalogue
                   </h2>
                   <p className="mt-1 text-sm text-muted">
-                    {products.length} products · sorted by weekly price
+                    {products.length} products · weekly Motability figures only
+                    · contact us to arrange a demo
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -221,7 +259,7 @@ export default async function MotabilityPage() {
                   </h3>
                   <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                     {scooters.map((p) => (
-                      <ProductCard key={p.id} product={p} />
+                      <MotabilityProductCard key={p.id} product={p} />
                     ))}
                   </div>
                 </div>
@@ -234,7 +272,7 @@ export default async function MotabilityPage() {
                   </h3>
                   <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                     {wheelchairs.map((p) => (
-                      <ProductCard key={p.id} product={p} />
+                      <MotabilityProductCard key={p.id} product={p} />
                     ))}
                   </div>
                 </div>
@@ -255,7 +293,6 @@ export default async function MotabilityPage() {
         </div>
       </section>
 
-      {/* FAQ */}
       <section className="border-y border-border bg-soft py-14 md:py-16">
         <div className="container-site max-w-3xl">
           <h2 className="text-2xl font-extrabold text-primary md:text-3xl">
@@ -276,7 +313,7 @@ export default async function MotabilityPage() {
 
       <CtaFooter
         title="Book a Motability demonstration"
-        subtitle="Free Motability scooter and wheelchair home demos from Heathrow and Ferndown — no obligation."
+        subtitle="Free Motability scooter and wheelchair home demos from Heathrow and Ferndown — no obligation. We’ll confirm weekly figures at assessment."
       />
     </>
   );

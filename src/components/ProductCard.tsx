@@ -3,6 +3,7 @@ import { BrandLogo } from "@/components/product/brand-logo";
 import { CatalogImage } from "@/components/product/catalog-image";
 import { MotabilityLogo } from "@/components/product/motability-logo";
 import {
+  conditionGradeLabel,
   conditionLabel,
   formatGBP,
   isUsedCondition,
@@ -17,6 +18,7 @@ export function ProductCard({ product }: { product: ProductListItem }) {
   const vat = getVatPriceDisplay(product);
   const img = primaryImage(product);
   const used = isUsedCondition(product.condition);
+  const gradeLabel = conditionGradeLabel(product.condition_grade);
   const stock = stockStatus(product);
 
   const headline =
@@ -46,6 +48,11 @@ export function ProductCard({ product }: { product: ProductListItem }) {
           {used ? (
             <span className="rounded bg-tertiary px-2 py-1 text-xs font-semibold text-foreground">
               {conditionLabel(product.condition)}
+            </span>
+          ) : null}
+          {gradeLabel ? (
+            <span className="rounded bg-white/95 px-2 py-1 text-xs font-semibold text-primary shadow-sm ring-1 ring-border">
+              {gradeLabel}
             </span>
           ) : null}
           {wasHeadline ? (

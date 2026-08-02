@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { AdaptationCard } from "@/components/product/adaptation-card";
+import { MotabilityProductCard } from "@/components/product/motability-product-card";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductDetailView } from "@/components/product/product-detail-view";
 import {
@@ -11,6 +12,7 @@ import {
   sectionHref,
 } from "@/lib/adaptations";
 import {
+  conditionGradeLabel,
   conditionLabel,
   displayPrice,
   formatGBP,
@@ -26,7 +28,10 @@ import { truncate } from "@/lib/utils";
 
 export const revalidate = 300;
 
-type Props = { params: Promise<{ slug: string }> };
+type Props = {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ from?: string }>;
+};
 
 export async function generateStaticParams() {
   try {
@@ -81,8 +86,10 @@ function youtubeEmbed(url: string) {
   return match ? `https://www.youtube.com/embed/${match[1]}` : null;
 }
 
-export default async function ProductPage({ params }: Props) {
+export default async function ProductPage({ params, searchParams }: Props) {
   const { slug } = await params;
+  const { from } = await searchParams;
+  const motabilityMode = from === "motability";
   const product = await getProductBySlug(slug);
   if (!product) notFound();
 
@@ -192,19 +199,21 @@ export default async function ProductPage({ params }: Props) {
                       ]
                     : []),
                 ]
-              : [
-                  { label: "Shop", href: "/shop" },
-                  ...(product.category
-                    ? [
-                        {
-                          label: product.category,
-                          href: `/shop/${product.category
-                            .toLowerCase()
-                            .replace(/\s+/g, "-")}`,
-                        },
-                      ]
-                    : []),
-                ]),
+              : motabilityMode
+                ? [{ label: "Motability", href: "/motability" }]
+                : [
+                    { label: "Shop", href: "/shop" },
+                    ...(product.category
+                      ? [
+                          {
+                            label: product.category,
+                            href: `/shop/${product.category
+                              .toLowerCase()
+                              .replace(/\s+/g, "-")}`,
+                          },
+                        ]
+                      : []),
+                  ]),
             { label: product.name },
           ]}
         />
@@ -221,23 +230,25 @@ export default async function ProductPage({ params }: Props) {
           priceCurrent={price.current}
           priceWas={price.was}
           stockLabel={
-            adaptation
-              ? "Available to order — quotation required"
-              : [
-                  stock.label,
-                  product.pre_order_enabled && product.pre_order_message
-                    ? product.pre_order_message
-                    : null,
-                ]
-                  .filter(Boolean)
-                  .join(" — ")
+            motabilityMode
+              ? "Available on Motability — book a demonstration"
+              : adaptation
+                ? "Available to order — quotation required"
+                : [
+                    stock.label,
+                    product.pre_order_enabled && product.pre_order_message
+                      ? product.pre_order_message
+                      : null,
+                  ]
+                    .filter(Boolean)
+                    .join(" — ")
           }
           stockAvailable={stock.available}
           used={used}
           conditionLabel={used ? conditionLabel(product.condition) : null}
-          conditionGrade={product.condition_grade}
+          conditionGrade={conditionGradeLabel(product.condition_grade)}
           saleSaveLabel={
-            price.was && price.current
+            !motabilityMode && price.was && price.current
               ? `Sale — save ${formatGBP(price.was - price.current)}`
               : null
           }
@@ -249,7 +260,7 @@ export default async function ProductPage({ params }: Props) {
           weight={product.weight}
           colourOptions={product.colour_options ?? []}
           variants={product.variants}
-          cartProduct={cartProduct}
+          cartProduct={motabilityMode ? null : cartProduct}
           discontinuedMessage={
             product.is_discontinued ? product.discontinued_message : null
           }
@@ -258,6 +269,7 @@ export default async function ProductPage({ params }: Props) {
           suitabilityInfo={product.suitability_info}
           specs={specs.map(([k, v]) => [k, String(v)])}
           videoEmbed={videoEmbed}
+          motabilityMode={motabilityMode}
         />
       </div>
 
@@ -269,12 +281,16 @@ export default async function ProductPage({ params }: Props) {
           <p className="mt-1 text-sm text-muted">
             {adaptation
               ? "More adaptations from our catalogue."
-              : "More scooters and wheelchairs you might consider."}
+              : motabilityMode
+                ? "More Motability scooters and wheelchairs."
+                : "More scooters and wheelchairs you might consider."}
           </p>
           <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {related.map((item) =>
               adaptation ? (
                 <AdaptationCard key={item.id} product={item} />
+              ) : motabilityMode ? (
+                <MotabilityProductCard key={item.id} product={item} />
               ) : (
                 <ProductCard key={item.id} product={item} />
               ),

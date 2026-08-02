@@ -1,221 +1,236 @@
 import Link from "next/link";
-import { HireFleet } from "@/components/hire/hire-fleet";
+import {
+  Accessibility,
+  Bike,
+  FoldHorizontal,
+  Phone,
+  Truck,
+} from "lucide-react";
+import { CatalogIntro } from "@/components/sections/catalog-intro";
 import { CtaFooter } from "@/components/sections/cta-footer";
-import { Hero } from "@/components/sections/hero";
-import {
-  FLEX_MIN_MONTHS,
-  FLEX_ZONE_MILES,
-  HIRE_RATE_CARD,
-  SHORT_TERM_MAX_DAYS,
-} from "@/lib/hire";
-import {
-  DUMMY_HIRE_PRODUCTS,
-  formatGBP,
-  getHireProducts,
-} from "@/lib/products";
-import { createMetadata } from "@/lib/seo";
+import { buttonVariants } from "@/components/ui/button";
+import { formatGBP } from "@/lib/products";
+import { createMetadata, SITE } from "@/lib/seo";
+import { cn } from "@/lib/utils";
 
 export const revalidate = 300;
 
 export const metadata = createMetadata({
   title: "Hire scooters & wheelchairs | Short-term & Flex",
   description:
-    "Short-term hire and Flex monthly hire from Heathrow and Ferndown. Coverage-area delivery only. Month 1 + deposit upfront on Flex.",
+    "Indicative hire prices for scooters and wheelchairs from Heathrow and Ferndown. Call us to check availability and book.",
   path: "/hire",
 });
 
-export default async function HirePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ mode?: string }>;
-}) {
-  const { mode: modeParam } = await searchParams;
-  const initialMode = modeParam === "flex" ? "flex" : "short";
+/** Interim public rate bands until live hire stock is listed in admin. */
+const HIRE_BANDS = [
+  {
+    id: "folding",
+    label: "Folding / travel scooters",
+    blurb: "Boot-friendly models for holidays and short trips.",
+    icon: FoldHorizontal,
+    fromWeekly: 85,
+    fromMonthly: 79,
+  },
+  {
+    id: "small",
+    label: "Small scooters",
+    blurb: "Compact pavement scooters for everyday local use.",
+    icon: Bike,
+    fromWeekly: 95,
+    fromMonthly: 89,
+  },
+  {
+    id: "medium",
+    label: "Medium scooters",
+    blurb: "Stable mid-size hire machines with a comfortable ride.",
+    icon: Bike,
+    fromWeekly: 125,
+    fromMonthly: 115,
+  },
+  {
+    id: "large",
+    label: "Large / road scooters",
+    blurb: "Bigger, more powerful scooters for longer distances.",
+    icon: Truck,
+    fromWeekly: 145,
+    fromMonthly: 135,
+  },
+  {
+    id: "wheelchair",
+    label: "Wheelchairs",
+    blurb: "Manual and powered wheelchairs — tell us what you need.",
+    icon: Accessibility,
+    fromWeekly: 65,
+    fromMonthly: 59,
+  },
+] as const;
 
-  let products: Awaited<ReturnType<typeof getHireProducts>> = [];
-  try {
-    products = await getHireProducts();
-  } catch (error) {
-    console.error("Hire fleet error:", error);
-  }
-  const usingDummyFleet = products.length === 0;
-  if (usingDummyFleet) {
-    products = DUMMY_HIRE_PRODUCTS;
-  }
-
-  const tiers = Object.values(HIRE_RATE_CARD);
-
+export default function HirePage() {
   return (
     <>
-      <Hero
-        compact
+      <CatalogIntro
         title="Hire a scooter or wheelchair"
-        subtitle="Short-term for a few days or weeks — or Flex Hire for ongoing monthly use. Local coverage only."
-        primaryHref="#fleet"
-        primaryLabel="Browse the fleet"
-        secondaryHref="/contact?interest=callback#callback"
-        secondaryLabel="Request a callback"
+        subtitle="Short-term and Flex monthly hire from Heathrow and Ferndown. Guide prices below — call us to check what’s available and book."
+        primary={{ href: SITE.phoneHref, label: `Call ${SITE.phone}` }}
+        secondary={{
+          href: "/contact?interest=hire#callback",
+          label: "Request a callback",
+        }}
       />
 
-      <section className="border-b border-border bg-soft py-10 md:py-12">
-        <div className="container-site grid gap-6 md:grid-cols-2">
-          <div className="rounded-2xl border border-border bg-white p-6">
-            <p className="text-xs font-bold uppercase tracking-wide text-accent-foreground">
-              Short-term hire
-            </p>
-            <h2 className="mt-2 text-2xl font-extrabold text-primary">
-              A few days up to {SHORT_TERM_MAX_DAYS}
+      <div className="border-b border-border bg-soft/70">
+        <div className="container-site py-3 text-sm text-muted">
+          <strong className="font-semibold text-primary">Guide prices only.</strong>{" "}
+          Exact model, dates and delivery depend on availability — we’ll confirm
+          when you call.
+        </div>
+      </div>
+
+      <section className="border-b border-border py-10 md:py-12">
+        <div className="container-site">
+          <div className="max-w-2xl">
+            <h2 className="text-2xl font-extrabold tracking-tight text-primary md:text-3xl">
+              Hire from these prices
             </h2>
-            <p className="mt-3 text-sm leading-relaxed text-muted">
-              Fixed dates and package pricing. Collect free from a branch, or we
-              can deliver and collect for a call-out charge both ways.
+            <p className="mt-2 text-sm text-muted md:text-base">
+              Weekly rates for short-term hire. Flex is a monthly rate with a
+              3-month minimum — useful if you need something longer term.
+            </p>
+          </div>
+
+          <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {HIRE_BANDS.map(
+              ({ id, label, blurb, icon: Icon, fromWeekly, fromMonthly }) => (
+                <li
+                  key={id}
+                  className="flex flex-col rounded-2xl border border-border bg-white p-5"
+                >
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/20 text-primary">
+                    <Icon className="h-5 w-5" aria-hidden />
+                  </span>
+                  <h3 className="mt-4 text-lg font-extrabold text-primary">
+                    {label}
+                  </h3>
+                  <p className="mt-1.5 flex-1 text-sm leading-relaxed text-muted">
+                    {blurb}
+                  </p>
+                  <dl className="mt-4 space-y-1 border-t border-border pt-4 text-sm">
+                    <div className="flex items-baseline justify-between gap-3">
+                      <dt className="text-muted">Short-term from</dt>
+                      <dd className="font-extrabold tabular-nums text-primary">
+                        {formatGBP(fromWeekly)}
+                        <span className="text-xs font-semibold text-muted">
+                          /week
+                        </span>
+                      </dd>
+                    </div>
+                    <div className="flex items-baseline justify-between gap-3">
+                      <dt className="text-muted">Flex from</dt>
+                      <dd className="font-bold tabular-nums text-primary">
+                        {formatGBP(fromMonthly)}
+                        <span className="text-xs font-semibold text-muted">
+                          /month
+                        </span>
+                      </dd>
+                    </div>
+                  </dl>
+                  <a
+                    href={SITE.phoneHref}
+                    className={cn(
+                      buttonVariants({ size: "sm" }),
+                      "mt-4 w-full rounded-full",
+                    )}
+                  >
+                    <Phone className="h-4 w-4" aria-hidden />
+                    Call to book
+                  </a>
+                </li>
+              ),
+            )}
+          </ul>
+        </div>
+      </section>
+
+      <section className="border-b border-border bg-soft py-10 md:py-12">
+        <div className="container-site grid gap-8 md:grid-cols-2">
+          <div>
+            <h2 className="text-xl font-extrabold text-primary">
+              Short-term hire
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-muted">
+              A few days or a couple of weeks — holidays, recovery, or trying
+              before you buy. Collect from Heathrow or Ferndown, or ask about
+              local delivery.
             </p>
             <ul className="mt-4 space-y-1.5 text-sm text-foreground/85">
-              <li>· Minimum 3 days</li>
-              <li>· Refundable deposit on the card</li>
-              <li>· Need it longer? Switch to Flex</li>
+              <li>· From 3 days</li>
+              <li>· Refundable deposit</li>
+              <li>· We’ll match you to an available machine</li>
             </ul>
           </div>
-          <div className="rounded-2xl border border-primary/30 bg-white p-6 ring-1 ring-primary/20">
-            <p className="text-xs font-bold uppercase tracking-wide text-accent-foreground">
-              Flex Hire
-            </p>
-            <h2 className="mt-2 text-2xl font-extrabold text-primary">
-              Monthly · {FLEX_MIN_MONTHS}-month minimum
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-muted">
-              Pay the first month and deposit today, then the same monthly rate
-              after that. After {FLEX_MIN_MONTHS} months you can cancel with 14
-              days’ notice.
+          <div>
+            <h2 className="text-xl font-extrabold text-primary">Flex Hire</h2>
+            <p className="mt-2 text-sm leading-relaxed text-muted">
+              Monthly hire if you need something longer. 3-month minimum, then
+              cancel with notice. Free delivery and collection inside our Flex
+              zone.
             </p>
             <ul className="mt-4 space-y-1.5 text-sm text-foreground/85">
-              <li>
-                · Flex zone: Heathrow {FLEX_ZONE_MILES.heathrow} mi · Ferndown{" "}
-                {FLEX_ZONE_MILES.ferndown} mi
-              </li>
-              <li>· Free delivery, collection and fault call-outs in zone</li>
-              <li>· Batteries, servicing and maintenance included</li>
+              <li>· Heathrow ~10 miles · Ferndown ~20 miles</li>
+              <li>· Servicing and batteries included on Flex</li>
+              <li>· Call us to check zone and start date</li>
             </ul>
           </div>
         </div>
       </section>
 
       <section className="border-b border-border py-10 md:py-12">
-        <div className="container-site grid gap-10 lg:grid-cols-2">
-          <div>
-            <h2 className="text-xl font-extrabold text-primary">
-              What’s included
-            </h2>
-            <ul className="mt-4 space-y-3 text-sm leading-relaxed text-foreground/85">
-              <li>
-                <strong className="text-primary">The equipment</strong> — scooter
-                or wheelchair, charger, and a quick how-to when we hand it over.
-              </li>
-              <li>
-                <strong className="text-primary">Deposit</strong> — held against
-                loss, theft or damage beyond fair wear and tear, then returned
-                when the hire ends cleanly.
-              </li>
-              <li>
-                <strong className="text-primary">Standard hire cover</strong> —
-                we supply insured hire stock; you look after it while it’s with
-                you. Full responsibilities are in the hire terms.
-              </li>
-              <li>
-                <strong className="text-primary">Flex extras</strong> — batteries,
-                servicing, maintenance, and free delivery / collection / fault
-                call-outs inside the Flex zone.
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h2 className="text-xl font-extrabold text-primary">How it works</h2>
-            <ol className="mt-4 list-decimal space-y-3 pl-5 text-sm leading-relaxed text-foreground/85">
-              <li>Choose short-term or Flex and pick a machine below.</li>
-              <li>
-                Confirm dates (or start date for Flex) and your postcode or
-                branch.
-              </li>
-              <li>
-                Pay online — short-term hire + deposit, or Flex month one +
-                deposit.
-              </li>
-              <li>We deliver, or you collect from Heathrow or Ferndown.</li>
-              <li>
-                Return it on the end date, or end Flex with notice after the
-                minimum term.
-              </li>
-            </ol>
-            <p className="mt-5 text-sm text-muted">
-              Full hire agreement:{" "}
-              <Link
-                href="/hire/terms"
+        <div className="container-site max-w-3xl">
+          <h2 className="text-xl font-extrabold text-primary">How to hire</h2>
+          <ol className="mt-4 list-decimal space-y-3 pl-5 text-sm leading-relaxed text-foreground/85">
+            <li>Pick the type that fits — folding, small, medium, large or wheelchair.</li>
+            <li>
+              Call{" "}
+              <a
+                href={SITE.phoneHref}
                 className="font-semibold text-primary underline underline-offset-2"
               >
-                hire terms &amp; conditions
-              </Link>
-              .
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="border-b border-border bg-soft py-10 md:py-12">
-        <div className="container-site">
-          <h2 className="text-xl font-extrabold text-primary">Guide prices</h2>
-          <p className="mt-1 max-w-2xl text-sm text-muted">
-            Short-term is priced by the week (or shorter packages). Flex is a
-            flat monthly rate. Exact price for each machine is shown in the
-            fleet below.
-          </p>
-          <div className="mt-5 overflow-x-auto rounded-2xl border border-border bg-white">
-            <table className="w-full min-w-[32rem] text-left text-sm">
-              <thead className="border-b border-border bg-soft/80 text-xs uppercase tracking-wide text-muted">
-                <tr>
-                  <th className="px-4 py-3 font-semibold">Machine type</th>
-                  <th className="px-4 py-3 font-semibold">Short-term / week</th>
-                  <th className="px-4 py-3 font-semibold">Flex / month</th>
-                  <th className="px-4 py-3 font-semibold">Deposit</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tiers.map((tier) => (
-                  <tr key={tier.id} className="border-b border-border last:border-0">
-                    <td className="px-4 py-3 font-medium text-primary">
-                      {tier.label}
-                    </td>
-                    <td className="px-4 py-3">{formatGBP(tier.weekly)}</td>
-                    <td className="px-4 py-3">{formatGBP(tier.monthly)}</td>
-                    <td className="px-4 py-3 text-muted">
-                      {formatGBP(tier.deposit)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <p className="mt-3 text-xs text-muted">
-            Short-term also has 3-day and 2-week packages — shown when you pick
-            dates.
+                {SITE.phone}
+              </a>{" "}
+              or{" "}
+              <Link
+                href="/contact?interest=hire#callback"
+                className="font-semibold text-primary underline underline-offset-2"
+              >
+                request a callback
+              </Link>{" "}
+              with your dates and postcode.
+            </li>
+            <li>We’ll confirm availability, price and delivery or collection.</li>
+            <li>Collect from Heathrow or Ferndown, or arrange local delivery.</li>
+          </ol>
+          <p className="mt-5 text-sm text-muted">
+            Full hire agreement:{" "}
+            <Link
+              href="/hire/terms"
+              className="font-semibold text-primary underline underline-offset-2"
+            >
+              hire terms &amp; conditions
+            </Link>
+            .
           </p>
         </div>
       </section>
 
-      <section id="fleet" className="scroll-mt-28 pb-16 md:pb-20 pt-10 md:pt-12">
-        <div className="container-site">
-          <h2 className="mb-6 text-xl font-extrabold text-primary">
-            Choose a machine
-          </h2>
-          <HireFleet
-            products={products}
-            initialMode={initialMode}
-            preview={usingDummyFleet}
-          />
-        </div>
-      </section>
       <CtaFooter
-        title="Not sure which option fits?"
-        subtitle="Tell us how long you need it and your postcode — we’ll confirm Flex zone or short-term call-out before you book."
+        title="Ready to hire?"
+        subtitle="Call us with your dates and postcode — we’ll confirm what’s free and the exact weekly or Flex price."
+        primary={{ href: SITE.phoneHref, label: `Call ${SITE.phone}` }}
+        secondary={{
+          href: "/contact?interest=hire#callback",
+          label: "Request a callback",
+        }}
       />
     </>
   );

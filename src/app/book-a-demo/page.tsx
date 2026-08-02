@@ -54,7 +54,9 @@ export default async function BookADemoPage({
                 >
                   *
                 </a>
-                , fully refundable if you go ahead and place an order.
+                . Private scooter/wheelchair fees are deducted if you buy;
+                adaptation fees are refunded if the order goes ahead (including
+                via a dealership).
               </li>
               <li>
                 We come to you so you can try equipment where you live, park and
@@ -113,11 +115,15 @@ export default async function BookADemoPage({
                 private (non-Motability) scooters and wheelchairs
               </strong>{" "}
               carry a <strong className="text-foreground">£100</strong> visit
-              fee. This is fully refundable if you proceed and place an order
-              with us.
+              fee. For private scooter and wheelchair purchases, this is deducted
+              from the price if you buy from us. For vehicle adaptations, it is
+              refunded if you go ahead with us, or where the adaptation order is
+              placed via a dealership. We&apos;ll confirm the arrangement when we
+              book your visit.
             </p>
             <p>
-              Branch demonstrations at Heathrow and Ferndown remain free.
+              Branch demonstrations at Heathrow and Ferndown remain free — a
+              good option if you prefer to try equipment with no visit fee.
               We&apos;ll confirm the right option when we book your visit.
             </p>
             <p>

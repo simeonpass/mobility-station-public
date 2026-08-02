@@ -12,6 +12,7 @@ import { ProductAccordion } from "@/components/product/product-accordion";
 import { ProductGallery } from "@/components/product/product-gallery";
 import { MotabilityLogo } from "@/components/product/motability-logo";
 import { ProductOptionsSelector } from "@/components/product/product-options-selector";
+import { ProductPurchaseReassurance } from "@/components/product/product-purchase-reassurance";
 import { VatReliefDialog } from "@/components/product/vat-relief-dialog";
 import { useCart } from "@/components/cart/cart-provider";
 import { Button } from "@/components/ui/button";
@@ -61,6 +62,8 @@ export type ProductDetailViewProps = {
   suitabilityInfo: string | null;
   specs: Array<[string, string]>;
   videoEmbed: string | null;
+  /** Motability catalogue context: weekly price only, no retail checkout. */
+  motabilityMode?: boolean;
 };
 
 export function ProductDetailView(props: ProductDetailViewProps) {
@@ -309,7 +312,9 @@ export function ProductDetailView(props: ProductDetailViewProps) {
   }>;
 
   const hasConfigurableOptions = props.variants.length > 0;
+  const motabilityMode = Boolean(props.motabilityMode);
   const canBuy =
+    !motabilityMode &&
     !props.isAdaptation &&
     configuredCartProduct &&
     stockAvailable &&
@@ -322,22 +327,27 @@ export function ProductDetailView(props: ProductDetailViewProps) {
 
         <div className="min-w-0">
           <div className="mb-3 flex flex-wrap gap-2">
+            {motabilityMode ? (
+              <span className="inline-flex items-center rounded-full bg-white px-3 py-1 shadow-sm ring-1 ring-border">
+                <MotabilityLogo height={16} />
+              </span>
+            ) : null}
             {props.isAdaptation ? (
               <span className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
                 Supplied &amp; fitted
               </span>
             ) : null}
-            {props.used && props.conditionLabel ? (
+            {props.used && props.conditionLabel && !motabilityMode ? (
               <span className="rounded-full bg-error px-3 py-1 text-xs font-semibold text-white">
                 Clearance · {props.conditionLabel}
               </span>
             ) : null}
-            {props.conditionGrade ? (
+            {props.conditionGrade && !motabilityMode ? (
               <span className="rounded-full bg-soft px-3 py-1 text-xs font-semibold text-primary">
-                Grade {props.conditionGrade}
+                {props.conditionGrade}
               </span>
             ) : null}
-            {props.saleSaveLabel ? (
+            {props.saleSaveLabel && !motabilityMode ? (
               <span className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
                 {props.saleSaveLabel}
               </span>
@@ -366,85 +376,145 @@ export function ProductDetailView(props: ProductDetailViewProps) {
           </p>
 
           <div className="mt-4 space-y-2">
-            <div className="flex flex-wrap items-baseline gap-2">
-              {headline != null ? (
-                <>
-                  {!hasConfigurableOptions ? (
-                    <span className="text-sm text-muted">From</span>
+            {motabilityMode ? (
+              <>
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted">
+                  From your Motability allowance
+                </p>
+                <div className="flex flex-wrap items-baseline gap-2">
+                  {motabilityWeekly != null && motabilityWeekly > 0 ? (
+                    <>
+                      <span className="text-3xl font-extrabold tabular-nums text-primary">
+                        {formatGBP(motabilityWeekly)}
+                      </span>
+                      <span className="text-base font-semibold text-muted">
+                        / week
+                      </span>
+                    </>
+                  ) : motabilityWeekly === 0 || motabilityPrice === 0 ? (
+                    <span className="text-3xl font-extrabold text-primary">
+                      £0 / week
+                    </span>
+                  ) : (
+                    <span className="text-2xl font-extrabold text-primary">
+                      Weekly price on request
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm text-muted">
+                  Indicative Motability weekly figure — not a retail purchase
+                  price. Confirmed at assessment.
+                </p>
+                {adaptationId ? (
+                  <p className="text-xs text-muted">Code: {adaptationId}</p>
+                ) : null}
+              </>
+            ) : (
+              <>
+                <div className="flex flex-wrap items-baseline gap-2">
+                  {headline != null ? (
+                    <>
+                      {!hasConfigurableOptions ? (
+                        <span className="text-sm text-muted">From</span>
+                      ) : null}
+                      <span className="text-3xl font-bold text-primary">
+                        {formatGBP(headline)}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-3xl font-bold text-primary">POA</span>
+                  )}
+                  {wasHeadline ? (
+                    <span className="text-base text-muted line-through">
+                      RRP {formatGBP(wasHeadline)}
+                    </span>
                   ) : null}
-                  <span className="text-3xl font-bold text-primary">
-                    {formatGBP(headline)}
-                  </span>
-                </>
-              ) : (
-                <span className="text-3xl font-bold text-primary">POA</span>
-              )}
-              {wasHeadline ? (
-                <span className="text-base text-muted line-through">
-                  RRP {formatGBP(wasHeadline)}
-                </span>
-              ) : null}
-            </div>
+                </div>
 
-            {addonTotal > 0 ? (
-              <p className="text-sm text-muted">
-                + {formatGBP(addonTotal)} optional extras
-              </p>
-            ) : null}
+                {addonTotal > 0 ? (
+                  <p className="text-sm text-muted">
+                    + {formatGBP(addonTotal)} optional extras
+                  </p>
+                ) : null}
 
-            {vat.mode === "relief" && net != null && gross != null ? (
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                <p className="text-sm text-muted">ex VAT</p>
-                <VatReliefDialog
-                  netPrice={net}
-                  grossPrice={gross}
-                  variant="link"
-                />
-              </div>
-            ) : null}
+                {vat.mode === "relief" && net != null && gross != null ? (
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <p className="text-sm text-muted">ex VAT</p>
+                    <VatReliefDialog
+                      netPrice={net}
+                      grossPrice={gross}
+                      variant="link"
+                    />
+                  </div>
+                ) : null}
 
-            {vat.mode === "always-inc" && headline != null ? (
-              <p className="text-sm text-muted">inc. VAT</p>
-            ) : null}
+                {vat.mode === "always-inc" && headline != null ? (
+                  <p className="text-sm text-muted">inc. VAT</p>
+                ) : null}
 
-            {vat.mode === "no-vat" && headline != null ? (
-              <p className="text-sm text-muted">No VAT</p>
-            ) : null}
+                {vat.mode === "no-vat" && headline != null ? (
+                  <p className="text-sm text-muted">No VAT</p>
+                ) : null}
 
-            {props.isAdaptation && props.priceCurrent != null ? (
-              <p className="text-xs text-muted">
-                Indicative supplied &amp; fitted price — final quote tailored to
-                your vehicle
-              </p>
-            ) : null}
+                {props.isAdaptation && props.priceCurrent != null ? (
+                  <p className="text-xs text-muted">
+                    Indicative supplied &amp; fitted price — final quote tailored
+                    to your vehicle
+                  </p>
+                ) : null}
+              </>
+            )}
           </div>
 
-          {(motabilityWeekly != null && motabilityWeekly >= 0) ||
-          motabilityPrice != null ? (
-            <div className="mt-4 flex items-center justify-between gap-3 rounded-xl bg-primary px-4 py-3 text-primary-foreground">
-              <div>
-                <MotabilityLogo variant="white" height={24} className="mb-2" />
-                {motabilityWeekly != null && motabilityWeekly > 0 ? (
-                  <p className="text-base font-bold">
-                    {formatGBP(motabilityWeekly)}/week
-                  </p>
-                ) : motabilityWeekly === 0 || motabilityPrice === 0 ? (
-                  <p className="text-base font-bold">Free of charge</p>
-                ) : motabilityPrice != null ? (
-                  <p className="text-base font-bold">
-                    {formatGBP(motabilityPrice)}{" "}
-                    {props.isAdaptation ? "advance payment" : "contribution"}
-                  </p>
-                ) : null}
-                {adaptationId ? (
-                  <p className="mt-0.5 text-[11px] opacity-80">
-                    Code: {adaptationId}
-                  </p>
-                ) : null}
+          {!motabilityMode &&
+          ((motabilityWeekly != null && motabilityWeekly >= 0) ||
+            motabilityPrice != null) ? (
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-primary px-3.5 py-2.5 text-primary-foreground">
+              <div className="flex min-w-0 flex-wrap items-center gap-x-2.5 gap-y-1">
+                <MotabilityLogo variant="white" height={18} />
+                <p className="text-sm">
+                  {motabilityWeekly != null && motabilityWeekly > 0 ? (
+                    <>
+                      <span className="font-bold tabular-nums">
+                        {formatGBP(motabilityWeekly)}/week
+                      </span>
+                      <span className="text-primary-foreground/75">
+                        {" "}
+                        on Motability
+                      </span>
+                    </>
+                  ) : motabilityWeekly === 0 || motabilityPrice === 0 ? (
+                    <>
+                      <span className="font-bold">£0 / week</span>
+                      <span className="text-primary-foreground/75">
+                        {" "}
+                        on Motability
+                      </span>
+                    </>
+                  ) : motabilityPrice != null ? (
+                    <>
+                      <span className="font-bold tabular-nums">
+                        {formatGBP(motabilityPrice)}
+                      </span>
+                      <span className="text-primary-foreground/75">
+                        {" "}
+                        {props.isAdaptation
+                          ? "advance payment"
+                          : "contribution"}{" "}
+                        on Motability
+                      </span>
+                    </>
+                  ) : null}
+                  {adaptationId ? (
+                    <span className="ml-1.5 text-xs text-primary-foreground/60">
+                      · Code {adaptationId}
+                    </span>
+                  ) : null}
+                </p>
               </div>
               <Link
                 href="/motability"
-                className="shrink-0 text-xs font-semibold underline opacity-90"
+                className="shrink-0 text-xs font-semibold text-accent-on-dark underline-offset-2 hover:underline"
               >
                 Learn more
               </Link>
@@ -472,24 +542,13 @@ export function ProductDetailView(props: ProductDetailViewProps) {
             </div>
           ) : null}
 
-          {!props.isAdaptation && props.deliveryEstimate ? (
-            <p className="mt-3 text-sm text-muted">
-              Delivery: {props.deliveryEstimate}
-            </p>
-          ) : null}
-
-          {!props.isAdaptation ? (
+          {!motabilityMode && !props.isAdaptation ? (
             <div className="mt-5">
               <DeliveryChecker weight={props.weight} compact />
-              <p className="mt-2 text-xs text-muted">
-                <Link href="/delivery" className="underline hover:text-primary">
-                  Delivery &amp; returns information
-                </Link>
-              </p>
             </div>
           ) : null}
 
-          {!props.isAdaptation && hasConfigurableOptions ? (
+          {!motabilityMode && !props.isAdaptation && hasConfigurableOptions ? (
             <div className="mt-5">
               <ProductOptionsSelector
                 variants={props.variants}
@@ -525,7 +584,27 @@ export function ProductDetailView(props: ProductDetailViewProps) {
           ) : null}
 
           <div ref={buyRef} className="mt-6 space-y-3">
-            {props.isAdaptation ? (
+            {motabilityMode ? (
+              <>
+                <Link
+                  href={`/book-a-demo?product=${encodeURIComponent(props.slug)}`}
+                  className="flex w-full items-center justify-center rounded-xl bg-accent px-6 py-3 text-center font-semibold text-accent-foreground hover:bg-accent-hover"
+                >
+                  Book a Motability demonstration
+                </Link>
+                <Link
+                  href={`/contact?interest=motability&product=${encodeURIComponent(props.slug)}#callback`}
+                  className="flex w-full items-center justify-center rounded-xl border border-primary px-6 py-3 text-center font-semibold text-primary hover:bg-primary hover:text-primary-foreground"
+                >
+                  Contact us about this model
+                </Link>
+                <p className="text-xs leading-relaxed text-muted">
+                  Motability models aren&apos;t sold through online checkout.
+                  Book a free demo or request a callback and we&apos;ll confirm
+                  weekly figures and eligibility with you.
+                </p>
+              </>
+            ) : props.isAdaptation ? (
               <>
                 <Link
                   href={`/contact?interest=adaptation&product=${encodeURIComponent(props.slug)}`}
@@ -537,7 +616,7 @@ export function ProductDetailView(props: ProductDetailViewProps) {
                   href={`/book-a-demo?type=adaptation&product=${encodeURIComponent(props.slug)}`}
                   className="flex w-full items-center justify-center rounded-xl border border-primary px-6 py-3 text-center font-semibold text-primary hover:bg-primary hover:text-primary-foreground"
                 >
-                  Book a home demo
+                  Book a demonstration
                 </Link>
                 <p className="text-xs leading-relaxed text-muted">
                   Adaptations aren&apos;t available for online checkout because
@@ -560,7 +639,7 @@ export function ProductDetailView(props: ProductDetailViewProps) {
                     href={`/book-a-demo?product=${encodeURIComponent(props.slug)}`}
                     className="flex w-full items-center justify-center rounded-xl border border-primary px-6 py-3 text-center font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
                   >
-                    Book a home demo
+                    Book a demonstration
                   </Link>
                 </div>
                 {cartMessage ? (
@@ -594,28 +673,28 @@ export function ProductDetailView(props: ProductDetailViewProps) {
                 Request a quote
               </Link>
             ) : null}
-            <Link
-              href="/contact?interest=callback#callback"
-              className="flex w-full rounded-xl border border-primary px-6 py-3 text-center font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
-            >
-              Request a callback
-            </Link>
           </div>
 
+          {!motabilityMode && !props.isAdaptation ? (
+            <ProductPurchaseReassurance
+              deliveryEstimate={props.deliveryEstimate}
+            />
+          ) : null}
+
           <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">
-            {props.isAdaptation ? (
+            {motabilityMode ? (
+              <>
+                <li>Weekly Motability figures</li>
+                <li>Free Motability demonstrations</li>
+                <li>Accredited dealer</li>
+              </>
+            ) : props.isAdaptation ? (
               <>
                 <li>Workshop fitting included</li>
                 <li>Motability accredited</li>
                 <li>Home visit available</li>
               </>
-            ) : (
-              <>
-                <li>Free UK delivery</li>
-                <li>Motability options</li>
-                <li>Home demonstration</li>
-              </>
-            )}
+            ) : null}
           </ul>
 
           {props.discontinuedMessage ? (

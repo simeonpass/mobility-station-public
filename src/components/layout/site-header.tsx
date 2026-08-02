@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 const nav = [
   { href: "/vehicle-adaptations", label: "Vehicle Adaptations" },
   { href: "/shop", label: "Scooters & Wheelchairs" },
+  { href: "/clearance", label: "Clearance" },
   { href: "/hire", label: "Hire" },
   { href: "/motability", label: "Motability" },
   { href: "/locations", label: "Locations" },

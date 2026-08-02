@@ -305,6 +305,43 @@ export async function getFeaturedProducts(limit = 8): Promise<ProductListItem[]>
   return getPublishedProducts({ limit, shopOnly: true });
 }
 
+/** Shop spotlight: sale items first, then featured to fill. */
+export async function getShopSpecialOffers(
+  limit = 8,
+): Promise<ProductListItem[]> {
+  const all = await getPublishedProducts({ limit: 500, shopOnly: true });
+  const onSale = all.filter((p) => {
+    const { current, was } = displayPrice(p);
+    return current != null && was != null && current < was;
+  });
+  const seen = new Set(onSale.map((p) => p.id));
+  const featured = all.filter((p) => p.is_featured && !seen.has(p.id));
+  const combined = [...onSale, ...featured];
+  if (combined.length >= Math.min(4, limit)) {
+    return combined.slice(0, limit);
+  }
+  for (const p of all) {
+    if (combined.length >= limit) break;
+    if (seen.has(p.id) || combined.some((x) => x.id === p.id)) continue;
+    combined.push(p);
+  }
+  return combined.slice(0, limit);
+}
+
+/** Adaptations spotlight: featured first, then fill from catalogue. */
+export async function getPopularAdaptations(
+  limit = 8,
+): Promise<ProductListItem[]> {
+  const all = await getAdaptationProducts({ limit: 200 });
+  const featured = all.filter((p) => p.is_featured);
+  if (featured.length >= Math.min(4, limit)) {
+    return featured.slice(0, limit);
+  }
+  const seen = new Set(featured.map((p) => p.id));
+  const fill = all.filter((p) => !seen.has(p.id));
+  return [...featured, ...fill].slice(0, limit);
+}
+
 export async function getCategories(
   opts: { shopOnly?: boolean } = {},
 ): Promise<{ category: string; count: number }[]> {
@@ -476,6 +513,9 @@ export type SearchResults = {
  * Site-wide search across BOTH catalogues (shop + vehicle adaptations).
  * Matches name, manufacturer, category and SKU so brand searches like
  * "Jeff Gosling" surface hand controls as well as scooters.
+ *
+ * Multi-word queries are tokenised: every word must match somewhere in the
+ * searchable fields (so "pride compact" finds "Pride GoGo Compact").
  */
 export async function searchProducts(
   rawQuery: string,
@@ -488,9 +528,31 @@ export async function searchProducts(
 
   const limit = opts.limit ?? 300;
   const supabase = getClient();
-  // Escape PostgREST reserved characters in the or() filter value.
-  const safe = query.replace(/[%,()]/g, " ").trim();
-  const pattern = `%${safe}%`;
+  // Escape PostgREST reserved characters in filter values.
+  const safe = query.replace(/[%,.()]/g, " ").trim();
+  const tokens = safe
+    .toLowerCase()
+    .split(/\s+/)
+    .map((t) => t.trim())
+    .filter((t) => t.length >= 2);
+
+  if (!tokens.length) {
+    return { query, shop: [], adaptations: [], total: 0 };
+  }
+
+  const fieldMatch = (token: string) =>
+    [
+      `name.ilike.%${token}%`,
+      `manufacturer.ilike.%${token}%`,
+      `category.ilike.%${token}%`,
+      `sku.ilike.%${token}%`,
+    ].join(",");
+
+  // Every token must hit at least one field (AND of ORs).
+  const tokenFilter =
+    tokens.length === 1
+      ? fieldMatch(tokens[0])
+      : `and(${tokens.map((t) => `or(${fieldMatch(t)})`).join(",")})`;
 
   const { data, error } = await supabase
     .from("stock_items")
@@ -499,14 +561,7 @@ export async function searchProducts(
     .eq("website_visible", true)
     .neq("product_type", "archived")
     .not("slug", "is", null)
-    .or(
-      [
-        `name.ilike.${pattern}`,
-        `manufacturer.ilike.${pattern}`,
-        `category.ilike.${pattern}`,
-        `sku.ilike.${pattern}`,
-      ].join(","),
-    )
+    .or(tokenFilter)
     .order("is_featured", { ascending: false })
     .order("name", { ascending: true })
     .limit(limit);
@@ -517,16 +572,24 @@ export async function searchProducts(
     mapListItem(row as Record<string, unknown>),
   );
 
-  const lower = safe.toLowerCase();
-  const score = (p: ProductListItem) => {
+  const score = (p: ProductListItem & { sku?: string | null }) => {
     const name = p.name.toLowerCase();
     const manufacturer = (p.manufacturer || "").toLowerCase();
-    if (name.startsWith(lower)) return 0;
-    if (manufacturer === lower) return 1;
-    if (name.includes(lower)) return 2;
-    if (manufacturer.includes(lower)) return 3;
-    return 4;
+    const haystack = [name, manufacturer, p.category || "", p.sku || ""]
+      .join(" ")
+      .toLowerCase();
+
+    // Prefer exact / prefix hits on the full phrase, then name coverage.
+    const phrase = tokens.join(" ");
+    if (name.startsWith(phrase) || name.includes(phrase)) return 0;
+    if (manufacturer === phrase) return 1;
+    if (tokens.every((t) => name.includes(t))) return 2;
+    if (tokens.every((t) => haystack.includes(t) && name.includes(t))) return 3;
+    if (tokens.every((t) => manufacturer.includes(t) || name.includes(t)))
+      return 4;
+    return 5;
   };
+
   items.sort((a, b) => {
     const diff = score(a) - score(b);
     if (diff !== 0) return diff;
@@ -620,6 +683,50 @@ export function conditionLabel(
   if (condition === "refurbished") return "Refurbished";
   if (condition === "pre-owned") return "Pre-Owned";
   return "New";
+}
+
+export type ConditionGrade = NonNullable<ProductListItem["condition_grade"]>;
+
+/** Clearance cosmetic / readiness grades used on stock_items.condition_grade */
+export const CONDITION_GRADES: ReadonlyArray<{
+  id: ConditionGrade;
+  title: string;
+  short: string;
+  body: string;
+}> = [
+  {
+    id: "A",
+    title: "Grade A — Excellent",
+    short: "Excellent",
+    body: "Light use or ex-demo. Looks near-new, fully checked by our engineers, and ready to go.",
+  },
+  {
+    id: "B",
+    title: "Grade B — Good",
+    short: "Good",
+    body: "Honest cosmetic wear that doesn’t affect how it rides. Serviced, safe, and priced accordingly.",
+  },
+  {
+    id: "C",
+    title: "Grade C — Fair value",
+    short: "Fair value",
+    body: "More wear or an older machine — still safety-checked and working. Best price if you want function over looks.",
+  },
+];
+
+export function conditionGradeMeta(
+  grade: ProductListItem["condition_grade"] | null | undefined,
+) {
+  if (!grade) return null;
+  return CONDITION_GRADES.find((g) => g.id === grade) ?? null;
+}
+
+export function conditionGradeLabel(
+  grade: ProductListItem["condition_grade"] | null | undefined,
+) {
+  const meta = conditionGradeMeta(grade);
+  if (!meta) return null;
+  return `Grade ${meta.id} · ${meta.short}`;
 }
 
 export function stockStatus(p: {

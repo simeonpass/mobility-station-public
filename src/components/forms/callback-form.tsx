@@ -20,11 +20,20 @@ const TOPICS = [
 export function CallbackForm({
   title = "Request a callback",
   defaultTopic = "",
+  productSlug,
+  productLabel,
 }: {
   title?: string;
   defaultTopic?: string;
+  productSlug?: string;
+  productLabel?: string;
 }) {
   const [state, action, pending] = useActionState(submitEnquiry, initial);
+  const topicValue = defaultTopic || TOPICS[0];
+  const topicOptions =
+    defaultTopic && !TOPICS.includes(defaultTopic as (typeof TOPICS)[number])
+      ? [defaultTopic, ...TOPICS]
+      : TOPICS;
 
   return (
     <form action={action} className="space-y-4">
@@ -35,6 +44,9 @@ export function CallbackForm({
       </p>
       <input type="hidden" name="enquiry_type" value="callback" />
       <input type="hidden" name="preferred_branch" value="either" />
+      {productSlug ? (
+        <input type="hidden" name="product_slug" value={productSlug} />
+      ) : null}
 
       <div className="grid gap-4 md:grid-cols-2">
         <div>
@@ -67,9 +79,9 @@ export function CallbackForm({
           id="cb-interest"
           name="interest"
           required
-          defaultValue={defaultTopic || TOPICS[0]}
+          defaultValue={topicValue}
         >
-          {TOPICS.map((topic) => (
+          {topicOptions.map((topic) => (
             <option key={topic} value={topic}>
               {topic}
             </option>
@@ -84,6 +96,11 @@ export function CallbackForm({
           name="message"
           rows={3}
           placeholder="e.g. weekday mornings, after 2pm, or leave a short note"
+          defaultValue={
+            productLabel
+              ? `I'd like to talk about ${productLabel} on Motability.`
+              : undefined
+          }
         />
       </div>
 
