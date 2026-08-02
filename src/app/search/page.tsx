@@ -46,6 +46,24 @@ export default async function SearchPage({ searchParams }: Props) {
   const showShop = filter === "all" || filter === "shop";
   const showAdaptations = filter === "all" || filter === "adaptations";
 
+  const compact = (value: string) =>
+    value.toLowerCase().replace(/[^a-z0-9]+/g, "");
+  const queryCompact = compact(query);
+  const shopHitsPhrase = Boolean(
+    shop[0] && queryCompact && compact(shop[0].name).includes(queryCompact),
+  );
+  const adaptationsHitPhrase = Boolean(
+    adaptations[0] &&
+      queryCompact &&
+      compact(adaptations[0].name).includes(queryCompact),
+  );
+  // Lead with the catalogue that best matches the typed phrase (e.g. "c tran" → adaptations).
+  const adaptationsFirst =
+    filter === "adaptations" ||
+    (filter === "all" &&
+      adaptations.length > 0 &&
+      (adaptationsHitPhrase || (!shopHitsPhrase && adaptations.length > 0)));
+
   const tabs = [
     { id: "all", label: "All results", count: shop.length + adaptations.length },
     { id: "shop", label: "Scooters & Wheelchairs", count: shop.length },
@@ -154,52 +172,60 @@ export default async function SearchPage({ searchParams }: Props) {
             })}
           </nav>
 
-          {showShop && shop.length > 0 ? (
-            <section className="mb-14">
-              <div className="mb-5 flex flex-wrap items-baseline justify-between gap-2">
-                <h2 className="text-2xl font-extrabold tracking-tight text-primary">
-                  Scooters &amp; Wheelchairs
-                </h2>
-                <Link
-                  href="/shop"
-                  className="text-sm font-semibold text-primary underline"
-                >
-                  Browse all
-                </Link>
-              </div>
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-                {shop.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
-            </section>
-          ) : null}
+          {(() => {
+            const shopSection =
+              showShop && shop.length > 0 ? (
+                <section key="shop" className="mb-14">
+                  <div className="mb-5 flex flex-wrap items-baseline justify-between gap-2">
+                    <h2 className="text-2xl font-extrabold tracking-tight text-primary">
+                      Scooters &amp; Wheelchairs
+                    </h2>
+                    <Link
+                      href="/shop"
+                      className="text-sm font-semibold text-primary underline"
+                    >
+                      Browse all
+                    </Link>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+                    {shop.map((product) => (
+                      <ProductCard key={product.id} product={product} />
+                    ))}
+                  </div>
+                </section>
+              ) : null;
 
-          {showAdaptations && adaptations.length > 0 ? (
-            <section>
-              <div className="mb-5 flex flex-wrap items-baseline justify-between gap-2">
-                <h2 className="text-2xl font-extrabold tracking-tight text-primary">
-                  Vehicle Adaptations
-                </h2>
-                <Link
-                  href="/vehicle-adaptations"
-                  className="text-sm font-semibold text-primary underline"
-                >
-                  Browse all
-                </Link>
-              </div>
-              <p className="mb-5 max-w-2xl text-sm text-muted">
-                Supplied and fitted at our Heathrow or Ferndown workshops. Prices
-                are indicative — we confirm compatibility and a firm quote for
-                your vehicle.
-              </p>
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-                {adaptations.map((product) => (
-                  <AdaptationCard key={product.id} product={product} />
-                ))}
-              </div>
-            </section>
-          ) : null}
+            const adaptationsSection =
+              showAdaptations && adaptations.length > 0 ? (
+                <section key="adaptations" className="mb-14">
+                  <div className="mb-5 flex flex-wrap items-baseline justify-between gap-2">
+                    <h2 className="text-2xl font-extrabold tracking-tight text-primary">
+                      Vehicle Adaptations
+                    </h2>
+                    <Link
+                      href="/vehicle-adaptations"
+                      className="text-sm font-semibold text-primary underline"
+                    >
+                      Browse all
+                    </Link>
+                  </div>
+                  <p className="mb-5 max-w-2xl text-sm text-muted">
+                    Supplied and fitted at our Heathrow or Ferndown workshops.
+                    Prices are indicative — we confirm compatibility and a firm
+                    quote for your vehicle.
+                  </p>
+                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+                    {adaptations.map((product) => (
+                      <AdaptationCard key={product.id} product={product} />
+                    ))}
+                  </div>
+                </section>
+              ) : null;
+
+            return adaptationsFirst
+              ? [adaptationsSection, shopSection]
+              : [shopSection, adaptationsSection];
+          })()}
 
           {showShop && shop.length === 0 && filter === "shop" ? (
             <p className="rounded-xl border border-border bg-soft/60 p-6 text-sm text-muted">

@@ -8,6 +8,7 @@ import { AdaptationCard } from "@/components/product/adaptation-card";
 import { MotabilityLogo } from "@/components/product/motability-logo";
 import { EnquiryDialog } from "@/components/forms/enquiry-dialog";
 import { CatalogIntro } from "@/components/sections/catalog-intro";
+import { CatalogSearchStrip } from "@/components/sections/catalog-search-strip";
 import { CtaFooter } from "@/components/sections/cta-footer";
 import { ProductSpotlight } from "@/components/sections/product-spotlight";
 import { buttonVariants } from "@/components/ui/button";
@@ -153,6 +154,12 @@ export default async function VehicleAdaptationsPage() {
         }
       />
 
+      <CatalogSearchStrip
+        type="adaptations"
+        title="Looking for a specific adaptation?"
+        subtitle="Search by product, brand or category — then browse popular fittings below."
+      />
+
       <div className="border-b border-border bg-soft/50">
         <div className="container-site flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-muted">
@@ -170,7 +177,7 @@ export default async function VehicleAdaptationsPage() {
       {!errorMessage && popular.length > 0 ? (
         <ProductSpotlight
           title="Popular adaptations we fit"
-          subtitle="Featured driving controls, hoists and access solutions from our live catalogue."
+          subtitle="Jump straight in — featured driving controls, hoists and access solutions."
           viewAllHref="#catalogue"
           viewAllLabel="Browse full catalogue"
         >

@@ -516,6 +516,47 @@ export type SearchResults = {
   total: number;
 };
 
+function compactAlnum(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "");
+}
+
+/**
+ * Build search tokens plus hyphen/joined compounds so "c tran" finds "C-Tran".
+ */
+export function buildSearchTokens(rawQuery: string): {
+  tokens: string[];
+  compounds: string[];
+  phrase: string;
+} {
+  const safe = rawQuery.replace(/[%,.()]/g, " ").trim().toLowerCase();
+  const words = safe.split(/\s+/).map((w) => w.trim()).filter(Boolean);
+  const tokens = words.filter((w) => w.length >= 2);
+  const compounds: string[] = [];
+
+  for (let i = 0; i < words.length - 1; i++) {
+    const a = words[i];
+    const b = words[i + 1];
+    if (!a || !b) continue;
+    // Short lead tokens ("c", "g") + next word → "c-tran" / "ctran"
+    if (a.length <= 2 || a.includes("-") || b.includes("-")) {
+      compounds.push(`${a}-${b}`, `${a}${b}`);
+    }
+  }
+
+  // Also treat an already-hyphenated word as its joined form.
+  for (const word of words) {
+    if (word.includes("-")) {
+      compounds.push(word.replace(/-/g, ""));
+    }
+  }
+
+  return {
+    tokens: [...new Set(tokens)],
+    compounds: [...new Set(compounds.filter((c) => c.length >= 3))],
+    phrase: words.join(" "),
+  };
+}
+
 /**
  * Site-wide search across BOTH catalogues (shop + vehicle adaptations).
  * Matches name, manufacturer, category and SKU so brand searches like
@@ -523,6 +564,8 @@ export type SearchResults = {
  *
  * Multi-word queries are tokenised: every word must match somewhere in the
  * searchable fields (so "pride compact" finds "Pride GoGo Compact").
+ * Short lead words are also joined ("c tran" → "c-tran") so hyphenated
+ * adaptation names are found.
  */
 export async function searchProducts(
   rawQuery: string,
@@ -535,15 +578,9 @@ export async function searchProducts(
 
   const limit = opts.limit ?? 300;
   const supabase = getClient();
-  // Escape PostgREST reserved characters in filter values.
-  const safe = query.replace(/[%,.()]/g, " ").trim();
-  const tokens = safe
-    .toLowerCase()
-    .split(/\s+/)
-    .map((t) => t.trim())
-    .filter((t) => t.length >= 2);
+  const { tokens, compounds, phrase } = buildSearchTokens(query);
 
-  if (!tokens.length) {
+  if (!tokens.length && !compounds.length) {
     return { query, shop: [], adaptations: [], total: 0 };
   }
 
@@ -555,11 +592,18 @@ export async function searchProducts(
       `sku.ilike.%${token}%`,
     ].join(",");
 
-  // Every token must hit at least one field (AND of ORs).
+  const clauses: string[] = [];
+  if (tokens.length === 1) {
+    clauses.push(fieldMatch(tokens[0]));
+  } else if (tokens.length > 1) {
+    clauses.push(`and(${tokens.map((t) => `or(${fieldMatch(t)})`).join(",")})`);
+  }
+  for (const compound of compounds) {
+    clauses.push(fieldMatch(compound));
+  }
+
   const tokenFilter =
-    tokens.length === 1
-      ? fieldMatch(tokens[0])
-      : `and(${tokens.map((t) => `or(${fieldMatch(t)})`).join(",")})`;
+    clauses.length === 1 ? clauses[0] : `or(${clauses.join(",")})`;
 
   const { data, error } = await supabase
     .from("stock_items")
@@ -585,16 +629,18 @@ export async function searchProducts(
     const haystack = [name, manufacturer, p.category || "", p.sku || ""]
       .join(" ")
       .toLowerCase();
+    const compactName = compactAlnum(name);
+    const compactPhrase = compactAlnum(phrase);
 
-    // Prefer exact / prefix hits on the full phrase, then name coverage.
-    const phrase = tokens.join(" ");
-    if (name.startsWith(phrase) || name.includes(phrase)) return 0;
-    if (manufacturer === phrase) return 1;
-    if (tokens.every((t) => name.includes(t))) return 2;
-    if (tokens.every((t) => haystack.includes(t) && name.includes(t))) return 3;
-    if (tokens.every((t) => manufacturer.includes(t) || name.includes(t)))
-      return 4;
-    return 5;
+    // Prefer compact / hyphen-insensitive phrase hits ("c tran" → "C-Tran").
+    if (compactPhrase && compactName.includes(compactPhrase)) return 0;
+    if (name.startsWith(phrase) || name.includes(phrase)) return 1;
+    if (compounds.some((c) => name.includes(c) || compactName.includes(compactAlnum(c))))
+      return 2;
+    if (manufacturer === phrase) return 3;
+    if (tokens.length && tokens.every((t) => name.includes(t))) return 4;
+    if (tokens.length && tokens.every((t) => haystack.includes(t))) return 5;
+    return 6;
   };
 
   items.sort((a, b) => {

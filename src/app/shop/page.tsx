@@ -3,10 +3,12 @@ import Link from "next/link";
 import { ProductCard } from "@/components/ProductCard";
 import { ShopBrowser } from "@/components/product/shop-browser";
 import { CatalogIntro } from "@/components/sections/catalog-intro";
+import { CatalogSearchStrip } from "@/components/sections/catalog-search-strip";
 import { CtaFooter } from "@/components/sections/cta-footer";
 import { ProductSpotlight } from "@/components/sections/product-spotlight";
 import {
   getCategories,
+  getFeaturedProducts,
   getPublishedProducts,
   getShopSpecialOffers,
 } from "@/lib/products";
@@ -30,19 +32,24 @@ export default async function ShopPage({ searchParams }: Props) {
   let products: Awaited<ReturnType<typeof getPublishedProducts>> = [];
   let categories: Awaited<ReturnType<typeof getCategories>> = [];
   let specialOffers: Awaited<ReturnType<typeof getShopSpecialOffers>> = [];
+  let popular: Awaited<ReturnType<typeof getFeaturedProducts>> = [];
   let errorMessage: string | null = null;
 
   try {
-    [products, categories, specialOffers] = await Promise.all([
+    [products, categories, specialOffers, popular] = await Promise.all([
       getPublishedProducts({ limit: 500, shopOnly: true }),
       getCategories({ shopOnly: true }),
       getShopSpecialOffers(8),
+      getFeaturedProducts(8),
     ]);
   } catch (error) {
     console.error("Shop catalog error:", error);
     errorMessage =
       "We could not load the product catalogue right now. Please try again shortly or request a callback.";
   }
+
+  const popularProducts =
+    popular.length > 0 ? popular : specialOffers.slice(0, 8);
 
   return (
     <>
@@ -54,6 +61,12 @@ export default async function ShopPage({ searchParams }: Props) {
           href: "/contact?interest=callback#callback",
           label: "Help me choose",
         }}
+      />
+
+      <CatalogSearchStrip
+        type="shop"
+        title="Looking for something specific?"
+        subtitle="Search by model, brand or type — then browse popular picks below."
       />
 
       <div className="border-b border-border bg-soft/50">
@@ -70,20 +83,20 @@ export default async function ShopPage({ searchParams }: Props) {
         </div>
       </div>
 
-      {!errorMessage && specialOffers.length > 0 ? (
+      {!errorMessage && popularProducts.length > 0 ? (
         <ProductSpotlight
-          title="Special offers"
-          subtitle="Sale and featured scooters and wheelchairs from our live catalogue."
-          viewAllHref="/clearance"
-          viewAllLabel="View clearance"
+          title="Popular scooters & wheelchairs"
+          subtitle="Jump straight in — featured and sale models from our live catalogue."
+          viewAllHref="#catalogue"
+          viewAllLabel="Browse full catalogue"
         >
-          {specialOffers.map((p) => (
+          {popularProducts.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
         </ProductSpotlight>
       ) : null}
 
-      <div className="container-site py-8 md:py-12">
+      <div id="catalogue" className="container-site scroll-mt-28 py-8 md:py-12">
         {errorMessage ? (
           <p className="rounded-lg bg-soft px-4 py-3 text-sm text-primary">
             {errorMessage}

@@ -89,19 +89,34 @@ export function ShopBrowser({
     }
 
     if (query.trim()) {
-      const tokens = query
-        .trim()
-        .toLowerCase()
-        .split(/\s+/)
-        .filter((t) => t.length >= 2);
+      const raw = query.trim().toLowerCase();
+      const words = raw.split(/\s+/).filter(Boolean);
+      const tokens = words.filter((t) => t.length >= 2);
+      const compounds: string[] = [];
+      for (let i = 0; i < words.length - 1; i++) {
+        const a = words[i];
+        const b = words[i + 1];
+        if (a.length <= 2 || a.includes("-") || b.includes("-")) {
+          compounds.push(`${a}-${b}`, `${a}${b}`);
+        }
+      }
+      for (const word of words) {
+        if (word.includes("-")) compounds.push(word.replace(/-/g, ""));
+      }
+      const compact = (value: string) => value.replace(/[^a-z0-9]+/g, "");
+      const phraseCompact = compact(raw);
       list = list.filter((p) => {
-        const haystack = [
-          p.name,
-          p.manufacturer || "",
-          p.category || "",
-        ]
+        const haystack = [p.name, p.manufacturer || "", p.category || ""]
           .join(" ")
           .toLowerCase();
+        const haystackCompact = compact(haystack);
+        if (phraseCompact && haystackCompact.includes(phraseCompact)) {
+          return true;
+        }
+        if (compounds.some((c) => haystack.includes(c) || haystackCompact.includes(compact(c)))) {
+          return true;
+        }
+        if (!tokens.length) return false;
         return tokens.every((t) => haystack.includes(t));
       });
     }
