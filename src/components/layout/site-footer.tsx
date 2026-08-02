@@ -7,6 +7,7 @@ import {
   SiPaypal,
   SiVisa,
 } from "react-icons/si";
+import { EnquiryDialog } from "@/components/forms/enquiry-dialog";
 import { SITE } from "@/lib/seo";
 import { BRANCHES } from "@/data/content";
 
@@ -16,7 +17,6 @@ const columns = [
     links: [
       { href: "/vehicle-adaptations", label: "All Adaptations" },
       { href: "/brochure/vehicle-adaptations", label: "Download brochure" },
-      { href: "/contact?interest=adaptation", label: "Get a Quotation" },
       { href: "/book-a-demo", label: "Book a Home Visit" },
     ],
   },
@@ -134,6 +134,19 @@ export function SiteFooter() {
                   </Link>
                 </li>
               ))}
+              {col.title === "Vehicle adaptations" ? (
+                <li>
+                  <EnquiryDialog
+                    mode="enquiry"
+                    enquiryType="contact"
+                    title="Get a quotation"
+                    defaultInterest="Vehicle adaptation quotation"
+                    triggerClassName="text-sm text-white transition-colors hover:text-accent-on-dark"
+                  >
+                    Get a Quotation
+                  </EnquiryDialog>
+                </li>
+              ) : null}
             </ul>
           </div>
         ))}

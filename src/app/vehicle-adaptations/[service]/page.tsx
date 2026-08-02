@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
+import { EnquiryDialog } from "@/components/forms/enquiry-dialog";
 import { AdaptationCard } from "@/components/product/adaptation-card";
 import { CtaFooter } from "@/components/sections/cta-footer";
 import {
@@ -154,12 +155,15 @@ export default async function AdaptationCategoryPage({ params }: Props) {
             {description}
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <Link
-              href="/contact?interest=adaptation"
-              className="rounded-xl bg-accent px-5 py-3 text-center font-semibold text-accent-foreground hover:bg-accent-hover"
+            <EnquiryDialog
+              mode="enquiry"
+              enquiryType="contact"
+              title="Request a quotation"
+              defaultInterest={`Vehicle adaptation quotation — ${title}`}
+              triggerClassName="rounded-xl bg-accent px-5 py-3 text-center font-semibold text-accent-foreground hover:bg-accent-hover"
             >
               Request a quotation
-            </Link>
+            </EnquiryDialog>
             <Link
               href="/book-a-demo?type=adaptation"
               className="rounded-xl border border-primary px-5 py-3 text-center font-semibold text-primary hover:bg-primary hover:text-primary-foreground"

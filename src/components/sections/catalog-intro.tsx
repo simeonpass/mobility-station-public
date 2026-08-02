@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -12,11 +13,14 @@ export function CatalogIntro({
   subtitle,
   primary,
   secondary,
+  primaryAction,
 }: {
   title: string;
   subtitle: string;
   primary: CatalogCta;
   secondary: CatalogCta;
+  /** Optional popup/button instead of the primary link. */
+  primaryAction?: ReactNode;
 }) {
   return (
     <section className="border-b border-border bg-gradient-to-b from-primary-soft/80 to-white">
@@ -29,12 +33,14 @@ export function CatalogIntro({
             <p className="mt-3 text-base text-muted md:text-lg">{subtitle}</p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link
-              href={primary.href}
-              className={cn(buttonVariants({ size: "lg" }), "rounded-full")}
-            >
-              {primary.label}
-            </Link>
+            {primaryAction ?? (
+              <Link
+                href={primary.href}
+                className={cn(buttonVariants({ size: "lg" }), "rounded-full")}
+              >
+                {primary.label}
+              </Link>
+            )}
             <Link
               href={secondary.href}
               className={cn(

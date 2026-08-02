@@ -22,11 +22,17 @@ export function CallbackForm({
   defaultTopic = "",
   productSlug,
   productLabel,
+  inline = false,
+  compact = false,
 }: {
   title?: string;
   defaultTopic?: string;
   productSlug?: string;
   productLabel?: string;
+  /** Stay on the page / in a dialog instead of redirecting. */
+  inline?: boolean;
+  /** Tighter spacing for dialogs. */
+  compact?: boolean;
 }) {
   const [state, action, pending] = useActionState(submitEnquiry, initial);
   const topicValue = defaultTopic || TOPICS[0];
@@ -35,15 +41,30 @@ export function CallbackForm({
       ? [defaultTopic, ...TOPICS]
       : TOPICS;
 
+  if (state.success) {
+    return (
+      <div className="rounded-xl border border-border bg-soft/70 p-5 text-center">
+        <p className="text-lg font-extrabold text-primary">Request sent</p>
+        <p className="mt-2 text-sm text-muted">
+          {state.message ??
+            "Thanks — we’ll call you back shortly during opening hours."}
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <form action={action} className="space-y-4">
+    <form action={action} className={compact ? "space-y-3" : "space-y-4"}>
       {title ? <h2 className="text-2xl font-extrabold">{title}</h2> : null}
-      <p className="text-sm text-muted">
-        Tell us when to call and what it&apos;s about — we&apos;ll ring you back
-        instead of you waiting on hold.
-      </p>
+      {!compact ? (
+        <p className="text-sm text-muted">
+          Tell us when to call and what it&apos;s about — we&apos;ll ring you
+          back instead of you waiting on hold.
+        </p>
+      ) : null}
       <input type="hidden" name="enquiry_type" value="callback" />
       <input type="hidden" name="preferred_branch" value="either" />
+      {inline ? <input type="hidden" name="inline" value="1" /> : null}
       {productSlug ? (
         <input type="hidden" name="product_slug" value={productSlug} />
       ) : null}
@@ -108,7 +129,7 @@ export function CallbackForm({
         <p className="text-sm text-error">{state.message}</p>
       ) : null}
 
-      <Button type="submit" size="lg" disabled={pending}>
+      <Button type="submit" size="lg" disabled={pending} className="w-full">
         {pending ? "Sending…" : "Request callback"}
       </Button>
     </form>

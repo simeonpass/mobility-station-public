@@ -14,6 +14,7 @@ import { MotabilityLogo } from "@/components/product/motability-logo";
 import { ProductOptionsSelector } from "@/components/product/product-options-selector";
 import { ProductPurchaseReassurance } from "@/components/product/product-purchase-reassurance";
 import { VatReliefDialog } from "@/components/product/vat-relief-dialog";
+import { EnquiryDialog } from "@/components/forms/enquiry-dialog";
 import { useCart } from "@/components/cart/cart-provider";
 import { Button } from "@/components/ui/button";
 import {
@@ -596,12 +597,16 @@ export function ProductDetailView(props: ProductDetailViewProps) {
                 >
                   Book a Motability demonstration
                 </Link>
-                <Link
-                  href={`/contact?interest=motability&product=${encodeURIComponent(props.slug)}#callback`}
-                  className="flex w-full items-center justify-center rounded-xl border border-primary px-6 py-3 text-center font-semibold text-primary hover:bg-primary hover:text-primary-foreground"
+                <EnquiryDialog
+                  mode="callback"
+                  title="Contact us about this model"
+                  defaultTopic="Motability"
+                  productSlug={props.slug}
+                  productLabel={props.name}
+                  triggerClassName="flex w-full items-center justify-center rounded-xl border border-primary px-6 py-3 text-center font-semibold text-primary hover:bg-primary hover:text-primary-foreground"
                 >
                   Contact us about this model
-                </Link>
+                </EnquiryDialog>
                 <p className="text-xs leading-relaxed text-muted">
                   Motability models aren&apos;t sold through online checkout.
                   Book a free demo or request a callback and we&apos;ll confirm
@@ -610,12 +615,16 @@ export function ProductDetailView(props: ProductDetailViewProps) {
               </>
             ) : props.isAdaptation ? (
               <>
-                <Link
-                  href={`/contact?interest=adaptation&product=${encodeURIComponent(props.slug)}`}
-                  className="flex w-full items-center justify-center rounded-xl bg-accent px-6 py-3 text-center font-semibold text-accent-foreground hover:bg-accent-hover"
+                <EnquiryDialog
+                  mode="enquiry"
+                  enquiryType="contact"
+                  title="Get a free quotation"
+                  defaultInterest={`Vehicle adaptation quotation — ${props.name}`}
+                  productSlug={props.slug}
+                  triggerClassName="flex w-full items-center justify-center rounded-xl bg-accent px-6 py-3 text-center font-semibold text-accent-foreground hover:bg-accent-hover"
                 >
                   Get a free quotation
-                </Link>
+                </EnquiryDialog>
                 <Link
                   href={`/book-a-demo?type=adaptation&product=${encodeURIComponent(props.slug)}`}
                   className="flex w-full items-center justify-center rounded-xl border border-primary px-6 py-3 text-center font-semibold text-primary hover:bg-primary hover:text-primary-foreground"
@@ -670,12 +679,16 @@ export function ProductDetailView(props: ProductDetailViewProps) {
                 layout="stack"
               />
             ) : headline == null && !props.isAdaptation ? (
-              <Link
-                href={`/contact?interest=quote&product=${encodeURIComponent(props.slug)}`}
-                className="flex w-full items-center justify-center rounded-xl bg-accent px-6 py-3 text-center font-semibold text-accent-foreground hover:bg-accent-hover"
+              <EnquiryDialog
+                mode="enquiry"
+                enquiryType="contact"
+                title="Request a quote"
+                defaultInterest={`Quote request — ${props.name}`}
+                productSlug={props.slug}
+                triggerClassName="flex w-full items-center justify-center rounded-xl bg-accent px-6 py-3 text-center font-semibold text-accent-foreground hover:bg-accent-hover"
               >
                 Request a quote
-              </Link>
+              </EnquiryDialog>
             ) : null}
           </div>
 

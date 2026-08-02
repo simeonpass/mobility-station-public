@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { MapPin, Menu, Phone, PhoneCall, X } from "lucide-react";
 import { CartButton } from "@/components/cart/cart-drawer";
+import { EnquiryDialog } from "@/components/forms/enquiry-dialog";
 import { HeaderSearch } from "@/components/layout/header-search";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { SITE } from "@/lib/seo";
@@ -104,9 +105,10 @@ export function SiteHeader() {
 
           <div className="ml-auto flex shrink-0 items-center gap-2.5">
             <div className="hidden items-center gap-2 sm:flex">
-              <Link
-                href="/contact?interest=callback#callback"
-                className={cn(
+              <EnquiryDialog
+                mode="callback"
+                title="Request a callback"
+                triggerClassName={cn(
                   buttonVariants({ variant: "outline", size: "sm" }),
                   "rounded-full border-primary/20 bg-white text-primary hover:border-primary hover:bg-primary-soft",
                 )}
@@ -114,7 +116,7 @@ export function SiteHeader() {
                 <PhoneCall className="h-4 w-4" aria-hidden />
                 <span className="hidden lg:inline">Request a callback</span>
                 <span className="lg:hidden">Callback</span>
-              </Link>
+              </EnquiryDialog>
               <Link
                 href="/book-a-demo"
                 className={cn(
@@ -215,17 +217,17 @@ export function SiteHeader() {
               })}
             </nav>
             <div className="grid gap-2 border-t border-border pt-4 sm:hidden">
-              <Link
-                href="/contact?interest=callback#callback"
-                className={cn(
+              <EnquiryDialog
+                mode="callback"
+                title="Request a callback"
+                triggerClassName={cn(
                   buttonVariants({ variant: "outline" }),
                   "w-full rounded-full",
                 )}
-                onClick={() => setOpen(false)}
               >
                 <PhoneCall className="h-4 w-4" aria-hidden />
                 Request a callback
-              </Link>
+              </EnquiryDialog>
               <Link
                 href="/book-a-demo"
                 className={cn(buttonVariants(), "w-full rounded-full")}

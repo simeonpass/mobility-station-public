@@ -6,9 +6,11 @@ import {
 } from "lucide-react";
 import { AdaptationCard } from "@/components/product/adaptation-card";
 import { MotabilityLogo } from "@/components/product/motability-logo";
+import { EnquiryDialog } from "@/components/forms/enquiry-dialog";
 import { CatalogIntro } from "@/components/sections/catalog-intro";
 import { CtaFooter } from "@/components/sections/cta-footer";
 import { ProductSpotlight } from "@/components/sections/product-spotlight";
+import { buttonVariants } from "@/components/ui/button";
 import {
   ADAPTATION_SECTIONS,
   adaptationHref,
@@ -135,6 +137,20 @@ export default async function VehicleAdaptationsPage() {
           href: "/book-a-demo?type=adaptation",
           label: "Book a home demo",
         }}
+        primaryAction={
+          <EnquiryDialog
+            mode="enquiry"
+            enquiryType="contact"
+            title="Request a quotation"
+            defaultInterest="Vehicle adaptation quotation"
+            triggerClassName={cn(
+              buttonVariants({ size: "lg" }),
+              "rounded-full",
+            )}
+          >
+            Request a quotation
+          </EnquiryDialog>
+        }
       />
 
       <div className="border-b border-border bg-soft/50">

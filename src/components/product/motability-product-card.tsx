@@ -1,7 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import { BrandLogo } from "@/components/product/brand-logo";
 import { CatalogImage } from "@/components/product/catalog-image";
 import { MotabilityLogo } from "@/components/product/motability-logo";
+import { EnquiryDialog } from "@/components/forms/enquiry-dialog";
 import { getBrandLogo } from "@/lib/brand-logos";
 import {
   formatGBP,
@@ -108,12 +111,16 @@ export function MotabilityProductCard({
       </Link>
 
       <div className="border-t border-border px-4 py-3">
-        <Link
-          href={`/contact?interest=motability&product=${encodeURIComponent(product.slug)}#callback`}
-          className="block w-full rounded-full bg-primary px-3 py-2.5 text-center text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-dark"
+        <EnquiryDialog
+          mode="callback"
+          title="Contact us about this model"
+          defaultTopic="Motability"
+          productSlug={product.slug}
+          productLabel={product.name}
+          triggerClassName="block w-full rounded-full bg-primary px-3 py-2.5 text-center text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-dark"
         >
           Contact us about this model
-        </Link>
+        </EnquiryDialog>
       </div>
     </article>
   );

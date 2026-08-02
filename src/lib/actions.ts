@@ -125,6 +125,17 @@ export async function submitEnquiry(
     }
   }
 
+  const inline = String(formData.get("inline") ?? "") === "1";
+  if (inline) {
+    return {
+      success: true,
+      message:
+        data.enquiry_type === "callback"
+          ? "Thanks — we’ll call you back shortly during opening hours."
+          : "Thanks — we’ve received your message and will be in touch soon.",
+    };
+  }
+
   const thankYouPaths: Record<typeof data.enquiry_type, string> = {
     demo: "/book-a-demo/thank-you",
     service: "/book-a-service/thank-you",

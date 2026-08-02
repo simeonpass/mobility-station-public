@@ -15,6 +15,10 @@ type EnquiryFormProps = {
   showBranch?: boolean;
   showDate?: boolean;
   showPostcode?: boolean;
+  /** Stay on the page / in a dialog instead of redirecting. */
+  inline?: boolean;
+  /** Tighter spacing for dialogs. */
+  compact?: boolean;
 };
 
 export function EnquiryForm({
@@ -25,13 +29,28 @@ export function EnquiryForm({
   showBranch = true,
   showDate = true,
   showPostcode = true,
+  inline = false,
+  compact = false,
 }: EnquiryFormProps) {
   const [state, action, pending] = useActionState(submitEnquiry, initial);
 
+  if (state.success) {
+    return (
+      <div className="rounded-xl border border-border bg-soft/70 p-5 text-center">
+        <p className="text-lg font-extrabold text-primary">Message sent</p>
+        <p className="mt-2 text-sm text-muted">
+          {state.message ??
+            "Thanks — we’ve received your message and will be in touch soon."}
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <form action={action} className="space-y-4">
+    <form action={action} className={compact ? "space-y-3" : "space-y-4"}>
       {title ? <h2 className="text-2xl font-extrabold">{title}</h2> : null}
       <input type="hidden" name="enquiry_type" value={enquiryType} />
+      {inline ? <input type="hidden" name="inline" value="1" /> : null}
       {productSlug ? (
         <input type="hidden" name="product_slug" value={productSlug} />
       ) : null}
@@ -53,7 +72,13 @@ export function EnquiryForm({
         </div>
         <div>
           <Label htmlFor="email">Email</Label>
-          <Input id="email" name="email" type="email" required autoComplete="email" />
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            required
+            autoComplete="email"
+          />
           {state.errors?.email ? (
             <p className="mt-1 text-xs text-error">{state.errors.email[0]}</p>
           ) : null}
@@ -61,9 +86,16 @@ export function EnquiryForm({
         {showPostcode ? (
           <div>
             <Label htmlFor="postcode">Postcode</Label>
-            <Input id="postcode" name="postcode" required autoComplete="postal-code" />
+            <Input
+              id="postcode"
+              name="postcode"
+              required
+              autoComplete="postal-code"
+            />
             {state.errors?.postcode ? (
-              <p className="mt-1 text-xs text-error">{state.errors.postcode[0]}</p>
+              <p className="mt-1 text-xs text-error">
+                {state.errors.postcode[0]}
+              </p>
             ) : null}
           </div>
         ) : (
@@ -89,7 +121,11 @@ export function EnquiryForm({
       {showBranch ? (
         <div>
           <Label htmlFor="preferred_branch">Preferred branch</Label>
-          <Select id="preferred_branch" name="preferred_branch" defaultValue="either">
+          <Select
+            id="preferred_branch"
+            name="preferred_branch"
+            defaultValue="either"
+          >
             <option value="either">Either / not sure</option>
             <option value="heathrow">Heathrow</option>
             <option value="ferndown">Ferndown</option>
@@ -109,14 +145,14 @@ export function EnquiryForm({
 
       <div>
         <Label htmlFor="message">Message (optional)</Label>
-        <Textarea id="message" name="message" rows={4} />
+        <Textarea id="message" name="message" rows={compact ? 3 : 4} />
       </div>
 
       {state.message && !state.success ? (
         <p className="text-sm text-error">{state.message}</p>
       ) : null}
 
-      <Button type="submit" size="lg" disabled={pending}>
+      <Button type="submit" size="lg" disabled={pending} className="w-full">
         {pending ? "Sending…" : "Submit enquiry"}
       </Button>
     </form>
