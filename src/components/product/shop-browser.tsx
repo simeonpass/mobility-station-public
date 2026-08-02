@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard";
@@ -49,11 +49,26 @@ export function ShopBrowser({
   const [motabilityOnly, setMotabilityOnly] = useState(false);
   const [clearanceOnly, setClearanceOnly] = useState(false);
   const [sub, setSub] = useState(initialSub ?? "");
+  const resultsRef = useRef<HTMLDivElement>(null);
+  const shouldScrollToResults = useRef(false);
 
   useEffect(() => {
     const q = searchParams.get("q");
     if (q != null) setQuery(q);
   }, [searchParams]);
+
+  useEffect(() => {
+    if (!shouldScrollToResults.current) return;
+    shouldScrollToResults.current = false;
+    // Let the filtered grid paint, then bring results up under the sticky header.
+    requestAnimationFrame(() => {
+      resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }, [category, manufacturer, sub, motabilityOnly, clearanceOnly, sort]);
+
+  function markScrollToResults() {
+    shouldScrollToResults.current = true;
+  }
 
   const manufacturers = useMemo(() => {
     const set = new Set<string>();
@@ -249,6 +264,7 @@ export function ShopBrowser({
               role="tab"
               aria-selected={active}
               onClick={() => {
+                markScrollToResults();
                 setSub(item.id);
                 setCategory("");
               }}
@@ -283,7 +299,10 @@ export function ShopBrowser({
           </label>
           <Select
             value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={(e) => {
+              markScrollToResults();
+              setCategory(e.target.value);
+            }}
             className="bg-white"
           >
             <option value="">All types</option>
@@ -300,7 +319,10 @@ export function ShopBrowser({
           </label>
           <Select
             value={manufacturer}
-            onChange={(e) => setManufacturer(e.target.value)}
+            onChange={(e) => {
+              markScrollToResults();
+              setManufacturer(e.target.value);
+            }}
             className="bg-white"
           >
             <option value="">All brands</option>
@@ -317,7 +339,10 @@ export function ShopBrowser({
           </label>
           <Select
             value={sort}
-            onChange={(e) => setSort(e.target.value as SortKey)}
+            onChange={(e) => {
+              markScrollToResults();
+              setSort(e.target.value as SortKey);
+            }}
             className="bg-white"
           >
             <option value="featured">Featured</option>
@@ -333,7 +358,10 @@ export function ShopBrowser({
               type="checkbox"
               className="h-4 w-4 rounded border-border text-primary focus:ring-accent"
               checked={motabilityOnly}
-              onChange={(e) => setMotabilityOnly(e.target.checked)}
+              onChange={(e) => {
+                markScrollToResults();
+                setMotabilityOnly(e.target.checked);
+              }}
             />
             Motability
           </label>
@@ -342,13 +370,21 @@ export function ShopBrowser({
               type="checkbox"
               className="h-4 w-4 rounded border-border text-primary focus:ring-accent"
               checked={clearanceOnly}
-              onChange={(e) => setClearanceOnly(e.target.checked)}
+              onChange={(e) => {
+                markScrollToResults();
+                setClearanceOnly(e.target.checked);
+              }}
             />
             Clearance
           </label>
         </div>
       </div>
 
+      <div
+        ref={resultsRef}
+        id="catalogue-results"
+        className="scroll-under-header"
+      >
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-muted">
           <span className="font-semibold text-primary">{filtered.length}</span>{" "}
@@ -429,6 +465,7 @@ export function ShopBrowser({
           </button>
         </div>
       )}
+      </div>
 
       <nav
         className="mt-12 flex flex-wrap gap-x-4 gap-y-2 border-t border-border pt-6 text-sm text-muted"

@@ -260,7 +260,7 @@ export default async function MotabilityPage() {
               </div>
 
               {scooters.length ? (
-                <div id="scooters" className="mb-14 scroll-mt-28">
+                <div id="scooters" className="mb-14 scroll-under-header">
                   <h3 className="mb-5 text-xl font-extrabold text-primary">
                     Scooters
                   </h3>
@@ -273,7 +273,7 @@ export default async function MotabilityPage() {
               ) : null}
 
               {wheelchairs.length ? (
-                <div id="wheelchairs" className="scroll-mt-28">
+                <div id="wheelchairs" className="scroll-under-header">
                   <h3 className="mb-5 text-xl font-extrabold text-primary">
                     Wheelchairs
                   </h3>

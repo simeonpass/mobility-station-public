@@ -96,7 +96,7 @@ export default async function ShopPage({ searchParams }: Props) {
         </ProductSpotlight>
       ) : null}
 
-      <div id="catalogue" className="container-site scroll-mt-28 py-8 md:py-12">
+      <div id="catalogue" className="container-site scroll-under-header py-8 md:py-12">
         {errorMessage ? (
           <p className="rounded-lg bg-soft px-4 py-3 text-sm text-primary">
             {errorMessage}

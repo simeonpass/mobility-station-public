@@ -133,6 +133,11 @@
       radial-gradient(ellipse 55% 45% at 8% 85%, rgb(0 63 67 / 0.08), transparent 50%),
       linear-gradient(165deg, #eef5f3 0%, #ffffff 42%, #e6f0ee 100%);
   }
+
+  /* Sticky header is ~9.5–10rem tall — keep in-page jumps clear of it. */
+  .scroll-under-header {
+    scroll-margin-top: 10.5rem;
+  }
 }
 
 /* Keep Leaflet below the sticky header (z-50). Pane z-indexes stay relative inside the map. */

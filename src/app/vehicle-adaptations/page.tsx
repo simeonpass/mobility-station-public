@@ -187,7 +187,7 @@ export default async function VehicleAdaptationsPage() {
         </ProductSpotlight>
       ) : null}
 
-      <div id="catalogue" className="container-site scroll-mt-28 py-8 md:py-12">
+      <div id="catalogue" className="container-site scroll-under-header py-8 md:py-12">
         {errorMessage ? (
           <p className="rounded-lg bg-soft px-4 py-3 text-sm text-primary">
             {errorMessage}
@@ -248,7 +248,7 @@ export default async function VehicleAdaptationsPage() {
             </div>
 
             {freeOnMotability.length > 0 ? (
-              <section id="free-motability" className="mt-10 scroll-mt-28">
+              <section id="free-motability" className="mt-10 scroll-under-header">
                 <div className="mb-6">
                   <div className="mb-2 flex flex-wrap items-center gap-2">
                     <MotabilityLogo height={22} />
@@ -283,7 +283,7 @@ export default async function VehicleAdaptationsPage() {
                 <section
                   key={section.id}
                   id={section.id}
-                  className="mt-14 scroll-mt-28"
+                  className="mt-14 scroll-under-header"
                 >
                   <div className="mb-3">
                     <h3 className="text-xl font-extrabold text-primary md:text-2xl">

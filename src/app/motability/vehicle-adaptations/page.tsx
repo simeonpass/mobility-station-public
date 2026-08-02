@@ -231,7 +231,7 @@ export default async function MotabilityAdaptationsPage() {
               </div>
 
               {freeOnScheme.length ? (
-                <div id="free" className="mb-14 scroll-mt-28">
+                <div id="free" className="mb-14 scroll-under-header">
                   <div className="mb-5 flex flex-wrap items-center gap-2">
                     <MotabilityLogo height={22} />
                     <h3 className="text-xl font-extrabold text-primary">
@@ -250,7 +250,7 @@ export default async function MotabilityAdaptationsPage() {
               ) : null}
 
               {withContribution.length ? (
-                <div id="contribution" className="scroll-mt-28">
+                <div id="contribution" className="scroll-under-header">
                   <h3 className="mb-5 text-xl font-extrabold text-primary">
                     With Motability contribution
                   </h3>
