@@ -45,21 +45,12 @@ export function ImageCollage({
       {/* Desktop / tablet — locked jigsaw */}
       <div
         className={cn(
-          "relative hidden h-[28rem] sm:block md:h-[34rem] lg:h-[36rem]",
+          "relative hidden h-[28rem] overflow-hidden sm:block md:h-[34rem] lg:h-[36rem]",
           className,
         )}
       >
         <div
-          className="absolute -right-1 top-8 z-0 h-16 w-10 rounded-xl bg-accent md:h-20 md:w-12"
-          aria-hidden
-        />
-        <div
-          className="absolute -left-1 bottom-12 z-0 h-14 w-10 rounded-xl bg-primary"
-          aria-hidden
-        />
-
-        <div
-          className="relative z-10 grid h-full gap-2.5 md:gap-3"
+          className="relative z-10 grid h-full min-w-0 gap-2.5 md:gap-3"
           style={{
             gridTemplateColumns: "1.35fr 1fr 1fr",
             gridTemplateRows: "1fr 1fr 1.05fr",
