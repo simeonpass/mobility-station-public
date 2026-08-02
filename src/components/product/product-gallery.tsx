@@ -72,24 +72,36 @@ export function ProductGallery({
           ref={scrollerRef}
           className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          {images.map((src, index) => (
-            <button
-              key={src + index}
-              type="button"
-              className="relative aspect-square w-full shrink-0 snap-center"
-              onClick={() => setLightbox(true)}
-              aria-label={`View larger image ${index + 1} of ${name}`}
-            >
-              <CatalogImage
-                src={src}
-                alt={`${name} mobility product ${index + 1}`}
-                fill
-                priority={index === 0}
-                className="object-contain p-3 sm:p-4"
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
-            </button>
-          ))}
+          {images.map((src, index) => {
+            // Only decode nearby slides on mobile — a 10-image gallery at
+            // full origin size was routinely 0.5–1MB+ before optimisation.
+            const shouldLoad = index === 0 || Math.abs(index - active) <= 1;
+            return (
+              <button
+                key={src + index}
+                type="button"
+                className="relative aspect-square w-full shrink-0 snap-center"
+                onClick={() => setLightbox(true)}
+                aria-label={`View larger image ${index + 1} of ${name}`}
+              >
+                {shouldLoad ? (
+                  <CatalogImage
+                    src={src}
+                    alt={`${name} mobility product ${index + 1}`}
+                    fill
+                    priority={index === 0}
+                    className="object-contain p-3 sm:p-4"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                ) : (
+                  <span
+                    className="absolute inset-0 bg-soft"
+                    aria-hidden
+                  />
+                )}
+              </button>
+            );
+          })}
         </div>
 
         <button

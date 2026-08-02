@@ -146,7 +146,7 @@ export default async function VehicleAdaptationsPage() {
             defaultInterest="Vehicle adaptation quotation"
             triggerClassName={cn(
               buttonVariants({ size: "lg" }),
-              "rounded-full",
+              "h-12 min-h-12 rounded-full px-7 text-base",
             )}
           >
             Request a quotation
@@ -159,20 +159,6 @@ export default async function VehicleAdaptationsPage() {
         title="Looking for a specific adaptation?"
         subtitle="Search by product, brand or category — then browse popular fittings below."
       />
-
-      <div className="border-b border-border bg-soft/50">
-        <div className="container-site flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-muted">
-            Prefer a printable list of the full adaptations range?
-          </p>
-          <Link
-            href="/brochure/vehicle-adaptations"
-            className="text-sm font-semibold text-primary underline-offset-2 hover:underline"
-          >
-            Download vehicle adaptations brochure →
-          </Link>
-        </div>
-      </div>
 
       {!errorMessage && popular.length > 0 ? (
         <ProductSpotlight

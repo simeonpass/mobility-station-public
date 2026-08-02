@@ -213,13 +213,6 @@ export default async function MotabilityPage() {
             >
               Motability vehicle adaptations
             </Link>
-            . Or{" "}
-            <Link
-              href="/brochure/scooters-wheelchairs"
-              className="font-semibold text-primary underline underline-offset-2"
-            >
-              download the scooters &amp; wheelchairs brochure
-            </Link>
             .
           </p>
         </div>

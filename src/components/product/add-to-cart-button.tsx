@@ -6,6 +6,10 @@ import { useCart } from "@/components/cart/cart-provider";
 import { Button } from "@/components/ui/button";
 import type { CartProduct } from "@/lib/cart";
 
+/** Shared height/type so Buy and Book a demonstration match exactly. */
+const ctaClass =
+  "inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-6 text-base font-semibold";
+
 export function AddToCartButton({
   product,
   layout = "full",
@@ -27,7 +31,12 @@ export function AddToCartButton({
 
   if (layout === "compact") {
     return (
-      <Button type="button" className="rounded-xl px-5" variant="buy" onClick={handleAdd}>
+      <Button
+        type="button"
+        className="h-12 rounded-xl px-5"
+        variant="buy"
+        onClick={handleAdd}
+      >
         Add to cart
       </Button>
     );
@@ -42,12 +51,17 @@ export function AddToCartButton({
             : "flex flex-col gap-3 sm:flex-row"
         }
       >
-        <Button type="button" className="flex-1 rounded-xl" variant="buy" onClick={handleAdd}>
+        <Button
+          type="button"
+          variant="buy"
+          className={ctaClass}
+          onClick={handleAdd}
+        >
           Add to cart
         </Button>
         <Link
           href={`/book-a-demo?product=${encodeURIComponent(product.slug)}`}
-          className="flex-1 rounded-xl border border-primary px-6 py-3 text-center font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+          className={`${ctaClass} border border-primary text-primary transition-colors hover:bg-primary hover:text-primary-foreground`}
         >
           Book a demonstration
         </Link>

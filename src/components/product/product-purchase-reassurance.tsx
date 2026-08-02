@@ -61,18 +61,18 @@ export function ProductPurchaseReassurance({
         </Link>
       </div>
 
-      <div className="flex items-center justify-between gap-3 border-t border-border bg-soft/60 px-3.5 py-2">
-        <p className="text-[11px] font-medium uppercase tracking-wide text-muted">
+      <div className="flex items-center justify-between gap-3 border-t border-border bg-soft/60 px-3.5 py-3">
+        <p className="text-xs font-medium uppercase tracking-wide text-muted">
           Pay with
         </p>
         <ul
-          className="flex items-center gap-2.5"
+          className="flex items-center gap-3.5"
           aria-label="Accepted payment methods"
         >
           {PAYMENT_ICONS.map(({ Icon, label, className }) => (
             <li key={label} title={label} className="flex items-center">
               <Icon
-                className={`h-[1.05rem] w-auto ${className}`}
+                className={`h-7 w-auto ${className}`}
                 role="img"
                 aria-label={label}
               />

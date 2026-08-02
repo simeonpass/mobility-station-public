@@ -78,7 +78,7 @@ export function HomeHero({
               href="/vehicle-adaptations"
               className={cn(
                 buttonVariants({ variant: "primary", size: "lg" }),
-                "rounded-xl shadow-sm",
+                "h-12 min-h-12 rounded-full px-7 text-base shadow-sm",
               )}
             >
               Vehicle adaptations
@@ -87,8 +87,8 @@ export function HomeHero({
             <Link
               href="/shop"
               className={cn(
-                buttonVariants({ variant: "outline", size: "lg" }),
-                "rounded-xl border-primary/25 bg-white/80",
+                buttonVariants({ size: "lg" }),
+                "h-12 min-h-12 rounded-full px-7 text-base shadow-sm",
               )}
             >
               Scooters &amp; wheelchairs

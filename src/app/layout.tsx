@@ -25,9 +25,6 @@ export const metadata: Metadata = {
   },
   description:
     "Vehicle adaptations, mobility scooters and wheelchairs from Heathrow & Ferndown. Motability accredited. Home and branch demonstrations available.",
-  alternates: {
-    canonical: SITE.url,
-  },
   openGraph: {
     type: "website",
     locale: "en_GB",

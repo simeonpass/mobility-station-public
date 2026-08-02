@@ -30,19 +30,25 @@ export function MotabilityProductCard({
   const freeOnScheme = product.motability_price === 0;
 
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-white transition-shadow hover:shadow-lg">
+    <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-white transition-[border-color,box-shadow] duration-200 hover:border-primary/25 hover:shadow-[0_16px_40px_-24px_rgba(0,63,67,0.45)]">
       <Link
         href={`/products/${product.slug}?from=motability`}
         className="group block flex-1"
       >
-        <div className="relative aspect-square border-b border-border bg-white">
+        <div className="relative aspect-square overflow-hidden bg-white">
           <CatalogImage
             src={img}
             alt={product.name}
             fill
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
-            className="object-contain p-2 transition-transform group-hover:scale-[1.03]"
+            className="object-contain p-3 transition-transform duration-300 group-hover:scale-[1.04]"
           />
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-0 flex translate-y-full items-center justify-center bg-primary px-3 py-3 text-sm font-semibold text-primary-foreground transition-transform duration-300 ease-out group-hover:translate-y-0"
+            aria-hidden
+          >
+            View product →
+          </div>
           <div className="absolute left-3 top-3">
             <span className="inline-flex items-center rounded bg-white/95 px-2 py-1 shadow-sm">
               <MotabilityLogo height={16} />
@@ -50,16 +56,20 @@ export function MotabilityProductCard({
           </div>
         </div>
         <div className="p-4 pb-3">
-          {getBrandLogo(product.manufacturer) ? (
-            <div className="mb-2">
-              <BrandLogo manufacturer={product.manufacturer} height={22} />
+          {product.category ? (
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">
+              {product.category}
+            </p>
+          ) : getBrandLogo(product.manufacturer) ? (
+            <div className="mb-1">
+              <BrandLogo manufacturer={product.manufacturer} height={20} />
             </div>
           ) : product.manufacturer ? (
-            <p className="mb-1 text-xs uppercase tracking-wide text-muted">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">
               {product.manufacturer}
             </p>
           ) : null}
-          <h3 className="min-h-[3rem] line-clamp-2 font-semibold leading-snug text-primary">
+          <h3 className="mt-1.5 min-h-[2.75rem] line-clamp-2 text-[15px] font-bold leading-snug text-primary">
             {product.name}
           </h3>
 

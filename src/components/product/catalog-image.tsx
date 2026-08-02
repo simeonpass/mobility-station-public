@@ -1,5 +1,7 @@
+"use client";
+
+import { useState } from "react";
 import Image, { type ImageProps } from "next/image";
-import { cn } from "@/lib/utils";
 
 const PLACEHOLDER = "/placeholder-product.svg";
 
@@ -11,14 +13,41 @@ function isHttpSrc(src: string) {
   return /^https?:\/\//i.test(src);
 }
 
+/**
+ * Cap Shopify CDN originals — they often ship 1500–2500px JPEGs.
+ * Next/image still re-encodes; this reduces origin fetch size first.
+ */
+function normalizeRemoteSrc(src: string): string {
+  try {
+    const url = new URL(src);
+    const host = url.hostname.toLowerCase();
+    if (
+      host === "cdn.shopify.com" ||
+      host.endsWith(".myshopify.com") ||
+      host.includes("shopify")
+    ) {
+      if (!url.searchParams.has("width")) {
+        url.searchParams.set("width", "1200");
+      }
+      if (!url.searchParams.has("quality")) {
+        url.searchParams.set("quality", "75");
+      }
+      return url.toString();
+    }
+  } catch {
+    /* keep original */
+  }
+  return src;
+}
+
 type CatalogImageProps = Omit<ImageProps, "src"> & {
   src: string | null | undefined;
 };
 
 /**
- * Product/catalog images come from many external hosts in Supabase.
- * Use next/image for local assets; plain <img> for remote URLs so unknown
- * hostnames cannot crash the page via next/image config errors.
+ * Catalogue images come from Shopify, Supabase, R2 and other hosts.
+ * Always go through next/image so mobile gets resized WebP/AVIF instead of
+ * multi‑hundred‑KB (sometimes 1MB+) originals.
  */
 export function CatalogImage({
   src,
@@ -29,58 +58,23 @@ export function CatalogImage({
   height,
   sizes,
   priority,
+  quality = 75,
   ...rest
 }: CatalogImageProps) {
   const resolved = src && src.trim() ? src.trim() : PLACEHOLDER;
+  const [failed, setFailed] = useState(false);
 
-  if (isLocalSrc(resolved)) {
-    return (
-      <Image
-        src={resolved}
-        alt={alt}
-        className={className}
-        fill={fill}
-        width={fill ? undefined : width}
-        height={fill ? undefined : height}
-        sizes={sizes}
-        priority={priority}
-        {...rest}
-      />
-    );
-  }
-
-  if (isHttpSrc(resolved)) {
-    if (fill) {
-      return (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={resolved}
-          alt={alt}
-          className={cn("absolute inset-0 h-full w-full", className)}
-          sizes={sizes}
-          loading={priority ? "eager" : "lazy"}
-          decoding="async"
-        />
-      );
-    }
-
-    return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={resolved}
-        alt={alt}
-        width={typeof width === "number" ? width : undefined}
-        height={typeof height === "number" ? height : undefined}
-        className={className}
-        loading={priority ? "eager" : "lazy"}
-        decoding="async"
-      />
-    );
-  }
+  const displaySrc = failed
+    ? PLACEHOLDER
+    : isHttpSrc(resolved)
+      ? normalizeRemoteSrc(resolved)
+      : isLocalSrc(resolved)
+        ? resolved
+        : PLACEHOLDER;
 
   return (
     <Image
-      src={PLACEHOLDER}
+      src={displaySrc}
       alt={alt}
       className={className}
       fill={fill}
@@ -88,6 +82,8 @@ export function CatalogImage({
       height={fill ? undefined : height}
       sizes={sizes}
       priority={priority}
+      quality={quality}
+      onError={() => setFailed(true)}
       {...rest}
     />
   );

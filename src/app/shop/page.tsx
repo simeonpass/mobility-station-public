@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import Link from "next/link";
 import { ProductCard } from "@/components/ProductCard";
 import { ShopBrowser } from "@/components/product/shop-browser";
 import { CatalogIntro } from "@/components/sections/catalog-intro";
@@ -68,20 +67,6 @@ export default async function ShopPage({ searchParams }: Props) {
         title="Looking for something specific?"
         subtitle="Search by model, brand or type — then browse popular picks below."
       />
-
-      <div className="border-b border-border bg-soft/50">
-        <div className="container-site flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-muted">
-            Prefer a printable list of the full catalogue?
-          </p>
-          <Link
-            href="/brochure/scooters-wheelchairs"
-            className="text-sm font-semibold text-primary underline-offset-2 hover:underline"
-          >
-            Download scooters &amp; wheelchairs brochure →
-          </Link>
-        </div>
-      </div>
 
       {!errorMessage && popularProducts.length > 0 ? (
         <ProductSpotlight

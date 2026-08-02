@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Image from "next/image";
+import { CatalogImage } from "@/components/product/catalog-image";
 import { HireBookingForm } from "@/components/hire/hire-booking-form";
 import {
   rateCardForProduct,
@@ -93,7 +93,7 @@ export function HireFleet({
               }`}
             >
               <div className="relative mb-3 aspect-[4/3] overflow-hidden rounded-xl bg-soft">
-                <Image
+                <CatalogImage
                   src={p.image_url || "/images/products/placeholder-scooter.svg"}
                   alt={p.name}
                   fill

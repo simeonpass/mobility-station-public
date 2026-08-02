@@ -144,13 +144,6 @@ export default async function MotabilityAdaptationsPage() {
             >
               View weekly Motability packages
             </Link>
-            . Or{" "}
-            <Link
-              href="/brochure/vehicle-adaptations"
-              className="font-semibold text-primary underline underline-offset-2"
-            >
-              download the adaptations brochure
-            </Link>
             .
           </p>
         </div>

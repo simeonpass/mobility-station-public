@@ -8,150 +8,120 @@ import { getBlogPosts } from "@/lib/data";
 import { getAllPublishedSlugs } from "@/lib/products";
 import { SITE } from "@/lib/seo";
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const now = new Date();
+/** Only emit lastmod when we have a real content timestamp — never build time. */
+function withLastMod(
+  entry: Omit<MetadataRoute.Sitemap[number], "lastModified">,
+  date: string | Date | null | undefined,
+): MetadataRoute.Sitemap[number] {
+  if (!date) return entry;
+  const parsed = date instanceof Date ? date : new Date(date);
+  if (Number.isNaN(parsed.getTime())) return entry;
+  return { ...entry, lastModified: parsed };
+}
 
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
-    { url: `${SITE.url}/`, lastModified: now, changeFrequency: "weekly", priority: 1 },
-    { url: `${SITE.url}/shop`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
+    { url: `${SITE.url}/`, changeFrequency: "weekly", priority: 1 },
+    { url: `${SITE.url}/shop`, changeFrequency: "daily", priority: 0.9 },
     {
       url: `${SITE.url}/vehicle-adaptations`,
-      lastModified: now,
       changeFrequency: "weekly",
       priority: 0.9,
     },
     {
       url: `${SITE.url}/locations`,
-      lastModified: now,
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: `${SITE.url}/book-a-demo`,
-      lastModified: now,
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: `${SITE.url}/book-a-service`,
-      lastModified: now,
       changeFrequency: "monthly",
       priority: 0.7,
     },
-    {
-      url: `${SITE.url}/hire`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
+    { url: `${SITE.url}/hire`, changeFrequency: "weekly", priority: 0.8 },
     {
       url: `${SITE.url}/hire/terms`,
-      lastModified: now,
       changeFrequency: "monthly",
       priority: 0.4,
     },
-    {
-      url: `${SITE.url}/blog`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.7,
-    },
+    { url: `${SITE.url}/blog`, changeFrequency: "weekly", priority: 0.7 },
     {
       url: `${SITE.url}/clearance`,
-      lastModified: now,
       changeFrequency: "weekly",
       priority: 0.7,
     },
     {
       url: `${SITE.url}/delivery`,
-      lastModified: now,
       changeFrequency: "monthly",
       priority: 0.6,
     },
     {
       url: `${SITE.url}/service-area`,
-      lastModified: now,
       changeFrequency: "monthly",
       priority: 0.7,
     },
     {
       url: `${SITE.url}/lightweight-folding-mobility`,
-      lastModified: now,
       changeFrequency: "monthly",
       priority: 0.6,
     },
     {
       url: `${SITE.url}/trade-in`,
-      lastModified: now,
       changeFrequency: "monthly",
       priority: 0.5,
     },
     {
       url: `${SITE.url}/about-us`,
-      lastModified: now,
       changeFrequency: "monthly",
       priority: 0.5,
     },
     {
       url: `${SITE.url}/motability`,
-      lastModified: now,
       changeFrequency: "weekly",
       priority: 0.7,
     },
     {
       url: `${SITE.url}/motability/vehicle-adaptations`,
-      lastModified: now,
       changeFrequency: "weekly",
       priority: 0.7,
     },
     {
       url: `${SITE.url}/brochure/scooters-wheelchairs`,
-      lastModified: now,
       changeFrequency: "weekly",
       priority: 0.5,
     },
     {
       url: `${SITE.url}/brochure/vehicle-adaptations`,
-      lastModified: now,
       changeFrequency: "weekly",
       priority: 0.5,
     },
-    {
-      url: `${SITE.url}/faq`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.5,
-    },
+    { url: `${SITE.url}/faq`, changeFrequency: "monthly", priority: 0.5 },
     {
       url: `${SITE.url}/contact`,
-      lastModified: now,
       changeFrequency: "monthly",
       priority: 0.6,
     },
     {
       url: `${SITE.url}/vat-relief`,
-      lastModified: now,
       changeFrequency: "yearly",
       priority: 0.5,
     },
     {
       url: `${SITE.url}/privacy-policy`,
-      lastModified: now,
       changeFrequency: "yearly",
       priority: 0.3,
     },
     {
       url: `${SITE.url}/cookie-policy`,
-      lastModified: now,
       changeFrequency: "yearly",
       priority: 0.3,
     },
-    {
-      url: `${SITE.url}/terms`,
-      lastModified: now,
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
+    { url: `${SITE.url}/terms`, changeFrequency: "yearly", priority: 0.3 },
   ];
 
   let products: { slug: string; updated_at: string }[] = [];
@@ -170,7 +140,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const townRoutes = LOCATION_PAGES.map((loc) => ({
     url: `${SITE.url}/service-area/${loc.slug}`,
-    lastModified: now,
     changeFrequency: "monthly" as const,
     priority: 0.55,
   }));
@@ -178,14 +147,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const adaptationRoutes = [
     ...ADAPTATION_SECTIONS.map((section) => ({
       url: `${SITE.url}/vehicle-adaptations/${section.id}`,
-      lastModified: now,
       changeFrequency: "weekly" as const,
       priority: 0.75,
     })),
     ...ADAPTATION_SECTIONS.flatMap((section) =>
       section.categories.map((category) => ({
         url: `${SITE.url}/vehicle-adaptations/${adaptationCategoryToSlug(category)}`,
-        lastModified: now,
         changeFrequency: "weekly" as const,
         priority: 0.7,
       })),
@@ -196,17 +163,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...staticRoutes,
     ...townRoutes,
     ...adaptationRoutes,
-    ...products.map((p) => ({
-      url: `${SITE.url}/products/${p.slug}`,
-      lastModified: p.updated_at ? new Date(p.updated_at) : now,
-      changeFrequency: "weekly" as const,
-      priority: 0.7,
-    })),
-    ...blogPosts.map((post) => ({
-      url: `${SITE.url}/blog/${post.slug}`,
-      lastModified: new Date(post.updatedAt || post.publishedAt),
-      changeFrequency: "monthly" as const,
-      priority: 0.5,
-    })),
+    ...products.map((p) =>
+      withLastMod(
+        {
+          url: `${SITE.url}/products/${p.slug}`,
+          changeFrequency: "weekly",
+          priority: 0.7,
+        },
+        p.updated_at,
+      ),
+    ),
+    ...blogPosts.map((post) =>
+      withLastMod(
+        {
+          url: `${SITE.url}/blog/${post.slug}`,
+          changeFrequency: "monthly",
+          priority: 0.5,
+        },
+        post.updatedAt || post.publishedAt,
+      ),
+    ),
   ];
 }

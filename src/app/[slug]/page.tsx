@@ -5,16 +5,22 @@ export const revalidate = 300;
 
 type Props = { params: Promise<{ slug: string }> };
 
-/** Legacy Lovable URLs were `/{slug}`. Redirect to `/products/{slug}` when the slug is a published product. */
+/**
+ * Legacy Lovable product URLs were `/{slug}`.
+ * Redirect to `/products/{slug}` when the slug is a published product;
+ * otherwise return a real HTTP 404 (do not soft-404 as the homepage).
+ */
 export default async function LegacyProductSlugPage({ params }: Props) {
   const { slug } = await params;
 
-  // Avoid clashing with reserved words if a static route is ever removed
+  // Avoid clashing with reserved / static route segments
   const reserved = new Set([
     "api",
     "shop",
     "products",
+    "product",
     "blog",
+    "blogs",
     "checkout",
     "contact",
     "locations",
@@ -24,15 +30,19 @@ export default async function LegacyProductSlugPage({ params }: Props) {
     "account",
     "admin",
     "manage",
+    "dashboard",
+    "engineer",
     "website",
     "privacy-policy",
     "cookie-policy",
     "terms",
     "faq",
     "about-us",
+    "about",
     "book-a-demo",
     "book-a-service",
     "vehicle-adaptations",
+    "adaptations",
     "order-confirmation",
     "trade-in",
     "mobility-scooter-hire",
@@ -43,15 +53,23 @@ export default async function LegacyProductSlugPage({ params }: Props) {
     "find-my-scooter",
     "our-work",
     "vat-relief",
+    "brochure",
+    "collections",
+    "pages",
+    "policies",
+    "services",
+    "servicing",
+    "cart",
+    "home",
+    "luggy-scooters",
+    "luggie-scooters",
+    "mobility-scooters",
+    "powered-wheelchairs",
   ]);
   if (reserved.has(slug.toLowerCase())) notFound();
 
-  try {
-    const product = await getProductBySlug(slug);
-    if (product) redirect(`/products/${product.slug}`);
-  } catch {
-    notFound();
-  }
+  const product = await getProductBySlug(slug);
+  if (product) redirect(`/products/${product.slug}`);
 
   notFound();
 }

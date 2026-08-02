@@ -36,7 +36,10 @@ export function CatalogIntro({
             {primaryAction ?? (
               <Link
                 href={primary.href}
-                className={cn(buttonVariants({ size: "lg" }), "rounded-full")}
+                className={cn(
+                  buttonVariants({ size: "lg" }),
+                  "h-12 min-h-12 rounded-full px-7 text-base",
+                )}
               >
                 {primary.label}
               </Link>
@@ -45,7 +48,7 @@ export function CatalogIntro({
               href={secondary.href}
               className={cn(
                 buttonVariants({ variant: "outline", size: "lg" }),
-                "rounded-full bg-white",
+                "h-12 min-h-12 rounded-full bg-white px-7 text-base",
               )}
             >
               {secondary.label}

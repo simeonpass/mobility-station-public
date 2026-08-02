@@ -17,6 +17,7 @@ import { VatReliefDialog } from "@/components/product/vat-relief-dialog";
 import { EnquiryDialog } from "@/components/forms/enquiry-dialog";
 import { useCart } from "@/components/cart/cart-provider";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import {
   addonCartLineId,
   configuredCartLineId,
@@ -30,7 +31,7 @@ import {
   type ProductListItem,
   type ProductVariant,
 } from "@/lib/products";
-import { getVatPriceDisplay } from "@/lib/vat";
+import { getVatPriceDisplay, UK_VAT_PERCENT } from "@/lib/vat";
 
 export type ProductDetailViewProps = {
   name: string;
@@ -76,6 +77,8 @@ export function ProductDetailView(props: ProductDetailViewProps) {
   const [selectedAddons, setSelectedAddons] = useState<ProductVariant[]>([]);
   const [galleryOverride, setGalleryOverride] = useState<string | null>(null);
   const [cartMessage, setCartMessage] = useState<string | null>(null);
+  /** Lovable-style: default shows VAT relief; toggle reveals inc. VAT. */
+  const [showIncVat, setShowIncVat] = useState(false);
 
   const selectedOptions = useMemo(
     () => Object.values(selectedByGroup),
@@ -121,8 +124,18 @@ export function ProductDetailView(props: ProductDetailViewProps) {
       ? (vat.wasGross ?? wasNet)
       : wasNet;
 
-  const headline = vat.mode === "always-inc" ? gross : net;
-  const wasHeadline = vat.mode === "always-inc" ? wasGross : wasNet;
+  const headline =
+    vat.mode === "always-inc"
+      ? gross
+      : vat.mode === "relief" && showIncVat
+        ? gross
+        : net;
+  const wasHeadline =
+    vat.mode === "always-inc"
+      ? wasGross
+      : vat.mode === "relief" && showIncVat
+        ? wasGross
+        : wasNet;
   const priceLabel = headline == null ? "POA" : formatGBP(headline);
 
   const motabilityFromVariant = selectedOptions.find(
@@ -357,7 +370,7 @@ export function ProductDetailView(props: ProductDetailViewProps) {
 
           {getBrandLogo(props.manufacturer) ? (
             <div className="mb-3">
-              <BrandLogo manufacturer={props.manufacturer} height={36} />
+              <BrandLogo manufacturer={props.manufacturer} height={52} />
             </div>
           ) : props.manufacturer ? (
             <p className="text-sm font-semibold uppercase tracking-wider text-muted">
@@ -368,13 +381,19 @@ export function ProductDetailView(props: ProductDetailViewProps) {
             {props.name}
           </h1>
 
-          <p
-            className={`mt-2 text-sm font-medium ${
-              stockAvailable ? "text-success" : "text-error"
-            }`}
-          >
-            {optionsOutOfStock ? "Selected option out of stock" : props.stockLabel}
-          </p>
+          {props.category && props.isAdaptation && !motabilityMode ? (
+            <p className="mt-2 text-sm text-muted">{props.category}</p>
+          ) : props.stockLabel ? (
+            <p
+              className={`mt-2 text-sm font-medium ${
+                stockAvailable ? "text-success" : "text-error"
+              }`}
+            >
+              {optionsOutOfStock
+                ? "Selected option out of stock"
+                : props.stockLabel}
+            </p>
+          ) : null}
 
           <div className="mt-4 space-y-2">
             {motabilityMode ? (
@@ -439,18 +458,40 @@ export function ProductDetailView(props: ProductDetailViewProps) {
                 ) : null}
 
                 {vat.mode === "relief" && net != null && gross != null ? (
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                    <p className="text-sm text-muted">ex VAT</p>
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                    <p className="text-sm text-muted">
+                      {showIncVat
+                        ? `inc. ${UK_VAT_PERCENT}% VAT`
+                        : "VAT relief price"}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        id="vat-toggle"
+                        checked={showIncVat}
+                        onCheckedChange={setShowIncVat}
+                        label={`Show price including ${UK_VAT_PERCENT}% VAT`}
+                      />
+                      <label
+                        htmlFor="vat-toggle"
+                        className="cursor-pointer text-sm text-muted"
+                      >
+                        Show price inc. {UK_VAT_PERCENT}% VAT
+                      </label>
+                    </div>
                     <VatReliefDialog
                       netPrice={net}
                       grossPrice={gross}
                       variant="link"
-                    />
+                    >
+                      About VAT
+                    </VatReliefDialog>
                   </div>
                 ) : null}
 
                 {vat.mode === "always-inc" && headline != null ? (
-                  <p className="text-sm text-muted">inc. VAT</p>
+                  <p className="text-sm text-muted">
+                    inc. {UK_VAT_PERCENT}% VAT
+                  </p>
                 ) : null}
 
                 {vat.mode === "no-vat" && headline != null ? (
@@ -458,9 +499,9 @@ export function ProductDetailView(props: ProductDetailViewProps) {
                 ) : null}
 
                 {props.isAdaptation && props.priceCurrent != null ? (
-                  <p className="text-xs text-muted">
-                    Indicative supplied &amp; fitted price — final quote tailored
-                    to your vehicle
+                  <p className="text-sm text-muted">
+                    Indicative supplied &amp; fitted — final quote for your
+                    vehicle
                   </p>
                 ) : null}
               </>
@@ -468,8 +509,59 @@ export function ProductDetailView(props: ProductDetailViewProps) {
           </div>
 
           {!motabilityMode &&
+          props.isAdaptation &&
           ((motabilityWeekly != null && motabilityWeekly >= 0) ||
             motabilityPrice != null) ? (
+            <div className="mt-4 rounded-xl border border-primary/20 bg-primary-soft/60 px-4 py-4 sm:px-5 sm:py-5">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <MotabilityLogo height={20} />
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted">
+                      Motability reference
+                    </p>
+                  </div>
+                  <div className="mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                    {motabilityWeekly != null && motabilityWeekly > 0 ? (
+                      <>
+                        <span className="text-3xl font-extrabold tabular-nums text-primary">
+                          {formatGBP(motabilityWeekly)}
+                        </span>
+                        <span className="text-base font-semibold text-muted">
+                          / week
+                        </span>
+                      </>
+                    ) : motabilityWeekly === 0 || motabilityPrice === 0 ? (
+                      <span className="text-3xl font-extrabold text-primary">
+                        £0
+                      </span>
+                    ) : motabilityPrice != null ? (
+                      <span className="text-3xl font-extrabold tabular-nums text-primary">
+                        {formatGBP(motabilityPrice)}
+                      </span>
+                    ) : null}
+                  </div>
+                  <p className="mt-1 text-sm text-muted">
+                    {motabilityWeekly != null && motabilityWeekly > 0
+                      ? "Indicative weekly Motability figure"
+                      : motabilityWeekly === 0 || motabilityPrice === 0
+                        ? "£0 advance payment on Motability"
+                        : "Indicative Motability advance payment"}
+                    {adaptationId ? ` · Code ${adaptationId}` : ""}
+                  </p>
+                </div>
+                <Link
+                  href="/motability/vehicle-adaptations"
+                  className="shrink-0 text-sm font-semibold text-primary underline-offset-2 hover:underline"
+                >
+                  Learn more
+                </Link>
+              </div>
+            </div>
+          ) : !motabilityMode &&
+            !props.isAdaptation &&
+            ((motabilityWeekly != null && motabilityWeekly >= 0) ||
+              motabilityPrice != null) ? (
             <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-primary px-3.5 py-2.5 text-primary-foreground">
               <div className="flex min-w-0 flex-wrap items-center gap-x-2.5 gap-y-1">
                 <MotabilityLogo variant="white" height={18} />
@@ -499,26 +591,14 @@ export function ProductDetailView(props: ProductDetailViewProps) {
                       </span>
                       <span className="text-primary-foreground/75">
                         {" "}
-                        {props.isAdaptation
-                          ? "advance payment"
-                          : "contribution"}{" "}
-                        on Motability
+                        contribution on Motability
                       </span>
                     </>
-                  ) : null}
-                  {adaptationId ? (
-                    <span className="ml-1.5 text-xs text-primary-foreground/60">
-                      · Code {adaptationId}
-                    </span>
                   ) : null}
                 </p>
               </div>
               <Link
-                href={
-                  props.isAdaptation
-                    ? "/motability/vehicle-adaptations"
-                    : "/motability"
-                }
+                href="/motability"
                 className="shrink-0 text-xs font-semibold text-accent-on-dark underline-offset-2 hover:underline"
               >
                 Learn more
@@ -527,24 +607,10 @@ export function ProductDetailView(props: ProductDetailViewProps) {
           ) : null}
 
           {props.isAdaptation ? (
-            <div className="mt-4 grid gap-2 rounded-xl border border-border bg-soft p-4 text-sm sm:grid-cols-3">
-              <div>
-                <p className="font-semibold text-primary">Workshop fitting</p>
-                <p className="mt-0.5 text-xs text-muted">
-                  Included at Heathrow or Ferndown
-                </p>
-              </div>
-              <div>
-                <p className="font-semibold text-primary">Mobile fitting</p>
-                <p className="mt-0.5 text-xs text-muted">Ask us where possible</p>
-              </div>
-              <div>
-                <p className="font-semibold text-primary">Vehicle collection</p>
-                <p className="mt-0.5 text-xs text-muted">
-                  Available at reasonable cost
-                </p>
-              </div>
-            </div>
+            <p className="mt-3 text-sm text-muted">
+              Fitted at Heathrow or Ferndown · mobile where possible ·
+              collection available
+            </p>
           ) : null}
 
           {!motabilityMode && !props.isAdaptation ? (
@@ -621,20 +687,19 @@ export function ProductDetailView(props: ProductDetailViewProps) {
                   title="Get a free quotation"
                   defaultInterest={`Vehicle adaptation quotation — ${props.name}`}
                   productSlug={props.slug}
-                  triggerClassName="flex w-full items-center justify-center rounded-xl bg-accent px-6 py-3 text-center font-semibold text-accent-foreground hover:bg-accent-hover"
+                  triggerClassName="flex h-12 w-full cursor-pointer items-center justify-center rounded-xl bg-accent px-6 text-center text-base font-semibold text-accent-foreground hover:bg-accent-hover"
                 >
                   Get a free quotation
                 </EnquiryDialog>
                 <Link
                   href={`/book-a-demo?type=adaptation&product=${encodeURIComponent(props.slug)}`}
-                  className="flex w-full items-center justify-center rounded-xl border border-primary px-6 py-3 text-center font-semibold text-primary hover:bg-primary hover:text-primary-foreground"
+                  className="flex h-12 w-full cursor-pointer items-center justify-center rounded-xl border border-primary px-6 text-center text-base font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
                 >
                   Book a demonstration
                 </Link>
                 <p className="text-xs leading-relaxed text-muted">
-                  Adaptations aren&apos;t available for online checkout because
-                  fitting depends on your vehicle. We&apos;ll confirm
-                  compatibility and a firm price before any work starts.
+                  Quoted and fitted to your vehicle — not available for online
+                  checkout.
                 </p>
               </>
             ) : canBuy && hasConfigurableOptions ? (
@@ -643,14 +708,14 @@ export function ProductDetailView(props: ProductDetailViewProps) {
                   <Button
                     type="button"
                     variant="buy"
-                    className="w-full rounded-xl"
+                    className="inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-6 text-base font-semibold"
                     onClick={handleAddConfigured}
                   >
                     Add to cart
                   </Button>
                   <Link
                     href={`/book-a-demo?product=${encodeURIComponent(props.slug)}`}
-                    className="flex w-full items-center justify-center rounded-xl border border-primary px-6 py-3 text-center font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+                    className="inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-primary px-6 text-base font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
                   >
                     Book a demonstration
                   </Link>
@@ -698,21 +763,13 @@ export function ProductDetailView(props: ProductDetailViewProps) {
             />
           ) : null}
 
-          <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">
-            {motabilityMode ? (
-              <>
-                <li>Weekly Motability figures</li>
-                <li>Free Motability demonstrations</li>
-                <li>Accredited dealer</li>
-              </>
-            ) : props.isAdaptation ? (
-              <>
-                <li>Workshop fitting included</li>
-                <li>Motability accredited</li>
-                <li>Home visit available</li>
-              </>
-            ) : null}
-          </ul>
+          {motabilityMode ? (
+            <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">
+              <li>Weekly Motability figures</li>
+              <li>Free Motability demonstrations</li>
+              <li>Accredited dealer</li>
+            </ul>
+          ) : null}
 
           {props.discontinuedMessage ? (
             <p className="mt-4 rounded-lg bg-soft p-3 text-sm text-muted">

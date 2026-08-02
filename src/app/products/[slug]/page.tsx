@@ -46,39 +46,35 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  try {
-    const product = await getProductBySlug(slug);
-    if (!product) return { title: "Product not found" };
+  const product = await getProductBySlug(slug);
+  if (!product) notFound();
 
-    const title = truncate(
-      product.seo_title || `${product.name} | Mobility Station`,
-      60,
-    );
-    const description = truncate(
-      product.meta_description ||
-        `${product.name}. Home and branch demonstrations from our Heathrow or Ferndown branches.`,
-      160,
-    );
-    const image = primaryImage(product);
-    const absoluteImage = image.startsWith("https://") ? image : undefined;
+  const title = truncate(
+    product.seo_title || `${product.name} | Mobility Station`,
+    60,
+  );
+  const description = truncate(
+    product.meta_description ||
+      `${product.name}. Home and branch demonstrations from our Heathrow or Ferndown branches.`,
+    160,
+  );
+  const image = primaryImage(product);
+  const absoluteImage = image.startsWith("https://") ? image : undefined;
 
-    return {
-      title: { absolute: title },
+  return {
+    title: { absolute: title },
+    description,
+    alternates: {
+      canonical: `${SITE.url}/products/${product.slug}`,
+    },
+    openGraph: {
+      title,
       description,
-      alternates: {
-        canonical: `${SITE.url}/products/${product.slug}`,
-      },
-      openGraph: {
-        title,
-        description,
-        type: "website",
-        url: `${SITE.url}/products/${product.slug}`,
-        ...(absoluteImage ? { images: [absoluteImage] } : {}),
-      },
-    };
-  } catch {
-    return { title: "Product not found" };
-  }
+      type: "website",
+      url: `${SITE.url}/products/${product.slug}`,
+      ...(absoluteImage ? { images: [absoluteImage] } : {}),
+    },
+  };
 }
 
 function youtubeEmbed(url: string) {
@@ -238,7 +234,7 @@ export default async function ProductPage({ params, searchParams }: Props) {
             motabilityMode
               ? "Available on Motability — book a demonstration"
               : adaptation
-                ? "Available to order — quotation required"
+                ? ""
                 : [
                     stock.label,
                     product.pre_order_enabled && product.pre_order_message

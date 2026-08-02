@@ -49,6 +49,7 @@ export function ShopBrowser({
   const [motabilityOnly, setMotabilityOnly] = useState(false);
   const [clearanceOnly, setClearanceOnly] = useState(false);
   const [sub, setSub] = useState(initialSub ?? "");
+  const [visibleCount, setVisibleCount] = useState(48);
   const resultsRef = useRef<HTMLDivElement>(null);
   const shouldScrollToResults = useRef(false);
 
@@ -65,6 +66,11 @@ export function ShopBrowser({
       resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   }, [category, manufacturer, sub, motabilityOnly, clearanceOnly, sort]);
+
+  // Reset pagination whenever the filtered set changes.
+  useEffect(() => {
+    setVisibleCount(48);
+  }, [query, category, manufacturer, sub, motabilityOnly, clearanceOnly, sort]);
 
   function markScrollToResults() {
     shouldScrollToResults.current = true;
@@ -180,6 +186,9 @@ export function ShopBrowser({
     clearanceOnly,
     sub,
   ]);
+
+  const visibleProducts = filtered.slice(0, visibleCount);
+  const hasMore = visibleCount < filtered.length;
 
   const activeFilters: { key: string; label: string; clear: () => void }[] = [];
   if (sub === "scooters") {
@@ -419,11 +428,27 @@ export function ShopBrowser({
       </div>
 
       {filtered.length ? (
-        <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 lg:gap-6">
-          {filtered.map((p) => (
-            <ProductCard key={p.id} product={p} />
-          ))}
-        </div>
+        <>
+          <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 lg:gap-6">
+            {visibleProducts.map((p) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+          </div>
+          {hasMore ? (
+            <div className="mt-8 flex flex-col items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setVisibleCount((n) => n + 48)}
+                className="rounded-xl border border-primary px-6 py-3 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+              >
+                Show more products
+              </button>
+              <p className="text-xs text-muted">
+                Showing {visibleProducts.length} of {filtered.length}
+              </p>
+            </div>
+          ) : null}
+        </>
       ) : (
         <div className="mt-8 border border-border bg-soft px-5 py-10 text-center">
           <p className="font-semibold text-primary">
