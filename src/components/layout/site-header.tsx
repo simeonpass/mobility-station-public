@@ -84,7 +84,7 @@ export function SiteHeader() {
 
       {/* Brand row: logo · search · actions */}
       <div className="border-b border-border/60 bg-white">
-        <div className="container-site flex h-16 items-center gap-3 md:h-[4.5rem] md:gap-6">
+        <div className="container-site flex h-[4.75rem] items-center gap-3 md:h-20 md:gap-6">
           <Link
             href="/"
             className="flex shrink-0 items-center"
@@ -96,7 +96,7 @@ export function SiteHeader() {
               width={800}
               height={300}
               priority
-              className="h-10 w-auto md:h-11"
+              className="h-12 w-auto md:h-14"
             />
           </Link>
 
@@ -148,31 +148,30 @@ export function SiteHeader() {
         className="hidden bg-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] lg:block"
         aria-label="Primary"
       >
-        <div className="container-site flex items-stretch">
-          {nav.map((item, index) => {
+        <div className="container-site flex h-11 items-center gap-1">
+          {nav.map((item) => {
             const active = isActivePath(pathname, item.href);
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "group relative flex flex-1 items-center justify-center px-2 py-3.5 text-center text-[13px] font-semibold tracking-wide transition-colors",
-                  index > 0 && "border-l border-white/10",
+                  "group relative flex h-full items-center px-3.5 text-[13px] font-semibold tracking-wide transition-colors",
                   active
-                    ? "bg-white/10 text-white"
-                    : "text-white/80 hover:bg-white/10 hover:text-white",
+                    ? "text-white"
+                    : "text-white/75 hover:text-white",
                 )}
               >
-                <span className="relative">
-                  {item.label}
-                  <span
-                    className={cn(
-                      "absolute -bottom-2 left-1/2 h-0.5 w-0 -translate-x-1/2 rounded-full bg-accent transition-all duration-200",
-                      active ? "w-full" : "group-hover:w-3/4",
-                    )}
-                    aria-hidden
-                  />
-                </span>
+                {item.label}
+                <span
+                  className={cn(
+                    "absolute inset-x-3.5 bottom-0 h-0.5 rounded-full bg-accent transition-opacity duration-200",
+                    active
+                      ? "opacity-100"
+                      : "opacity-0 group-hover:opacity-70",
+                  )}
+                  aria-hidden
+                />
               </Link>
             );
           })}

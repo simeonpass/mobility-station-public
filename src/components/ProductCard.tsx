@@ -3,7 +3,7 @@ import { BrandLogo } from "@/components/product/brand-logo";
 import { CatalogImage } from "@/components/product/catalog-image";
 import { MotabilityLogo } from "@/components/product/motability-logo";
 import {
-  conditionGradeLabel,
+  conditionGradeMeta,
   conditionLabel,
   formatGBP,
   isUsedCondition,
@@ -18,13 +18,22 @@ export function ProductCard({ product }: { product: ProductListItem }) {
   const vat = getVatPriceDisplay(product);
   const img = primaryImage(product);
   const used = isUsedCondition(product.condition);
-  const gradeLabel = conditionGradeLabel(product.condition_grade);
+  const grade = conditionGradeMeta(product.condition_grade);
   const stock = stockStatus(product);
 
   const headline =
     vat.mode === "always-inc" ? vat.gross : vat.net;
   const wasHeadline =
     vat.mode === "always-inc" ? vat.wasGross : vat.wasNet;
+
+  const clearanceMeta = used
+    ? [
+        conditionLabel(product.condition),
+        grade ? `Grade ${grade.id}` : null,
+      ]
+        .filter(Boolean)
+        .join(" · ")
+    : null;
 
   return (
     <Link
@@ -39,28 +48,15 @@ export function ProductCard({ product }: { product: ProductListItem }) {
           sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
           className="object-contain p-2 transition-transform group-hover:scale-[1.03]"
         />
-        <div className="absolute left-3 top-3 flex flex-col gap-1.5">
-          {used ? (
-            <span className="rounded bg-error px-2 py-1 text-xs font-semibold text-white">
-              Clearance
-            </span>
-          ) : null}
-          {used ? (
-            <span className="rounded bg-tertiary px-2 py-1 text-xs font-semibold text-foreground">
-              {conditionLabel(product.condition)}
-            </span>
-          ) : null}
-          {gradeLabel ? (
-            <span className="rounded bg-white/95 px-2 py-1 text-xs font-semibold text-primary shadow-sm ring-1 ring-border">
-              {gradeLabel}
-            </span>
-          ) : null}
-          {wasHeadline ? (
-            <span className="rounded bg-primary px-2 py-1 text-xs font-semibold text-primary-foreground">
-              Sale
-            </span>
-          ) : null}
-        </div>
+        {used ? (
+          <span className="absolute left-2.5 top-2.5 rounded-md bg-error px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+            Clearance
+          </span>
+        ) : wasHeadline ? (
+          <span className="absolute left-2.5 top-2.5 rounded-md bg-primary px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary-foreground">
+            Sale
+          </span>
+        ) : null}
         {!stock.available ? (
           <div className="absolute inset-0 flex items-center justify-center bg-white/60">
             <span className="rounded-full bg-soft px-3 py-1 text-sm font-medium text-muted">
@@ -78,6 +74,9 @@ export function ProductCard({ product }: { product: ProductListItem }) {
           <p className="mb-1 text-xs uppercase tracking-wide text-muted">
             {product.manufacturer}
           </p>
+        ) : null}
+        {clearanceMeta ? (
+          <p className="mb-1 text-xs font-medium text-muted">{clearanceMeta}</p>
         ) : null}
         <h3 className="min-h-[3rem] line-clamp-2 font-semibold leading-snug text-primary">
           {product.name}
