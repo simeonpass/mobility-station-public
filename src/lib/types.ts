@@ -62,12 +62,24 @@ export type Review = {
   location?: string;
   relativeTime?: string;
   authorPhotoUrl?: string | null;
+  /** Google Maps business page for this review’s branch, when known. */
+  googleMapsUrl?: string | null;
+};
+
+export type GoogleBusinessLink = {
+  name: string;
+  googleMapsUrl: string;
+  rating?: number;
+  totalReviews?: number;
 };
 
 export type ReviewsSummary = {
   reviews: Review[];
   averageRating: number | null;
   totalReviews: number;
+  /** Primary Google Maps URL (highest-review branch, or first available). */
+  googleMapsUrl?: string | null;
+  profiles?: GoogleBusinessLink[];
 };
 
 export type AdaptationService = {

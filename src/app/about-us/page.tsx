@@ -282,6 +282,8 @@ export default async function AboutPage() {
         reviews={reviewSummary.reviews}
         averageRating={reviewSummary.averageRating}
         totalReviews={reviewSummary.totalReviews}
+        googleMapsUrl={reviewSummary.googleMapsUrl}
+        profiles={reviewSummary.profiles}
       />
 
       <CtaFooter

@@ -1,47 +1,11 @@
 import Link from "next/link";
-import {
-  Accessibility,
-  ArrowRight,
-  BadgeCheck,
-  CarFront,
-  Home,
-  MapPinned,
-  Wrench,
-} from "lucide-react";
+import { ArrowRight, Star } from "lucide-react";
 import {
   ImageCollage,
   type CollageTile,
 } from "@/components/sections/image-collage";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
-const FEATURES = [
-  {
-    href: "/vehicle-adaptations",
-    icon: CarFront,
-    title: "Vehicle adaptations",
-    description: "Hand controls, access fittings and safer, easier driving.",
-  },
-  {
-    href: "/shop",
-    icon: Accessibility,
-    title: "Scooters & wheelchairs",
-    description: "Powerchairs, scooters and daily living aids ready to try.",
-  },
-  {
-    href: "/book-a-service",
-    icon: Wrench,
-    title: "Servicing & support",
-    description: "Reliable aftercare from our Heathrow and Ferndown teams.",
-  },
-] as const;
-
-const TRUST = [
-  { icon: BadgeCheck, label: "Motability accredited" },
-  { icon: Home, label: "Home visits available" },
-  { icon: MapPinned, label: "Heathrow & Ferndown" },
-  { icon: Wrench, label: "Expert support" },
-] as const;
 
 /** Jigsaw tiles: large service shot + four supporting scenes */
 const HOME_TILES: CollageTile[] = [
@@ -72,76 +36,102 @@ const HOME_TILES: CollageTile[] = [
   },
 ];
 
-export function HomeHero() {
+type HomeHeroProps = {
+  averageRating?: number | null;
+  totalReviews?: number;
+  googleMapsUrl?: string | null;
+};
+
+export function HomeHero({
+  averageRating = 4.9,
+  totalReviews,
+  googleMapsUrl = "https://www.google.com/maps/search/?api=1&query=Mobility+Station+UK",
+}: HomeHeroProps) {
+  const ratingLabel =
+    averageRating != null ? averageRating.toFixed(1) : "4.9";
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-soft via-white to-primary-soft">
       <div
-        className="pointer-events-none absolute -left-24 top-24 h-72 w-72 rounded-full bg-accent/15 blur-3xl"
+        className="pointer-events-none absolute -left-24 top-16 h-80 w-80 rounded-full bg-accent/20 blur-3xl"
         aria-hidden
       />
       <div
-        className="pointer-events-none absolute -right-16 bottom-10 h-80 w-80 rounded-full bg-primary/10 blur-3xl"
+        className="pointer-events-none absolute -right-20 bottom-0 h-96 w-96 rounded-full bg-primary/10 blur-3xl"
         aria-hidden
       />
 
-      <div className="container-site relative grid items-center gap-10 py-12 md:gap-12 md:py-16 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-14 lg:py-20">
+      <div className="container-site relative grid items-center gap-12 py-14 md:gap-14 md:py-20 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:gap-16 lg:py-24">
         <div className="animate-[fadeRise_700ms_ease-out]">
-          <h1 className="text-balance text-4xl font-extrabold tracking-tight text-primary md:text-5xl lg:text-[3.25rem] lg:leading-[1.08]">
-            Move Freely.{" "}
-            <span className="text-accent">Live Fully.</span>
+          <h1 className="max-w-xl text-balance text-4xl font-extrabold tracking-tight text-primary sm:text-5xl lg:text-[3.4rem] lg:leading-[1.05]">
+            Keeping you{" "}
+            <em className="font-extrabold italic text-accent">moving</em>,
+            inside and outside the car.
           </h1>
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-muted md:text-lg">
-            Experts in vehicle adaptations and mobility products, supplied and
-            supported by a team you can trust.
+          <p className="mt-6 max-w-md text-base leading-relaxed text-muted md:text-lg">
+            Vehicle adaptations, scooters and wheelchairs — supplied and
+            supported by specialists you can trust at Heathrow and Ferndown.
           </p>
 
-          <ul className="mt-8 space-y-4">
-            {FEATURES.map(({ href, icon: Icon, title, description }) => (
-              <li key={href}>
-                <Link
-                  href={href}
-                  className="group flex items-start gap-3 rounded-xl p-1 transition-colors hover:bg-white/70"
-                >
-                  <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent/15 text-primary">
-                    <Icon className="h-5 w-5" aria-hidden />
-                  </span>
-                  <span>
-                    <span className="block font-bold text-primary group-hover:text-primary-dark">
-                      {title}
-                    </span>
-                    <span className="mt-0.5 block text-sm text-muted">
-                      {description}
-                    </span>
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-
-          <div className="mt-8">
+          <div className="mt-9 flex flex-wrap gap-3">
             <Link
-              href="#what-we-do"
+              href="/vehicle-adaptations"
               className={cn(
                 buttonVariants({ variant: "primary", size: "lg" }),
                 "rounded-xl shadow-sm",
               )}
             >
-              Explore our services
+              Vehicle adaptations
               <ArrowRight className="h-4 w-4" aria-hidden />
+            </Link>
+            <Link
+              href="/shop"
+              className={cn(
+                buttonVariants({ variant: "outline", size: "lg" }),
+                "rounded-xl border-primary/25 bg-white/80",
+              )}
+            >
+              Scooters &amp; wheelchairs
             </Link>
           </div>
 
-          <ul className="mt-10 grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4">
-            {TRUST.map(({ icon: Icon, label }) => (
-              <li
-                key={label}
-                className="flex items-center gap-2 text-xs font-semibold text-primary/85"
+          <div className="mt-10 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+            <a
+              href={googleMapsUrl ?? undefined}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center gap-2.5 rounded-lg transition-opacity hover:opacity-90"
+            >
+              <span
+                className="flex gap-0.5"
+                aria-label={`${ratingLabel} out of 5 stars on Google`}
               >
-                <Icon className="h-4 w-4 shrink-0 text-accent" aria-hidden />
-                <span>{label}</span>
-              </li>
-            ))}
-          </ul>
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <span
+                    key={i}
+                    className="inline-flex h-5 w-5 items-center justify-center rounded-sm bg-[#F4B400]"
+                  >
+                    <Star
+                      className="h-3.5 w-3.5 fill-white text-white"
+                      aria-hidden
+                    />
+                  </span>
+                ))}
+              </span>
+              <span className="text-sm font-semibold text-primary group-hover:underline group-hover:underline-offset-2">
+                Rated {ratingLabel}/5 on Google
+                {totalReviews ? (
+                  <span className="font-normal text-muted">
+                    {" "}
+                    · {totalReviews} reviews
+                  </span>
+                ) : null}
+              </span>
+            </a>
+          </div>
+          <p className="mt-2 text-sm text-muted">
+            Trusted by customers across London, Dorset &amp; the South Coast
+          </p>
         </div>
 
         <div className="animate-[fadeRise_900ms_ease-out]">

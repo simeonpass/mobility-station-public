@@ -66,7 +66,11 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLdScript(jsonLd)}
       />
-      <HomeHero />
+      <HomeHero
+        averageRating={reviewSummary.averageRating}
+        totalReviews={reviewSummary.totalReviews}
+        googleMapsUrl={reviewSummary.googleMapsUrl}
+      />
       <TrustStrip />
       <HomePaths />
 
@@ -101,6 +105,8 @@ export default async function HomePage() {
         reviews={reviewSummary.reviews}
         averageRating={reviewSummary.averageRating}
         totalReviews={reviewSummary.totalReviews}
+        googleMapsUrl={reviewSummary.googleMapsUrl}
+        profiles={reviewSummary.profiles}
       />
       <CtaFooter
         title="Book a home demonstration"

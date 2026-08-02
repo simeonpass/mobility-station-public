@@ -327,15 +327,24 @@ type GoogleReviewRow = {
 };
 
 type GoogleBusinessProfile = {
+  locationId?: string;
+  locationName?: string;
   rating?: number;
   totalReviews?: number;
+  googleMapsUrl?: string | null;
 };
+
+/** Public Google search for Mobility Station if live Maps URLs are unavailable. */
+const FALLBACK_GOOGLE_MAPS_URL =
+  "https://www.google.com/maps/search/?api=1&query=Mobility+Station+UK";
 
 function fallbackReviewsSummary(): ReviewsSummary {
   return {
     reviews: REVIEWS,
     averageRating: 5,
     totalReviews: REVIEWS.length,
+    googleMapsUrl: FALLBACK_GOOGLE_MAPS_URL,
+    profiles: [],
   };
 }
 
@@ -393,6 +402,28 @@ export async function getReviewsSummary(): Promise<ReviewsSummary> {
           ) / totalReviews
         : null;
 
+    const profileLinks = profiles
+      .filter((p) => typeof p.googleMapsUrl === "string" && p.googleMapsUrl)
+      .map((p) => ({
+        name: String(p.locationName || p.locationId || "Mobility Station"),
+        googleMapsUrl: String(p.googleMapsUrl),
+        rating: p.rating != null ? Number(p.rating) : undefined,
+        totalReviews:
+          p.totalReviews != null ? Number(p.totalReviews) : undefined,
+      }))
+      .sort(
+        (a, b) => Number(b.totalReviews ?? 0) - Number(a.totalReviews ?? 0),
+      );
+
+    const mapsByLocationId = new Map(
+      profiles
+        .filter((p) => p.locationId && p.googleMapsUrl)
+        .map((p) => [String(p.locationId), String(p.googleMapsUrl)]),
+    );
+
+    const primaryMapsUrl =
+      profileLinks[0]?.googleMapsUrl ?? FALLBACK_GOOGLE_MAPS_URL;
+
     const reviews = (payload.reviews ?? [])
       .filter(
         (r) =>
@@ -409,6 +440,9 @@ export async function getReviewsSummary(): Promise<ReviewsSummary> {
         location: r.locationName ? String(r.locationName) : undefined,
         relativeTime: r.relativeTime ? String(r.relativeTime) : undefined,
         authorPhotoUrl: r.authorPhotoUrl ?? null,
+        googleMapsUrl: r.locationId
+          ? (mapsByLocationId.get(String(r.locationId)) ?? primaryMapsUrl)
+          : primaryMapsUrl,
       }));
 
     if (!reviews.length) return fallbackReviewsSummary();
@@ -417,6 +451,8 @@ export async function getReviewsSummary(): Promise<ReviewsSummary> {
       reviews,
       averageRating,
       totalReviews: totalReviews || reviews.length,
+      googleMapsUrl: primaryMapsUrl,
+      profiles: profileLinks,
     };
   } catch (error) {
     console.error("Google reviews fetch failed", error);
