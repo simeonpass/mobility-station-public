@@ -20,11 +20,11 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: {
-    default: "Mobility Station | Free Home Demonstrations",
+    default: "Mobility Station | Adaptations, Scooters & Wheelchairs",
     template: "%s | Mobility Station",
   },
   description:
-    "Free home demonstrations for scooters, wheelchairs and vehicle adaptations. Heathrow & Ferndown. Motability accredited.",
+    "Vehicle adaptations, mobility scooters and wheelchairs from Heathrow & Ferndown. Motability accredited. Home and branch demonstrations available.",
   alternates: {
     canonical: SITE.url,
   },
@@ -32,9 +32,9 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_GB",
     siteName: "Mobility Station",
-    title: "Mobility Station | Free Home Demonstrations",
+    title: "Mobility Station | Adaptations, Scooters & Wheelchairs",
     description:
-      "We come to you with scooters, wheelchairs and vehicle adaptations. Heathrow & Ferndown branches.",
+      "Vehicle adaptations, scooters and wheelchairs from Heathrow & Ferndown. Motability accredited dealer.",
   },
 };
 
@@ -48,7 +48,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col font-sans antialiased">
         <CartProvider>
           <SiteHeader />
-          <main className="flex-1 overflow-x-clip">{children}</main>
+          <main className="relative z-0 flex-1 overflow-x-clip">{children}</main>
           <SiteFooter />
           <CartDrawer />
           <CookieConsentBanner />

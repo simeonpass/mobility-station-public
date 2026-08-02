@@ -45,7 +45,7 @@ export function SiteHeader() {
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-50 bg-white shadow-[0_8px_28px_-12px_rgba(0,63,67,0.28)]">
+    <header className="relative sticky top-0 z-50 bg-white shadow-[0_8px_28px_-12px_rgba(0,63,67,0.28)]">
       {/* Utility bar */}
       <div className="relative bg-primary text-primary-foreground">
         <div className="container-site flex h-8 items-center justify-between gap-3 text-xs font-medium">

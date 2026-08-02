@@ -49,7 +49,7 @@ const HOW_IT_WORKS: {
   {
     step: "3",
     title: "Demo or assessment",
-    body: "Book a home visit where needed. Adaptation home demos are £100 — fully refundable if you order.",
+    body: "Book a home visit where needed. Adaptation home demos are £100 — refunded if you order with us or via a dealership.",
     href: "/book-a-demo#demo-terms",
   },
   {
@@ -136,6 +136,20 @@ export default async function VehicleAdaptationsPage() {
           label: "Book a home demo",
         }}
       />
+
+      <div className="border-b border-border bg-soft/50">
+        <div className="container-site flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-muted">
+            Prefer a printable list of the full adaptations range?
+          </p>
+          <Link
+            href="/brochure/vehicle-adaptations"
+            className="text-sm font-semibold text-primary underline-offset-2 hover:underline"
+          >
+            Download vehicle adaptations brochure →
+          </Link>
+        </div>
+      </div>
 
       {!errorMessage && popular.length > 0 ? (
         <ProductSpotlight

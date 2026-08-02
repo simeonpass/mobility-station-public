@@ -153,8 +153,10 @@ export default function TermsPage() {
           <p className="mt-2">
             Home demonstrations for vehicle adaptations and for private
             (non-Motability) scooters and wheelchairs carry a £100 visit fee.
-            This fee is fully refundable if you proceed and place an order with
-            us. Full details are on our{" "}
+            For private scooter and wheelchair purchases, this is deducted from
+            the price if you buy from us. For vehicle adaptations, it is
+            refunded if you go ahead with us, or where the adaptation order is
+            placed via a dealership. Full details are on our{" "}
             <Link href="/book-a-demo#demo-terms">book a demonstration</Link>{" "}
             page.
           </p>

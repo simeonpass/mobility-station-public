@@ -15,6 +15,7 @@ const columns = [
     title: "Vehicle adaptations",
     links: [
       { href: "/vehicle-adaptations", label: "All Adaptations" },
+      { href: "/brochure/vehicle-adaptations", label: "Download brochure" },
       { href: "/contact?interest=adaptation", label: "Get a Quotation" },
       { href: "/book-a-demo", label: "Book a Home Visit" },
     ],
@@ -23,8 +24,10 @@ const columns = [
     title: "Scooters & wheelchairs",
     links: [
       { href: "/shop", label: "Shop All" },
+      { href: "/brochure/scooters-wheelchairs", label: "Download brochure" },
       { href: "/hire", label: "Hire & Flex Hire" },
       { href: "/motability", label: "Motability" },
+      { href: "/motability/vehicle-adaptations", label: "Motability adaptations" },
       { href: "/clearance", label: "Clearance" },
       { href: "/trade-in", label: "Old scooter takeaway" },
     ],

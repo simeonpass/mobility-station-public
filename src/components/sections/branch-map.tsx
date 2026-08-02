@@ -29,8 +29,8 @@ export function BranchMap({ branches }: { branches: Branch[] }) {
             Visit us locally — or we come to you from Heathrow and Ferndown.
           </p>
         </div>
-        <div className="mt-8 overflow-hidden rounded-lg border border-border bg-white">
-          <div className="h-[360px] w-full">
+        <div className="relative z-0 mt-8 isolate overflow-hidden rounded-lg border border-border bg-white">
+          <div className="relative z-0 h-[360px] w-full">
             {MapView ? (
               <MapView branches={branches} />
             ) : (

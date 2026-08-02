@@ -54,7 +54,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     );
     const description = truncate(
       product.meta_description ||
-        `${product.name}. Free home demonstration from our Heathrow or Ferndown branches.`,
+        `${product.name}. Home and branch demonstrations from our Heathrow or Ferndown branches.`,
       160,
     );
     const image = primaryImage(product);

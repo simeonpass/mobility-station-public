@@ -127,7 +127,7 @@ export default async function ClearancePage() {
 
       <CtaFooter
         title="Want to try a clearance model?"
-        subtitle="Book a free home demonstration — we’ll talk through grade, condition and warranty before you decide."
+        subtitle="Book a home or branch demonstration — we’ll talk through grade, condition and warranty before you decide."
       />
     </>
   );

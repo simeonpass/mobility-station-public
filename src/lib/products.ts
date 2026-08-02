@@ -296,13 +296,23 @@ export async function getFeaturedProducts(limit = 8): Promise<ProductListItem[]>
     .limit(limit + 10);
 
   if (error) throw error;
-  const items = excludeAdaptations(
+  const featured = excludeAdaptations(
     (data ?? []).map((row) => mapListItem(row as Record<string, unknown>)),
-  ).slice(0, limit);
-  if (items.length) return items;
+  );
 
-  // Fallback when nothing is flagged featured yet
-  return getPublishedProducts({ limit, shopOnly: true });
+  if (featured.length >= limit) return featured.slice(0, limit);
+
+  // Fill with more catalogue items so carousels have enough to scroll.
+  const fill = await getPublishedProducts({ limit: limit + 40, shopOnly: true });
+  const seen = new Set(featured.map((p) => p.id));
+  const combined = [...featured];
+  for (const p of fill) {
+    if (combined.length >= limit) break;
+    if (seen.has(p.id)) continue;
+    seen.add(p.id);
+    combined.push(p);
+  }
+  return combined.slice(0, limit);
 }
 
 /** Shop spotlight: sale items first, then featured to fill. */
@@ -334,9 +344,6 @@ export async function getPopularAdaptations(
 ): Promise<ProductListItem[]> {
   const all = await getAdaptationProducts({ limit: 200 });
   const featured = all.filter((p) => p.is_featured);
-  if (featured.length >= Math.min(4, limit)) {
-    return featured.slice(0, limit);
-  }
   const seen = new Set(featured.map((p) => p.id));
   const fill = all.filter((p) => !seen.has(p.id));
   return [...featured, ...fill].slice(0, limit);

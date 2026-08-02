@@ -6,7 +6,7 @@ import { createMetadata } from "@/lib/seo";
 export const metadata = createMetadata({
   title: "Book a Demo | Home Demonstrations",
   description:
-    "Book a home or branch demonstration for scooters, wheelchairs or vehicle adaptations. Motability demos free; private & adaptation home visits £100 — fully refundable if you place an order.",
+    "Book a home or branch demonstration for scooters, wheelchairs or vehicle adaptations. Motability scooter/wheelchair home demos free; private & adaptation home visits £100 — see terms.",
   path: "/book-a-demo",
 });
 

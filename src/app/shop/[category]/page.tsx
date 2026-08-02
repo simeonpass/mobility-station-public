@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Props) {
     return createMetadata({
       title: truncate(category, 45),
       description: truncate(
-        `Browse ${category} from Mobility Station. Free home demonstrations from Heathrow and Ferndown.`,
+        `Browse ${category} from Mobility Station. Home and branch demonstrations from Heathrow and Ferndown.`,
         160,
       ),
       path: `/shop/${categorySlug}`,
@@ -88,7 +88,7 @@ export default async function ShopCategoryPage({ params }: Props) {
                 {category}
               </h1>
               <p className="mt-3 text-base text-muted md:text-lg">
-                Free home demonstrations from Heathrow and Ferndown.
+                Home and branch demonstrations from Heathrow and Ferndown.
               </p>
             </div>
             <Link

@@ -250,11 +250,11 @@ export const BLOG_POSTS: BlogPost[] = [
   {
     id: "1",
     slug: "free-home-demonstrations-explained",
-    title: "Free home demonstrations explained",
+    title: "Home demonstrations explained",
     excerpt:
-      "Why we come to you, what happens on the day, and how to prepare for your mobility assessment.",
+      "Why we come to you, what happens on the day, and how fees work for Motability, private and adaptation visits.",
     content:
-      "A free home demonstration means we bring suitable scooters, wheelchairs or adaptations to your door. You can try equipment where you live, park and get around every day — which is far more useful than browsing somewhere unfamiliar.\n\nWe start with a short conversation about your needs, then demonstrate the safest options. There is no obligation to buy on the day.",
+      "A home demonstration means we bring suitable scooters, wheelchairs or adaptations to your door. You can try equipment where you live, park and get around every day — which is far more useful than browsing somewhere unfamiliar.\n\nMotability scooter and wheelchair home demos are free. Private scooter/wheelchair and vehicle adaptation home visits carry a £100 fee — deducted if you buy a scooter or wheelchair from us, or refunded if an adaptation order goes ahead.\n\nWe start with a short conversation about your needs, then demonstrate the safest options. There is no obligation to buy on the day.",
     image: "/images/blog/placeholder-demo.svg",
     publishedAt: "2026-03-12",
     author: "Mobility Station",

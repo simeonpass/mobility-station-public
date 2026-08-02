@@ -208,10 +208,17 @@ export default async function MotabilityPage() {
           <p className="mt-6 text-sm text-muted">
             Looking for vehicle adaptations on Motability?{" "}
             <Link
-              href="/vehicle-adaptations"
+              href="/motability/vehicle-adaptations"
               className="font-semibold text-primary underline underline-offset-2"
             >
-              Browse adaptations
+              Motability vehicle adaptations
+            </Link>
+            . Or{" "}
+            <Link
+              href="/brochure/scooters-wheelchairs"
+              className="font-semibold text-primary underline underline-offset-2"
+            >
+              download the scooters &amp; wheelchairs brochure
             </Link>
             .
           </p>
@@ -304,6 +311,18 @@ export default async function MotabilityPage() {
                 <dt className="font-bold text-primary">{item.q}</dt>
                 <dd className="mt-1.5 text-sm leading-relaxed text-muted">
                   {item.a}
+                  {item.q.includes("vehicle adaptations") ? (
+                    <>
+                      {" "}
+                      <Link
+                        href="/motability/vehicle-adaptations"
+                        className="font-semibold text-primary underline underline-offset-2"
+                      >
+                        Motability vehicle adaptations
+                      </Link>
+                      .
+                    </>
+                  ) : null}
                 </dd>
               </div>
             ))}

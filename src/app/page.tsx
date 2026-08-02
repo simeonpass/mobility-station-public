@@ -1,20 +1,24 @@
-import Link from "next/link";
+import { AdaptationCard } from "@/components/product/adaptation-card";
 import { ProductCard } from "@/components/ProductCard";
 import { BranchMap } from "@/components/sections/branch-map";
 import { CtaFooter } from "@/components/sections/cta-footer";
 import { HomeHero } from "@/components/sections/home-hero";
 import { HomePaths } from "@/components/sections/home-paths";
+import { ProductScroller } from "@/components/sections/product-scroller";
 import { RecentWorkStrip } from "@/components/sections/recent-work-strip";
 import { Testimonials } from "@/components/sections/testimonials";
 import { TrustStrip } from "@/components/sections/trust-strip";
 import { getBranches, getPublicPortfolio, getReviews } from "@/lib/data";
-import { getFeaturedProducts } from "@/lib/products";
+import {
+  getFeaturedProducts,
+  getPopularAdaptations,
+} from "@/lib/products";
 import { createMetadata, jsonLdScript, SITE } from "@/lib/seo";
 
 export const metadata = createMetadata({
   title: "Mobility Station | Vehicle Adaptations & Mobility",
   description:
-    "Vehicle adaptations and mobility scooters & wheelchairs. Free home visits. Heathrow & Ferndown. Motability accredited.",
+    "Vehicle adaptations and mobility scooters & wheelchairs. Heathrow & Ferndown. Motability accredited. Home demos available.",
   path: "/",
   absoluteTitle: true,
 });
@@ -27,11 +31,13 @@ export default async function HomePage() {
     getReviews(),
   ]);
 
-  let featured: Awaited<ReturnType<typeof getFeaturedProducts>> = [];
+  let adaptations: Awaited<ReturnType<typeof getPopularAdaptations>> = [];
+  let scooters: Awaited<ReturnType<typeof getFeaturedProducts>> = [];
   let portfolio: Awaited<ReturnType<typeof getPublicPortfolio>> = [];
   try {
-    [featured, portfolio] = await Promise.all([
-      getFeaturedProducts(8),
+    [adaptations, scooters, portfolio] = await Promise.all([
+      getPopularAdaptations(14),
+      getFeaturedProducts(14),
       getPublicPortfolio(6),
     ]);
   } catch (error) {
@@ -64,33 +70,29 @@ export default async function HomePage() {
       <TrustStrip />
       <HomePaths />
 
-      {featured.length > 0 ? (
-        <section className="bg-soft py-16 md:py-20">
-          <div className="container-site">
-            <div className="mb-6 flex items-end justify-between gap-4">
-              <div>
-                <h2 className="text-3xl font-extrabold tracking-tight text-primary md:text-4xl">
-                  Scooters &amp; wheelchairs
-                </h2>
-                <p className="mt-2 text-muted">
-                  Popular models ready for a home demonstration.
-                </p>
-              </div>
-              <Link
-                href="/shop"
-                className="shrink-0 font-semibold text-primary underline underline-offset-4 hover:text-primary-dark"
-              >
-                See all →
-              </Link>
-            </div>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {featured.map((p) => (
-                <ProductCard key={p.id} product={p} />
-              ))}
-            </div>
-          </div>
-        </section>
-      ) : null}
+      <ProductScroller
+        title="Popular vehicle adaptations"
+        subtitle="Hand controls, hoists and access solutions we fit most often."
+        viewAllHref="/vehicle-adaptations"
+        viewAllLabel="See all adaptations"
+        tone="white"
+      >
+        {adaptations.map((p) => (
+          <AdaptationCard key={p.id} product={p} />
+        ))}
+      </ProductScroller>
+
+      <ProductScroller
+        title="Popular scooters & wheelchairs"
+        subtitle="Featured models ready for a home demonstration."
+        viewAllHref="/shop"
+        viewAllLabel="See all"
+        tone="soft"
+      >
+        {scooters.map((p) => (
+          <ProductCard key={p.id} product={p} />
+        ))}
+      </ProductScroller>
 
       <RecentWorkStrip items={portfolio} />
 

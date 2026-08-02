@@ -12,7 +12,7 @@ const faqs: { q: string; a: string; href?: string; hrefLabel?: string }[] = [
   },
   {
     q: "What does a home demonstration cost?",
-    a: "Motability scooter and wheelchair home demos are free. Private scooter, wheelchair and vehicle adaptation home visits carry a £100 fee, fully refundable if you place an order.",
+    a: "Motability scooter and wheelchair home demos are free. Private scooter, wheelchair and vehicle adaptation home visits carry a £100 fee — deducted from a private purchase if you buy from us, or refunded if an adaptation order goes ahead (including via a dealership).",
     href: "/book-a-demo#demo-terms",
     hrefLabel: "Full demo terms",
   },

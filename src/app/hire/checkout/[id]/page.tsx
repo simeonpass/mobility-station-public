@@ -6,6 +6,7 @@ export const metadata = createMetadata({
   description:
     "Confirm fulfilment details and sign your hire agreement. We’ll take payment when we confirm your booking.",
   path: "/hire/checkout",
+  noIndex: true,
 });
 
 type Props = { params: Promise<{ id: string }> };

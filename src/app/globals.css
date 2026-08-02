@@ -135,6 +135,11 @@
   }
 }
 
+/* Keep Leaflet below the sticky header (z-50). Pane z-indexes stay relative inside the map. */
+.leaflet-container {
+  z-index: 0 !important;
+}
+
 @keyframes fadeRise {
   from {
     opacity: 0;
@@ -285,5 +290,30 @@
     background: var(--soft);
     font-weight: 600;
     color: var(--muted);
+  }
+}
+
+@media print {
+  header,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+  }
+
+  a {
+    text-decoration: none !important;
+    color: inherit !important;
+  }
+
+  .break-inside-avoid {
+    break-inside: avoid;
+  }
+
+  .break-inside-avoid-page {
+    break-inside: avoid;
   }
 }

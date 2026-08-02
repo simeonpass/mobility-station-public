@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { ProductCard } from "@/components/ProductCard";
 import { ShopBrowser } from "@/components/product/shop-browser";
 import { CatalogIntro } from "@/components/sections/catalog-intro";
@@ -16,7 +17,7 @@ export const revalidate = 300;
 export const metadata = createMetadata({
   title: "Shop scooters, wheelchairs & more",
   description:
-    "Browse mobility scooters, powered wheelchairs and more. Free home demonstrations from Heathrow and Ferndown branches.",
+    "Browse mobility scooters, powered wheelchairs and more. Home and branch demonstrations from Heathrow and Ferndown.",
   path: "/shop",
 });
 
@@ -47,13 +48,27 @@ export default async function ShopPage({ searchParams }: Props) {
     <>
       <CatalogIntro
         title="Scooters & Wheelchairs"
-        subtitle="Browse our live catalogue, then book a free home demonstration from Heathrow or Ferndown."
+        subtitle="Browse our live catalogue, then book a home or branch demonstration from Heathrow or Ferndown."
         primary={{ href: "/book-a-demo", label: "Book a Demo" }}
         secondary={{
           href: "/contact?interest=callback#callback",
           label: "Help me choose",
         }}
       />
+
+      <div className="border-b border-border bg-soft/50">
+        <div className="container-site flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-muted">
+            Prefer a printable list of the full catalogue?
+          </p>
+          <Link
+            href="/brochure/scooters-wheelchairs"
+            className="text-sm font-semibold text-primary underline-offset-2 hover:underline"
+          >
+            Download scooters &amp; wheelchairs brochure →
+          </Link>
+        </div>
+      </div>
 
       {!errorMessage && specialOffers.length > 0 ? (
         <ProductSpotlight

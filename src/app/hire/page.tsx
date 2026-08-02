@@ -22,47 +22,39 @@ export const metadata = createMetadata({
   path: "/hire",
 });
 
-/** Interim public rate bands until live hire stock is listed in admin. */
+/** Public “from” bands — aligned with HIRE_RATE_CARD in src/lib/hire.ts */
 const HIRE_BANDS = [
   {
     id: "folding",
     label: "Folding / travel scooters",
     blurb: "Boot-friendly models for holidays and short trips.",
     icon: FoldHorizontal,
-    fromWeekly: 85,
-    fromMonthly: 79,
-  },
-  {
-    id: "small",
-    label: "Small scooters",
-    blurb: "Compact pavement scooters for everyday local use.",
-    icon: Bike,
-    fromWeekly: 95,
-    fromMonthly: 89,
+    fromWeekly: 120,
+    fromMonthly: 109,
   },
   {
     id: "medium",
-    label: "Medium scooters",
-    blurb: "Stable mid-size hire machines with a comfortable ride.",
+    label: "Small & mid-size scooters",
+    blurb: "Compact and mid-size hire machines for everyday local use.",
     icon: Bike,
-    fromWeekly: 125,
-    fromMonthly: 115,
+    fromWeekly: 150,
+    fromMonthly: 139,
   },
   {
     id: "large",
     label: "Large / road scooters",
     blurb: "Bigger, more powerful scooters for longer distances.",
     icon: Truck,
-    fromWeekly: 145,
-    fromMonthly: 135,
+    fromWeekly: 180,
+    fromMonthly: 169,
   },
   {
     id: "wheelchair",
     label: "Wheelchairs",
-    blurb: "Manual and powered wheelchairs — tell us what you need.",
+    blurb: "Manual from these prices; powered chairs are higher — we’ll confirm.",
     icon: Accessibility,
-    fromWeekly: 65,
-    fromMonthly: 59,
+    fromWeekly: 85,
+    fromMonthly: 69,
   },
 ] as const;
 

@@ -513,7 +513,11 @@ export function ProductDetailView(props: ProductDetailViewProps) {
                 </p>
               </div>
               <Link
-                href="/motability"
+                href={
+                  props.isAdaptation
+                    ? "/motability/vehicle-adaptations"
+                    : "/motability"
+                }
                 className="shrink-0 text-xs font-semibold text-accent-on-dark underline-offset-2 hover:underline"
               >
                 Learn more
