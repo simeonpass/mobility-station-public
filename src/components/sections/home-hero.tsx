@@ -87,13 +87,12 @@ export function HomeHero() {
       <div className="container-site relative grid items-center gap-10 py-12 md:gap-12 md:py-16 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-14 lg:py-20">
         <div className="animate-[fadeRise_700ms_ease-out]">
           <h1 className="text-balance text-4xl font-extrabold tracking-tight text-primary md:text-5xl lg:text-[3.25rem] lg:leading-[1.08]">
-            Mobility solutions that{" "}
-            <span className="text-accent">fit your life.</span>
+            Move Freely.{" "}
+            <span className="text-accent">Live Fully.</span>
           </h1>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-muted md:text-lg">
-            Expert advice, high-quality mobility products and professional
-            vehicle adaptations — designed around you, from Heathrow &amp;
-            Ferndown.
+            Experts in vehicle adaptations and mobility products, supplied and
+            supported by a team you can trust.
           </p>
 
           <ul className="mt-8 space-y-4">
