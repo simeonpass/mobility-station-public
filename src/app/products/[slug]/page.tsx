@@ -5,12 +5,14 @@ import { AdaptationCard } from "@/components/product/adaptation-card";
 import { MotabilityProductCard } from "@/components/product/motability-product-card";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductDetailView } from "@/components/product/product-detail-view";
+import { ProductReviews } from "@/components/product/product-reviews";
 import {
   adaptationHref,
   findSectionForCategory,
   isAdaptationProduct,
   sectionHref,
 } from "@/lib/adaptations";
+import { getProductReviews } from "@/lib/data";
 import {
   conditionGradeLabel,
   conditionLabel,
@@ -98,7 +100,10 @@ export default async function ProductPage({ params, searchParams }: Props) {
   const used = isUsedCondition(product.condition);
   const adaptation = isAdaptationProduct(product);
   const adaptationSection = findSectionForCategory(product.category);
-  const related = await getRelatedProducts(product, 4);
+  const [related, productReviews] = await Promise.all([
+    getRelatedProducts(product, 4),
+    getProductReviews(product.id),
+  ]);
 
   const galleryUrls: string[] = [];
   if (product.image_url) galleryUrls.push(product.image_url);
@@ -272,6 +277,12 @@ export default async function ProductPage({ params, searchParams }: Props) {
           motabilityMode={motabilityMode}
         />
       </div>
+
+      {productReviews.length > 0 ? (
+        <div className="container-site">
+          <ProductReviews reviews={productReviews} />
+        </div>
+      ) : null}
 
       {related.length > 0 ? (
         <section className="container-site mt-12 border-t border-border pt-10 md:mt-16 md:pt-14">

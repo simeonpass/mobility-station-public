@@ -60,6 +60,14 @@ export type Review = {
   rating: number;
   quote: string;
   location?: string;
+  relativeTime?: string;
+  authorPhotoUrl?: string | null;
+};
+
+export type ReviewsSummary = {
+  reviews: Review[];
+  averageRating: number | null;
+  totalReviews: number;
 };
 
 export type AdaptationService = {

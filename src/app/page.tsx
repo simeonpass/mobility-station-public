@@ -8,7 +8,7 @@ import { ProductScroller } from "@/components/sections/product-scroller";
 import { RecentWorkStrip } from "@/components/sections/recent-work-strip";
 import { Testimonials } from "@/components/sections/testimonials";
 import { TrustStrip } from "@/components/sections/trust-strip";
-import { getBranches, getPublicPortfolio, getReviews } from "@/lib/data";
+import { getBranches, getPublicPortfolio, getReviewsSummary } from "@/lib/data";
 import {
   getFeaturedProducts,
   getPopularAdaptations,
@@ -26,9 +26,9 @@ export const metadata = createMetadata({
 export const revalidate = 300;
 
 export default async function HomePage() {
-  const [branches, reviews] = await Promise.all([
+  const [branches, reviewSummary] = await Promise.all([
     getBranches(),
-    getReviews(),
+    getReviewsSummary(),
   ]);
 
   let adaptations: Awaited<ReturnType<typeof getPopularAdaptations>> = [];
@@ -97,7 +97,11 @@ export default async function HomePage() {
       <RecentWorkStrip items={portfolio} />
 
       <BranchMap branches={branches} />
-      <Testimonials reviews={reviews} />
+      <Testimonials
+        reviews={reviewSummary.reviews}
+        averageRating={reviewSummary.averageRating}
+        totalReviews={reviewSummary.totalReviews}
+      />
       <CtaFooter
         title="Book a home demonstration"
         subtitle="Whether you need a vehicle adaptation or a scooter or wheelchair — we come to you from Heathrow or Ferndown."

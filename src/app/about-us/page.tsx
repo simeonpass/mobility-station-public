@@ -9,7 +9,9 @@ import {
 } from "lucide-react";
 import { CatalogIntro } from "@/components/sections/catalog-intro";
 import { CtaFooter } from "@/components/sections/cta-footer";
+import { Testimonials } from "@/components/sections/testimonials";
 import { buttonVariants } from "@/components/ui/button";
+import { getReviewsSummary } from "@/lib/data";
 import { createMetadata, jsonLdScript, SITE } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
@@ -76,7 +78,8 @@ const PATHS = [
   },
 ] as const;
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const reviewSummary = await getReviewsSummary();
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -274,6 +277,12 @@ export default function AboutPage() {
           </p>
         </div>
       </section>
+
+      <Testimonials
+        reviews={reviewSummary.reviews}
+        averageRating={reviewSummary.averageRating}
+        totalReviews={reviewSummary.totalReviews}
+      />
 
       <CtaFooter
         title="Ready when you are"

@@ -7,7 +7,7 @@ import {
   REVIEWS,
 } from "@/data/content";
 import { getSupabase, hasSupabase } from "@/lib/supabase";
-import type { BlogPost, Branch, Product, Review } from "@/lib/types";
+import type { BlogPost, Branch, Product, Review, ReviewsSummary } from "@/lib/types";
 
 export const revalidateSeconds = 300;
 
@@ -315,27 +315,143 @@ export async function getPublicPortfolio(
     }));
 }
 
+type GoogleReviewRow = {
+  locationId?: string;
+  locationName?: string;
+  authorName?: string;
+  authorPhotoUrl?: string | null;
+  rating?: number;
+  text?: string;
+  time?: string;
+  relativeTime?: string;
+};
+
+type GoogleBusinessProfile = {
+  rating?: number;
+  totalReviews?: number;
+};
+
+function fallbackReviewsSummary(): ReviewsSummary {
+  return {
+    reviews: REVIEWS,
+    averageRating: 5,
+    totalReviews: REVIEWS.length,
+  };
+}
+
+/** Live Google reviews via the Lovable `get-google-reviews` edge function. */
 export async function getReviews(): Promise<Review[]> {
-  if (!hasSupabase()) return REVIEWS;
+  const summary = await getReviewsSummary();
+  return summary.reviews;
+}
+
+export async function getReviewsSummary(): Promise<ReviewsSummary> {
+  if (!hasSupabase()) return fallbackReviewsSummary();
+
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_PUBLIC_SITE_KEY;
+  if (!url || !key) return fallbackReviewsSummary();
+
+  try {
+    const res = await fetch(`${url}/functions/v1/get-google-reviews`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${key}`,
+        apikey: key,
+      },
+      body: "{}",
+      next: { revalidate: 300 },
+    });
+
+    if (!res.ok) {
+      console.error("Google reviews fetch failed", res.status);
+      return fallbackReviewsSummary();
+    }
+
+    const payload = (await res.json()) as {
+      reviews?: GoogleReviewRow[];
+      businessProfiles?: GoogleBusinessProfile[];
+      error?: string;
+    };
+
+    if (payload.error) {
+      console.error("Google reviews error", payload.error);
+    }
+
+    const profiles = payload.businessProfiles ?? [];
+    const totalReviews = profiles.reduce(
+      (sum, p) => sum + Number(p.totalReviews || 0),
+      0,
+    );
+    const averageRating =
+      totalReviews > 0
+        ? profiles.reduce(
+            (sum, p) =>
+              sum + Number(p.rating || 0) * Number(p.totalReviews || 0),
+            0,
+          ) / totalReviews
+        : null;
+
+    const reviews = (payload.reviews ?? [])
+      .filter(
+        (r) =>
+          Number(r.rating ?? 0) >= 4 &&
+          typeof r.text === "string" &&
+          r.text.trim().length > 30,
+      )
+      .slice(0, 6)
+      .map((r, index) => ({
+        id: `${r.locationId ?? "g"}-${r.time ?? index}-${r.authorName ?? index}`,
+        author: String(r.authorName ?? "Google reviewer"),
+        rating: Math.min(5, Math.max(1, Math.round(Number(r.rating ?? 5)))),
+        quote: String(r.text).trim(),
+        location: r.locationName ? String(r.locationName) : undefined,
+        relativeTime: r.relativeTime ? String(r.relativeTime) : undefined,
+        authorPhotoUrl: r.authorPhotoUrl ?? null,
+      }));
+
+    if (!reviews.length) return fallbackReviewsSummary();
+
+    return {
+      reviews,
+      averageRating,
+      totalReviews: totalReviews || reviews.length,
+    };
+  } catch (error) {
+    console.error("Google reviews fetch failed", error);
+    return fallbackReviewsSummary();
+  }
+}
+
+/** Approved on-product reviews from Lovable (`public_product_reviews`). */
+export async function getProductReviews(
+  stockItemId: string,
+): Promise<Review[]> {
+  if (!hasSupabase()) return [];
   const supabase = getSupabase();
-  if (!supabase) return REVIEWS;
+  if (!supabase) return [];
 
   const { data, error } = await supabase
-    .from("reviews")
-    .select("*")
-    .eq("published", true)
+    .from("public_product_reviews")
+    .select("id, reviewer_name, rating, review_text, created_at")
+    .eq("stock_item_id", stockItemId)
     .order("created_at", { ascending: false })
-    .limit(6);
+    .limit(12);
 
-  if (error || !data?.length) return REVIEWS;
+  if (error || !data?.length) {
+    if (error) console.error("Product reviews fetch failed", error);
+    return [];
+  }
 
-  return data.map((row) => ({
-    id: String(row.id),
-    author: String(row.author),
-    rating: Number(row.rating ?? 5),
-    quote: String(row.quote ?? row.body),
-    location: row.location ? String(row.location) : undefined,
-  }));
+  return data
+    .filter((row) => row.review_text && String(row.review_text).trim())
+    .map((row) => ({
+      id: String(row.id),
+      author: String(row.reviewer_name ?? "Customer"),
+      rating: Math.min(5, Math.max(1, Math.round(Number(row.rating ?? 5)))),
+      quote: String(row.review_text).trim(),
+    }));
 }
 
 export function getAdaptationServices() {
