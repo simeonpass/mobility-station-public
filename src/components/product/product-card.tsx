@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { productPath } from "@/lib/data";
@@ -9,12 +8,13 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <article className="group flex h-full flex-col">
       <Link href={productPath(product)} className="relative aspect-[4/3] overflow-hidden bg-soft">
-        <Image
+        {/* eslint-disable-next-line @next/next/no-img-element -- catalogue card; skip Vercel Image Optimization */}
+        <img
           src={product.image}
           alt={`${product.name} mobility product`}
-          fill
-          className="object-contain p-4 transition-transform duration-300 group-hover:scale-[1.03]"
-          sizes="(max-width: 768px) 100vw, 25vw"
+          className="absolute inset-0 h-full w-full object-contain p-1.5 scale-[1.12] transition-transform duration-300 group-hover:scale-[1.16]"
+          loading="lazy"
+          decoding="async"
         />
         {product.motability ? (
           <Badge className="absolute left-3 top-3">Motability</Badge>

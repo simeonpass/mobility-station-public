@@ -94,7 +94,7 @@ export function ProductGallery({
                     alt={`${name} mobility product ${index + 1}`}
                     fill
                     priority={index === 0}
-                    className="object-contain p-3 sm:p-4"
+                    className="object-contain p-1 sm:p-1.5 scale-[1.12] sm:scale-[1.15]"
                     sizes="(max-width: 768px) 100vw, 50vw"
                   />
                 ) : (

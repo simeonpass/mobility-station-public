@@ -49,7 +49,7 @@ export function ProductCard({ product }: { product: ProductListItem }) {
           alt={product.name}
           fill
           sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
-          className="object-contain p-3 transition-transform duration-300 group-hover:scale-[1.04]"
+          className="object-contain p-1.5 scale-[1.12] transition-transform duration-300 group-hover:scale-[1.16]"
         />
 
         {/* Hover slide-up — Lovable-style */}

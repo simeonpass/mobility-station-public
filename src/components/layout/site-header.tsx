@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -91,13 +90,15 @@ export function SiteHeader() {
             className="flex shrink-0 items-center"
             onClick={() => setOpen(false)}
           >
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element -- logo; skip Vercel Image Optimization */}
+            <img
               src="/brand/logo-header-v6.png"
               alt="Mobility Station"
               width={800}
               height={300}
-              priority
               className="h-12 w-auto md:h-14"
+              decoding="async"
+              fetchPriority="high"
             />
           </Link>
 

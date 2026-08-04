@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image, { type ImageProps } from "next/image";
+import { cn } from "@/lib/utils";
 
 const PLACEHOLDER = "/placeholder-product.svg";
 
@@ -15,7 +15,7 @@ function isHttpSrc(src: string) {
 
 /**
  * Cap Shopify CDN originals — they often ship 1500–2500px JPEGs.
- * Next/image still re-encodes; this reduces origin fetch size first.
+ * R2 assets are already resized by the admin pipeline.
  */
 function normalizeRemoteSrc(src: string): string {
   try {
@@ -40,14 +40,26 @@ function normalizeRemoteSrc(src: string): string {
   return src;
 }
 
-type CatalogImageProps = Omit<ImageProps, "src"> & {
+type CatalogImageProps = {
   src: string | null | undefined;
+  alt: string;
+  className?: string;
+  /** Absolutely fill the positioned parent (same contract as next/image fill). */
+  fill?: boolean;
+  width?: number;
+  height?: number;
+  /** Kept for call-site compatibility; plain <img> ignores srcset sizes. */
+  sizes?: string;
+  /** LCP / above-fold — eager load + high fetch priority. */
+  priority?: boolean;
+  quality?: number;
 };
 
 /**
- * Catalogue images come from Shopify, Supabase, R2 and other hosts.
- * Always go through next/image so mobile gets resized WebP/AVIF instead of
- * multi‑hundred‑KB (sometimes 1MB+) originals.
+ * Catalogue images from Shopify, Supabase, R2, etc.
+ *
+ * Plain <img> on purpose — R2 files are pre-resized, and routing them through
+ * next/image burned Vercel Image Optimization quota for no gain.
  */
 export function CatalogImage({
   src,
@@ -56,10 +68,7 @@ export function CatalogImage({
   fill,
   width,
   height,
-  sizes,
-  priority,
-  quality = 75,
-  ...rest
+  priority = false,
 }: CatalogImageProps) {
   const resolved = src && src.trim() ? src.trim() : PLACEHOLDER;
   const [failed, setFailed] = useState(false);
@@ -73,18 +82,17 @@ export function CatalogImage({
         : PLACEHOLDER;
 
   return (
-    <Image
+    // eslint-disable-next-line @next/next/no-img-element -- intentional: bypass Vercel Image Optimization
+    <img
       src={displaySrc}
       alt={alt}
-      className={className}
-      fill={fill}
       width={fill ? undefined : width}
       height={fill ? undefined : height}
-      sizes={sizes}
-      priority={priority}
-      quality={quality}
+      className={cn(fill && "absolute inset-0 h-full w-full", className)}
+      loading={priority ? "eager" : "lazy"}
+      decoding="async"
+      fetchPriority={priority ? "high" : "auto"}
       onError={() => setFailed(true)}
-      {...rest}
     />
   );
 }

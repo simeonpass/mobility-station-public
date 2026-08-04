@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import type { PortfolioItem } from "@/lib/data";
 
 const FILTERS = [
@@ -16,9 +15,7 @@ export function OurWorkGallery({ items }: { items: PortfolioItem[] }) {
   const [active, setActive] = useState<PortfolioItem | null>(null);
 
   const filtered =
-    filter === "all"
-      ? items
-      : items.filter((i) => i.category === filter);
+    filter === "all" ? items : items.filter((i) => i.category === filter);
 
   return (
     <>
@@ -53,12 +50,13 @@ export function OurWorkGallery({ items }: { items: PortfolioItem[] }) {
               className="group relative aspect-square overflow-hidden rounded-xl bg-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               aria-label={item.title || "Recent work photo"}
             >
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element -- portfolio thumb; skip Vercel Image Optimization */}
+              <img
                 src={item.url}
                 alt={item.title || item.description || "Mobility Station job"}
-                fill
-                className="object-cover transition duration-500 group-hover:scale-105"
-                sizes="(max-width: 768px) 50vw, 25vw"
+                className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                loading="lazy"
+                decoding="async"
               />
               {item.title ? (
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3 opacity-0 transition group-hover:opacity-100">
@@ -91,12 +89,12 @@ export function OurWorkGallery({ items }: { items: PortfolioItem[] }) {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-black">
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element -- lightbox; skip Vercel Image Optimization */}
+              <img
                 src={active.url}
                 alt={active.title || "Recent work"}
-                fill
-                className="object-contain"
-                sizes="90vw"
+                className="absolute inset-0 h-full w-full object-contain"
+                decoding="async"
               />
             </div>
             {(active.title || active.description) && (

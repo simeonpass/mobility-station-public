@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { PortfolioItem } from "@/lib/data";
 
@@ -34,12 +33,13 @@ export function RecentWorkStrip({ items }: { items: PortfolioItem[] }) {
               href="/blog#gallery"
               className="group relative aspect-square overflow-hidden rounded-xl bg-soft"
             >
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element -- portfolio thumb; skip Vercel Image Optimization */}
+              <img
                 src={item.url}
                 alt={item.title || "Recent Mobility Station work"}
-                fill
-                className="object-cover transition duration-500 group-hover:scale-105"
-                sizes="(max-width: 768px) 50vw, 16vw"
+                className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                loading="lazy"
+                decoding="async"
               />
             </Link>
           ))}

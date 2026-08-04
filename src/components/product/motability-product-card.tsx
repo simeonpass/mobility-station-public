@@ -41,7 +41,7 @@ export function MotabilityProductCard({
             alt={product.name}
             fill
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
-            className="object-contain p-3 transition-transform duration-300 group-hover:scale-[1.04]"
+            className="object-contain p-1.5 scale-[1.12] transition-transform duration-300 group-hover:scale-[1.16]"
           />
           <div
             className="pointer-events-none absolute inset-x-0 bottom-0 flex translate-y-full items-center justify-center bg-primary px-3 py-3 text-sm font-semibold text-primary-foreground transition-transform duration-300 ease-out group-hover:translate-y-0"

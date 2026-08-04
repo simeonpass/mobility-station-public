@@ -10,11 +10,15 @@ import type { NextConfig } from "next";
  */
 const nextConfig: NextConfig = {
   images: {
-    // Prefer modern formats on mobile to cut payload size.
+    // Serve remote images via Cloudflare/R2 — not Vercel Image Optimization.
+    // Without this, every width variant on next/image burns Hobby quota.
+    loader: "custom",
+    loaderFile: "./src/lib/r2ImageLoader.ts",
+    // Prefer modern formats when the custom loader builds a srcset.
     formats: ["image/avif", "image/webp"],
-    // Catalogue cards are small; avoid requesting oversized variants.
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
-    imageSizes: [64, 96, 128, 256, 384],
+    // Tight matrix — even with a custom loader, keep variant count low.
+    deviceSizes: [640, 828, 1200, 1920],
+    imageSizes: [96, 256, 384],
     remotePatterns: [
       { protocol: "https", hostname: "cdn.shopify.com" },
       { protocol: "https", hostname: "**.myshopify.com" },
@@ -22,6 +26,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "**.r2.dev" },
       { protocol: "https", hostname: "**.r2.cloudflarestorage.com" },
       { protocol: "https", hostname: "cdn.mobilitystation.co.uk" },
+      { protocol: "https", hostname: "mobilitystation.co.uk" },
       // Catch-all for manufacturer / legacy product hosts (e.g. winches-uk).
       { protocol: "https", hostname: "**" },
       { protocol: "http", hostname: "**" },

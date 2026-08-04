@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { CtaFooter } from "@/components/sections/cta-footer";
@@ -149,13 +148,14 @@ export default async function BlogPostPage({ params }: Props) {
         {post.image ? (
           <div className="container-site mt-8 md:mt-10">
             <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-soft md:aspect-[21/9]">
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element -- blog hero; skip Vercel Image Optimization */}
+              <img
                 src={post.image}
                 alt={post.imageAlt || post.title}
-                fill
-                priority
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 1100px"
+                className="absolute inset-0 h-full w-full object-cover"
+                loading="eager"
+                decoding="async"
+                fetchPriority="high"
               />
             </div>
           </div>
@@ -237,12 +237,13 @@ export default async function BlogPostPage({ params }: Props) {
                         className="group block"
                       >
                         <div className="relative mb-2 aspect-[4/3] overflow-hidden rounded-lg bg-soft">
-                          <Image
+                          {/* eslint-disable-next-line @next/next/no-img-element -- related thumb; skip Vercel Image Optimization */}
+                          <img
                             src={item.image}
                             alt={item.imageAlt || item.title}
-                            fill
-                            className="object-cover transition-transform group-hover:scale-[1.03]"
-                            sizes="260px"
+                            className="absolute inset-0 h-full w-full object-cover transition-transform group-hover:scale-[1.03]"
+                            loading="lazy"
+                            decoding="async"
                           />
                         </div>
                         <p className="text-sm font-semibold leading-snug text-primary group-hover:underline">

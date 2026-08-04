@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 type FittedMechanicCornerProps = {
@@ -38,7 +37,9 @@ export function FittedMechanicCorner({
       <span
         className={cn(
           "relative overflow-hidden rounded-full bg-gradient-to-b from-[#e8f3f1] to-[#d5e8e4] shadow-[0_10px_22px_rgba(0,63,67,0.35)] ring-2 ring-white/90",
-          gallery ? "h-[5.5rem] w-[5.5rem] sm:h-[6.75rem] sm:w-[6.75rem]" : "h-[3.75rem] w-[3.75rem]",
+          gallery
+            ? "h-[5.5rem] w-[5.5rem] sm:h-[6.75rem] sm:w-[6.75rem]"
+            : "h-[3.75rem] w-[3.75rem]",
         )}
       >
         {/* eslint-disable-next-line @next/next/no-img-element -- cutout sticker; avoid Next Image square intrinsic box */}
@@ -48,6 +49,8 @@ export function FittedMechanicCorner({
           className={cn(
             "absolute left-1/2 top-[8%] h-[115%] w-auto max-w-none -translate-x-1/2 object-contain",
           )}
+          loading="lazy"
+          decoding="async"
           draggable={false}
         />
       </span>
@@ -84,7 +87,8 @@ export function FittedBadge({
     >
       {withMascot ? (
         <span className="relative shrink-0 overflow-hidden rounded-full bg-white/15">
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element -- tiny mascot thumb; skip Vercel Image Optimization */}
+          <img
             src="/brand/mechanic-fitted-sticker.png"
             alt=""
             width={compact ? 22 : 28}
@@ -93,6 +97,8 @@ export function FittedBadge({
               "object-cover object-top",
               compact ? "h-[22px] w-[22px]" : "h-7 w-7",
             )}
+            loading="lazy"
+            decoding="async"
             aria-hidden
           />
         </span>

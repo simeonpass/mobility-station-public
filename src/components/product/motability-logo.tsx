@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 type MotabilityLogoProps = {
@@ -18,14 +17,19 @@ export function MotabilityLogo({
       ? "/brand/motability-scheme-white.png"
       : "/brand/motability-scheme-logo-blue.png";
 
+  const width = Math.round(height * (1658 / 566));
+
   return (
-    <Image
+    // eslint-disable-next-line @next/next/no-img-element -- local logo; skip Vercel Image Optimization
+    <img
       src={src}
       alt="Motability Scheme"
-      width={Math.round(height * (1658 / 566))}
+      width={width}
       height={height}
       className={cn("w-auto object-contain", className)}
       style={{ width: "auto", height }}
+      loading="lazy"
+      decoding="async"
     />
   );
 }

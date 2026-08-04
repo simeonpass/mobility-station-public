@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import {
   SiApplepay,
@@ -63,12 +62,15 @@ export function SiteFooter() {
     <footer className="mt-auto bg-footer text-footer-foreground">
       <div className="container-site grid gap-x-8 gap-y-6 py-7 sm:grid-cols-2 lg:grid-cols-6">
         <div className="sm:col-span-2">
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element -- logo; skip Vercel Image Optimization */}
+          <img
             src="/brand/logo-footer-v6.png"
             alt="Mobility Station"
             width={800}
             height={300}
             className="h-8 w-auto"
+            loading="lazy"
+            decoding="async"
           />
           <a
             href={SITE.phoneHref}
@@ -102,13 +104,16 @@ export function SiteFooter() {
             href="/motability"
             className="mt-4 inline-flex flex-col gap-1 transition-opacity hover:opacity-80"
           >
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element -- logo; skip Vercel Image Optimization */}
+            <img
               src="/brand/motability-scheme-white.png"
               alt="Motability Scheme"
               width={220}
               height={75}
               className="h-6 w-auto object-contain"
               style={{ width: "auto", height: "1.5rem" }}
+              loading="lazy"
+              decoding="async"
             />
             <span className="text-[10px] font-semibold uppercase tracking-wide text-accent-on-dark">
               Accredited dealer

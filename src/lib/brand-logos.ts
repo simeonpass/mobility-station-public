@@ -71,7 +71,6 @@ export const BRAND_LOGOS: Record<string, string> = {
   "komfi-rider": "/brands/komfi-rider.png",
   rehasense: "/brands/rehasense.png",
   "allied mobility": "/brands/allied-mobility.png",
-  "mcelmeel mobility": "/brands/mcelmeel-mobility.png",
 };
 
 function normalizeManufacturer(value: string) {

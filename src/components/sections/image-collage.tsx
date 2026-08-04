@@ -22,6 +22,9 @@ type ImageCollageProps = {
  *   a a b
  *   a a c
  *   d e e
+ *
+ * Uses next/image only here (homepage LCP). Custom loader in next.config
+ * serves local files directly — no Vercel Image Optimization.
  */
 export function ImageCollage({
   tiles,
@@ -79,7 +82,8 @@ export function ImageCollage({
                   contain ? "object-contain p-3 md:p-4" : "object-cover",
                   tile.object ?? "object-center",
                 )}
-                priority={priority}
+                priority={priority && i === 0}
+                loading={priority && i === 0 ? "eager" : "lazy"}
               />
             </div>
           ))}
@@ -88,7 +92,7 @@ export function ImageCollage({
 
       {/* Mobile — compact 2×2 */}
       <div className="grid grid-cols-2 gap-2.5 sm:hidden">
-        {areas.slice(0, 4).map(({ tile, area }) => (
+        {areas.slice(0, 4).map(({ tile, area }, i) => (
           <div
             key={`m-${area}-${tile.src}`}
             className="relative aspect-square overflow-hidden rounded-2xl border border-border/60 bg-white"
@@ -102,7 +106,8 @@ export function ImageCollage({
                 contain ? "object-contain p-2.5" : "object-cover",
                 tile.object ?? "object-center",
               )}
-              priority={priority}
+              priority={priority && i === 0}
+              loading={priority && i === 0 ? "eager" : "lazy"}
             />
           </div>
         ))}

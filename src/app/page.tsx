@@ -62,6 +62,13 @@ export default async function HomePage() {
 
   return (
     <>
+      {/* LCP: first collage tile — static hero, not Vercel-optimised */}
+      <link
+        rel="preload"
+        as="image"
+        href="/images/hero-options/06-customer-handover.png"
+        fetchPriority="high"
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLdScript(jsonLd)}

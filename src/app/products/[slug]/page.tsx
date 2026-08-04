@@ -166,8 +166,23 @@ export default async function ProductPage({ params, searchParams }: Props) {
         }
       : null;
 
+  const heroImage = galleryUrls[0];
+  const preloadHero =
+    heroImage &&
+    (heroImage.startsWith("http") || heroImage.startsWith("/"))
+      ? heroImage
+      : null;
+
   return (
     <div className="pb-4 md:pb-12">
+      {preloadHero ? (
+        <link
+          rel="preload"
+          as="image"
+          href={preloadHero}
+          fetchPriority="high"
+        />
+      ) : null}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLdScript(jsonLd)}

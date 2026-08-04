@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { BlogPost } from "@/lib/types";
 
@@ -26,12 +25,13 @@ export function BlogGrid({ posts }: { posts: BlogPost[] }) {
         <article key={post.id} className="flex h-full flex-col">
           <Link href={`/blog/${post.slug}`} className="group flex h-full flex-col">
             <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-soft">
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element -- blog card; skip Vercel Image Optimization */}
+              <img
                 src={post.image}
                 alt={post.imageAlt || post.title}
-                fill
-                className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                sizes="(max-width: 768px) 100vw, 33vw"
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                loading="lazy"
+                decoding="async"
               />
             </div>
             <div className="mt-3 flex flex-1 flex-col">
