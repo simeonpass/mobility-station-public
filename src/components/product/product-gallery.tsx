@@ -3,18 +3,18 @@
 import { useCallback, useEffect, useRef, useState, type TouchEvent } from "react";
 import { ChevronLeft, ChevronRight, Expand, X } from "lucide-react";
 import { CatalogImage } from "@/components/product/catalog-image";
-import { FittedMechanicCorner } from "@/components/product/fitted-badge";
+import { FittingPartnerCorner } from "@/components/product/fitted-badge";
 import { cn } from "@/lib/utils";
 
 export function ProductGallery({
   images,
   name,
-  showFittedMechanic = false,
+  showFittingPartner = false,
 }: {
   images: string[];
   name: string;
-  /** Adaptation products — larger mechanic in the image corner. */
-  showFittedMechanic?: boolean;
+  /** Adaptation products — authorised installer mark in the image corner. */
+  showFittingPartner?: boolean;
 }) {
   const [active, setActive] = useState(0);
   const [lightbox, setLightbox] = useState(false);
@@ -99,7 +99,7 @@ export function ProductGallery({
           />
         </button>
 
-        {showFittedMechanic ? <FittedMechanicCorner size="gallery" /> : null}
+        {showFittingPartner ? <FittingPartnerCorner size="gallery" /> : null}
 
         <button
           type="button"

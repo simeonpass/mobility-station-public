@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { Search } from "lucide-react";
 import { ProductCard } from "@/components/ProductCard";
 import { Input, Select } from "@/components/ui/input";
 import { categoryToSlug, displayPrice, type ProductListItem } from "@/lib/products";
@@ -290,19 +291,28 @@ export function ShopBrowser({
         })}
       </div>
 
-      <div className="mt-5 grid gap-3 border-y border-border bg-soft/40 px-0 py-4 sm:grid-cols-2 lg:grid-cols-12 lg:items-end lg:gap-4 lg:py-5">
-        <div className="lg:col-span-4">
+      <div className="mt-5 grid gap-3 border-y border-border bg-soft/40 px-3 py-4 sm:grid-cols-2 sm:px-4 lg:grid-cols-12 lg:items-end lg:gap-3 lg:px-5 lg:py-5">
+        <div className="min-w-0 lg:col-span-3">
           <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted">
             Search
           </label>
-          <Input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Name or brand…"
-            className="bg-white"
-          />
+          <div className="relative">
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Name or brand…"
+              aria-label="Search by name or brand"
+              className="bg-white pr-11"
+            />
+            <span
+              className="pointer-events-none absolute inset-y-0 right-0 flex w-11 items-center justify-center text-primary/45"
+              aria-hidden
+            >
+              <Search className="h-4 w-4" />
+            </span>
+          </div>
         </div>
-        <div className="lg:col-span-2">
+        <div className="min-w-0 lg:col-span-2">
           <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted">
             Type
           </label>
@@ -322,7 +332,7 @@ export function ShopBrowser({
             ))}
           </Select>
         </div>
-        <div className="lg:col-span-2">
+        <div className="min-w-0 lg:col-span-2">
           <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted">
             Brand
           </label>
@@ -342,7 +352,7 @@ export function ShopBrowser({
             ))}
           </Select>
         </div>
-        <div className="lg:col-span-2">
+        <div className="min-w-0 lg:col-span-2">
           <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted">
             Sort
           </label>
@@ -361,31 +371,36 @@ export function ShopBrowser({
             <option value="motability">Motability first</option>
           </Select>
         </div>
-        <div className="flex flex-wrap gap-x-4 gap-y-2 pb-1 lg:col-span-2 lg:justify-end">
-          <label className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-primary">
-            <input
-              type="checkbox"
-              className="h-4 w-4 rounded border-border text-primary focus:ring-accent"
-              checked={motabilityOnly}
-              onChange={(e) => {
-                markScrollToResults();
-                setMotabilityOnly(e.target.checked);
-              }}
-            />
-            Motability
-          </label>
-          <label className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-primary">
-            <input
-              type="checkbox"
-              className="h-4 w-4 rounded border-border text-primary focus:ring-accent"
-              checked={clearanceOnly}
-              onChange={(e) => {
-                markScrollToResults();
-                setClearanceOnly(e.target.checked);
-              }}
-            />
-            Clearance
-          </label>
+        <div className="flex min-w-0 flex-col gap-2 pb-1 lg:col-span-3 lg:items-stretch">
+          <span className="mb-1.5 hidden text-xs font-semibold uppercase tracking-wide text-muted lg:block">
+            Filters
+          </span>
+          <div className="flex flex-col gap-2 rounded-md border border-border bg-white px-3 py-2 sm:flex-row sm:items-center sm:gap-4 lg:h-11 lg:gap-5">
+            <label className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium whitespace-nowrap text-primary">
+              <input
+                type="checkbox"
+                className="h-4 w-4 shrink-0 rounded border-border text-primary focus:ring-accent"
+                checked={motabilityOnly}
+                onChange={(e) => {
+                  markScrollToResults();
+                  setMotabilityOnly(e.target.checked);
+                }}
+              />
+              Motability
+            </label>
+            <label className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium whitespace-nowrap text-primary">
+              <input
+                type="checkbox"
+                className="h-4 w-4 shrink-0 rounded border-border text-primary focus:ring-accent"
+                checked={clearanceOnly}
+                onChange={(e) => {
+                  markScrollToResults();
+                  setClearanceOnly(e.target.checked);
+                }}
+              />
+              Clearance
+            </label>
+          </div>
         </div>
       </div>
 

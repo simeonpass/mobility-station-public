@@ -411,7 +411,7 @@ export function ProductDetailView(props: ProductDetailViewProps) {
           <ProductGallery
             images={gallery}
             name={props.name}
-            showFittedMechanic={props.isAdaptation}
+            showFittingPartner={props.isAdaptation}
           />
         </div>
 

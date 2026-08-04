@@ -50,6 +50,8 @@ export default async function HomePage() {
     name: SITE.name,
     url: SITE.url,
     telephone: SITE.phone,
+    image: `${SITE.url}/brand/logo-header-v6.png`,
+    logo: `${SITE.url}/brand/logo-header-v6.png`,
     areaServed: "GB",
     address: branches.map((b) => ({
       "@type": "PostalAddress",

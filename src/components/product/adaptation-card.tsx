@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { BrandLogo } from "@/components/product/brand-logo";
 import { CatalogImage } from "@/components/product/catalog-image";
-import { FittedMechanicCorner } from "@/components/product/fitted-badge";
+import { FittingPartnerCorner } from "@/components/product/fitted-badge";
 import { MotabilityLogo } from "@/components/product/motability-logo";
 import { getBrandLogo } from "@/lib/brand-logos";
 import {
@@ -34,12 +34,12 @@ export function AdaptationCard({ product }: { product: ProductListItem }) {
           className="object-cover transition-transform duration-300 group-hover:scale-[1.04]"
         />
         <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 flex translate-y-full items-center justify-center bg-primary px-3 py-3 text-sm font-semibold text-primary-foreground transition-transform duration-300 ease-out group-hover:translate-y-0"
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex translate-y-full items-center justify-center bg-primary px-3 py-3 text-sm font-semibold text-primary-foreground transition-transform duration-300 ease-out group-hover:translate-y-0"
           aria-hidden
         >
           View product →
         </div>
-        <FittedMechanicCorner size="card" />
+        <FittingPartnerCorner size="card" />
       </div>
 
       <div className="flex flex-1 flex-col gap-3.5 p-5 pb-5 pt-5">
