@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type TouchEvent } from "react";
 import { ChevronLeft, ChevronRight, Expand, X } from "lucide-react";
 import { CatalogImage } from "@/components/product/catalog-image";
 import { FittedMechanicCorner } from "@/components/product/fitted-badge";
@@ -18,21 +18,17 @@ export function ProductGallery({
 }) {
   const [active, setActive] = useState(0);
   const [lightbox, setLightbox] = useState(false);
-  const scrollerRef = useRef<HTMLDivElement>(null);
   const thumbsRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef<number | null>(null);
 
   const count = images.length;
   const current = images[active] ?? images[0];
 
   const goTo = useCallback(
     (index: number) => {
+      if (!count) return;
       const next = ((index % count) + count) % count;
       setActive(next);
-      const scroller = scrollerRef.current;
-      if (scroller) {
-        const width = scroller.clientWidth;
-        scroller.scrollTo({ left: width * next, behavior: "smooth" });
-      }
       const thumbs = thumbsRef.current;
       const thumb = thumbs?.children[next] as HTMLElement | undefined;
       thumb?.scrollIntoView({
@@ -45,20 +41,6 @@ export function ProductGallery({
   );
 
   useEffect(() => {
-    const scroller = scrollerRef.current;
-    if (!scroller) return;
-
-    const onScroll = () => {
-      const width = scroller.clientWidth || 1;
-      const index = Math.round(scroller.scrollLeft / width);
-      setActive((prev) => (prev === index ? prev : index));
-    };
-
-    scroller.addEventListener("scroll", onScroll, { passive: true });
-    return () => scroller.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useEffect(() => {
     if (!lightbox) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setLightbox(false);
@@ -69,44 +51,53 @@ export function ProductGallery({
     return () => window.removeEventListener("keydown", onKey);
   }, [lightbox, active, goTo]);
 
+  const onTouchStart = (e: TouchEvent) => {
+    touchStartX.current = e.changedTouches[0]?.clientX ?? null;
+  };
+
+  const onTouchEnd = (e: TouchEvent) => {
+    const start = touchStartX.current;
+    touchStartX.current = null;
+    if (start == null || count < 2) return;
+    const end = e.changedTouches[0]?.clientX ?? start;
+    const delta = end - start;
+    if (Math.abs(delta) < 40) return;
+    goTo(active + (delta < 0 ? 1 : -1));
+  };
+
+  if (!current) {
+    return (
+      <div
+        className="aspect-square w-full rounded-2xl border border-border bg-white"
+        aria-hidden
+      />
+    );
+  }
+
   return (
     <div className="min-w-0">
       <div className="relative w-full overflow-hidden rounded-2xl border border-border bg-white">
-        <div
-          ref={scrollerRef}
-          className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        {/*
+          One slide at a time — a horizontal scroller let the next image
+          bleed in after switching to plain <img> (R2), especially with scale.
+        */}
+        <button
+          type="button"
+          className="relative aspect-square w-full overflow-hidden"
+          onClick={() => setLightbox(true)}
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
+          aria-label={`View larger image ${active + 1} of ${name}`}
         >
-          {images.map((src, index) => {
-            // Only decode nearby slides on mobile — a 10-image gallery at
-            // full origin size was routinely 0.5–1MB+ before optimisation.
-            const shouldLoad = index === 0 || Math.abs(index - active) <= 1;
-            return (
-              <button
-                key={src + index}
-                type="button"
-                className="relative aspect-square w-full shrink-0 snap-center"
-                onClick={() => setLightbox(true)}
-                aria-label={`View larger image ${index + 1} of ${name}`}
-              >
-                {shouldLoad ? (
-                  <CatalogImage
-                    src={src}
-                    alt={`${name} mobility product ${index + 1}`}
-                    fill
-                    priority={index === 0}
-                    className="object-contain p-1 sm:p-1.5 scale-[1.12] sm:scale-[1.15]"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                  />
-                ) : (
-                  <span
-                    className="absolute inset-0 bg-soft"
-                    aria-hidden
-                  />
-                )}
-              </button>
-            );
-          })}
-        </div>
+          <CatalogImage
+            src={current}
+            alt={`${name} mobility product ${active + 1}`}
+            fill
+            priority
+            className="object-contain p-2 sm:p-3"
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
+        </button>
 
         {showFittedMechanic ? <FittedMechanicCorner size="gallery" /> : null}
 
