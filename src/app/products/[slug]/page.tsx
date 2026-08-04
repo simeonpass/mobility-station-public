@@ -4,6 +4,7 @@ import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { AdaptationCard } from "@/components/product/adaptation-card";
 import { MotabilityProductCard } from "@/components/product/motability-product-card";
 import { ProductCard } from "@/components/ProductCard";
+import { AdaptationDetailView } from "@/components/product/adaptation-detail-view";
 import { ProductDetailView } from "@/components/product/product-detail-view";
 import { ProductReviews } from "@/components/product/product-reviews";
 import {
@@ -125,6 +126,13 @@ export default async function ProductPage({ params, searchParams }: Props) {
     specs.push(["Dimensions", product.dimensions]);
   }
 
+  const warrantySpec = specs.find(([k]) => /warrant/i.test(k));
+  const warranty = warrantySpec
+    ? String(warrantySpec[1])
+    : adaptation
+      ? "3 years standard"
+      : null;
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -236,9 +244,30 @@ export default async function ProductPage({ params, searchParams }: Props) {
       </div>
 
       <div className="container-site">
-        <ProductDetailView
-          name={product.name}
-          slug={product.slug}
+        {adaptation ? (
+          <AdaptationDetailView
+            name={product.name}
+            slug={product.slug}
+            category={product.category}
+            manufacturer={product.manufacturer}
+            sku={product.sku}
+            condition={product.condition}
+            gallery={galleryUrls}
+            priceCurrent={price.current}
+            priceWas={price.was}
+            motabilityWeekly={product.motability_weekly_price}
+            motabilityPrice={product.motability_price}
+            adaptationId={product.adaptation_id}
+            warranty={warranty}
+            description={product.description}
+            features={(product.features ?? []).slice(0, 12)}
+            suitabilityInfo={product.suitability_info}
+            specs={specs.map(([k, v]) => [k, String(v)])}
+          />
+        ) : (
+          <ProductDetailView
+            name={product.name}
+            slug={product.slug}
           manufacturer={product.manufacturer}
           category={product.category}
           condition={product.condition}
@@ -280,7 +309,8 @@ export default async function ProductPage({ params, searchParams }: Props) {
           specs={specs.map(([k, v]) => [k, String(v)])}
           videoEmbed={videoEmbed}
           motabilityMode={motabilityMode}
-        />
+          />
+        )}
       </div>
 
       {productReviews.length > 0 ? (
