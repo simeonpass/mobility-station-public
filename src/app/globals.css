@@ -21,6 +21,12 @@
   --soft: #eef5f3;
   --border: #d5e3df;
 
+  /* Architectural brochure tokens (adaptation PDP) */
+  --primary-hover: #0a565a;
+  --panel: #f7faf9;
+  --hairline: #e7eeec;
+  --ink: #1e2b2b;
+
   /* Text */
   --foreground: #1a2626;
   --muted: #5f726f;
@@ -41,6 +47,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
   --color-primary-dark: var(--primary-dark);
   --color-primary-soft: var(--primary-soft);
   --color-primary-foreground: var(--primary-foreground);
@@ -57,12 +64,16 @@
   --color-footer-foreground: var(--footer-foreground);
   --color-soft: var(--soft);
   --color-border: var(--border);
+  --color-panel: var(--panel);
+  --color-hairline: var(--hairline);
+  --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-success: var(--success);
   --color-info: var(--info);
   --color-warning: var(--warning);
   --color-error: var(--error);
   --font-sans: var(--font-manrope);
+  --font-mono: var(--font-jetbrains-mono);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
