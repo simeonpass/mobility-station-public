@@ -12,6 +12,7 @@ GRANT SELECT ON public.product_images TO public_site;
 GRANT SELECT ON public.product_accessories TO public_site;
 GRANT SELECT ON public.branches TO public_site;
 GRANT SELECT ON public.blog_posts TO public_site;
+GRANT SELECT ON public.knowledge_faqs TO public_site;
 GRANT SELECT ON public.public_product_reviews TO public_site;
 GRANT SELECT ON public.website_enquiries TO public_site;
 GRANT INSERT ON public.website_enquiries TO public_site;

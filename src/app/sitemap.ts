@@ -4,7 +4,7 @@ import {
   ADAPTATION_SECTIONS,
   categoryToSlug as adaptationCategoryToSlug,
 } from "@/lib/adaptations";
-import { getBlogPosts } from "@/lib/data";
+import { getBlogPosts, getKnowledgeFaqs } from "@/lib/data";
 import { getAllPublishedSlugs } from "@/lib/products";
 import { SITE } from "@/lib/seo";
 
@@ -90,7 +90,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 0.7,
     },
-    { url: `${SITE.url}/faq`, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${SITE.url}/faq`, changeFrequency: "weekly", priority: 0.65 },
     {
       url: `${SITE.url}/contact`,
       changeFrequency: "monthly",
@@ -126,6 +126,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     blogPosts = await getBlogPosts();
   } catch (error) {
     console.error("Sitemap blog fetch failed:", error);
+  }
+
+  let knowledgeFaqs: Awaited<ReturnType<typeof getKnowledgeFaqs>> = [];
+  try {
+    knowledgeFaqs = await getKnowledgeFaqs();
+  } catch (error) {
+    console.error("Sitemap knowledge FAQ fetch failed:", error);
   }
 
   const townRoutes = LOCATION_PAGES.map((loc) => ({
@@ -171,6 +178,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           priority: 0.5,
         },
         post.updatedAt || post.publishedAt,
+      ),
+    ),
+    ...knowledgeFaqs.map((faq) =>
+      withLastMod(
+        {
+          url: `${SITE.url}/faq/${faq.slug}`,
+          changeFrequency: "monthly",
+          priority: 0.55,
+        },
+        faq.updatedAt || faq.publishedAt,
       ),
     ),
   ];
