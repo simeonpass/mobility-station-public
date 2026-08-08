@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 
 /**
  * Hidden fields that real users never see or fill.
@@ -9,6 +9,7 @@ import { useEffect, useRef } from "react";
  */
 export function FormSpamTraps() {
   const startedRef = useRef<HTMLInputElement>(null);
+  const honeypotId = useId();
 
   useEffect(() => {
     if (startedRef.current) {
@@ -22,9 +23,9 @@ export function FormSpamTraps() {
         className="absolute -left-[9999px] h-0 w-0 overflow-hidden opacity-0"
         aria-hidden="true"
       >
-        <label htmlFor="website">Website</label>
+        <label htmlFor={honeypotId}>Website</label>
         <input
-          id="website"
+          id={honeypotId}
           type="text"
           name="website"
           tabIndex={-1}
