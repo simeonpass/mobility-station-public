@@ -58,7 +58,13 @@ export const ALL_ADAPTATION_CATEGORIES = ADAPTATION_SECTIONS.flatMap(
   (s) => [...s.categories],
 );
 
-/** Old static marketing slugs → live category or section. */
+/**
+ * Old static marketing slugs → live category or section.
+ *
+ * Do NOT list a slug whose current categoryToSlug() already matches it
+ * (e.g. "left-foot-accelerators") — that creates a self-redirect loop
+ * and Google Search Console reports "Redirect error" for sitemap URLs.
+ */
 export const LEGACY_ADAPTATION_REDIRECTS: Record<
   string,
   { type: "category" | "section" | "hub"; target: string }
@@ -68,12 +74,6 @@ export const LEGACY_ADAPTATION_REDIRECTS: Record<
     type: "category",
     target: "Mechanical Hand Controls",
   },
-  "left-foot-accelerators": {
-    type: "category",
-    target: "Left Foot Accelerators",
-  },
-  "steering-aids": { type: "category", target: "Steering Aids" },
-  "swivel-seats": { type: "category", target: "Swivel Seats" },
   "boot-openers": { type: "category", target: "Automatic Boot Openers" },
   "scooter-hoists": { type: "category", target: "Boot Hoists" },
   "wheelchair-lifts": { type: "category", target: "Person Hoists" },
