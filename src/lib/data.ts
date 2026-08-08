@@ -6,8 +6,16 @@ import {
   PRODUCT_CATEGORIES,
   REVIEWS,
 } from "@/data/content";
+import { KNOWLEDGE_FAQS } from "@/data/knowledge-faqs";
 import { getSupabase, hasSupabase } from "@/lib/supabase";
-import type { BlogPost, Branch, Product, Review, ReviewsSummary } from "@/lib/types";
+import type {
+  BlogPost,
+  Branch,
+  KnowledgeFaq,
+  Product,
+  Review,
+  ReviewsSummary,
+} from "@/lib/types";
 
 export const revalidateSeconds = 300;
 
@@ -496,6 +504,108 @@ export function getAdaptationServices() {
 
 export function getAdaptationService(slug: string) {
   return ADAPTATION_SERVICES.find((s) => s.slug === slug) ?? null;
+}
+
+function mapKnowledgeFaqRow(row: Record<string, unknown>): KnowledgeFaq {
+  const source =
+    row.source === "call_summary" || row.source === "editorial"
+      ? row.source
+      : "editorial";
+  return {
+    id: String(row.id),
+    slug: String(row.slug),
+    question: String(row.question),
+    answer: String(row.answer ?? ""),
+    answerHtml: row.answer_html ? String(row.answer_html) : undefined,
+    category: String(row.category ?? "buying-service"),
+    relatedHref: row.related_href ? String(row.related_href) : undefined,
+    relatedLabel: row.related_label ? String(row.related_label) : undefined,
+    source,
+    publishedAt: String(row.published_at ?? new Date().toISOString()),
+    updatedAt: row.updated_at ? String(row.updated_at) : undefined,
+  };
+}
+
+/**
+ * Published knowledge FAQs. Prefers Lovable/Supabase `knowledge_faqs`
+ * when the table is available; otherwise uses curated seed content.
+ */
+export async function getKnowledgeFaqs(options?: {
+  category?: string;
+}): Promise<KnowledgeFaq[]> {
+  const seed = options?.category
+    ? KNOWLEDGE_FAQS.filter((f) => f.category === options.category)
+    : [...KNOWLEDGE_FAQS];
+
+  if (!hasSupabase()) return seed;
+  const supabase = getSupabase();
+  if (!supabase) return seed;
+
+  let query = supabase
+    .from("knowledge_faqs")
+    .select(
+      "id, slug, question, answer, answer_html, category, related_href, related_label, source, published_at, updated_at, is_published",
+    )
+    .eq("is_published", true)
+    .order("published_at", { ascending: false });
+
+  if (options?.category) {
+    query = query.eq("category", options.category);
+  }
+
+  const { data, error } = await query;
+  if (error) {
+    // Table may not exist yet in every environment — fall back quietly.
+    if (!/relation .* does not exist|Could not find the table/i.test(error.message)) {
+      console.error("knowledge_faqs fetch failed:", error.message);
+    }
+    return seed;
+  }
+  if (!data?.length) return seed;
+  return data.map((row) => mapKnowledgeFaqRow(row as Record<string, unknown>));
+}
+
+export async function getKnowledgeFaq(
+  slug: string,
+): Promise<KnowledgeFaq | null> {
+  const seed = KNOWLEDGE_FAQS.find((f) => f.slug === slug) ?? null;
+
+  if (!hasSupabase()) return seed;
+  const supabase = getSupabase();
+  if (!supabase) return seed;
+
+  const { data, error } = await supabase
+    .from("knowledge_faqs")
+    .select(
+      "id, slug, question, answer, answer_html, category, related_href, related_label, source, published_at, updated_at, is_published",
+    )
+    .eq("slug", slug)
+    .eq("is_published", true)
+    .maybeSingle();
+
+  if (error) {
+    if (!/relation .* does not exist|Could not find the table/i.test(error.message)) {
+      console.error("knowledge_faqs by slug failed:", error.message);
+    }
+    return seed;
+  }
+  if (!data) return seed;
+  return mapKnowledgeFaqRow(data as Record<string, unknown>);
+}
+
+export async function getRelatedKnowledgeFaqs(
+  faq: KnowledgeFaq,
+  limit = 3,
+): Promise<KnowledgeFaq[]> {
+  const all = await getKnowledgeFaqs();
+  const sameCategory = all.filter(
+    (f) => f.id !== faq.id && f.category === faq.category,
+  );
+  if (sameCategory.length >= limit) return sameCategory.slice(0, limit);
+  const rest = all.filter(
+    (f) => f.id !== faq.id && f.category !== faq.category,
+  );
+  return [...sameCategory, ...rest].slice(0, limit);
 }
 
 export function productPath(product: Pick<Product, "categorySlug" | "slug">) {
