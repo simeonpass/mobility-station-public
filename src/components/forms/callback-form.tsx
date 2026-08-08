@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { submitEnquiry, type ActionState } from "@/lib/actions";
+import { FormSpamTraps } from "@/components/forms/form-spam-traps";
 import { Input, Label, Select, Textarea } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -54,7 +55,11 @@ export function CallbackForm({
   }
 
   return (
-    <form action={action} className={compact ? "space-y-3" : "space-y-4"}>
+    <form
+      action={action}
+      className={`relative ${compact ? "space-y-3" : "space-y-4"}`}
+    >
+      <FormSpamTraps />
       {title ? <h2 className="text-2xl font-extrabold">{title}</h2> : null}
       {!compact ? (
         <p className="text-sm text-muted">

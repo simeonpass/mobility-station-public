@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { submitEnquiry, type ActionState } from "@/lib/actions";
+import { FormSpamTraps } from "@/components/forms/form-spam-traps";
 import { Input, Label, Select, Textarea } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -47,7 +48,11 @@ export function EnquiryForm({
   }
 
   return (
-    <form action={action} className={compact ? "space-y-3" : "space-y-4"}>
+    <form
+      action={action}
+      className={`relative ${compact ? "space-y-3" : "space-y-4"}`}
+    >
+      <FormSpamTraps />
       {title ? <h2 className="text-2xl font-extrabold">{title}</h2> : null}
       <input type="hidden" name="enquiry_type" value={enquiryType} />
       {inline ? <input type="hidden" name="inline" value="1" /> : null}
