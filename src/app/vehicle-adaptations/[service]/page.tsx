@@ -67,9 +67,16 @@ export default async function AdaptationCategoryPage({ params }: Props) {
 
   const legacy = LEGACY_ADAPTATION_REDIRECTS[slug];
   if (legacy) {
-    if (legacy.type === "hub") redirect("/vehicle-adaptations");
-    if (legacy.type === "section") redirect(sectionHref(legacy.target));
-    redirect(adaptationHref(legacy.target));
+    const destination =
+      legacy.type === "hub"
+        ? "/vehicle-adaptations"
+        : legacy.type === "section"
+          ? sectionHref(legacy.target)
+          : adaptationHref(legacy.target);
+    // Skip self-redirects (same slug as the live category URL).
+    if (destination !== `/vehicle-adaptations/${slug}`) {
+      redirect(destination);
+    }
   }
 
   const section = findSectionById(slug);
