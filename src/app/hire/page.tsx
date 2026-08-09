@@ -186,9 +186,8 @@ export default async function HirePage() {
             <li className="border-t border-border pt-4">
               <h3 className="font-extrabold text-primary">Wider delivery</h3>
               <p className="mt-2 text-sm text-muted">
-                From {formatGBP(WIDER_DELIVERY_FROM_GBP)} for 15–40 miles. London
-                quoted on postcode because of traffic, parking and the Congestion
-                Charge.
+                {formatGBP(WIDER_DELIVERY_FROM_GBP)} for 15–40 miles. Outside that
+                range, choose free branch collection or call us.
               </p>
             </li>
             <li className="border-t border-border pt-4">

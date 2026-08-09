@@ -211,7 +211,7 @@ export const HIRE_FAQS: { q: string; a: string }[] = [
   },
   {
     q: "Do you deliver to hotels, hospitals and holiday lets?",
-    a: "Yes — enter the address when you book. Local delivery is £45 within 15 miles; wider distances from £95.",
+    a: "Yes — enter the address when you book. Local delivery is £45 within 15 miles; wider (15–40 miles) is £95.",
   },
 ];
 

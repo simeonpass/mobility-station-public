@@ -104,14 +104,10 @@ function deliveryFee(
     };
   }
   if (miles <= 40) {
-    // Linear step from £95 at 15mi toward a soft ceiling — London still quoted.
-    const t = (miles - LOCAL_DELIVERY_MILES) / (40 - LOCAL_DELIVERY_MILES);
-    const amount = Math.round(
-      WIDER_DELIVERY_FROM_GBP + t * (150 - WIDER_DELIVERY_FROM_GBP),
-    );
+    // Must match Lovable website-hire-checkout: flat £95 wider band.
     return {
-      amount,
-      label: `Wider delivery (~${miles.toFixed(0)} mi) — confirmed before dispatch`,
+      amount: WIDER_DELIVERY_FROM_GBP,
+      label: `Wider delivery (~${miles.toFixed(0)} mi)`,
     };
   }
   throw new Error(

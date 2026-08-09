@@ -30,8 +30,10 @@ published card and reject mismatches.
 4. On DNA success: mark **paid**, email customer confirmation + team notify, queue for delivery/collection.
 5. On failure: leave **payment pending** so the site thank-you page can retry.
 6. Flex due today = first month + £99 set-up (includes delivery/handover).
-7. Short-term due today = hire package + refundable deposit + delivery (0 if collecting).
+7. Short-term due today = hire package + refundable deposit + delivery
+   (£0 collect / £45 local ≤15mi / £95 wider ≤40mi).
 8. VAT relief: 0% when declaration flagged; otherwise 20% on hire + delivery/setup (not on short-term damage deposit).
+9. Reject if site `amount` / `quote.total` differs by more than £0.05 after recalculation.
 
 ## Return URLs
 
