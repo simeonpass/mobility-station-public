@@ -17,8 +17,7 @@ export function RecentWorkStrip({ items }: { items: RecentWorkProject[] }) {
               Recent work
             </h2>
             <p className="mt-2 max-w-lg text-sm text-muted">
-              Real fittings from Heathrow and Ferndown — published when the job
-              is done.
+              Real customers, real stories — from Heathrow and Ferndown.
             </p>
           </div>
           <Link
