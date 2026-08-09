@@ -75,7 +75,8 @@ export const HIRE_PRICING_CATEGORIES: HirePricingCategory[] = [
     fourWeeks: 260,
     deposit: 150,
     flexMonthly: 75,
-    imageMatch: /heavy.?duty|bariatric|wide/i,
+    imageMatch:
+      /(?:heavy.?duty|bariatric).*(?:manual )?wheelchair|(?:manual )?wheelchair.*(?:heavy.?duty|bariatric|wide(?:r)? seat)/i,
     imageAlt: "Heavy-duty manual wheelchair with wider seat",
   },
   {
