@@ -210,7 +210,7 @@ export const SHORT_TERM_FAQS: HireFaqItem[] = [
 export const FLEX_FAQS: HireFaqItem[] = [
   {
     q: "How long is Flex hire?",
-    a: "At least 3 months. After that it rolls on month by month. You can cancel with 30 days’ written notice.",
+    a: "At least 3 months. After that it rolls on month by month. No tie-in — cancel when you are ready if you no longer need it.",
   },
   {
     q: "What do I pay today?",

@@ -165,7 +165,7 @@ export default async function FlexHirePage() {
               },
               {
                 t: "Cancel when you are ready",
-                d: "After the first 3 months, give 30 days’ written notice. Simple.",
+                d: "No tie-in after the first 3 months. Just tell us when you no longer need it — no long notice period.",
               },
             ].map((step, i) => (
               <li

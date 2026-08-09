@@ -522,7 +522,7 @@ export function HireCheckoutClient({ bookingId }: { bookingId: string }) {
               {isFlex ? (
                 <p className="mt-2 text-xs text-muted">
                   After this payment we’ll bill the same monthly fee each month.
-                  Three-month minimum, then cancel with 30 days’ notice.
+                  Three-month minimum, then cancel when you are ready — no tie-in.
                 </p>
               ) : null}
             </div>

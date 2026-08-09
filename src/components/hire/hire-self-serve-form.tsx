@@ -520,7 +520,7 @@ export function HireSelfServeForm({
           {form.hireType === "flex" ? (
             <p className="mt-2 text-xs text-muted">
               Then {formatGBP(quote.category.flexMonthly)} each month in advance.
-              Cancel after 3 months with 30 days&apos; notice.
+              After 3 months, cancel when you are ready — no tie-in.
             </p>
           ) : (
             <p className="mt-2 text-xs text-muted">
