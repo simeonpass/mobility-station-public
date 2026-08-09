@@ -30,7 +30,8 @@ export function MotabilityProductCard({
   const freeOnScheme = product.motability_price === 0;
 
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-white transition-[border-color,box-shadow] duration-200 hover:border-primary/25 hover:shadow-[0_16px_40px_-24px_rgba(0,63,67,0.45)]">
+    <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-white transition-[border-color,box-shadow] duration-200 hover:border-tertiary/60 hover:shadow-[0_16px_40px_-24px_rgba(0,63,67,0.45)]">
+      <div className="h-1.5 w-full bg-tertiary" aria-hidden />
       <Link
         href={`/products/${product.slug}?from=motability`}
         className="group block flex-1"
@@ -50,7 +51,7 @@ export function MotabilityProductCard({
             View product →
           </div>
           <div className="absolute left-3 top-3">
-            <span className="inline-flex items-center rounded bg-white/95 px-2 py-1 shadow-sm">
+            <span className="inline-flex items-center rounded bg-tertiary px-2 py-1 shadow-sm">
               <MotabilityLogo height={22} />
             </span>
           </div>
