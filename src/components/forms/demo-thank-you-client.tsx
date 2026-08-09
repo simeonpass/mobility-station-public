@@ -12,17 +12,50 @@ export function DemoThankYouClient() {
   const ref = params.get("ref");
   const failed = payment === "failed" || payment === "cancel";
   const success = payment === "success";
-  const waived = payment === "waived" || (!payment && !failed);
+  const outOfArea = payment === "out-of-area";
+  const waived = payment === "waived" || (!payment && !failed && !outOfArea);
 
   useEffect(() => {
-    if (success || waived) {
+    if (success || waived || outOfArea) {
       try {
         sessionStorage.removeItem(DEMO_RETRY_STORAGE_KEY);
       } catch {
         /* ignore */
       }
     }
-  }, [success, waived]);
+  }, [success, waived, outOfArea]);
+
+  if (outOfArea) {
+    return (
+      <div className="container-site py-20 text-center">
+        <p className="text-sm font-semibold uppercase tracking-wide text-success">
+          Request received
+        </p>
+        <h1 className="mt-2 text-4xl font-extrabold tracking-tight">Thank you</h1>
+        <p className="mx-auto mt-4 max-w-xl text-lg text-foreground/80">
+          Thanks for your out-of-area home demonstration request. No payment has
+          been taken. Our team will review whether a visit is possible and get
+          back to you shortly.
+        </p>
+        {ref ? (
+          <p className="mt-3 text-muted">
+            Reference: <strong className="text-foreground">{ref}</strong>
+          </p>
+        ) : null}
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <Link href="/" className={buttonVariants()}>
+            Back to homepage
+          </Link>
+          <Link
+            href="/book-a-demo"
+            className={buttonVariants({ variant: "outline" })}
+          >
+            Book a branch demo
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (failed) {
     return (

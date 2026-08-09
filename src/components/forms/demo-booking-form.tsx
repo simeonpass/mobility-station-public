@@ -119,6 +119,7 @@ export function DemoBookingForm({
   const [coverage, setCoverage] = useState<CoverageResult | null>(null);
   const [coverageLoading, setCoverageLoading] = useState(false);
   const [coveredBy, setCoveredBy] = useState<DemoBranch | "">("");
+  const [showOutOfAreaForm, setShowOutOfAreaForm] = useState(false);
 
   useEffect(() => {
     try {
@@ -227,6 +228,9 @@ export function DemoBookingForm({
       if (key === "location") next.preferredDate = "";
       return next;
     });
+    if (key === "location" || key === "postcode") {
+      setShowOutOfAreaForm(false);
+    }
     setError(null);
     setFieldErrors({});
   }
@@ -348,6 +352,90 @@ export function DemoBookingForm({
       );
     } catch {
       /* private mode */
+    }
+  }
+
+  async function submitOutOfAreaRequest() {
+    if (!form.productCategory) {
+      setError("Please go back and choose what you are demoing.");
+      return;
+    }
+    if (
+      form.productCategory === "scooter_wheelchair" &&
+      !form.scooterWheelchairKind
+    ) {
+      setError("Please go back and choose scooter or wheelchair type.");
+      return;
+    }
+    if (!form.name.trim() || !form.phone.trim() || !form.email.trim()) {
+      setError("Please enter your name, phone and email.");
+      return;
+    }
+    if (
+      !form.addressLine1.trim() ||
+      !form.city.trim() ||
+      !form.postcode.trim()
+    ) {
+      setError("Please enter your address, town/city and postcode.");
+      return;
+    }
+    if (!form.productName.trim()) {
+      setError("Please enter the product of interest.");
+      return;
+    }
+    if (form.productCategory === "vehicle_adaptation") {
+      if (!form.vehicleMake.trim() || !form.vehicleModel.trim()) {
+        setError("Please enter the vehicle make and model.");
+        return;
+      }
+    }
+
+    setSubmitting(true);
+    setError(null);
+    setFieldErrors({});
+    try {
+      const res = await fetch("/api/demo/out-of-area", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productCategory: form.productCategory,
+          scooterWheelchairKind: form.scooterWheelchairKind || undefined,
+          customerType: form.customerType || "private",
+          name: form.name.trim(),
+          phone: form.phone.trim(),
+          email: form.email.trim(),
+          addressLine1: form.addressLine1.trim(),
+          addressLine2: form.addressLine2.trim() || undefined,
+          city: form.city.trim(),
+          postcode: form.postcode.trim(),
+          productName: form.productName.trim(),
+          vehicleMake: form.vehicleMake.trim() || undefined,
+          vehicleModel: form.vehicleModel.trim() || undefined,
+          vehicleReg: form.vehicleReg.trim() || undefined,
+          notes: form.notes.trim() || undefined,
+          preferredDate: form.preferredDate || undefined,
+          company_website: form.company_website,
+          bookingRef,
+        }),
+      });
+      const data = (await res.json()) as {
+        success?: boolean;
+        error?: string;
+        errors?: Record<string, string[]>;
+        bookingRef?: string;
+      };
+      if (!res.ok || data.success === false) {
+        if (data.errors) setFieldErrors(data.errors);
+        throw new Error(data.error || "Could not send your request");
+      }
+      router.push(
+        `/book-a-demo/thank-you?ref=${encodeURIComponent(
+          data.bookingRef || bookingRef,
+        )}&payment=out-of-area`,
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
+      setSubmitting(false);
     }
   }
 
@@ -578,8 +666,8 @@ export function DemoBookingForm({
                   {formatGBP(HOME_DEMO_FEE_GBP)}.
                 </p>
               ) : null}
-              {coverage?.kind === "out-of-range" ? (
-                <div className="space-y-2 rounded-md bg-warning/10 px-4 py-3 text-sm text-primary">
+              {coverage?.kind === "out-of-range" && !showOutOfAreaForm ? (
+                <div className="space-y-3 rounded-md bg-warning/10 px-4 py-3 text-sm text-primary">
                   <p>
                     That postcode is outside our home demonstration area
                     {coverage.miles
@@ -588,30 +676,200 @@ export function DemoBookingForm({
                     .
                   </p>
                   <p>
-                    Please{" "}
+                    You can still send us a request and we&apos;ll see whether a
+                    visit is possible,{" "}
                     <a
                       href={SITE.phoneHref}
                       className="font-semibold underline underline-offset-2"
                     >
                       call {SITE.phone}
-                    </a>{" "}
-                    and we&apos;ll see how we can help, or{" "}
+                    </a>
+                    , or{" "}
                     <button
                       type="button"
                       className="font-semibold underline underline-offset-2"
                       onClick={() => update("location", "branch")}
                     >
                       book a free branch demonstration
-                    </button>{" "}
-                    instead. You can also{" "}
+                    </button>
+                    .{" "}
                     <Link
                       href="/service-area"
                       className="font-semibold underline underline-offset-2"
                     >
-                      check our service area
+                      Check our service area
                     </Link>
                     .
                   </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setShowOutOfAreaForm(true);
+                      setError(null);
+                    }}
+                  >
+                    Request a home demo anyway
+                  </Button>
+                </div>
+              ) : null}
+              {coverage?.kind === "out-of-range" && showOutOfAreaForm ? (
+                <div className="space-y-4 rounded-md border border-border bg-white p-4">
+                  <div>
+                    <h3 className="text-lg font-extrabold text-primary">
+                      Request an out-of-area home demonstration
+                    </h3>
+                    <p className="mt-1 text-sm text-muted">
+                      No payment is taken online. Tell us what you need and
+                      we&apos;ll come back to you about whether we can visit.
+                    </p>
+                  </div>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <Label htmlFor="ooa-name">Full name</Label>
+                      <Input
+                        id="ooa-name"
+                        autoComplete="name"
+                        value={form.name}
+                        onChange={(e) => update("name", e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="ooa-phone">Phone</Label>
+                      <Input
+                        id="ooa-phone"
+                        autoComplete="tel"
+                        value={form.phone}
+                        onChange={(e) => update("phone", e.target.value)}
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <Label htmlFor="ooa-email">Email</Label>
+                      <Input
+                        id="ooa-email"
+                        type="email"
+                        autoComplete="email"
+                        value={form.email}
+                        onChange={(e) => update("email", e.target.value)}
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <Label htmlFor="ooa-address">Address line 1</Label>
+                      <Input
+                        id="ooa-address"
+                        autoComplete="address-line1"
+                        value={form.addressLine1}
+                        onChange={(e) => update("addressLine1", e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="ooa-city">Town / city</Label>
+                      <Input
+                        id="ooa-city"
+                        autoComplete="address-level2"
+                        value={form.city}
+                        onChange={(e) => update("city", e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="ooa-postcode-locked">Postcode</Label>
+                      <Input
+                        id="ooa-postcode-locked"
+                        value={form.postcode}
+                        readOnly
+                        className="bg-soft uppercase"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="ooa-customer">Customer type</Label>
+                      <Select
+                        id="ooa-customer"
+                        value={form.customerType || "private"}
+                        onChange={(e) =>
+                          update(
+                            "customerType",
+                            e.target.value as CustomerType | "",
+                          )
+                        }
+                      >
+                        <option value="private">Private</option>
+                        <option value="motability">Motability</option>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="ooa-product">Product of interest</Label>
+                      <Input
+                        id="ooa-product"
+                        value={form.productName}
+                        onChange={(e) => update("productName", e.target.value)}
+                      />
+                    </div>
+                    {form.productCategory === "vehicle_adaptation" ? (
+                      <>
+                        <div>
+                          <Label htmlFor="ooa-make">Vehicle make</Label>
+                          <Input
+                            id="ooa-make"
+                            value={form.vehicleMake}
+                            onChange={(e) =>
+                              update("vehicleMake", e.target.value)
+                            }
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="ooa-model">Vehicle model</Label>
+                          <Input
+                            id="ooa-model"
+                            value={form.vehicleModel}
+                            onChange={(e) =>
+                              update("vehicleModel", e.target.value)
+                            }
+                          />
+                        </div>
+                      </>
+                    ) : null}
+                    <div className="md:col-span-2">
+                      <Label htmlFor="ooa-date">
+                        Preferred date (optional)
+                      </Label>
+                      <Input
+                        id="ooa-date"
+                        type="date"
+                        value={form.preferredDate}
+                        onChange={(e) =>
+                          update("preferredDate", e.target.value)
+                        }
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <Label htmlFor="ooa-notes">Notes (optional)</Label>
+                      <Textarea
+                        id="ooa-notes"
+                        rows={3}
+                        value={form.notes}
+                        onChange={(e) => update("notes", e.target.value)}
+                        placeholder="Anything that helps us assess a visit"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={submitting}
+                      onClick={() => setShowOutOfAreaForm(false)}
+                    >
+                      Back
+                    </Button>
+                    <Button
+                      type="button"
+                      size="lg"
+                      disabled={submitting}
+                      onClick={() => void submitOutOfAreaRequest()}
+                    >
+                      {submitting ? "Sending…" : "Send request"}
+                    </Button>
+                  </div>
                 </div>
               ) : null}
               {coverage?.kind === "not-found" ? (
@@ -880,7 +1138,7 @@ export function DemoBookingForm({
       {error ? <p className="text-sm text-error">{error}</p> : null}
 
       <div className="flex flex-wrap gap-3">
-        {step > 1 ? (
+        {step > 1 && !showOutOfAreaForm ? (
           <Button
             type="button"
             variant="outline"
@@ -890,7 +1148,7 @@ export function DemoBookingForm({
             Back
           </Button>
         ) : null}
-        {step < 6 || (step === 5 && !requiresPayment) ? (
+        {!showOutOfAreaForm && (step < 6 || (step === 5 && !requiresPayment)) ? (
           <Button
             type="button"
             size="lg"

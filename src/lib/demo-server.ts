@@ -1,10 +1,12 @@
 import {
   buildDemoEnquiryMessage,
+  buildOutOfAreaDemoMessage,
   calculateDemoFee,
   createBookingRef,
   dnaLineDescription,
   type DemoBookingPayload,
   type DemoFeeResult,
+  type OutOfAreaDemoRequest,
   type PaymentStatus,
 } from "@/lib/demo-booking";
 import { resolveReturnOrigin } from "@/lib/checkout-server";
@@ -125,6 +127,88 @@ export async function submitDemoEnquiry(opts: {
     paymentData: result.paymentData,
     orderNumber: result.orderNumber,
   };
+}
+
+export async function submitOutOfAreaDemoRequest(opts: {
+  request: OutOfAreaDemoRequest;
+  bookingRef: string;
+}) {
+  const { request, bookingRef } = opts;
+  const coverage = await lookupCoverage(request.postcode);
+  const meta =
+    coverage.kind === "out-of-range" || coverage.kind === "covered"
+      ? {
+          nearestBranch: coverage.workshop.name,
+          miles: coverage.miles,
+          postcode: coverage.postcode,
+        }
+      : undefined;
+
+  if (meta?.postcode) {
+    request.postcode = meta.postcode;
+  }
+
+  const message = [
+    buildOutOfAreaDemoMessage(request, meta),
+    `Booking Ref: ${bookingRef}`,
+  ].join("\n");
+
+  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_PUBLIC_SITE_KEY) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("Enquiry service is not configured");
+    }
+    console.info("Out-of-area demo request (dev fallback):", {
+      bookingRef,
+      message,
+      request,
+      meta,
+    });
+    return { success: true as const, bookingRef };
+  }
+
+  const { url, key } = getSupabaseConfig();
+  const res = await fetch(`${url}/functions/v1/send-contact-enquiry`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${key}`,
+      apikey: key,
+    },
+    body: JSON.stringify({
+      name: request.name,
+      email: request.email,
+      phone: request.phone,
+      message,
+      enquiryType: "demo",
+      productName: request.productName,
+      postcode: request.postcode,
+      addressLine1: request.addressLine1,
+      addressLine2: request.addressLine2 || undefined,
+      city: request.city,
+      vehicleMake: request.vehicleMake || undefined,
+      vehicleModel: request.vehicleModel || undefined,
+      vehicleReg: request.vehicleReg || undefined,
+      bookingRef,
+      demoFee: 0,
+      paymentStatus: "OUT_OF_AREA_REQUEST",
+      outOfArea: true,
+      company_website: request.company_website || "",
+    }),
+  });
+
+  const result = (await res.json().catch(() => ({}))) as {
+    success?: boolean;
+    error?: string;
+  };
+
+  if (!res.ok || result.success === false) {
+    throw new Error(
+      result.error ||
+        "Something went wrong. Please try again or call us on 0800 772 3870.",
+    );
+  }
+
+  return { success: true as const, bookingRef };
 }
 
 /**

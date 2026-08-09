@@ -448,6 +448,130 @@ export const demoBookingSchema = z
 
 export type DemoBookingPayload = z.infer<typeof demoBookingSchema>;
 
+/** Lighter schema for out-of-area home demo requests (no payment). */
+export const outOfAreaDemoRequestSchema = z
+  .object({
+    productCategory: z.enum(["vehicle_adaptation", "scooter_wheelchair"]),
+    scooterWheelchairKind: z
+      .enum(["scooter", "powered_wheelchair", "manual_wheelchair"])
+      .optional(),
+    customerType: z.enum(["private", "motability"]).default("private"),
+    name: z.string().trim().min(2, "Please enter your name"),
+    phone: z
+      .string()
+      .trim()
+      .min(10, "Please enter a valid UK phone number")
+      .regex(ukPhoneShape, "Please enter a valid UK phone number")
+      .refine(isLikelyUkPhone, {
+        message: "Please enter a valid UK phone number (starting with 0 or +44)",
+      }),
+    email: z.string().trim().email("Please enter a valid email address"),
+    addressLine1: z.string().trim().min(2, "Please enter your address"),
+    addressLine2: z.string().trim().optional(),
+    city: z.string().trim().min(2, "Please enter your town / city"),
+    postcode: z
+      .string()
+      .trim()
+      .refine((v) => ukPostcode.test(v), "Please enter a valid UK postcode"),
+    productName: z.string().trim().min(2, "Please tell us the product of interest"),
+    vehicleMake: z.string().trim().optional(),
+    vehicleModel: z.string().trim().optional(),
+    vehicleReg: z.string().trim().optional(),
+    notes: z.string().trim().max(2000).optional(),
+    preferredDate: z.string().trim().optional(),
+    company_website: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (
+      data.productCategory === "scooter_wheelchair" &&
+      !data.scooterWheelchairKind
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["scooterWheelchairKind"],
+        message: "Please choose scooter or wheelchair type",
+      });
+    }
+    if (data.productCategory === "vehicle_adaptation") {
+      if (!data.vehicleMake?.trim()) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["vehicleMake"],
+          message: "Please enter the vehicle make",
+        });
+      }
+      if (!data.vehicleModel?.trim()) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["vehicleModel"],
+          message: "Please enter the vehicle model",
+        });
+      }
+    }
+  });
+
+export type OutOfAreaDemoRequest = z.infer<typeof outOfAreaDemoRequestSchema>;
+
+export function buildOutOfAreaDemoMessage(
+  input: OutOfAreaDemoRequest,
+  meta?: { nearestBranch?: string; miles?: number },
+) {
+  const address = [
+    input.addressLine1,
+    input.addressLine2,
+    input.city,
+    input.postcode,
+  ]
+    .map((p) => p?.trim())
+    .filter(Boolean)
+    .join(", ");
+
+  const lines = [
+    `Enquiry Type: Out-of-area Home Demonstration Request (${productCategoryLabel(input.productCategory)})`,
+    `Product: ${input.productName.trim()}`,
+    `Demo Address: ${address}`,
+    `Demo Product: ${demoProductLabel({
+      productCategory: input.productCategory,
+      scooterWheelchairKind: input.scooterWheelchairKind,
+    })}`,
+    `Demo Location: Mobile / Home Demonstration (OUTSIDE standard coverage)`,
+    `Customer Type: ${input.customerType === "motability" ? "Motability Scheme" : "Private"}`,
+    "Demo Fee: Not taken online — out-of-area request (team to advise)",
+    "Payment: N/A — out-of-area request (no online payment)",
+    "Note: customer is outside our standard home demonstration area and has asked us to consider a visit.",
+  ];
+
+  if (meta?.nearestBranch) {
+    lines.push(
+      `Nearest branch: ${meta.nearestBranch}${
+        typeof meta.miles === "number"
+          ? ` (about ${meta.miles.toFixed(0)} miles)`
+          : ""
+      }`,
+    );
+  }
+  if (input.preferredDate?.trim()) {
+    const formatted = parseIsoDate(input.preferredDate)
+      ? formatPreferredDate(input.preferredDate)
+      : input.preferredDate.trim();
+    lines.push(`Preferred Date (optional): ${formatted}`);
+  }
+  if (input.vehicleMake?.trim()) {
+    lines.push(`Vehicle Make: ${input.vehicleMake.trim()}`);
+  }
+  if (input.vehicleModel?.trim()) {
+    lines.push(`Vehicle Model: ${input.vehicleModel.trim()}`);
+  }
+  if (input.vehicleReg?.trim()) {
+    lines.push(`Vehicle Reg: ${input.vehicleReg.trim()}`);
+  }
+  if (input.notes?.trim()) {
+    lines.push("", input.notes.trim());
+  }
+
+  return lines.join("\n");
+}
+
 export const DEMO_RETRY_STORAGE_KEY = "ms-demo-booking-retry";
 
 export function createBookingRef() {
