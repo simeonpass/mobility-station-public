@@ -35,6 +35,7 @@ const columns = [
       { href: "/locations", label: "Locations" },
       { href: "/delivery", label: "Delivery" },
       { href: "/vat-relief", label: "VAT Relief" },
+      { href: "/servicing", label: "Servicing & Care Plans" },
       { href: "/book-a-service", label: "Book a Service" },
       { href: "/faq", label: "FAQ" },
     ],

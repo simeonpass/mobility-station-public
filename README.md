@@ -25,9 +25,14 @@ Without Supabase credentials the site serves curated fallback content so pages a
 ```env
 SUPABASE_URL=
 SUPABASE_PUBLIC_SITE_KEY=
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
 NEXT_PUBLIC_SITE_URL=https://mobilitystation.co.uk
 NEXT_PUBLIC_GA_ID=
 ```
+
+`NEXT_PUBLIC_SUPABASE_*` mirror the project URL and public site key so Care Plan
+checkout can run in the browser (Stripe return URLs on mobilitystation.co.uk).
 
 Run `supabase/public_site_grants.sql` in Supabase to create the minimum `public_site` grants.
 

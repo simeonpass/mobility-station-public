@@ -19,6 +19,8 @@ export default function BookAServicePage() {
         subtitle="Tell us about your scooter, wheelchair or adaptation and we will arrange support from Heathrow or Ferndown."
         primaryHref="#form"
         primaryLabel="Book service"
+        secondaryHref="/servicing#care-plans"
+        secondaryLabel="View Care Plans"
       />
       <section id="form" className="pb-16 md:pb-20">
         <div className="container-site max-w-3xl">
@@ -30,26 +32,19 @@ export default function BookAServicePage() {
             />
           </div>
           <p className="mt-6 text-sm text-muted">
-            Not a service enquiry?{" "}
+            Want ongoing cover? See{" "}
+            <Link
+              href="/servicing#care-plans"
+              className="font-semibold text-primary underline underline-offset-2"
+            >
+              Mobility Care Plans
+            </Link>{" "}
+            from £12.99/month. Or{" "}
             <Link
               href="/contact"
               className="font-semibold text-primary underline underline-offset-2"
             >
-              Contact the team
-            </Link>
-            ,{" "}
-            <Link
-              href="/book-a-demo"
-              className="font-semibold text-primary underline underline-offset-2"
-            >
-              book a demonstration
-            </Link>
-            , or{" "}
-            <Link
-              href="/hire"
-              className="font-semibold text-primary underline underline-offset-2"
-            >
-              hire a scooter or wheelchair
+              contact the team
             </Link>
             .
           </p>
