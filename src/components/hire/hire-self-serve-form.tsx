@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { startTransition, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select, Textarea } from "@/components/ui/input";
@@ -25,23 +25,36 @@ type HireType = "short" | "flex";
 
 const HIRE_RETRY_KEY = "ms-hire-booking-retry";
 
-export function HireSelfServeForm({
-  defaultHireType = "short",
-}: {
-  defaultHireType?: HireType;
-}) {
-  const router = useRouter();
-  const { ready: dnaReady, failed: dnaFailed } = useDnaPaymentsSdk();
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [deliveryMiles, setDeliveryMiles] = useState<number | null>(null);
-  const [coverageNote, setCoverageNote] = useState<string | null>(null);
-  const [form, setForm] = useState({
-    hireType: defaultHireType as HireType,
-    categoryId: "folding_scooter" as HirePricingCategoryId,
+type HireFormState = {
+  hireType: HireType;
+  categoryId: HirePricingCategoryId;
+  startDate: string;
+  endDate: string;
+  delivery: HireDeliveryMode;
+  userHeight: string;
+  userWeight: string;
+  name: string;
+  phone: string;
+  email: string;
+  addressLine1: string;
+  addressLine2: string;
+  city: string;
+  postcode: string;
+  notes: string;
+  vatRelief: boolean;
+  termsAccepted: boolean;
+  signedName: string;
+  company_website: string;
+  bookingRef: string;
+};
+
+function defaultHireForm(hireType: HireType): HireFormState {
+  return {
+    hireType,
+    categoryId: "folding_scooter",
     startDate: "",
     endDate: "",
-    delivery: "collect_heathrow" as HireDeliveryMode,
+    delivery: "collect_heathrow",
     userHeight: "",
     userWeight: "",
     name: "",
@@ -57,44 +70,67 @@ export function HireSelfServeForm({
     signedName: "",
     company_website: "",
     bookingRef: "",
-  });
+  };
+}
 
-  useEffect(() => {
-    try {
-      const raw = sessionStorage.getItem(HIRE_RETRY_KEY);
-      if (!raw) return;
-      const saved = JSON.parse(raw) as typeof form;
-      setForm((prev) => ({ ...prev, ...saved }));
-    } catch {
-      /* ignore */
-    }
-  }, []);
+function readRetryForm(hireType: HireType): HireFormState {
+  const defaults = defaultHireForm(hireType);
+  if (typeof window === "undefined") return defaults;
+  try {
+    const raw = sessionStorage.getItem(HIRE_RETRY_KEY);
+    if (!raw) return defaults;
+    return { ...defaults, ...(JSON.parse(raw) as Partial<HireFormState>) };
+  } catch {
+    return defaults;
+  }
+}
+
+export function HireSelfServeForm({
+  defaultHireType = "short",
+}: {
+  defaultHireType?: HireType;
+}) {
+  const router = useRouter();
+  const { ready: dnaReady, failed: dnaFailed } = useDnaPaymentsSdk();
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [deliveryMiles, setDeliveryMiles] = useState<number | null>(null);
+  const [coverageNote, setCoverageNote] = useState<string | null>(null);
+  const [form, setForm] = useState<HireFormState>(() =>
+    readRetryForm(defaultHireType),
+  );
 
   useEffect(() => {
     if (form.delivery !== "deliver" || form.postcode.trim().length < 5) {
-      setDeliveryMiles(null);
-      setCoverageNote(null);
-      return;
+      const t = window.setTimeout(() => {
+        startTransition(() => {
+          setDeliveryMiles(null);
+          setCoverageNote(null);
+        });
+      }, 0);
+      return () => window.clearTimeout(t);
     }
     const ctrl = new AbortController();
     const t = window.setTimeout(() => {
       void lookupCoverage(form.postcode, ctrl.signal).then((r) => {
-        if (r.kind === "covered") {
-          setDeliveryMiles(r.miles);
-          setCoverageNote(
-            `Covered from ${r.workshop.name} (${r.miles.toFixed(1)} mi).`,
-          );
-        } else if (r.kind === "out-of-range") {
-          setDeliveryMiles(null);
-          setCoverageNote(
-            `Outside delivery range (~${r.miles.toFixed(0)} mi from ${r.workshop.name}). Choose free branch collection or call us.`,
-          );
-        } else {
-          setDeliveryMiles(null);
-          setCoverageNote(
-            r.kind === "not-found" ? "Postcode not found." : null,
-          );
-        }
+        startTransition(() => {
+          if (r.kind === "covered") {
+            setDeliveryMiles(r.miles);
+            setCoverageNote(
+              `Covered from ${r.workshop.name} (${r.miles.toFixed(1)} mi).`,
+            );
+          } else if (r.kind === "out-of-range") {
+            setDeliveryMiles(null);
+            setCoverageNote(
+              `Outside delivery range (~${r.miles.toFixed(0)} mi from ${r.workshop.name}). Choose free branch collection or call us.`,
+            );
+          } else {
+            setDeliveryMiles(null);
+            setCoverageNote(
+              r.kind === "not-found" ? "Postcode not found." : null,
+            );
+          }
+        });
       });
     }, 400);
     return () => {
