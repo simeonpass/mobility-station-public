@@ -2,7 +2,7 @@ import {
   HIRE_PRICING_CATEGORIES,
   type HirePricingCategoryId,
 } from "@/lib/hire-pricing";
-import { getPublishedProducts, type ProductListItem } from "@/lib/products";
+import { getPublishedProducts } from "@/lib/products";
 
 export type HireCategoryImage = {
   id: HirePricingCategoryId;
@@ -22,116 +22,117 @@ const FALLBACKS: Record<HirePricingCategoryId, string> = {
   large_scooter: "/images/products/placeholder-scooter.svg",
 };
 
-/** Extra positive / negative keywords so powered chairs never win a manual slot. */
-const MATCH_RULES: Record<
-  HirePricingCategoryId,
-  { prefer: RegExp; reject: RegExp }
+type HireImageSource = {
+  slug: string;
+  name: string;
+  /** Curated product photo from the live catalogue page. */
+  imageUrl: string;
+};
+
+/**
+ * Staff-chosen catalogue examples for each hire category.
+ * Prefer live product image_url by slug when Supabase is available;
+ * otherwise use the curated imageUrl so previews stay accurate.
+ * heavy_duty_manual left unset until confirmed.
+ */
+export const HIRE_CATEGORY_IMAGE_SOURCES: Partial<
+  Record<HirePricingCategoryId, HireImageSource>
 > = {
   transit_wheelchair: {
-    prefer: /transit|attendant/i,
-    reject: /power|electric|joystick|self.?propel|scooter/i,
+    slug: "karma-ergo-lite-2-transit-wheelchair",
+    name: "Karma Ergo Lite 2 Transit Wheelchair",
+    imageUrl:
+      "https://cdn.shopify.com/s/files/1/0568/2928/0435/files/Karma-Ergo-Lite-2-Transit-Wheelchair.jpg?v=1761236999",
   },
   self_propelled_manual: {
-    prefer: /manual wheelchair|self.?propel/i,
-    reject: /power|electric|joystick|transit|attendant|scooter|bariatric|heavy.?duty/i,
-  },
-  heavy_duty_manual: {
-    prefer:
-      /(?:heavy.?duty|bariatric).*(?:manual )?wheelchair|(?:manual )?wheelchair.*(?:heavy.?duty|bariatric)|wide(?:r)? seat.*wheelchair/i,
-    reject: /power|electric|joystick|scooter|folding electric/i,
+    slug: "karma-ergo-lite-2-self-propel-wheelchair",
+    name: "Karma Ergo Lite 2 Self-Propel Wheelchair",
+    imageUrl:
+      "https://cdn.shopify.com/s/files/1/0568/2928/0435/files/Karma-Ergo-Lite-2-Self-Propel-Wheelchair.jpg?v=1761236610",
   },
   folding_electric_wheelchair: {
-    prefer: /folding.*(electric|power).*wheelchair|lightweight.*power/i,
-    reject: /scooter|manual wheelchair|transit/i,
+    slug: "ergofold-folding-power-chair",
+    name: "ErgoFold Folding Power Chair",
+    imageUrl:
+      "https://uwalzdrmowrciwnbetzk.supabase.co/storage/v1/object/public/stock-images/fc36591e-fab0-4345-8ae5-767610a7e45d.webp",
   },
   powered_wheelchair: {
-    prefer: /powered wheelchair|powerchair|power chair/i,
-    reject: /folding|scooter|manual|transit/i,
+    slug: "k-activ-rehab",
+    name: "K-Activ Rehab",
+    imageUrl:
+      "https://pub-d0fa88fa71f044d9a9fc37a3c9d5fe47.r2.dev/stock-images/9a4ddfe7-df31-4a50-87fb-cf68fc4b06de.jpg",
   },
   folding_scooter: {
-    prefer: /folding.*scooter/i,
-    reject: /wheelchair/i,
+    slug: "eezy-fold-mobility-scooter-white",
+    name: "Eezy-Fold Mobility Scooter",
+    imageUrl:
+      "https://uwalzdrmowrciwnbetzk.supabase.co/storage/v1/object/public/stock-images/4ba18505-ec1f-460a-8a70-50bd8b8b1e82.webp",
   },
   small_boot_scooter: {
-    prefer: /boot|portable|travel.*scooter|small.*scooter|class\s*2/i,
-    reject: /wheelchair|folding.*scooter|class\s*3|large|road/i,
+    slug: "pride-go-go-elite-traveller-2-0-mobility-scooter",
+    name: "Pride Go Go Elite Traveller 2.0",
+    imageUrl:
+      "https://cdn.shopify.com/s/files/1/0568/2928/0435/files/Pride-Go-Go-Elite-Traveller-2_0-Mobility-Scooter.webp?v=1761237268",
   },
   medium_scooter: {
-    prefer: /medium|mid.?size|mobility scooter/i,
-    reject: /wheelchair|folding|boot|portable|class\s*3|large|road/i,
+    slug: "agility-mobility-scooter",
+    name: "Agility Mobility Scooter",
+    imageUrl:
+      "https://cdn.shopify.com/s/files/1/0568/2928/0435/files/Agility-Mobility-Scooter.jpg?v=1761236988",
   },
   large_scooter: {
-    prefer: /large|road|class\s*3/i,
-    reject: /wheelchair|folding|boot|portable|class\s*2/i,
+    slug: "pride-colt-pursuit-mobility-scooter-1",
+    name: "Pride Colt Pursuit Mobility Scooter",
+    imageUrl:
+      "https://cdn.shopify.com/s/files/1/0568/2928/0435/files/Pride-Colt-Pursuit-Mobility-Scooter.jpg?v=1761236518",
   },
 };
 
-function scoreProduct(
-  product: ProductListItem,
-  categoryId: HirePricingCategoryId,
-  match: RegExp,
-): number {
-  const hay = `${product.name} ${product.category ?? ""}`;
-  const rules = MATCH_RULES[categoryId];
-  if (rules.reject.test(hay)) return 0;
-  if (!match.test(hay) && !rules.prefer.test(hay)) return 0;
-
-  let score = 10;
-  if (product.image_url) score += 5;
-  if (rules.prefer.test(hay)) score += 8;
-  if (match.test(hay)) score += 4;
-
-  // Manual wheelchair categories must look like manual chairs.
-  if (
-    categoryId === "heavy_duty_manual" ||
-    categoryId === "self_propelled_manual" ||
-    categoryId === "transit_wheelchair"
-  ) {
-    if (/manual/i.test(hay)) score += 6;
-    if (/wheelchair/i.test(hay)) score += 3;
-  }
-
-  return score;
-}
+/** @deprecated use HIRE_CATEGORY_IMAGE_SOURCES */
+export const HIRE_CATEGORY_PRODUCT_SLUGS: Partial<
+  Record<HirePricingCategoryId, string>
+> = Object.fromEntries(
+  Object.entries(HIRE_CATEGORY_IMAGE_SOURCES).map(([id, src]) => [
+    id,
+    src.slug,
+  ]),
+) as Partial<Record<HirePricingCategoryId, string>>;
 
 /**
- * Pick one genuine catalogue photo per hire category.
- * Never invents AI imagery — falls back to local product placeholders only.
+ * Pick one genuine catalogue photo per hire category from the mapped product.
+ * Never invents AI imagery — falls back to local placeholders only.
  */
 export async function getHireCategoryImages(): Promise<HireCategoryImage[]> {
-  let products: ProductListItem[] = [];
+  let bySlug = new Map<string, { name: string; image_url: string | null }>();
   try {
-    products = await getPublishedProducts({ limit: 400, shopOnly: true });
+    const products = await getPublishedProducts({ limit: 500, shopOnly: true });
+    bySlug = new Map(
+      products
+        .filter((p) => p.slug)
+        .map((p) => [p.slug, { name: p.name, image_url: p.image_url }]),
+    );
   } catch {
-    products = [];
+    bySlug = new Map();
   }
 
-  const used = new Set<string>();
-
   return HIRE_PRICING_CATEGORIES.map((category) => {
-    const ranked = products
-      .map((p) => ({
-        p,
-        score: scoreProduct(p, category.id, category.imageMatch),
-      }))
-      .filter((r) => r.score > 0 && r.p.image_url && !used.has(r.p.id))
-      .sort((a, b) => b.score - a.score);
-
-    const best = ranked[0]?.p;
-    if (best?.image_url) {
-      used.add(best.id);
+    const source = HIRE_CATEGORY_IMAGE_SOURCES[category.id];
+    if (!source) {
       return {
         id: category.id,
-        src: best.image_url,
-        alt: `${category.imageAlt} — example: ${best.name}`,
+        src: FALLBACKS[category.id],
+        alt: category.imageAlt,
       };
     }
 
-    // Prefer placeholder over a wrong powered-chair photo for manual categories.
+    const live = bySlug.get(source.slug);
+    const src = live?.image_url || source.imageUrl;
+    const name = live?.name || source.name;
+
     return {
       id: category.id,
-      src: FALLBACKS[category.id],
-      alt: category.imageAlt,
+      src,
+      alt: `${category.imageAlt} — example: ${name}`,
     };
   });
 }
