@@ -18,7 +18,7 @@ const nav = [
   { href: "/hire", label: "Hire" },
   { href: "/motability", label: "Motability" },
   { href: "/locations", label: "Locations" },
-  { href: "/blog", label: "Recent Work" },
+  { href: "/our-work", label: "Recent Work" },
 ];
 
 function isActivePath(pathname: string, href: string) {

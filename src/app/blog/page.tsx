@@ -50,12 +50,8 @@ export default async function BlogPage() {
         subtitle="Real adaptations we’ve fitted, installations we’re proud of, and practical mobility advice from our Heathrow and Ferndown teams."
         primaryHref="/contact?interest=adaptation"
         primaryLabel="Request a quotation"
-        {...(gallery.length
-          ? {
-              secondaryHref: "#gallery",
-              secondaryLabel: "Jump to photo gallery",
-            }
-          : {})}
+        secondaryHref="/our-work"
+        secondaryLabel="Browse recent work"
       />
 
       <section className="pb-14 md:pb-16">

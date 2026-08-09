@@ -257,7 +257,7 @@ export default async function AboutPage() {
           <p className="mt-8 text-sm text-muted">
             See{" "}
             <Link
-              href="/blog"
+              href="/our-work"
               className="font-semibold text-primary underline underline-offset-2"
             >
               recent work from our workshops

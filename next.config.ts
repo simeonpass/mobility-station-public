@@ -70,7 +70,7 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       { source: "/about", destination: "/about-us", permanent: true },
-      { source: "/our-work", destination: "/blog", permanent: true },
+      // /our-work is a live App Router page (Recent Work case studies)
       { source: "/find-my-scooter", destination: "/shop", permanent: true },
       {
         source: "/mobility-scooter-hire",
