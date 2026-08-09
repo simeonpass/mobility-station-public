@@ -36,13 +36,20 @@ export default function BookAServicePage() {
               className="font-semibold text-primary underline underline-offset-2"
             >
               Contact the team
-            </Link>{" "}
-            or{" "}
+            </Link>
+            ,{" "}
             <Link
               href="/book-a-demo"
               className="font-semibold text-primary underline underline-offset-2"
             >
               book a demonstration
+            </Link>
+            , or{" "}
+            <Link
+              href="/hire"
+              className="font-semibold text-primary underline underline-offset-2"
+            >
+              hire a scooter or wheelchair
             </Link>
             .
           </p>
