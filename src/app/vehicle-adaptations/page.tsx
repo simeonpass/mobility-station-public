@@ -52,7 +52,7 @@ const HOW_IT_WORKS: {
   {
     step: "3",
     title: "Demo or assessment",
-    body: "Book a home visit where needed. Adaptation home demos are £100 — refunded if you order with us or via a dealership.",
+    body: "Book a home visit where needed. Home demonstrations are £195 — deducted in full from your price if you go ahead.",
     href: "/book-a-demo#demo-terms",
   },
   {

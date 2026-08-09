@@ -147,16 +147,12 @@ export default function TermsPage() {
         <section>
           <h2>8. Home Demonstrations</h2>
           <p>
-            Branch demonstrations at Heathrow and Ferndown are free. Motability
-            scooter and wheelchair home demonstrations are also free.
-          </p>
-          <p className="mt-2">
-            Home demonstrations for vehicle adaptations and for private
-            (non-Motability) scooters and wheelchairs carry a £100 visit fee.
-            For private scooter and wheelchair purchases, this is deducted from
-            the price if you buy from us. For vehicle adaptations, it is
-            refunded if you go ahead with us, or where the adaptation order is
-            placed via a dealership. Full details are on our{" "}
+            Branch demonstrations at Heathrow and Ferndown are free. Home
+            demonstrations are £195 flat (vehicle adaptations, scooters, powered
+            and manual wheelchairs — private or Motability). The fee is
+            non-refundable but is deducted in full from the purchase price if
+            you go ahead. It is waived for the Motability Powered Wheelchair
+            &amp; Scooter Scheme (PWSS). Full details are on our{" "}
             <Link href="/book-a-demo#demo-terms">book a demonstration</Link>{" "}
             page.
           </p>

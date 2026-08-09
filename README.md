@@ -40,7 +40,7 @@ Run `supabase/public_site_grants.sql` in Supabase to create the minimum `public_
 | `/shop` | Scooters & wheelchairs listing |
 | `/{category}/{slug}` | Root-level product URLs |
 | `/locations` | Heathrow & Ferndown |
-| `/book-a-demo` | Demo booking (Server Action → `enquiries`) |
+| `/book-a-demo` | Multi-step demo booking (£195 home fee via DNA; branch/PWSS free) |
 | `/book-a-service` | Service booking |
 | `/blog` | Advice articles |
 | `/lightweight-folding-mobility` | Lightweight hub + spin-off CTA |

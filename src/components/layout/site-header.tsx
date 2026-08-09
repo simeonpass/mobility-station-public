@@ -64,7 +64,7 @@ export function SiteHeader() {
                 href="/book-a-demo#demo-terms"
                 className="text-accent-on-dark transition-colors hover:text-accent-on-dark-hover"
               >
-                Free home demonstrations*
+                Free branch demos · Home demos £195*
               </Link>
             </span>
           </p>

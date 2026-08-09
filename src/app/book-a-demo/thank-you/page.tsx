@@ -1,5 +1,5 @@
-import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
+import { Suspense } from "react";
+import { DemoThankYouClient } from "@/components/forms/demo-thank-you-client";
 import { createMetadata } from "@/lib/seo";
 
 export const metadata = createMetadata({
@@ -7,33 +7,19 @@ export const metadata = createMetadata({
   description:
     "Thanks for booking a Mobility Station demonstration. We will be in touch shortly.",
   path: "/book-a-demo/thank-you",
+  noIndex: true,
 });
 
 export default function DemoThankYouPage() {
   return (
-    <div className="container-site py-20 text-center">
-      <h1 className="text-4xl font-extrabold tracking-tight">Thank you</h1>
-      <p className="mx-auto mt-4 max-w-xl text-lg text-foreground/80">
-        Your demonstration request is with our team. We will contact you shortly
-        to confirm timing with Heathrow or Ferndown.
-      </p>
-      <p className="mt-3 text-muted">
-        Need us sooner?{" "}
-        <Link
-          href="/contact?interest=callback#callback"
-          className="font-semibold text-primary underline"
-        >
-          Request a callback
-        </Link>
-      </p>
-      <div className="mt-8 flex flex-wrap justify-center gap-3">
-        <Link href="/" className={buttonVariants()}>
-          Back to homepage
-        </Link>
-        <Link href="/shop" className={buttonVariants({ variant: "outline" })}>
-          Browse scooters &amp; wheelchairs
-        </Link>
-      </div>
-    </div>
+    <Suspense
+      fallback={
+        <div className="container-site py-20 text-center text-muted">
+          Loading confirmation…
+        </div>
+      }
+    >
+      <DemoThankYouClient />
+    </Suspense>
   );
 }

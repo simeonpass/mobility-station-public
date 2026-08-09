@@ -185,9 +185,9 @@ export default async function ContactPage({
             ))}
           </ul>
           <p className="mt-6 text-sm text-muted">
-            Branch demonstrations are free. Home visits are free for Motability
-            scooters and wheelchairs, and £100 for private or adaptation visits —
-            refundable if you place an order.{" "}
+            Branch demonstrations are free. Home demonstrations are £195 —
+            deducted in full from your price if you go ahead, and waived for the
+            Motability Powered Wheelchair &amp; Scooter Scheme.{" "}
             <Link
               href="/book-a-demo#demo-terms"
               className="font-semibold text-primary underline underline-offset-2"
