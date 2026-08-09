@@ -8,6 +8,8 @@ import {
   type PaymentStatus,
 } from "@/lib/demo-booking";
 import { resolveReturnOrigin } from "@/lib/checkout-server";
+import { lookupCoverage, type CoverageResult } from "@/lib/service-area";
+import { SITE } from "@/lib/seo";
 
 function getSupabaseConfig() {
   const url = process.env.SUPABASE_URL;
@@ -16,6 +18,28 @@ function getSupabaseConfig() {
     throw new Error("Missing SUPABASE_URL or SUPABASE_PUBLIC_SITE_KEY");
   }
   return { url, key };
+}
+
+export const OUT_OF_AREA_DEMO_MESSAGE = `Sorry — that postcode is outside our home demonstration area. Please call us on ${SITE.phone} and we’ll see how we can help, or book a free demonstration at our Heathrow or Ferndown branch.`;
+
+/**
+ * Home demos must be inside a branch coverage ring.
+ * Fee stays £195 flat — we only use coverage to accept/reject, not band pricing.
+ */
+export async function assertHomeDemoInArea(
+  postcode: string,
+): Promise<Extract<CoverageResult, { kind: "covered" }>> {
+  const coverage = await lookupCoverage(postcode);
+  if (coverage.kind === "covered") return coverage;
+  if (coverage.kind === "out-of-range") {
+    throw new Error(OUT_OF_AREA_DEMO_MESSAGE);
+  }
+  if (coverage.kind === "not-found") {
+    throw new Error("Please enter a valid UK postcode so we can check coverage.");
+  }
+  throw new Error(
+    `We couldn’t check that postcode just now. Please try again, or call ${SITE.phone}.`,
+  );
 }
 
 export function resolveDemoPaymentStatus(fee: DemoFeeResult): PaymentStatus {

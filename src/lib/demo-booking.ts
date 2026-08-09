@@ -56,6 +56,8 @@ export type DemoBookingInput = {
   notes?: string;
   preferredDate: string;
   preferredTime: TimeWindowId;
+  /** Covering workshop from postcode check (home demos) */
+  coveredBy?: DemoBranch;
   /** Honeypot — must stay empty */
   company_website?: string;
 };
@@ -291,11 +293,20 @@ export function buildDemoEnquiryMessage(
     `Preferred Date: ${formatPreferredDate(input.preferredDate)}`,
     `Preferred Time: ${timeWindowLabel(input.preferredTime)}`,
     `Demo Location: ${demoLocationLabel(input.location, input.branch)}`,
+  ];
+
+  if (input.location === "home" && input.coveredBy) {
+    lines.push(
+      `Coverage: Within ${input.coveredBy === "ferndown" ? "Ferndown" : "Heathrow"} home demonstration area`,
+    );
+  }
+
+  lines.push(
     `Customer Type: ${customerTypeLabel(input)}`,
     `Demo Fee: ${fee.label}${fee.amountGbp === 0 ? ` — ${fee.explanation}` : ""}`,
     `Payment: ${paymentLine(paymentStatus, dnaRef)}`,
     "Note: requested date is a preference only — home demos need at least 5 days' notice.",
-  ];
+  );
 
   if (input.vehicleMake?.trim()) {
     lines.push(`Vehicle Make: ${input.vehicleMake.trim()}`);
@@ -351,6 +362,7 @@ export const demoBookingSchema = z
     notes: z.string().trim().max(2000).optional(),
     preferredDate: z.string().trim().min(1, "Please choose a preferred date"),
     preferredTime: z.enum(["morning", "afternoon", "late"]),
+    coveredBy: z.enum(["heathrow", "ferndown"]).optional(),
     company_website: z.string().optional(),
   })
   .superRefine((data, ctx) => {

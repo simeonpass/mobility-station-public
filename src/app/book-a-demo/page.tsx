@@ -56,8 +56,9 @@ export default async function BookADemoPage({
               </li>
               <li>
                 We come to you so you can try equipment where you live, park and
-                get around every day. Home demos need at least 5 days&apos;
-                notice.
+                get around every day. Enter your postcode when booking a home
+                demo so we can confirm coverage before any payment. Home demos
+                need at least 5 days&apos; notice.
               </li>
             </ul>
             <p className="mt-6 text-sm text-muted">

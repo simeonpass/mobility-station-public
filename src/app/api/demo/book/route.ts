@@ -4,6 +4,7 @@ import {
   demoBookingSchema,
 } from "@/lib/demo-booking";
 import {
+  assertHomeDemoInArea,
   newBookingRef,
   resolveDemoPaymentStatus,
   submitDemoEnquiry,
@@ -36,6 +37,12 @@ export async function POST(request: Request) {
       });
     }
 
+    if (booking.location === "home") {
+      const coverage = await assertHomeDemoInArea(booking.postcode);
+      booking.coveredBy = coverage.workshop.id;
+      booking.postcode = coverage.postcode;
+    }
+
     const fee = calculateDemoFee(booking);
     const paymentStatus = resolveDemoPaymentStatus(fee);
     const bookingRef =
@@ -57,6 +64,7 @@ export async function POST(request: Request) {
       feeExplanation: fee.explanation,
       requiresPayment: fee.amountGbp > 0,
       paymentStatus,
+      coveredBy: booking.coveredBy,
       // Some Lovable deployments may return DNA data from the enquiry function.
       paymentData: enquiry.paymentData,
       orderNumber: enquiry.orderNumber,
@@ -66,6 +74,6 @@ export async function POST(request: Request) {
       error instanceof Error
         ? error.message
         : "Could not submit demonstration booking";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: message }, { status: 400 });
   }
 }

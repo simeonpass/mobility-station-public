@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { startTransition, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,8 @@ import {
   type TimeWindowId,
 } from "@/lib/demo-booking";
 import { formatGBP } from "@/lib/products";
+import { SITE } from "@/lib/seo";
+import { lookupCoverage, type CoverageResult } from "@/lib/service-area";
 
 type Step = 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -113,6 +116,9 @@ export function DemoBookingForm({
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [coverage, setCoverage] = useState<CoverageResult | null>(null);
+  const [coverageLoading, setCoverageLoading] = useState(false);
+  const [coveredBy, setCoveredBy] = useState<DemoBranch | "">("");
 
   useEffect(() => {
     try {
@@ -131,6 +137,47 @@ export function DemoBookingForm({
       /* ignore corrupt retry payload */
     }
   }, []);
+
+  // Home demos: check postcode against Heathrow / Ferndown coverage rings
+  // before the customer continues (and before they pay).
+  useEffect(() => {
+    let cancelled = false;
+    const ctrl = new AbortController();
+
+    if (form.location !== "home" || form.postcode.trim().length < 5) {
+      const reset = window.setTimeout(() => {
+        if (cancelled) return;
+        setCoverage(null);
+        setCoverageLoading(false);
+        setCoveredBy("");
+      }, 0);
+      return () => {
+        cancelled = true;
+        window.clearTimeout(reset);
+        ctrl.abort();
+      };
+    }
+
+    const cleaned = form.postcode.trim();
+    const start = window.setTimeout(() => {
+      if (!cancelled) setCoverageLoading(true);
+    }, 0);
+    const timer = window.setTimeout(() => {
+      void lookupCoverage(cleaned, ctrl.signal).then((result) => {
+        if (cancelled) return;
+        setCoverage(result);
+        setCoveredBy(result.kind === "covered" ? result.workshop.id : "");
+        setCoverageLoading(false);
+      });
+    }, 400);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(start);
+      window.clearTimeout(timer);
+      ctrl.abort();
+    };
+  }, [form.location, form.postcode]);
 
   const fee = useMemo(() => {
     if (!form.location || !form.productCategory || !form.customerType) {
@@ -199,6 +246,23 @@ export function DemoBookingForm({
       if (form.location === "branch" && !form.branch) {
         return "Please choose Heathrow or Ferndown.";
       }
+      if (form.location === "home") {
+        if (form.postcode.trim().length < 5) {
+          return "Please enter your postcode so we can check home demonstration coverage.";
+        }
+        if (coverageLoading) {
+          return "Checking your postcode — just a moment.";
+        }
+        if (coverage?.kind === "out-of-range") {
+          return `That postcode is outside our home demonstration area. Please call ${SITE.phone}, or book a free branch demonstration instead.`;
+        }
+        if (coverage?.kind === "not-found") {
+          return "Postcode not found — please check and try again.";
+        }
+        if (coverage?.kind === "error" || coverage?.kind !== "covered") {
+          return `We couldn’t check that postcode. Please try again, or call ${SITE.phone}.`;
+        }
+      }
     }
     if (current === 3) {
       if (!form.customerType) return "Please choose Private or Motability.";
@@ -210,6 +274,12 @@ export function DemoBookingForm({
       if (!form.addressLine1.trim()) return "Please enter your address.";
       if (!form.city.trim()) return "Please enter your town / city.";
       if (!form.postcode.trim()) return "Please enter your postcode.";
+      if (form.location === "home") {
+        if (coverageLoading) return "Checking your postcode — just a moment.";
+        if (coverage?.kind !== "covered") {
+          return `Home demonstrations are only available in our local area. Please call ${SITE.phone}, or choose a branch demonstration.`;
+        }
+      }
       if (!form.productName.trim()) return "Please enter the product of interest.";
       if (form.productCategory === "vehicle_adaptation") {
         if (!form.vehicleMake.trim()) return "Please enter the vehicle make.";
@@ -264,6 +334,7 @@ export function DemoBookingForm({
       notes: form.notes.trim() || undefined,
       preferredDate: form.preferredDate,
       preferredTime: form.preferredTime,
+      coveredBy: coveredBy || undefined,
       company_website: form.company_website,
       bookingRef,
     };
@@ -285,6 +356,11 @@ export function DemoBookingForm({
     setError(null);
     setFieldErrors({});
     try {
+      if (form.location === "home" && coverage?.kind !== "covered") {
+        throw new Error(
+          `Home demonstrations are only available in our local area. Please call ${SITE.phone}, or book a free branch demonstration.`,
+        );
+      }
       const payload = buildPayload();
       const bookRes = await fetch("/api/demo/book", {
         method: "POST",
@@ -470,10 +546,86 @@ export function DemoBookingForm({
             </div>
           ) : null}
           {form.location === "home" ? (
-            <p className="text-sm text-muted">
-              The {formatGBP(HOME_DEMO_FEE_GBP)} fee is non-refundable but is
-              deducted in full from your purchase price if you go ahead.
-            </p>
+            <div className="space-y-3 pt-2">
+              <p className="text-sm text-muted">
+                The {formatGBP(HOME_DEMO_FEE_GBP)} fee is non-refundable but is
+                deducted in full from your purchase price if you go ahead. Enter
+                your postcode first so we can confirm you&apos;re in our home
+                demonstration area.
+              </p>
+              <div>
+                <Label htmlFor="home-postcode">Your postcode</Label>
+                <Input
+                  id="home-postcode"
+                  autoComplete="postal-code"
+                  className="uppercase"
+                  placeholder="e.g. UB7 8EB"
+                  value={form.postcode}
+                  onChange={(e) =>
+                    update("postcode", e.target.value.toUpperCase())
+                  }
+                />
+              </div>
+              {coverageLoading ? (
+                <p className="text-sm text-muted">Checking coverage…</p>
+              ) : null}
+              {coverage?.kind === "covered" ? (
+                <p className="rounded-md bg-success/10 px-4 py-3 text-sm text-primary">
+                  Good news — we cover{" "}
+                  <strong>{coverage.postcode}</strong> from our{" "}
+                  <strong>{coverage.workshop.name}</strong> branch (
+                  {coverage.miles.toFixed(1)} miles). Home demonstration fee:{" "}
+                  {formatGBP(HOME_DEMO_FEE_GBP)}.
+                </p>
+              ) : null}
+              {coverage?.kind === "out-of-range" ? (
+                <div className="space-y-2 rounded-md bg-warning/10 px-4 py-3 text-sm text-primary">
+                  <p>
+                    That postcode is outside our home demonstration area
+                    {coverage.miles
+                      ? ` (about ${coverage.miles.toFixed(0)} miles from ${coverage.workshop.name})`
+                      : ""}
+                    .
+                  </p>
+                  <p>
+                    Please{" "}
+                    <a
+                      href={SITE.phoneHref}
+                      className="font-semibold underline underline-offset-2"
+                    >
+                      call {SITE.phone}
+                    </a>{" "}
+                    and we&apos;ll see how we can help, or{" "}
+                    <button
+                      type="button"
+                      className="font-semibold underline underline-offset-2"
+                      onClick={() => update("location", "branch")}
+                    >
+                      book a free branch demonstration
+                    </button>{" "}
+                    instead. You can also{" "}
+                    <Link
+                      href="/service-area"
+                      className="font-semibold underline underline-offset-2"
+                    >
+                      check our service area
+                    </Link>
+                    .
+                  </p>
+                </div>
+              ) : null}
+              {coverage?.kind === "not-found" ? (
+                <p className="text-sm text-error">
+                  Postcode not found — please check and try again.
+                </p>
+              ) : null}
+              {coverage?.kind === "error" ? (
+                <p className="text-sm text-error">
+                  We couldn&apos;t check that postcode just now. Please try
+                  again, or call {SITE.phone}.
+                </p>
+              ) : null}
+            </div>
           ) : null}
         </div>
       ) : null}
@@ -743,7 +895,12 @@ export function DemoBookingForm({
             type="button"
             size="lg"
             onClick={goNext}
-            disabled={submitting}
+            disabled={
+              submitting ||
+              (step === 2 &&
+                form.location === "home" &&
+                (coverageLoading || coverage?.kind !== "covered"))
+            }
             className="min-w-40"
           >
             {submitting
@@ -758,7 +915,11 @@ export function DemoBookingForm({
             type="button"
             size="lg"
             variant="buy"
-            disabled={submitting || !dnaReady}
+            disabled={
+              submitting ||
+              !dnaReady ||
+              (form.location === "home" && coverage?.kind !== "covered")
+            }
             className="min-w-48"
             onClick={() => void submitBooking(true)}
           >

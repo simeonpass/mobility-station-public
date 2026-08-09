@@ -3,7 +3,11 @@ import {
   calculateDemoFee,
   demoBookingSchema,
 } from "@/lib/demo-booking";
-import { newBookingRef, startDemoDnaCheckout } from "@/lib/demo-server";
+import {
+  assertHomeDemoInArea,
+  newBookingRef,
+  startDemoDnaCheckout,
+} from "@/lib/demo-server";
 
 /**
  * Start (or retry) DNA hosted checkout for a £195 home demonstration fee.
@@ -34,6 +38,17 @@ export async function POST(request: Request) {
       });
     }
 
+    // Never take payment outside the home demonstration area.
+    if (booking.location !== "home") {
+      return NextResponse.json(
+        { error: "Payment is only required for home demonstrations." },
+        { status: 400 },
+      );
+    }
+    const coverage = await assertHomeDemoInArea(booking.postcode);
+    booking.coveredBy = coverage.workshop.id;
+    booking.postcode = coverage.postcode;
+
     const fee = calculateDemoFee(booking);
     if (fee.amountGbp <= 0) {
       return NextResponse.json(
@@ -58,11 +73,12 @@ export async function POST(request: Request) {
       orderNumber: checkout.orderNumber,
       bookingRef: checkout.bookingRef,
       feeGbp: fee.amountGbp,
+      coveredBy: booking.coveredBy,
       description: `Home Demonstration Fee — ${booking.preferredDate}`,
     });
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "DNA checkout failed";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: message }, { status: 400 });
   }
 }
