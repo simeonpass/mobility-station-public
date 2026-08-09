@@ -2,12 +2,11 @@ import Link from "next/link";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { CtaFooter } from "@/components/sections/cta-footer";
 import { RecentWorkCard } from "@/components/sections/recent-work-card";
-import { RecentWorkFilters } from "@/components/sections/recent-work-filters";
+import { RecentWorkSearch } from "@/components/sections/recent-work-search";
 import { buttonVariants } from "@/components/ui/button";
 import {
-  categoryLabel,
-  listRecentWork,
-  RECENT_WORK_CATEGORIES,
+  filterRecentWorkByQuery,
+  listAllRecentWork,
 } from "@/lib/recent-work";
 import { createMetadata, jsonLdScript, SITE } from "@/lib/seo";
 import { cn } from "@/lib/utils";
@@ -15,33 +14,28 @@ import { cn } from "@/lib/utils";
 export const revalidate = 300;
 
 type Props = {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ q?: string; category?: string }>;
 };
 
 export async function generateMetadata({ searchParams }: Props) {
-  const { category } = await searchParams;
-  const valid = RECENT_WORK_CATEGORIES.some((c) => c.id === category);
-  const label = valid ? categoryLabel(category) : null;
-
+  const { q } = await searchParams;
+  const query = q?.trim();
   return createMetadata({
-    title: label ? `${label} — Recent work` : "Recent work",
-    description: label
-      ? `Real ${label.toLowerCase()} projects from Mobility Station — Heathrow and Ferndown. Anonymised case studies from jobs we’ve completed.`
-      : "Real vehicle adaptations, scooters and wheelchair work from Mobility Station — Heathrow and Ferndown. Anonymised case studies from jobs we’ve completed.",
-    path: valid ? `/our-work?category=${category}` : "/our-work",
+    title: query ? `Search “${query}” — Recent work` : "Recent work",
+    description:
+      "Real vehicle adaptations, scooters and wheelchair work from Mobility Station — Heathrow and Ferndown. Anonymised case studies from jobs we’ve completed.",
+    path: query ? `/our-work?q=${encodeURIComponent(query)}` : "/our-work",
+    ...(query ? { noIndex: true } : {}),
   });
 }
 
 export default async function OurWorkPage({ searchParams }: Props) {
-  const { category: rawCategory } = await searchParams;
-  const category = RECENT_WORK_CATEGORIES.some((c) => c.id === rawCategory)
-    ? rawCategory
-    : undefined;
+  const { q, category } = await searchParams;
+  // Prefer search. Legacy ?category= links become a search for that label/slug.
+  const query = (q || category || "").trim();
 
-  const { total, projects } = await listRecentWork({
-    limit: 24,
-    category,
-  });
+  const all = await listAllRecentWork();
+  const projects = filterRecentWorkByQuery(all, query);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -84,14 +78,15 @@ export default async function OurWorkPage({ searchParams }: Props) {
 
       <section className="py-10 md:py-14">
         <div className="container-site">
-          <RecentWorkFilters active={category} />
+          <RecentWorkSearch query={query} resultCount={projects.length} />
 
-          <p className="mt-6 text-sm text-muted">
-            {total === 0
-              ? "No published projects in this view yet."
-              : `${total} ${total === 1 ? "project" : "projects"}`}
-            {category ? ` · ${categoryLabel(category)}` : null}
-          </p>
+          {!query ? (
+            <p className="mt-6 text-sm text-muted">
+              {all.length === 0
+                ? "No published projects yet."
+                : `${all.length} ${all.length === 1 ? "project" : "projects"}`}
+            </p>
+          ) : null}
 
           {projects.length ? (
             <ul className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -104,20 +99,29 @@ export default async function OurWorkPage({ searchParams }: Props) {
           ) : (
             <div className="mt-10 max-w-xl border-t border-border pt-8">
               <h2 className="text-2xl font-extrabold text-primary">
-                Case studies coming soon
+                {query ? "No matches" : "Case studies coming soon"}
               </h2>
               <p className="mt-3 text-base leading-relaxed text-muted">
-                Our team publishes completed jobs from the workshop here. In the
-                meantime, ask us about a similar adaptation or browse advice
-                stories.
+                {query
+                  ? "Try a different word — for example hoist, scooter, hand controls, Heathrow or Ferndown."
+                  : "Our team publishes completed jobs from the workshop here. In the meantime, ask us about a similar adaptation or browse advice stories."}
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Link
-                  href="/contact?interest=adaptation"
-                  className={cn(buttonVariants({ size: "lg" }), "rounded-md")}
-                >
-                  Request a quotation
-                </Link>
+                {query ? (
+                  <Link
+                    href="/our-work"
+                    className={cn(buttonVariants({ size: "lg" }), "rounded-md")}
+                  >
+                    Show all work
+                  </Link>
+                ) : (
+                  <Link
+                    href="/contact?interest=adaptation"
+                    className={cn(buttonVariants({ size: "lg" }), "rounded-md")}
+                  >
+                    Request a quotation
+                  </Link>
+                )}
                 <Link
                   href="/blog"
                   className={cn(

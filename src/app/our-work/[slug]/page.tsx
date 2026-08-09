@@ -203,7 +203,7 @@ export default async function OurWorkProjectPage({ params }: Props) {
                     <dt>Category</dt>
                     <dd className="text-right font-medium text-foreground">
                       <Link
-                        href={`/our-work?category=${encodeURIComponent(project.category)}`}
+                        href={`/our-work?q=${encodeURIComponent(categoryLabel(project.category))}`}
                         className="underline-offset-2 hover:underline"
                       >
                         {categoryLabel(project.category)}

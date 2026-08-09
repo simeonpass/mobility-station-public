@@ -149,3 +149,26 @@ export async function listAllRecentWork(): Promise<RecentWorkProject[]> {
 
   return all;
 }
+
+/** Case-insensitive match across title, summary, town and category label. */
+export function filterRecentWorkByQuery(
+  projects: RecentWorkProject[],
+  query: string,
+) {
+  const q = query.trim().toLowerCase();
+  if (!q) return projects;
+  const terms = q.split(/\s+/).filter(Boolean);
+  return projects.filter((project) => {
+    const haystack = [
+      project.title,
+      project.summary,
+      project.town,
+      project.category,
+      categoryLabel(project.category),
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+    return terms.every((term) => haystack.includes(term));
+  });
+}
