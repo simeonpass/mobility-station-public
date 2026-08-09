@@ -19,7 +19,7 @@ export function HireFaq({
               <span className="flex items-start justify-between gap-4">
                 {faq.q}
                 <span
-                  className="mt-0.5 text-muted transition-transform group-open:rotate-45"
+                  className="mt-0.5 text-tertiary transition-transform group-open:rotate-45"
                   aria-hidden
                 >
                   +

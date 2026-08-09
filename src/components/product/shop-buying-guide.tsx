@@ -10,7 +10,7 @@ export function ShopBuyingGuide() {
     <div className="max-w-3xl space-y-8">
       <section>
         <div className="flex items-start gap-3">
-          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-tertiary-soft text-primary">
             <Truck className="h-4 w-4" aria-hidden />
           </span>
           <div>
@@ -38,7 +38,7 @@ export function ShopBuyingGuide() {
 
       <section>
         <div className="flex items-start gap-3">
-          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-tertiary-soft text-primary">
             <MapPin className="h-4 w-4" aria-hidden />
           </span>
           <div>
@@ -67,7 +67,7 @@ export function ShopBuyingGuide() {
 
       <section>
         <div className="flex items-start gap-3">
-          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-tertiary-soft text-primary">
             <Settings className="h-4 w-4" aria-hidden />
           </span>
           <div>
@@ -95,7 +95,7 @@ export function ShopBuyingGuide() {
 
       <section>
         <div className="flex items-start gap-3">
-          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-tertiary-soft text-primary">
             <Receipt className="h-4 w-4" aria-hidden />
           </span>
           <div>

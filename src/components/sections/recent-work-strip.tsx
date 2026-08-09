@@ -9,7 +9,7 @@ export function RecentWorkStrip({ items }: { items: PortfolioItem[] }) {
       <div className="container-site">
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-accent-foreground">
+            <p className="text-sm font-semibold uppercase tracking-wide text-tertiary">
               From our workshop
             </p>
             <h2 className="mt-1 text-3xl font-extrabold tracking-tight text-primary md:text-4xl">

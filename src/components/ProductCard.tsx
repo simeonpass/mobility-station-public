@@ -41,7 +41,7 @@ export function ProductCard({ product }: { product: ProductListItem }) {
   return (
     <Link
       href={`/products/${product.slug}`}
-      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-white transition-[border-color,box-shadow] duration-200 hover:border-primary/25 hover:shadow-[0_16px_40px_-24px_rgba(0,63,67,0.45)]"
+      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-white transition-[border-color,box-shadow] duration-200 hover:border-tertiary/50 hover:shadow-[0_16px_40px_-24px_rgba(0,63,67,0.45)]"
     >
       <div className="relative aspect-square overflow-hidden bg-white">
         <CatalogImage

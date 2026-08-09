@@ -24,7 +24,7 @@ export function Hero({
   return (
     <section className={cn("bg-hero-mesh", compact ? "py-14 md:py-16" : "py-16 md:py-24")}>
       <div className="container-site max-w-3xl">
-        <p className="mb-4 text-sm font-bold uppercase tracking-[0.14em] text-primary-dark">
+        <p className="mb-4 text-sm font-bold uppercase tracking-[0.14em] text-primary-dark underline decoration-tertiary decoration-2 underline-offset-4">
           Mobility Station
         </p>
         <h1 className="text-balance text-4xl font-extrabold tracking-tight text-primary md:text-5xl lg:text-[3.25rem]">

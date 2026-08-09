@@ -335,7 +335,7 @@ export default async function VehicleAdaptationsPage() {
           <ol className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {HOW_IT_WORKS.map((item) => (
               <li key={item.step}>
-                <p className="text-sm font-bold uppercase tracking-wider text-accent">
+                <p className="text-sm font-bold uppercase tracking-wider text-tertiary">
                   Step {item.step}
                 </p>
                 <h3 className="mt-2 text-base font-bold text-primary">
@@ -369,7 +369,7 @@ export default async function VehicleAdaptationsPage() {
           <ul className="mt-8 grid gap-8 md:grid-cols-3">
             {WHY_US.map(({ icon: Icon, title, body }) => (
               <li key={title} className="flex gap-3">
-                <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent/15 text-primary">
+                <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-tertiary-soft text-primary">
                   <Icon className="h-5 w-5" aria-hidden />
                 </span>
                 <div>

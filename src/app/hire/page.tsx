@@ -69,7 +69,7 @@ export default function HirePage() {
 
       <section className="py-10 md:py-14">
         <div className="container-site grid gap-6 lg:grid-cols-2 lg:gap-8">
-          <article className="flex flex-col border border-border bg-white p-6 md:p-8">
+          <article className="flex flex-col border border-border bg-white p-6 transition-colors hover:border-tertiary/60 md:p-8">
             <p className="text-sm font-bold uppercase tracking-wide text-muted">
               Option 1
             </p>
@@ -115,7 +115,7 @@ export default function HirePage() {
             </div>
           </article>
 
-          <article className="flex flex-col border border-border bg-white p-6 md:p-8">
+          <article className="flex flex-col border border-border bg-white p-6 transition-colors hover:border-tertiary/60 md:p-8">
             <p className="text-sm font-bold uppercase tracking-wide text-muted">
               Option 2
             </p>
