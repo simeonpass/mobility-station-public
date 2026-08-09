@@ -165,56 +165,72 @@ export const HIRE_PRICING_CATEGORIES: HirePricingCategory[] = [
   },
 ];
 
-export const HIRE_FAQS: { q: string; a: string }[] = [
+export type HireFaqItem = { q: string; a: string };
+
+/** Shared plain-language FAQs used on both product pages. */
+export const HIRE_SHARED_FAQS: HireFaqItem[] = [
   {
     q: "Can I book and pay online?",
-    a: "Yes. Choose your hire, pay securely by card, and we deliver or prepare free branch collection. No quote chase needed for standard bookings.",
-  },
-  {
-    q: "Minimum hire?",
-    a: "Short-term starts at 3 days. Flex has a 3-month minimum.",
-  },
-  {
-    q: "Why does short-term stop after 4 weeks?",
-    a: "Beyond 28 days the machine needs servicing, battery care and cover a daily rate cannot fund; longer hires move to Flex, which includes all of that and is much cheaper per week.",
-  },
-  {
-    q: "What is the £99 Flex set-up fee?",
-    a: "A one-off fee covering delivery, set-up and handover when you start Flex. It is charged with your first month when you book online.",
-  },
-  {
-    q: "How does the Flex deposit work?",
-    a: "One month up front, then monthly in advance — always a month ahead. Returned at the end less damage beyond fair wear and tear.",
-  },
-  {
-    q: "Can I cancel Flex?",
-    a: "Yes, after the 3-month minimum with 30 days' written notice; the month already paid covers the notice period.",
+    a: "Yes. Fill in the form, pay by card, and we arrange delivery or free collection from our branch. You do not need to chase a quote for a normal booking.",
   },
   {
     q: "Is hire VAT free?",
-    a: "Yes if it is for a disabled person's personal use — tick the declaration when booking. Otherwise VAT at 20% on hire and delivery/set-up.",
+    a: "Often yes. If the scooter or wheelchair is for a disabled person’s own use, tick the VAT relief box when you book and you pay the price shown with no VAT. Otherwise VAT is 20%.",
   },
   {
-    q: "Damage deposit on short-term?",
-    a: "Yes, £100–£250 refundable, paid with the hire online and returned in full when the equipment comes back as it went out.",
+    q: "What do I need?",
+    a: "Photo ID, proof of address, and a dry place to store and charge the machine. You pay by card when you book.",
   },
   {
-    q: "What if I decide to buy?",
-    a: "On Flex we put your most recent month towards the purchase of any new scooter or wheelchair. On short-term we credit the first week.",
+    q: "Do you deliver to hotels and hospitals?",
+    a: "Yes — put the address in when you book. We deliver locally for £45 (within 15 miles). Further away (up to about 40 miles) is £95.",
   },
   {
     q: "Can I hire on Motability?",
-    a: "No — Motability is a lease scheme in its own right. Hire is for people who cannot go on the scheme or only need equipment briefly.",
-  },
-  {
-    q: "What do I need to provide?",
-    a: "Photo ID, proof of address, and somewhere dry to store and charge it. Card payment is taken online when you book.",
-  },
-  {
-    q: "Do you deliver to hotels, hospitals and holiday lets?",
-    a: "Yes — enter the address when you book. Local delivery is £45 within 15 miles; wider (15–40 miles) is £95.",
+    a: "No. Motability is a different scheme. Hire is for short needs, or for people who cannot use Motability.",
   },
 ];
+
+export const SHORT_TERM_FAQS: HireFaqItem[] = [
+  {
+    q: "How long can I hire for?",
+    a: "From 3 days up to 28 days. If you need it longer than that, please use Flex hire instead — it is usually cheaper per week and includes servicing.",
+  },
+  {
+    q: "What is the deposit?",
+    a: "A refundable damage deposit of £100–£250, depending on the equipment. You pay it with the hire. We give it back when the machine comes home in good condition.",
+  },
+  {
+    q: "What if I decide to buy one?",
+    a: "We can credit the first week of your short-term hire towards buying a new scooter or wheelchair from us.",
+  },
+  ...HIRE_SHARED_FAQS,
+];
+
+export const FLEX_FAQS: HireFaqItem[] = [
+  {
+    q: "How long is Flex hire?",
+    a: "At least 3 months. After that it rolls on month by month. You can cancel with 30 days’ written notice.",
+  },
+  {
+    q: "What do I pay today?",
+    a: "Your first month, plus a one-off £99 set-up fee. The set-up fee covers delivery, set-up and showing you how to use it. Then you pay each month in advance.",
+  },
+  {
+    q: "Is there a separate damage deposit?",
+    a: "No. Your first month is held as a rolling deposit (you are always a month ahead). At the end we return it, less any damage beyond fair wear and tear.",
+  },
+  {
+    q: "What is included?",
+    a: "Servicing, battery replacement when needed, breakdown repairs, and a loan machine if yours needs time in the workshop. No repair bills for fair wear and tear.",
+  },
+  {
+    q: "What if I decide to buy one?",
+    a: "We put your most recent month towards buying any new scooter or wheelchair from us.",
+  },
+  ...HIRE_SHARED_FAQS,
+];
+
 
 export const HIRE_COMPARISON_ROWS: {
   label: string;

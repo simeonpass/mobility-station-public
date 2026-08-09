@@ -1,20 +1,7 @@
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
-import { HireEnquiryForm } from "@/components/hire/hire-enquiry-form";
-import { HireFaq } from "@/components/hire/hire-faq";
-import { HirePricingTable } from "@/components/hire/hire-pricing-table";
-import { HireSelfServeForm } from "@/components/hire/hire-self-serve-form";
 import { buttonVariants } from "@/components/ui/button";
-import { getHireCategoryImages } from "@/lib/hire-images";
-import {
-  FLEX_SETUP_FEE_GBP,
-  HIRE_COMPARISON_ROWS,
-  HIRE_FAQS,
-  LOCAL_DELIVERY_FEE_GBP,
-  LOCAL_DELIVERY_MILES,
-  WIDER_DELIVERY_FROM_GBP,
-  type HirePricingCategoryId,
-} from "@/lib/hire-pricing";
+import { FLEX_SETUP_FEE_GBP } from "@/lib/hire-pricing";
 import { formatGBP } from "@/lib/products";
 import { createMetadata, jsonLdScript, SITE } from "@/lib/seo";
 import { cn } from "@/lib/utils";
@@ -22,19 +9,14 @@ import { cn } from "@/lib/utils";
 export const revalidate = 300;
 
 export const metadata = createMetadata({
-  title: "Mobility Scooter & Wheelchair Hire | Short-Term & Flex | Mobility Station",
+  title: "Mobility Scooter & Wheelchair Hire | Mobility Station",
   description:
-    "Hire a mobility scooter or wheelchair from 3 days, or take Flex monthly hire with servicing, batteries and breakdown cover included. Heathrow & Ferndown.",
+    "Hire a mobility scooter or wheelchair. Choose short-term hire (3–28 days) or Flex monthly hire. Heathrow and Ferndown. Book online or call us.",
   path: "/hire",
   absoluteTitle: true,
 });
 
-export default async function HirePage() {
-  const imagesList = await getHireCategoryImages();
-  const images = Object.fromEntries(
-    imagesList.map((img) => [img.id, { src: img.src, alt: img.alt }]),
-  ) as Record<HirePricingCategoryId, { src: string | null; alt: string }>;
-
+export default function HirePage() {
   const breadcrumbLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -54,25 +36,11 @@ export default async function HirePage() {
     ],
   };
 
-  const faqLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: HIRE_FAQS.map((faq) => ({
-      "@type": "Question",
-      name: faq.q,
-      acceptedAnswer: { "@type": "Answer", text: faq.a },
-    })),
-  };
-
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLdScript(breadcrumbLd)}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={jsonLdScript(faqLd)}
       />
 
       <section className="border-b border-border bg-soft/40">
@@ -80,252 +48,131 @@ export default async function HirePage() {
           <Breadcrumbs
             items={[{ label: "Home", href: "/" }, { label: "Hire" }]}
           />
-          <h1 className="max-w-3xl text-4xl font-extrabold tracking-tight text-primary md:text-5xl">
-            Mobility scooter &amp; wheelchair hire
+          <h1 className="mt-4 max-w-3xl text-4xl font-extrabold tracking-tight text-primary md:text-5xl">
+            Hire a scooter or wheelchair
           </h1>
-          <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted md:text-lg">
-            Short-term hire from 3 to 28 days, or Flex monthly hire with
-            servicing, batteries and breakdown cover included. From our Heathrow
-            and Ferndown branches.
+          <p className="mt-5 max-w-2xl text-lg leading-relaxed text-foreground/85 md:text-xl">
+            Please choose the type of hire that fits you. We keep it simple —
+            one choice, then clear prices and booking.
           </p>
-          <div className="mt-7 flex flex-wrap gap-3">
-            <Link
-              href="#book"
-              className={cn(buttonVariants({ size: "lg" }), "rounded-md")}
+          <p className="mt-4 text-base text-muted md:text-lg">
+            Not sure which one? Call us and we will help:{" "}
+            <a
+              href={SITE.phoneHref}
+              className="font-bold text-primary underline underline-offset-2"
             >
-              Book and pay online
-            </Link>
-            <Link
-              href="#pricing"
-              className={cn(
-                buttonVariants({ variant: "outline", size: "lg" }),
-                "rounded-md bg-white",
-              )}
-            >
-              View prices
-            </Link>
-          </div>
+              {SITE.phone}
+            </a>
+          </p>
         </div>
       </section>
 
-      <section className="border-b border-border py-10 md:py-14">
-        <div className="container-site grid gap-10 md:grid-cols-2">
-          <div className="border-t border-border pt-6">
-            <h2 className="text-xl font-extrabold text-primary md:text-2xl">
+      <section className="py-10 md:py-14">
+        <div className="container-site grid gap-6 lg:grid-cols-2 lg:gap-8">
+          <article className="flex flex-col border border-border bg-white p-6 md:p-8">
+            <p className="text-sm font-bold uppercase tracking-wide text-muted">
+              Option 1
+            </p>
+            <h2 className="mt-2 text-3xl font-extrabold text-primary">
               Short-term hire
             </h2>
-            <p className="mt-3 text-sm leading-relaxed text-foreground/85">
-              Minimum 3 days. Maximum 28 days — after that the only option is
-              Flex. Paid up front, with a refundable damage deposit of £100–£250
-              by equipment type.
+            <p className="mt-4 text-lg leading-relaxed text-foreground/85">
+              For a few days or a few weeks. Holidays, hospital visits, or
+              trying a scooter before you buy.
             </p>
-            <ul className="mt-4 space-y-2 text-sm text-foreground/85">
-              <li>Fully charged and safety-checked machine</li>
-              <li>Charger, keys and basket where fitted</li>
-              <li>Breakdown repair-or-swap</li>
-              <li>Free collection from Heathrow or Ferndown</li>
-            </ul>
-          </div>
-          <div className="border-t border-border pt-6">
-            <h2 className="text-xl font-extrabold text-primary md:text-2xl">
-              Flex hire (long term)
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-foreground/85">
-              Minimum term 3 months, then rolling with 30 days&apos; notice. One
-              month paid up front as a deposit, then monthly in advance — always
-              a month ahead. Deposit returned at the end less damage beyond fair
-              wear and tear. One-off {formatGBP(FLEX_SETUP_FEE_GBP)} set-up fee
-              includes delivery, set-up and handover.
-            </p>
-            <ul className="mt-4 space-y-2 text-sm text-foreground/85">
-              <li>Annual servicing and routine maintenance</li>
-              <li>Battery replacement when capacity drops</li>
-              <li>Breakdown repairs with a loan machine</li>
-              <li>No repair bills for fair wear and tear</li>
-              <li>Model swap allowed after 3 months</li>
-            </ul>
-          </div>
-        </div>
-        <div className="container-site mt-8 max-w-3xl border-t border-border pt-6">
-          <h3 className="text-base font-extrabold text-primary">
-            Why short-term stops at 28 days
-          </h3>
-          <p className="mt-2 text-sm leading-relaxed text-muted">
-            Beyond a month the machine needs servicing, battery care and cover a
-            daily rate cannot fund — and Flex is much cheaper per week.
-          </p>
-        </div>
-      </section>
-
-      <section id="pricing" className="scroll-mt-24 border-b border-border py-10 md:py-14">
-        <div className="container-site">
-          <HirePricingTable images={images} />
-        </div>
-      </section>
-
-      <section className="border-b border-border bg-soft/50 py-10 md:py-14">
-        <div className="container-site">
-          <h2 className="text-2xl font-extrabold tracking-tight text-primary md:text-3xl">
-            Delivery, collection and set-up
-          </h2>
-          <ul className="mt-6 grid gap-6 md:grid-cols-2">
-            <li className="border-t border-border pt-4">
-              <h3 className="font-extrabold text-primary">Collect from us — free</h3>
-              <p className="mt-2 text-sm text-muted">
-                Heathrow (West Drayton) or Ferndown (Wimborne), by appointment.
-              </p>
-            </li>
-            <li className="border-t border-border pt-4">
-              <h3 className="font-extrabold text-primary">Local delivery</h3>
-              <p className="mt-2 text-sm text-muted">
-                {formatGBP(LOCAL_DELIVERY_FEE_GBP)} round trip within{" "}
-                {LOCAL_DELIVERY_MILES} miles of either branch, including handover
-                and a run-through.
-              </p>
-            </li>
-            <li className="border-t border-border pt-4">
-              <h3 className="font-extrabold text-primary">Wider delivery</h3>
-              <p className="mt-2 text-sm text-muted">
-                {formatGBP(WIDER_DELIVERY_FROM_GBP)} for 15–40 miles. Outside that
-                range, choose free branch collection or call us.
-              </p>
-            </li>
-            <li className="border-t border-border pt-4">
-              <h3 className="font-extrabold text-primary">Flex hire</h3>
-              <p className="mt-2 text-sm text-muted">
-                Delivery and handover included in the{" "}
-                {formatGBP(FLEX_SETUP_FEE_GBP)} set-up fee.
-              </p>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <section className="border-b border-border py-10 md:py-14">
-        <div className="container-site">
-          <h2 className="text-2xl font-extrabold tracking-tight text-primary md:text-3xl">
-            Short-term vs Flex
-          </h2>
-          <div className="mt-6 overflow-x-auto border-y border-border">
-            <table className="w-full min-w-[560px] border-collapse text-left text-sm">
-              <thead>
-                <tr className="border-b border-border bg-soft/60 text-xs font-semibold uppercase tracking-wide text-muted">
-                  <th className="px-3 py-3"> </th>
-                  <th className="px-3 py-3">Short-term</th>
-                  <th className="px-3 py-3">Flex</th>
-                </tr>
-              </thead>
-              <tbody>
-                {HIRE_COMPARISON_ROWS.map((row) => (
-                  <tr key={row.label} className="border-b border-border/80">
-                    <th className="px-3 py-3 text-left font-semibold text-primary">
-                      {row.label}
-                    </th>
-                    <td className="px-3 py-3 text-foreground/85">{row.short}</td>
-                    <td className="px-3 py-3 text-foreground/85">{row.flex}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <section className="border-b border-border bg-soft/40 py-10 md:py-14">
-        <div className="container-site max-w-3xl">
-          <h2 className="text-2xl font-extrabold tracking-tight text-primary md:text-3xl">
-            How hiring works
-          </h2>
-          <ol className="mt-6 space-y-5">
-            {[
-              {
-                t: "Book and pay online",
-                d: "Choose short-term or Flex, pick the equipment category, dates, and delivery or free branch collection. Pay by card and sign the hire terms — VAT relief if it applies.",
-              },
-              {
-                t: "We match the machine",
-                d: "Paid bookings go straight into the diary. We allocate the right scooter or wheelchair from the fleet.",
-              },
-              {
-                t: "We deliver or you collect",
-                d: "Our engineer delivers and hands over — or you collect free from Heathrow or Ferndown by appointment. That’s the only hands-on step on our side.",
-              },
-            ].map((step, i) => (
-              <li
-                key={step.t}
-                className="flex gap-4 border-t border-border pt-4"
-              >
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center border border-primary text-sm font-extrabold text-primary">
-                  {i + 1}
-                </span>
-                <div>
-                  <h3 className="font-extrabold text-primary">{step.t}</h3>
-                  <p className="mt-1 text-sm text-muted">{step.d}</p>
-                </div>
+            <ul className="mt-5 space-y-3 text-base text-foreground/85">
+              <li>
+                <strong className="text-primary">How long:</strong> 3 to 28 days
               </li>
-            ))}
-          </ol>
-          <p className="mt-6 text-sm text-muted">
-            Full agreement:{" "}
-            <Link
-              href="/hire/terms"
-              className="font-semibold text-primary underline underline-offset-2"
-            >
-              hire terms &amp; conditions
-            </Link>
-            .
-          </p>
-        </div>
-      </section>
-
-      <section className="border-b border-border py-10 md:py-14">
-        <div className="container-site">
-          <HireFaq />
-        </div>
-      </section>
-
-      <section id="book" className="scroll-mt-24 border-b border-border py-10 md:py-14">
-        <div className="container-site grid gap-10 lg:grid-cols-[0.85fr_1.15fr]">
-          <div>
-            <h2 className="text-2xl font-extrabold text-primary">
-              Book online — we handle the rest
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-muted">
-              Pay the hire and deposit (or Flex first month + set-up) securely
-              now. We get a paid booking, match the right machine, and either
-              deliver or prepare your branch collection. Call{" "}
-              <a
-                href={SITE.phoneHref}
-                className="font-semibold text-primary underline underline-offset-2"
+              <li>
+                <strong className="text-primary">You pay:</strong> hire + a
+                refundable deposit
+              </li>
+              <li>
+                <strong className="text-primary">Collect free</strong> from
+                Heathrow or Ferndown, or we can deliver
+              </li>
+            </ul>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link
+                href="/hire/short-term"
+                className={cn(
+                  buttonVariants({ size: "lg" }),
+                  "rounded-md text-base",
+                )}
               >
-                {SITE.phone}
-              </a>{" "}
-              only if you need something unusual.
-            </p>
-          </div>
-          <div className="border border-border bg-white p-6 md:p-8">
-            <HireSelfServeForm />
-          </div>
-        </div>
-      </section>
+                See short-term hire
+              </Link>
+              <Link
+                href="/hire/short-term#book"
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "lg" }),
+                  "rounded-md bg-white text-base",
+                )}
+              >
+                Book short-term
+              </Link>
+            </div>
+          </article>
 
-      <section
-        id="enquiry-fallback"
-        className="scroll-mt-24 bg-soft/40 py-10 md:py-14"
-      >
-        <div className="container-site grid gap-10 lg:grid-cols-[0.85fr_1.15fr]">
-          <div>
-            <h2 className="text-xl font-extrabold text-primary">
-              Prefer an enquiry first?
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-muted">
-              Use this if your dates are flexible, you&apos;re outside the usual
-              delivery area, or you want us to call you before paying.
+          <article className="flex flex-col border border-border bg-white p-6 md:p-8">
+            <p className="text-sm font-bold uppercase tracking-wide text-muted">
+              Option 2
             </p>
-          </div>
-          <div className="border border-border bg-white p-6 md:p-8">
-            <HireEnquiryForm />
-          </div>
+            <h2 className="mt-2 text-3xl font-extrabold text-primary">
+              Flex monthly hire
+            </h2>
+            <p className="mt-4 text-lg leading-relaxed text-foreground/85">
+              For longer use. Pay each month. Servicing, batteries and
+              breakdown cover are included.
+            </p>
+            <ul className="mt-5 space-y-3 text-base text-foreground/85">
+              <li>
+                <strong className="text-primary">How long:</strong> 3 months
+                minimum, then month by month
+              </li>
+              <li>
+                <strong className="text-primary">You pay today:</strong> first
+                month + {formatGBP(FLEX_SETUP_FEE_GBP)} set-up
+              </li>
+              <li>
+                <strong className="text-primary">We deliver</strong> and show you
+                how to use it
+              </li>
+            </ul>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link
+                href="/hire/flex"
+                className={cn(
+                  buttonVariants({ size: "lg" }),
+                  "rounded-md text-base",
+                )}
+              >
+                See Flex hire
+              </Link>
+              <Link
+                href="/hire/flex#book"
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "lg" }),
+                  "rounded-md bg-white text-base",
+                )}
+              >
+                Book Flex
+              </Link>
+            </div>
+          </article>
+        </div>
+
+        <div className="container-site mt-10 max-w-3xl border-t border-border pt-8">
+          <h2 className="text-xl font-extrabold text-primary md:text-2xl">
+            Quick tip
+          </h2>
+          <p className="mt-3 text-lg leading-relaxed text-foreground/85">
+            If you only need it for under a month, choose{" "}
+            <strong>short-term</strong>. If you need it for longer,{" "}
+            <strong>Flex</strong> is usually simpler and better value — and we
+            look after servicing for you.
+          </p>
         </div>
       </section>
     </>

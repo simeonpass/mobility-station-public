@@ -87,8 +87,11 @@ function readRetryForm(hireType: HireType): HireFormState {
 
 export function HireSelfServeForm({
   defaultHireType = "short",
+  lockHireType = false,
 }: {
   defaultHireType?: HireType;
+  /** Hide the short/Flex switch when this page is for one product only. */
+  lockHireType?: boolean;
 }) {
   const router = useRouter();
   const { ready: dnaReady, failed: dnaFailed } = useDnaPaymentsSdk();
@@ -96,9 +99,10 @@ export function HireSelfServeForm({
   const [error, setError] = useState<string | null>(null);
   const [deliveryMiles, setDeliveryMiles] = useState<number | null>(null);
   const [coverageNote, setCoverageNote] = useState<string | null>(null);
-  const [form, setForm] = useState<HireFormState>(() =>
-    readRetryForm(defaultHireType),
-  );
+  const [form, setForm] = useState<HireFormState>(() => {
+    const saved = readRetryForm(defaultHireType);
+    return lockHireType ? { ...saved, hireType: defaultHireType } : saved;
+  });
 
   useEffect(() => {
     if (form.delivery !== "deliver" || form.postcode.trim().length < 5) {
@@ -238,38 +242,47 @@ export function HireSelfServeForm({
         <h2 className="text-2xl font-extrabold text-primary">
           Book and pay online
         </h2>
-        <p className="mt-2 text-sm text-muted">
-          Choose your hire, pay securely by card, and we&apos;ll deliver or
-          prepare branch collection. No back-and-forth quote needed for standard
-          bookings.
+        <p className="mt-2 text-base text-muted">
+          {form.hireType === "flex"
+            ? "Choose your equipment, pay the first month and set-up by card, and we will deliver and show you how to use it."
+            : "Choose your equipment and dates, pay by card, and we will deliver or get it ready for free collection."}
         </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <div>
-          <Label>Hire type</Label>
-          <div className="mt-1 grid grid-cols-2 gap-2">
-            {(
-              [
-                ["short", "Short-term"],
-                ["flex", "Flex"],
-              ] as const
-            ).map(([id, label]) => (
-              <button
-                key={id}
-                type="button"
-                className={`rounded-md border px-3 py-2 text-sm font-semibold ${
-                  form.hireType === id
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-border bg-white text-primary"
-                }`}
-                onClick={() => update("hireType", id)}
-              >
-                {label}
-              </button>
-            ))}
+        {!lockHireType ? (
+          <div>
+            <Label>Hire type</Label>
+            <div className="mt-1 grid grid-cols-2 gap-2">
+              {(
+                [
+                  ["short", "Short-term"],
+                  ["flex", "Flex"],
+                ] as const
+              ).map(([id, label]) => (
+                <button
+                  key={id}
+                  type="button"
+                  className={`rounded-md border px-3 py-2 text-base font-semibold ${
+                    form.hireType === id
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-white text-primary"
+                  }`}
+                  onClick={() => update("hireType", id)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div>
+            <Label>You are booking</Label>
+            <p className="mt-1 rounded-md border border-border bg-soft px-3 py-2.5 text-base font-semibold text-primary">
+              {form.hireType === "flex" ? "Flex monthly hire" : "Short-term hire"}
+            </p>
+          </div>
+        )}
         <div>
           <Label htmlFor="categoryId">Equipment</Label>
           <Select
