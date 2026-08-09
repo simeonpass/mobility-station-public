@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CatalogImage } from "@/components/product/catalog-image";
 import {
+  FLEX_SETUP_FEE_GBP,
   HIRE_PRICING_CATEGORIES,
   type HirePricingCategoryId,
 } from "@/lib/hire-pricing";
@@ -60,7 +61,12 @@ export function HirePricingTable({
       </div>
 
       <div className="mt-6 overflow-x-auto border-y border-border">
-        <table className="w-full min-w-[720px] border-collapse text-left text-sm">
+        <table
+          className={cn(
+            "w-full border-collapse text-left text-sm",
+            mode === "short" ? "min-w-[720px]" : "min-w-[480px]",
+          )}
+        >
           <thead>
             <tr className="border-b border-border bg-soft/60 text-xs font-semibold uppercase tracking-wide text-muted">
               <th className="px-3 py-3 font-semibold">Category</th>
@@ -75,12 +81,7 @@ export function HirePricingTable({
                   <th className="px-3 py-3 font-semibold">Deposit</th>
                 </>
               ) : (
-                <>
-                  <th className="px-3 py-3 font-semibold">Flex / month</th>
-                  <th className="px-3 py-3 font-semibold">
-                    Short-term deposit*
-                  </th>
-                </>
+                <th className="px-3 py-3 font-semibold">Flex / month</th>
               )}
             </tr>
           </thead>
@@ -94,11 +95,11 @@ export function HirePricingTable({
                 >
                   <td className="px-3 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="relative h-14 w-20 shrink-0 overflow-hidden bg-soft">
+                      <div className="relative h-16 w-16 shrink-0 overflow-hidden bg-soft">
                         <CatalogImage
                           src={image?.src}
                           alt={image?.alt || row.imageAlt}
-                          className="h-full w-full object-cover"
+                          className="h-full w-full object-cover object-center"
                         />
                       </div>
                       <span className="font-semibold text-primary">
@@ -129,17 +130,12 @@ export function HirePricingTable({
                       </td>
                     </>
                   ) : (
-                    <>
-                      <td className="px-3 py-3 tabular-nums text-lg font-extrabold text-primary">
-                        {formatGBP(row.flexMonthly)}
-                        <span className="ml-1 text-xs font-semibold text-muted">
-                          /mo
-                        </span>
-                      </td>
-                      <td className="px-3 py-3 tabular-nums text-muted">
-                        {formatGBP(row.deposit)} short-term only
-                      </td>
-                    </>
+                    <td className="px-3 py-3 tabular-nums text-lg font-extrabold text-primary">
+                      {formatGBP(row.flexMonthly)}
+                      <span className="ml-1 text-xs font-semibold text-muted">
+                        /mo
+                      </span>
+                    </td>
                   )}
                 </tr>
               );
@@ -160,11 +156,17 @@ export function HirePricingTable({
         </p>
         {mode === "flex" ? (
           <p>
-            * Flex uses one month paid up front as the deposit (always a month
-            ahead), not the short-term damage deposit column. Plus a one-off{" "}
-            {formatGBP(99)} set-up fee including delivery, set-up and handover.
+            Flex is paid monthly in advance. You pay the first month up front
+            (held as a rolling deposit — always a month ahead), plus a one-off{" "}
+            {formatGBP(FLEX_SETUP_FEE_GBP)} set-up fee for delivery, set-up and
+            handover. There is no separate short-term damage deposit on Flex.
           </p>
-        ) : null}
+        ) : (
+          <p>
+            Short-term deposits are refundable when the equipment comes back as
+            it went out.
+          </p>
+        )}
       </div>
     </div>
   );
