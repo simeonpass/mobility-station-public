@@ -49,16 +49,16 @@ export function HireThankYouClient() {
         ) : null}
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
-            href="/hire#book"
+            href="/hire/short-term#book"
             className={buttonVariants({ size: "lg" })}
           >
-            Retry payment
+            Retry short-term booking
           </Link>
           <Link
-            href="/hire#enquiry-fallback"
+            href="/hire/flex#book"
             className={buttonVariants({ variant: "outline", size: "lg" })}
           >
-            Send an enquiry instead
+            Retry Flex booking
           </Link>
           <a
             href="tel:01202875552"
@@ -115,10 +115,10 @@ export function HireThankYouClient() {
         availability and a clear quote — usually the same day during office
         hours. Prefer to book and pay now?{" "}
         <Link
-          href="/hire#book"
+          href="/hire"
           className="font-semibold text-[var(--color-brand)] underline underline-offset-2"
         >
-          Go to online booking
+          Choose short-term or Flex
         </Link>
         .
       </p>
@@ -128,11 +128,8 @@ export function HireThankYouClient() {
         </p>
       ) : null}
       <div className="mt-8 flex flex-wrap gap-3">
-        <Link href="/hire#book" className={buttonVariants()}>
-          Book and pay online
-        </Link>
-        <Link href="/hire" className={buttonVariants({ variant: "outline" })}>
-          Back to hire
+        <Link href="/hire" className={buttonVariants()}>
+          Hire options
         </Link>
         <a
           href="tel:01202875552"

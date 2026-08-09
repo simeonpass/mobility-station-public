@@ -88,11 +88,8 @@ export const SHORT_TERM_MAX_DAYS = 28;
 /** Short-term minimum hire length. */
 export const SHORT_TERM_MIN_DAYS = 3;
 
-/** Flex commitment before rolling monthly cancel. */
+/** Flex commitment before you can cancel with no tie-in. */
 export const FLEX_MIN_MONTHS = 3;
-
-/** Notice after the commitment period. */
-export const FLEX_NOTICE_DAYS = 30;
 
 /** Days of notice before a short-term start date. */
 export const HIRE_BOOKING_NOTICE_DAYS = 7;

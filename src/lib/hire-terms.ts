@@ -22,7 +22,7 @@ export const HIRE_TERMS: HireTerm[] = [
   },
   {
     heading: "3. Hire fee, Flex billing & refundable deposit",
-    body: "Short-term: the total taken at checkout includes the hire charge, any deliver-and-collect call-out fees, and a refundable security deposit. Flex Hire: you pay the first month’s hire fee and the refundable deposit today; each following month is billed automatically at the same monthly rate. Flex has a three-month minimum; after that you may cancel with 30 days’ notice. The deposit is held against loss, theft or damage beyond fair wear and tear and is returned in full within 5 working days of safe equipment return — either to your original card or in person on collection.",
+    body: "Short-term: the total taken at checkout includes the hire charge, any deliver-and-collect call-out fees, and a refundable security deposit. Flex Hire: you pay the first month’s hire fee and the refundable deposit today; each following month is billed automatically at the same monthly rate. Flex has a three-month minimum; after that there is no tie-in — you may cancel when you are ready if you no longer need the equipment. The deposit is held against loss, theft or damage beyond fair wear and tear and is returned in full within 5 working days of safe equipment return — either to your original card or in person on collection.",
   },
   {
     heading: "4. Flex zone, delivery & servicing",
@@ -38,7 +38,7 @@ export const HIRE_TERMS: HireTerm[] = [
   },
   {
     heading: "7. Returns, late returns & Flex ending",
-    body: "Short-term: equipment must be returned by the end-date shown on your booking. Late returns are charged at the daily rate per additional day until the equipment is back in our care. Flex: after the three-month minimum you may end the hire with 30 days’ written notice; a collection call-out is free inside the Flex zone, or you may return the equipment to the branch. Equipment that is more than 7 days late may be reported as stolen.",
+    body: "Short-term: equipment must be returned by the end-date shown on your booking. Late returns are charged at the daily rate per additional day until the equipment is back in our care. Flex: after the three-month minimum you may end the hire when you are ready (no tie-in); a collection call-out is free inside the Flex zone, or you may return the equipment to the branch. Equipment that is more than 7 days late may be reported as stolen.",
   },
   {
     heading: "8. Cancellation",
