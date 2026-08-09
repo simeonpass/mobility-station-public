@@ -35,10 +35,10 @@ export function TrustStrip() {
           })}
         </ul>
         <p className="mt-4 text-center text-[11px] leading-relaxed text-white/65 sm:text-left">
-          * Motability scooter &amp; wheelchair home demos are free. Private and
-          vehicle adaptation home visits are £100 — deducted if you buy a
-          scooter/wheelchair from us, or refunded if an adaptation order goes
-          ahead.{" "}
+          * Free demonstrations at our Heathrow and Ferndown branches. Home
+          demonstrations are £195 — deducted in full from your price if you go
+          ahead. Waived for the Motability Powered Wheelchair &amp; Scooter
+          Scheme.{" "}
           <Link
             href="/book-a-demo#demo-terms"
             className="underline underline-offset-2 hover:text-accent"

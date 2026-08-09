@@ -1,29 +1,35 @@
 import Link from "next/link";
-import { EnquiryForm } from "@/components/forms/enquiry-form";
+import { DemoBookingForm } from "@/components/forms/demo-booking-form";
 import { Hero } from "@/components/sections/hero";
+import { DEMO_PRICING_STRIP, HOME_DEMO_FEE_GBP } from "@/lib/demo-booking";
 import { createMetadata } from "@/lib/seo";
 
 export const metadata = createMetadata({
   title: "Book a Demo | Home Demonstrations",
   description:
-    "Book a home or branch demonstration for scooters, wheelchairs or vehicle adaptations. Motability scooter/wheelchair home demos free; private & adaptation home visits £100 — see terms.",
+    "Book a free branch demonstration or a £195 home demonstration for scooters, wheelchairs or vehicle adaptations. Fee deducted if you buy; waived for Motability PWSS.",
   path: "/book-a-demo",
 });
 
 export default async function BookADemoPage({
   searchParams,
 }: {
-  searchParams: Promise<{ product?: string }>;
+  searchParams: Promise<{ product?: string; type?: string }>;
 }) {
-  const { product } = await searchParams;
+  const { product, type } = await searchParams;
   const productSlug = product?.trim() || undefined;
+  const defaultProductName = productSlug
+    ? productSlug.replace(/-/g, " ")
+    : "";
+  const defaultCategory =
+    type === "adaptation" ? ("vehicle_adaptation" as const) : undefined;
 
   return (
     <>
       <Hero
         compact
         title="Book a demonstration"
-        subtitle="Try scooters, wheelchairs or adaptations at home or at our Heathrow and Ferndown branches."
+        subtitle={DEMO_PRICING_STRIP}
         primaryHref="#form"
         primaryLabel="Start booking"
       />
@@ -37,30 +43,22 @@ export default async function BookADemoPage({
                 always free at Heathrow or Ferndown.
               </li>
               <li>
-                <strong className="text-primary">
-                  Motability home demonstration:
-                </strong>{" "}
-                free for Motability scooter and wheelchair packages.
+                <strong className="text-primary">Home demonstration:</strong>{" "}
+                £{HOME_DEMO_FEE_GBP} flat everywhere — vehicle adaptations,
+                scooters, powered and manual wheelchairs, private or Motability.
+                Non-refundable, but deducted in full from your purchase price if
+                you go ahead.
               </li>
               <li>
-                <strong className="text-primary">
-                  Private / adaptation home demonstration:
-                </strong>{" "}
-                £100 visit fee
-                <a
-                  href="#demo-terms"
-                  className="font-semibold text-primary"
-                  aria-describedby="demo-terms"
-                >
-                  *
-                </a>
-                . Private scooter/wheelchair fees are deducted if you buy;
-                adaptation fees are refunded if the order goes ahead (including
-                via a dealership).
+                <strong className="text-primary">PWSS waiver:</strong> waived
+                for the Motability Powered Wheelchair &amp; Scooter Scheme when
+                you tick the PWSS box at booking.
               </li>
               <li>
                 We come to you so you can try equipment where you live, park and
-                get around every day.
+                get around every day. Enter your postcode when booking a home
+                demo so we can confirm coverage before any payment. Home demos
+                need at least 5 days&apos; notice.
               </li>
             </ul>
             <p className="mt-6 text-sm text-muted">
@@ -82,13 +80,9 @@ export default async function BookADemoPage({
             </p>
           </div>
           <div className="rounded-lg bg-soft p-6 md:p-8">
-            <EnquiryForm
-              enquiryType="demo"
-              title="Request your demonstration"
-              defaultInterest={
-                productSlug ? productSlug.replace(/-/g, " ") : ""
-              }
-              productSlug={productSlug}
+            <DemoBookingForm
+              defaultProductName={defaultProductName}
+              defaultCategory={defaultCategory}
             />
           </div>
         </div>
@@ -100,34 +94,28 @@ export default async function BookADemoPage({
       >
         <div className="container-site max-w-3xl">
           <h2 className="text-lg font-extrabold text-primary">
-            * Home demonstration terms
+            Home demonstration terms
           </h2>
           <div className="mt-4 space-y-3 text-sm leading-relaxed text-muted">
+            <p>{DEMO_PRICING_STRIP}</p>
             <p>
-              <strong className="text-foreground">Free home demonstrations</strong>{" "}
-              apply to Motability scooter and wheelchair assessments.
-            </p>
-            <p>
-              Home demonstrations for{" "}
-              <strong className="text-foreground">vehicle adaptations</strong>{" "}
-              and{" "}
+              The £{HOME_DEMO_FEE_GBP} home demonstration fee is{" "}
+              <strong className="text-foreground">non-refundable</strong>. If
+              you go ahead with a purchase, it is{" "}
               <strong className="text-foreground">
-                private (non-Motability) scooters and wheelchairs
-              </strong>{" "}
-              carry a <strong className="text-foreground">£100</strong> visit
-              fee. For private scooter and wheelchair purchases, this is deducted
-              from the price if you buy from us. For vehicle adaptations, it is
-              refunded if you go ahead with us, or where the adaptation order is
-              placed via a dealership. We&apos;ll confirm the arrangement when we
-              book your visit.
+                deducted in full from the purchase price
+              </strong>
+              — it is not a refund.
             </p>
             <p>
-              Branch demonstrations at Heathrow and Ferndown remain free — a
-              good option if you prefer to try equipment with no visit fee.
-              We&apos;ll confirm the right option when we book your visit.
+              Call-out distance bands do{" "}
+              <strong className="text-foreground">not</strong> apply to
+              demonstrations. Bands still apply to service call-outs and hire
+              deliveries only.
             </p>
             <p>
-              See also our{" "}
+              Branch demonstrations at Heathrow and Ferndown remain free. See
+              also our{" "}
               <Link
                 href="/terms"
                 className="font-semibold text-primary underline underline-offset-2"

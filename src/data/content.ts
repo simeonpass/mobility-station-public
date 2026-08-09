@@ -72,7 +72,7 @@ export const PRODUCTS: Product[] = [
     description:
       "The Shoprider Cordoba is a dependable mid-size mobility scooter designed for everyday independence. With a comfortable captain’s seat, smooth tiller controls and solid outdoor capability, it is a popular choice for customers who want confidence on pavements and longer local trips. We bring the Cordoba to your home for a free demonstration so you can try it in the places you actually use every day.",
     seoCopy:
-      "Buy the Shoprider Cordoba mobility scooter with free home demonstration from Mobility Station. Motability options available. Heathrow & Ferndown branches.",
+      "Buy the Shoprider Cordoba mobility scooter with home or branch demonstration from Mobility Station. Motability options available. Heathrow & Ferndown branches.",
     image: "/images/products/placeholder-scooter.svg",
     images: ["/images/products/placeholder-scooter.svg"],
     inStock: true,
@@ -254,7 +254,7 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt:
       "Why we come to you, what happens on the day, and how fees work for Motability, private and adaptation visits.",
     content:
-      "A home demonstration means we bring suitable scooters, wheelchairs or adaptations to your door. You can try equipment where you live, park and get around every day — which is far more useful than browsing somewhere unfamiliar.\n\nMotability scooter and wheelchair home demos are free. Private scooter/wheelchair and vehicle adaptation home visits carry a £100 fee — deducted if you buy a scooter or wheelchair from us, or refunded if an adaptation order goes ahead.\n\nWe start with a short conversation about your needs, then demonstrate the safest options. There is no obligation to buy on the day.",
+      "A home demonstration means we bring suitable scooters, wheelchairs or adaptations to your door. You can try equipment where you live, park and get around every day — which is far more useful than browsing somewhere unfamiliar.\n\nBranch demonstrations at Heathrow and Ferndown are free. Home demonstrations are £195 flat — non-refundable, but deducted in full from your price if you go ahead. The fee is waived for the Motability Powered Wheelchair & Scooter Scheme (PWSS).\n\nWe start with a short conversation about your needs, then demonstrate the safest options. There is no obligation to buy on the day.",
     image: "/images/blog/placeholder-demo.svg",
     publishedAt: "2026-03-12",
     author: "Mobility Station",

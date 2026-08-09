@@ -12,7 +12,7 @@ const faqs: { q: string; a: string; href?: string; hrefLabel?: string }[] = [
   },
   {
     q: "What does a home demonstration cost?",
-    a: "Motability scooter and wheelchair home demos are free. Private scooter, wheelchair and vehicle adaptation home visits carry a £100 fee — deducted from a private purchase if you buy from us, or refunded if an adaptation order goes ahead (including via a dealership).",
+    a: "Branch demonstrations at Heathrow and Ferndown are free. Home demonstrations are £195 flat everywhere — deducted in full from your price if you go ahead. The fee is waived for the Motability Powered Wheelchair & Scooter Scheme (PWSS).",
     href: "/book-a-demo#demo-terms",
     hrefLabel: "Full demo terms",
   },
@@ -30,7 +30,7 @@ const faqs: { q: string; a: string; href?: string; hrefLabel?: string }[] = [
   },
   {
     q: "Do you supply Motability scooters and wheelchairs?",
-    a: "Yes. We are a Motability Scheme accredited dealer, with live weekly prices on our Motability catalogue and free home demonstrations.",
+    a: "Yes. We are a Motability Scheme accredited dealer, with live weekly prices on our Motability catalogue and demonstrations from Heathrow and Ferndown.",
     href: "/motability",
     hrefLabel: "See Motability options",
   },

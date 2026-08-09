@@ -534,7 +534,7 @@ export function ProductDetailView(props: ProductDetailViewProps) {
                   Contact us about this model
                 </EnquiryDialog>
                 <p className="text-center text-[11px] leading-relaxed text-muted">
-                  Not available through online checkout · Free Motability demos ·
+                  Not available through online checkout · Branch demos free ·
                   Accredited dealer
                 </p>
               </div>

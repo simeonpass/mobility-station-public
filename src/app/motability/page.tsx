@@ -12,7 +12,7 @@ export const revalidate = 300;
 export const metadata = createMetadata({
   title: "Motability Scooters & Wheelchairs",
   description:
-    "Motability-accredited scooters and wheelchairs with weekly allowance prices. Free home demonstrations from Heathrow & Ferndown.",
+    "Motability-accredited scooters and wheelchairs with weekly allowance prices. Free branch demos; home demos £195 (PWSS waived) from Heathrow & Ferndown.",
   path: "/motability",
 });
 
@@ -47,8 +47,8 @@ const WEEKLY_BENEFITS = [
   },
   {
     icon: Home,
-    title: "Free home demonstration",
-    body: "Try suitable models at home from Heathrow or Ferndown before you decide.",
+    title: "Home or branch demonstration",
+    body: "Branch demos are free. Home demos are £195 (deducted if you go ahead; waived for Motability PWSS).",
   },
 ] as const;
 
@@ -111,10 +111,10 @@ export default async function MotabilityPage() {
 
       <CatalogIntro
         title="Motability scooters & wheelchairs"
-        subtitle="Weekly figures from your mobility allowance — not retail purchase prices. Free home demonstrations from Heathrow and Ferndown."
+        subtitle="Weekly figures from your mobility allowance — not retail purchase prices. Free branch demos; home demos £195 (waived for Motability PWSS)."
         primary={{
           href: "/book-a-demo",
-          label: "Book a free Motability demo",
+          label: "Book a Motability demo",
         }}
         secondary={{
           href: "/contact?interest=callback#callback",
@@ -152,7 +152,7 @@ export default async function MotabilityPage() {
             </li>
             <li className="flex items-center gap-2">
               <Home className="h-4 w-4 text-accent" aria-hidden />
-              Free home demos
+              Branch demos free
             </li>
             <li className="flex items-center gap-2">
               <Phone className="h-4 w-4 text-accent" aria-hidden />
@@ -184,7 +184,7 @@ export default async function MotabilityPage() {
               {
                 step: "2",
                 title: "Try before you decide",
-                body: "Book a free Motability home demonstration and we’ll bring suitable models to you.",
+                body: "Book a branch or home demonstration and we’ll show suitable models before you decide.",
               },
               {
                 step: "3",
@@ -325,7 +325,7 @@ export default async function MotabilityPage() {
 
       <CtaFooter
         title="Book a Motability demonstration"
-        subtitle="Free Motability scooter and wheelchair home demos from Heathrow and Ferndown — no obligation. We’ll confirm weekly figures at assessment."
+        subtitle="Book a free branch demo or a home demonstration from Heathrow and Ferndown — no obligation. We’ll confirm weekly figures at assessment."
       />
     </>
   );

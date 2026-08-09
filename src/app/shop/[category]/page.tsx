@@ -89,14 +89,30 @@ export default async function ShopCategoryPage({ params }: Props) {
               </h1>
               <p className="mt-3 text-base text-muted md:text-lg">
                 Home and branch demonstrations from Heathrow and Ferndown.
+                {/scooter|wheelchair/i.test(category)
+                  ? " Need something short-term or monthly? We also hire."
+                  : ""}
               </p>
             </div>
-            <Link
-              href="/book-a-demo"
-              className={cn(buttonVariants({ size: "lg" }), "rounded-full")}
-            >
-              Book a Demo
-            </Link>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href="/book-a-demo"
+                className={cn(buttonVariants({ size: "lg" }), "rounded-full")}
+              >
+                Book a Demo
+              </Link>
+              {/scooter|wheelchair/i.test(category) ? (
+                <Link
+                  href="/hire"
+                  className={cn(
+                    buttonVariants({ variant: "outline", size: "lg" }),
+                    "rounded-full bg-white",
+                  )}
+                >
+                  Hire instead
+                </Link>
+              ) : null}
+            </div>
           </div>
         </div>
       </section>

@@ -13,6 +13,8 @@ import {
 import { SignaturePad } from "@/components/hire/signature-pad";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/input";
+import { useDnaPaymentsSdk } from "@/hooks/use-dna-payments-sdk";
+import { openDnaPaymentPage } from "@/lib/dna-payments";
 import { HIRE_TERMS } from "@/lib/hire-terms";
 import { formatGBP } from "@/lib/products";
 import { lookupCoverage, type CoverageResult } from "@/lib/service-area";
@@ -48,10 +50,12 @@ type HireBooking = {
 };
 
 export function HireCheckoutClient({ bookingId }: { bookingId: string }) {
+  const { ready: dnaReady, failed: dnaFailed } = useDnaPaymentsSdk();
   const [step, setStep] = useState(1);
   const [booking, setBooking] = useState<HireBooking | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [paying, setPaying] = useState(false);
 
   const [fulfilment, setFulfilment] = useState<Fulfilment>("branch");
   const [branch, setBranch] = useState("heathrow");
@@ -518,20 +522,54 @@ export function HireCheckoutClient({ bookingId }: { bookingId: string }) {
               {isFlex ? (
                 <p className="mt-2 text-xs text-muted">
                   After this payment we’ll bill the same monthly fee each month.
-                  Three-month minimum, then cancel with 14 days’ notice.
+                  Three-month minimum, then cancel with 30 days’ notice.
                 </p>
               ) : null}
             </div>
-            <p className="text-sm text-muted">
-              Online hire card payment isn&apos;t live on this site yet. Call us
-              or request a callback and we&apos;ll take payment when we confirm
-              your booking.
-            </p>
-            <Link href="/contact?interest=hire#callback">
-              <Button className="w-full" variant="buy" type="button">
-                Request a callback
-              </Button>
-            </Link>
+            <Button
+              className="w-full"
+              variant="buy"
+              type="button"
+              disabled={paying || !dnaReady}
+              onClick={() => {
+                void (async () => {
+                  setPaying(true);
+                  setError(null);
+                  try {
+                    if (!dnaReady) {
+                      throw new Error(
+                        dnaFailed
+                          ? "Card payments could not load. Please refresh."
+                          : "Card payments are still loading.",
+                      );
+                    }
+                    const res = await fetch("/api/hire/pay", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ bookingId }),
+                    });
+                    const data = (await res.json()) as {
+                      paymentData?: Record<string, unknown>;
+                      error?: string;
+                    };
+                    if (!res.ok || !data.paymentData) {
+                      throw new Error(data.error || "Payment could not start");
+                    }
+                    openDnaPaymentPage(data.paymentData);
+                  } catch (err) {
+                    setError(
+                      err instanceof Error ? err.message : "Payment failed",
+                    );
+                  } finally {
+                    setPaying(false);
+                  }
+                })();
+              }}
+            >
+              {paying
+                ? "Starting payment…"
+                : `Pay ${formatGBP(Number(booking.total_amount))} by card`}
+            </Button>
           </div>
         ) : null}
 

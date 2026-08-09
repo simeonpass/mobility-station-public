@@ -140,7 +140,7 @@ export async function submitEnquiry(
     demo: "/book-a-demo/thank-you",
     service: "/book-a-service/thank-you",
     contact: "/contact?sent=1",
-    hire: "/contact?sent=1",
+    hire: "/hire/thank-you",
     "trade-in": "/contact?sent=1",
     callback: "/contact?sent=callback#callback",
   };

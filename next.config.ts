@@ -77,6 +77,9 @@ const nextConfig: NextConfig = {
         destination: "/hire",
         permanent: true,
       },
+      { source: "/rental", destination: "/hire", permanent: true },
+      { source: "/hire-rental", destination: "/hire", permanent: true },
+      { source: "/scooter-hire", destination: "/hire", permanent: true },
       { source: "/privacy", destination: "/privacy-policy", permanent: true },
       { source: "/cookies", destination: "/cookie-policy", permanent: true },
       {

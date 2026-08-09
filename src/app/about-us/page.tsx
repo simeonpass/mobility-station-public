@@ -31,7 +31,7 @@ const PILLARS = [
   {
     icon: Truck,
     title: "Or we come to you",
-    body: "Happy to demonstrate at home where it helps. Motability scooter and wheelchair home demos are free; private and adaptation home visits have a clear £100 fee — see how it works below.",
+    body: "Happy to demonstrate at home where it helps. Branch demos are free; home demonstrations are £195 (deducted if you buy; waived for Motability PWSS) — see how it works below.",
   },
   {
     icon: Wrench,
@@ -201,18 +201,14 @@ export default async function AboutPage() {
                   Demonstrations — kept simple
                 </h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted">
-                  Branch visits for scooters and wheelchairs are always free. If
-                  you’d rather we come out, Motability scooter and wheelchair
-                  home demonstrations are free too. For a private (non-Motability)
-                  scooter or wheelchair home visit, or a vehicle adaptation
-                  demonstration, there is a{" "}
+                  Branch visits are always free at Heathrow and Ferndown. Home
+                  demonstrations are{" "}
                   <strong className="font-semibold text-foreground">
-                    £100
+                    £195
                   </strong>{" "}
-                  fee — deducted from your purchase if you buy from us, or
-                  refunded when an adaptation order goes ahead (including where
-                  the work is placed via a dealership). We’ll confirm which
-                  applies when we book.
+                  flat — non-refundable, but deducted in full from your price if
+                  you go ahead. Waived for the Motability Powered Wheelchair
+                  &amp; Scooter Scheme (PWSS).
                 </p>
                 <p className="mt-3 text-sm text-muted">
                   <Link

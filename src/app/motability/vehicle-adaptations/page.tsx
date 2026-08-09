@@ -48,7 +48,7 @@ const FAQS = [
   },
   {
     q: "Are Motability adaptation demos free?",
-    a: "Branch visits are free. Adaptation home demonstrations carry a £100 visit fee, refunded if you go ahead with us or where the order is placed via a dealership. We’ll confirm when we book.",
+    a: "Branch visits are free. Home demonstrations are £195 flat — non-refundable, but deducted in full from your price if you go ahead. We’ll confirm when we book.",
   },
   {
     q: "Can any car be adapted on Motability?",
@@ -171,7 +171,7 @@ export default async function MotabilityAdaptationsPage() {
               {
                 step: "2",
                 title: "Assessment & demonstration",
-                body: "We’ll check compatibility and show suitable options. Branch visits are free; home adaptation demos have a clear £100 fee with refund terms.",
+                body: "We’ll check compatibility and show suitable options. Branch visits are free; home demonstrations are £195 (deducted if you go ahead).",
               },
               {
                 step: "3",
