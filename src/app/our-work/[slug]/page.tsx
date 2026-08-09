@@ -229,8 +229,7 @@ export default async function OurWorkProjectPage({ params }: Props) {
                 </dl>
               </div>
               <p className="leading-relaxed">
-                Photos and copy are anonymised. We never publish customer names,
-                number plates, postcodes or job numbers.
+                Shared with care — we keep personal details private.
               </p>
             </aside>
           </div>

@@ -23,7 +23,7 @@ export async function generateMetadata({ searchParams }: Props) {
   return createMetadata({
     title: query ? `Search “${query}” — Recent work` : "Recent work",
     description:
-      "Real vehicle adaptations, scooters and wheelchair work from Mobility Station — Heathrow and Ferndown. Anonymised case studies from jobs we’ve completed.",
+      "Real customers, real stories — vehicle adaptations, scooters and wheelchair work from Mobility Station in Heathrow and Ferndown.",
     path: query ? `/our-work?q=${encodeURIComponent(query)}` : "/our-work",
     ...(query ? { noIndex: true } : {}),
   });
@@ -69,9 +69,8 @@ export default async function OurWorkPage({ searchParams }: Props) {
             Recent work
           </h1>
           <p className="mt-5 max-w-2xl text-lg leading-relaxed text-foreground/85 md:text-xl">
-            Real fittings from our Heathrow and Ferndown workshops — published
-            when the job is done. Stories stay anonymised: no names, plates or
-            addresses.
+            Real customers, real stories — from our Heathrow and Ferndown
+            workshops.
           </p>
         </div>
       </section>
