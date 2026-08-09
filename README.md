@@ -52,3 +52,4 @@ Run `supabase/public_site_grants.sql` in Supabase to create the minimum `public_
 - Brand colours and Manrope typography are enforced via CSS variables / theme tokens
 - Forms validate with Zod on the server and write to Supabase `enquiries`
 - Do not generate `og:image` in code unless an absolute HTTPS asset URL is supplied
+- Knowledge FAQs (`/faq` + `/faq/[slug]`) can be seeded locally or published from Lovable via Supabase `knowledge_faqs` after PII stripping and human review (`supabase/knowledge_faqs.sql`)

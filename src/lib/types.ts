@@ -90,3 +90,20 @@ export type AdaptationService = {
   benefits: string[];
   faqs: { question: string; answer: string }[];
 };
+
+/** Anonymised customer Q&A for public FAQ / AI-searchable advice. */
+export type KnowledgeFaq = {
+  id: string;
+  slug: string;
+  question: string;
+  answer: string;
+  /** Optional richer HTML body from Lovable; plain `answer` always required. */
+  answerHtml?: string;
+  category: string;
+  relatedHref?: string;
+  relatedLabel?: string;
+  /** editorial = written in-house; call_summary = derived from anonymised enquiry themes. */
+  source: "editorial" | "call_summary";
+  publishedAt: string;
+  updatedAt?: string;
+};
