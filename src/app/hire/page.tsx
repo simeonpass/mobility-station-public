@@ -3,6 +3,7 @@ import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { HireEnquiryForm } from "@/components/hire/hire-enquiry-form";
 import { HireFaq } from "@/components/hire/hire-faq";
 import { HirePricingTable } from "@/components/hire/hire-pricing-table";
+import { HireSelfServeForm } from "@/components/hire/hire-self-serve-form";
 import { buttonVariants } from "@/components/ui/button";
 import { getHireCategoryImages } from "@/lib/hire-images";
 import {
@@ -89,10 +90,10 @@ export default async function HirePage() {
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
             <Link
-              href="#enquiry"
+              href="#book"
               className={cn(buttonVariants({ size: "lg" }), "rounded-md")}
             >
-              Request a hire quote
+              Book and pay online
             </Link>
             <Link
               href="#pricing"
@@ -239,20 +240,16 @@ export default async function HirePage() {
           <ol className="mt-6 space-y-5">
             {[
               {
-                t: "Tell us what you need",
-                d: "Dates, the user’s height and weight, and the address.",
+                t: "Book and pay online",
+                d: "Choose short-term or Flex, pick the equipment category, dates, and delivery or free branch collection. Pay by card and sign the hire terms — VAT relief if it applies.",
               },
               {
-                t: "We match the equipment",
-                d: "Right category, availability and price confirmed.",
+                t: "We match the machine",
+                d: "Paid bookings go straight into the diary. We allocate the right scooter or wheelchair from the fleet.",
               },
               {
-                t: "Pay and sign",
-                d: "Hire charge and deposit up front, short hire agreement, plus a VAT relief declaration if it applies.",
-              },
-              {
-                t: "Delivery and handover",
-                d: "Our own engineer delivers, sets it up for the user and shows them how to use and charge it.",
+                t: "We deliver or you collect",
+                d: "Our engineer delivers and hands over — or you collect free from Heathrow or Ferndown by appointment. That’s the only hands-on step on our side.",
               },
             ].map((step, i) => (
               <li
@@ -288,21 +285,43 @@ export default async function HirePage() {
         </div>
       </section>
 
-      <section id="enquiry" className="scroll-mt-24 py-10 md:py-14">
-        <div className="container-site grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+      <section id="book" className="scroll-mt-24 border-b border-border py-10 md:py-14">
+        <div className="container-site grid gap-10 lg:grid-cols-[0.85fr_1.15fr]">
           <div>
             <h2 className="text-2xl font-extrabold text-primary">
-              Ready when you are
+              Book online — we handle the rest
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-muted">
-              Send the form and we&apos;ll confirm what&apos;s available. Or call{" "}
+              Pay the hire and deposit (or Flex first month + set-up) securely
+              now. We get a paid booking, match the right machine, and either
+              deliver or prepare your branch collection. Call{" "}
               <a
                 href={SITE.phoneHref}
                 className="font-semibold text-primary underline underline-offset-2"
               >
                 {SITE.phone}
-              </a>
-              .
+              </a>{" "}
+              only if you need something unusual.
+            </p>
+          </div>
+          <div className="border border-border bg-white p-6 md:p-8">
+            <HireSelfServeForm />
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="enquiry-fallback"
+        className="scroll-mt-24 bg-soft/40 py-10 md:py-14"
+      >
+        <div className="container-site grid gap-10 lg:grid-cols-[0.85fr_1.15fr]">
+          <div>
+            <h2 className="text-xl font-extrabold text-primary">
+              Prefer an enquiry first?
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-muted">
+              Use this if your dates are flexible, you&apos;re outside the usual
+              delivery area, or you want us to call you before paying.
             </p>
           </div>
           <div className="border border-border bg-white p-6 md:p-8">

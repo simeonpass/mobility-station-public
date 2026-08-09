@@ -81,7 +81,7 @@ export function HireEnquiryForm({
         throw new Error(data.error || "Could not send hire enquiry");
       }
       router.push(
-        `/hire/thank-you?ref=${encodeURIComponent(data.bookingRef || "")}`,
+        `/hire/thank-you?enquiry=1&ref=${encodeURIComponent(data.bookingRef || "")}`,
       );
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");

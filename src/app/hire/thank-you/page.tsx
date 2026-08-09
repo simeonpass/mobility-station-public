@@ -3,9 +3,9 @@ import { HireThankYouClient } from "@/components/hire/hire-thank-you-client";
 import { createMetadata } from "@/lib/seo";
 
 export const metadata = createMetadata({
-  title: "Thank You | Hire Enquiry Received",
+  title: "Thank You | Hire Booking",
   description:
-    "Thanks for your Mobility Station hire enquiry. We will confirm availability shortly.",
+    "Thanks for your Mobility Station hire booking or enquiry.",
   path: "/hire/thank-you",
   noIndex: true,
 });

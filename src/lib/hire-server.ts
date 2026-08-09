@@ -11,7 +11,9 @@ export async function invokeHireFunction(
   functionName:
     | "create-hire-booking"
     | "hire-update-fulfilment"
-    | "send-hire-enquiry",
+    | "send-hire-enquiry"
+    | "hire-checkout-pay"
+    | "website-hire-checkout",
   body: Record<string, unknown>,
   returnOrigin: string,
 ) {

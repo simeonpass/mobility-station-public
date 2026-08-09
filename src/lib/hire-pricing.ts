@@ -166,12 +166,20 @@ export const HIRE_PRICING_CATEGORIES: HirePricingCategory[] = [
 
 export const HIRE_FAQS: { q: string; a: string }[] = [
   {
+    q: "Can I book and pay online?",
+    a: "Yes. Choose your hire, pay securely by card, and we deliver or prepare free branch collection. No quote chase needed for standard bookings.",
+  },
+  {
     q: "Minimum hire?",
     a: "Short-term starts at 3 days. Flex has a 3-month minimum.",
   },
   {
     q: "Why does short-term stop after 4 weeks?",
     a: "Beyond 28 days the machine needs servicing, battery care and cover a daily rate cannot fund; longer hires move to Flex, which includes all of that and is much cheaper per week.",
+  },
+  {
+    q: "What is the £99 Flex set-up fee?",
+    a: "A one-off fee covering delivery, set-up and handover when you start Flex. It is charged with your first month when you book online.",
   },
   {
     q: "How does the Flex deposit work?",
@@ -183,11 +191,11 @@ export const HIRE_FAQS: { q: string; a: string }[] = [
   },
   {
     q: "Is hire VAT free?",
-    a: "Yes if it is for a disabled person's personal use — sign a short declaration when booking. Otherwise VAT at 20%.",
+    a: "Yes if it is for a disabled person's personal use — tick the declaration when booking. Otherwise VAT at 20% on hire and delivery/set-up.",
   },
   {
     q: "Damage deposit on short-term?",
-    a: "Yes, £100–£250 refundable, returned in full when the equipment comes back as it went out.",
+    a: "Yes, £100–£250 refundable, paid with the hire online and returned in full when the equipment comes back as it went out.",
   },
   {
     q: "What if I decide to buy?",
@@ -199,11 +207,11 @@ export const HIRE_FAQS: { q: string; a: string }[] = [
   },
   {
     q: "What do I need to provide?",
-    a: "Photo ID, proof of address, a card for the deposit, and somewhere dry to store and charge it.",
+    a: "Photo ID, proof of address, and somewhere dry to store and charge it. Card payment is taken online when you book.",
   },
   {
     q: "Do you deliver to hotels, hospitals and holiday lets?",
-    a: "Yes — give us the address and dates.",
+    a: "Yes — enter the address when you book. Local delivery is £45 within 15 miles; wider distances from £95.",
   },
 ];
 
