@@ -6,6 +6,7 @@ import {
 } from "@/lib/adaptations";
 import { getBlogPosts, getKnowledgeFaqs } from "@/lib/data";
 import { getAllPublishedSlugs } from "@/lib/products";
+import { listAllRecentWork } from "@/lib/recent-work";
 import { SITE } from "@/lib/seo";
 
 /** Only emit lastmod when we have a real content timestamp — never build time. */
@@ -59,6 +60,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.4,
     },
+    { url: `${SITE.url}/our-work`, changeFrequency: "weekly", priority: 0.75 },
     { url: `${SITE.url}/blog`, changeFrequency: "weekly", priority: 0.7 },
     {
       url: `${SITE.url}/clearance`,
@@ -145,6 +147,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("Sitemap knowledge FAQ fetch failed:", error);
   }
 
+  let recentWork: Awaited<ReturnType<typeof listAllRecentWork>> = [];
+  try {
+    recentWork = await listAllRecentWork();
+  } catch (error) {
+    console.error("Sitemap recent work fetch failed:", error);
+  }
+
   const townRoutes = LOCATION_PAGES.map((loc) => ({
     url: `${SITE.url}/service-area/${loc.slug}`,
     changeFrequency: "monthly" as const,
@@ -178,6 +187,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           priority: 0.7,
         },
         p.updated_at,
+      ),
+    ),
+    ...recentWork.map((project) =>
+      withLastMod(
+        {
+          url: `${SITE.url}/our-work/${project.slug}`,
+          changeFrequency: "monthly",
+          priority: 0.6,
+        },
+        project.updated_at || project.work_date,
       ),
     ),
     ...blogPosts.map((post) =>

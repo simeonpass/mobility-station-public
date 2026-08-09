@@ -8,11 +8,12 @@ import { ProductScroller } from "@/components/sections/product-scroller";
 import { RecentWorkStrip } from "@/components/sections/recent-work-strip";
 import { Testimonials } from "@/components/sections/testimonials";
 import { TrustStrip } from "@/components/sections/trust-strip";
-import { getBranches, getPublicPortfolio, getReviewsSummary } from "@/lib/data";
+import { getBranches, getReviewsSummary } from "@/lib/data";
 import {
   getFeaturedProducts,
   getPopularAdaptations,
 } from "@/lib/products";
+import { listRecentWork } from "@/lib/recent-work";
 import { createMetadata, jsonLdScript, SITE } from "@/lib/seo";
 
 export const metadata = createMetadata({
@@ -33,13 +34,16 @@ export default async function HomePage() {
 
   let adaptations: Awaited<ReturnType<typeof getPopularAdaptations>> = [];
   let scooters: Awaited<ReturnType<typeof getFeaturedProducts>> = [];
-  let portfolio: Awaited<ReturnType<typeof getPublicPortfolio>> = [];
+  let recentWork: Awaited<ReturnType<typeof listRecentWork>>["projects"] = [];
   try {
-    [adaptations, scooters, portfolio] = await Promise.all([
+    const [adaptationRows, scooterRows, work] = await Promise.all([
       getPopularAdaptations(14),
       getFeaturedProducts(14),
-      getPublicPortfolio(6),
+      listRecentWork({ limit: 6 }),
     ]);
+    adaptations = adaptationRows;
+    scooters = scooterRows;
+    recentWork = work.projects;
   } catch (error) {
     console.error("Homepage catalogue error:", error);
   }
@@ -107,7 +111,7 @@ export default async function HomePage() {
         ))}
       </ProductScroller>
 
-      <RecentWorkStrip items={portfolio} />
+      <RecentWorkStrip items={recentWork} />
 
       <BranchMap branches={branches} />
       <Testimonials

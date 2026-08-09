@@ -215,10 +215,10 @@ export default async function BlogPostPage({ params }: Props) {
                 </li>
                 <li>
                   <Link
-                    href="/blog#gallery"
+                    href="/our-work"
                     className="font-medium text-foreground hover:text-primary"
                   >
-                    Photo gallery
+                    Recent work
                   </Link>
                 </li>
               </ul>
