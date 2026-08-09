@@ -109,12 +109,7 @@ const nextConfig: NextConfig = {
         destination: "/book-a-service",
         permanent: true,
       },
-      { source: "/servicing", destination: "/book-a-service", permanent: true },
-      {
-        source: "/servicing/:path*",
-        destination: "/book-a-service",
-        permanent: true,
-      },
+      // /servicing is a live App Router page (Care Plans + service booking)
 
       // Shopify / WordPress-style catalogue paths
       { source: "/product/:slug", destination: "/products/:slug", permanent: true },
