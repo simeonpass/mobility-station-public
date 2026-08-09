@@ -1,21 +1,24 @@
 import { z } from "zod";
+import { isLikelyUkPhone } from "@/lib/spam";
 
 const ukPostcode =
   /^(GIR\s?0AA|[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2})$/i;
 
-const ukPhone = /^[\d\s+()-]{10,20}$/;
+const ukPhoneShape = /^[\d\s+()-]{10,20}$/;
+
+const phoneField = z
+  .string()
+  .trim()
+  .min(10, "Please enter a valid UK phone number")
+  .regex(ukPhoneShape, "Please enter a valid UK phone number")
+  .refine((value) => isLikelyUkPhone(value), {
+    message: "Please enter a valid UK phone number (starting with 0 or +44)",
+  });
 
 export const enquirySchema = z
   .object({
     name: z.string().trim().min(2, "Please enter your name"),
-    phone: z
-      .string()
-      .trim()
-      .min(10, "Please enter a valid UK phone number")
-      .regex(ukPhone, "Please enter a valid UK phone number")
-      .refine((value) => value.replace(/\D/g, "").length >= 10, {
-        message: "Please enter a valid UK phone number",
-      }),
+    phone: phoneField,
     email: z.string().trim().optional(),
     postcode: z.string().trim().optional(),
     interest: z
@@ -34,6 +37,10 @@ export const enquirySchema = z
       "trade-in",
       "callback",
     ]),
+    /** Honeypot — must stay empty. Not shown to users. */
+    website: z.string().optional(),
+    /** Client-set timestamp for timing checks. */
+    form_started_at: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.enquiry_type !== "callback") {
@@ -66,11 +73,7 @@ export type EnquiryInput = z.infer<typeof enquirySchema>;
 
 export const contactSchema = z.object({
   name: z.string().trim().min(2, "Please enter your name"),
-  phone: z
-    .string()
-    .trim()
-    .min(10, "Please enter a valid UK phone number")
-    .regex(ukPhone, "Please enter a valid UK phone number"),
+  phone: phoneField,
   email: z.string().trim().email("Please enter a valid email address"),
   message: z.string().trim().max(2000).optional(),
   enquiry_type: z.literal("contact").default("contact"),
