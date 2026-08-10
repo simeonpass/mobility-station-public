@@ -147,7 +147,7 @@ export const HIRE_PRICING_CATEGORIES: HirePricingCategory[] = [
     twoWeeks: 270,
     fourWeeks: 430,
     deposit: SHORT_TERM_DEPOSIT_GBP,
-    flexMonthly: 119,
+    flexMonthly: 140,
     imageMatch: /medium|mid.?size|mobility scooter/i,
     imageAlt: "Medium mobility scooter from the hire fleet",
   },
