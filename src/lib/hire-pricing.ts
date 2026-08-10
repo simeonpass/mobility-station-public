@@ -7,6 +7,8 @@ export const FLEX_SETUP_FEE_GBP = 99;
 export const LOCAL_DELIVERY_FEE_GBP = 45;
 export const LOCAL_DELIVERY_MILES = 15;
 export const WIDER_DELIVERY_FROM_GBP = 95;
+/** Flat refundable short-term damage deposit for every hire category. */
+export const SHORT_TERM_DEPOSIT_GBP = 100;
 
 export type HirePricingCategoryId =
   | "transit_wheelchair"
@@ -45,7 +47,7 @@ export const HIRE_PRICING_CATEGORIES: HirePricingCategory[] = [
     week: 60,
     twoWeeks: 100,
     fourWeeks: 160,
-    deposit: 100,
+    deposit: SHORT_TERM_DEPOSIT_GBP,
     flexMonthly: 39,
     imageMatch: /transit|attendant/i,
     imageAlt: "Transit wheelchair from the Mobility Station hire fleet",
@@ -59,7 +61,7 @@ export const HIRE_PRICING_CATEGORIES: HirePricingCategory[] = [
     week: 60,
     twoWeeks: 100,
     fourWeeks: 160,
-    deposit: 100,
+    deposit: SHORT_TERM_DEPOSIT_GBP,
     flexMonthly: 45,
     imageMatch: /manual wheelchair|self.?propel/i,
     imageAlt: "Self-propelled manual wheelchair from the hire fleet",
@@ -73,7 +75,7 @@ export const HIRE_PRICING_CATEGORIES: HirePricingCategory[] = [
     week: 95,
     twoWeeks: 165,
     fourWeeks: 260,
-    deposit: 150,
+    deposit: SHORT_TERM_DEPOSIT_GBP,
     flexMonthly: 75,
     imageMatch:
       /(?:heavy.?duty|bariatric).*(?:manual )?wheelchair|(?:manual )?wheelchair.*(?:heavy.?duty|bariatric|wide(?:r)? seat)/i,
@@ -83,12 +85,12 @@ export const HIRE_PRICING_CATEGORIES: HirePricingCategory[] = [
     id: "folding_electric_wheelchair",
     label: "Folding electric wheelchair (lithium, boot-size)",
     userWeight: "up to 21 st",
-    threeDay: 135,
-    extraDay: 30,
-    week: 175,
-    twoWeeks: 300,
-    fourWeeks: 480,
-    deposit: 250,
+    threeDay: 95,
+    extraDay: 20,
+    week: 120,
+    twoWeeks: 210,
+    fourWeeks: 340,
+    deposit: SHORT_TERM_DEPOSIT_GBP,
     flexMonthly: 145,
     imageMatch: /folding.*(electric|power).*wheelchair|lightweight.*power/i,
     imageAlt: "Folding electric wheelchair suitable for car boot travel",
@@ -102,7 +104,7 @@ export const HIRE_PRICING_CATEGORIES: HirePricingCategory[] = [
     week: 195,
     twoWeeks: 340,
     fourWeeks: 540,
-    deposit: 250,
+    deposit: SHORT_TERM_DEPOSIT_GBP,
     flexMonthly: 165,
     imageMatch: /powered wheelchair|powerchair|power chair/i,
     imageAlt: "Full-size powered wheelchair for indoor and outdoor use",
@@ -116,7 +118,7 @@ export const HIRE_PRICING_CATEGORIES: HirePricingCategory[] = [
     week: 150,
     twoWeeks: 260,
     fourWeeks: 420,
-    deposit: 250,
+    deposit: SHORT_TERM_DEPOSIT_GBP,
     flexMonthly: 125,
     imageMatch: /folding.*scooter/i,
     imageAlt: "Folding mobility scooter from the hire fleet",
@@ -130,7 +132,7 @@ export const HIRE_PRICING_CATEGORIES: HirePricingCategory[] = [
     week: 135,
     twoWeeks: 235,
     fourWeeks: 380,
-    deposit: 200,
+    deposit: SHORT_TERM_DEPOSIT_GBP,
     flexMonthly: 105,
     imageMatch: /boot|portable|travel.*scooter|small.*scooter|class 2/i,
     imageAlt: "Small boot scooter that dismantles for car travel",
@@ -144,7 +146,7 @@ export const HIRE_PRICING_CATEGORIES: HirePricingCategory[] = [
     week: 155,
     twoWeeks: 270,
     fourWeeks: 430,
-    deposit: 200,
+    deposit: SHORT_TERM_DEPOSIT_GBP,
     flexMonthly: 119,
     imageMatch: /medium|mid.?size|mobility scooter/i,
     imageAlt: "Medium mobility scooter from the hire fleet",
@@ -158,7 +160,7 @@ export const HIRE_PRICING_CATEGORIES: HirePricingCategory[] = [
     week: 195,
     twoWeeks: 340,
     fourWeeks: 540,
-    deposit: 250,
+    deposit: SHORT_TERM_DEPOSIT_GBP,
     flexMonthly: 149,
     imageMatch: /large|road|class 3/i,
     imageAlt: "Large class 3 road-legal mobility scooter",
@@ -198,7 +200,7 @@ export const SHORT_TERM_FAQS: HireFaqItem[] = [
   },
   {
     q: "What is the deposit?",
-    a: "A refundable damage deposit of £100–£250, depending on the equipment. You pay it with the hire. We give it back when the machine comes home in good condition.",
+    a: "A refundable damage deposit of £100 on every hire. You pay it with the hire. We give it back when the machine comes home in good condition.",
   },
   {
     q: "What if I decide to buy one?",
@@ -246,7 +248,7 @@ export const HIRE_COMPARISON_ROWS: {
   },
   {
     label: "Deposit",
-    short: "£100–£250 refundable",
+    short: "£100 refundable",
     flex: "One month refundable",
   },
   { label: "Servicing", short: "Not needed", flex: "Included" },
