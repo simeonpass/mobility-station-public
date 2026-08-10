@@ -40,7 +40,7 @@ export function ProductScroller({
           {viewAllHref ? (
             <Link
               href={viewAllHref}
-              className="text-sm font-semibold text-primary underline-offset-4 hover:underline"
+              className="text-sm font-semibold text-primary underline-offset-4 transition-colors hover:text-tertiary hover:underline"
             >
               {viewAllLabel} →
             </Link>

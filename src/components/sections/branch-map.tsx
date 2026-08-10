@@ -42,7 +42,10 @@ export function BranchMap({ branches }: { branches: Branch[] }) {
         </div>
         <ul className="mt-8 grid gap-6 md:grid-cols-2">
           {branches.map((branch) => (
-            <li key={branch.id} className="border-t border-border pt-4">
+            <li
+              key={branch.id}
+              className="border-t-2 border-border pt-4 transition-colors hover:border-tertiary"
+            >
               <h3 className="text-xl font-bold">{branch.name}</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted">
                 {branch.addressLine1}

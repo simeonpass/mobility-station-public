@@ -36,7 +36,7 @@ export function HomePaths() {
             <li key={path.href}>
               <Link
                 href={path.href}
-                className="group block border-t-2 border-border pt-6 transition-colors hover:border-accent"
+                className="group block border-t-2 border-border pt-6 transition-colors hover:border-tertiary"
               >
                 <h3 className="text-2xl font-extrabold tracking-tight text-primary group-hover:text-primary-dark md:text-3xl">
                   {path.title}

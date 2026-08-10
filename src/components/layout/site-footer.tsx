@@ -117,7 +117,7 @@ export function SiteFooter() {
               loading="lazy"
               decoding="async"
             />
-            <span className="text-[10px] font-semibold uppercase tracking-wide text-accent-on-dark">
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-tertiary">
               Accredited dealer
             </span>
           </Link>

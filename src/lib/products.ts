@@ -1,17 +1,17 @@
-import { createClient } from "@supabase/supabase-js";
 import {
   isAdaptationProduct,
 } from "@/lib/adaptations";
+import { getSupabase, hasSupabase } from "@/lib/supabase";
 
+/** Supabase client — only call after hasSupabase() / early-return guards. */
 function getClient() {
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_PUBLIC_SITE_KEY;
-  if (!url || !key) {
+  const client = getSupabase();
+  if (!client) {
     throw new Error(
       "Missing SUPABASE_URL or SUPABASE_PUBLIC_SITE_KEY in environment",
     );
   }
-  return createClient(url, key, { auth: { persistSession: false } });
+  return client;
 }
 
 export type ProductImage = {
@@ -126,6 +126,7 @@ export async function getPublishedProducts(
     shopOnly?: boolean;
   } = {},
 ): Promise<ProductListItem[]> {
+  if (!hasSupabase()) return [];
   const shopOnly = opts.shopOnly !== false;
   const supabase = getClient();
   let q = supabase
@@ -172,6 +173,7 @@ export async function getAdaptationProducts(
     limit?: number;
   } = {},
 ): Promise<ProductListItem[]> {
+  if (!hasSupabase()) return [];
   const supabase = getClient();
   let q = supabase
     .from("stock_items")
@@ -242,7 +244,7 @@ export async function getRelatedProducts(
       }
     }
 
-    if (results.length < limit && product.manufacturer) {
+    if (results.length < limit && product.manufacturer && hasSupabase()) {
       const supabase = getClient();
       let q = supabase
         .from("stock_items")
@@ -282,6 +284,7 @@ export async function getRelatedProducts(
 }
 
 export async function getFeaturedProducts(limit = 8): Promise<ProductListItem[]> {
+  if (!hasSupabase()) return [];
   const supabase = getClient();
   const { data, error } = await supabase
     .from("stock_items")
@@ -352,6 +355,7 @@ export async function getPopularAdaptations(
 export async function getCategories(
   opts: { shopOnly?: boolean } = {},
 ): Promise<{ category: string; count: number }[]> {
+  if (!hasSupabase()) return [];
   const shopOnly = opts.shopOnly !== false;
   const supabase = getClient();
   let q = supabase
@@ -392,6 +396,7 @@ export async function resolveCategoryFromSlug(
 export async function getProductBySlug(
   slug: string,
 ): Promise<ProductDetail | null> {
+  if (!hasSupabase()) return null;
   const supabase = getClient();
   const { data: product, error } = await supabase
     .from("stock_items")
@@ -575,6 +580,9 @@ export async function searchProducts(
   if (!query) {
     return { query: "", shop: [], adaptations: [], total: 0 };
   }
+  if (!hasSupabase()) {
+    return { query, shop: [], adaptations: [], total: 0 };
+  }
 
   const limit = opts.limit ?? 300;
   const supabase = getClient();
@@ -661,6 +669,7 @@ export async function searchProducts(
 export async function getAllPublishedSlugs(): Promise<
   { slug: string; updated_at: string }[]
 > {
+  if (!hasSupabase()) return [];
   const supabase = getClient();
   const { data, error } = await supabase
     .from("stock_items")
@@ -901,6 +910,7 @@ export function isDummyHireProduct(product: Pick<HireProduct, "id">) {
 }
 
 export async function getHireProducts(): Promise<HireProduct[]> {
+  if (!hasSupabase()) return [];
   const supabase = getClient();
   const { data, error } = await supabase
     .from("stock_items")

@@ -77,7 +77,7 @@ export function SiteHeader() {
           </a>
         </div>
         <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-accent/80 to-transparent"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-tertiary/70 to-transparent"
           aria-hidden
         />
       </div>
@@ -154,6 +154,7 @@ export function SiteHeader() {
         <div className="container-site flex h-11 items-center gap-1">
           {nav.map((item) => {
             const active = isActivePath(pathname, item.href);
+            const motability = item.href === "/motability";
             return (
               <Link
                 key={item.href}
@@ -168,7 +169,8 @@ export function SiteHeader() {
                 {item.label}
                 <span
                   className={cn(
-                    "absolute inset-x-3.5 bottom-0 h-0.5 rounded-full bg-accent transition-opacity duration-200",
+                    "absolute inset-x-3.5 bottom-0 h-0.5 rounded-full transition-opacity duration-200",
+                    motability ? "bg-tertiary" : "bg-accent",
                     active
                       ? "opacity-100"
                       : "opacity-0 group-hover:opacity-70",
@@ -180,7 +182,7 @@ export function SiteHeader() {
           })}
         </div>
         <div
-          className="h-0.5 bg-gradient-to-r from-accent/40 via-accent to-accent/40"
+          className="h-0.5 bg-gradient-to-r from-accent/50 via-tertiary to-accent/50"
           aria-hidden
         />
       </nav>

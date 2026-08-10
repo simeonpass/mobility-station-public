@@ -109,6 +109,7 @@ export default async function MotabilityPage() {
         dangerouslySetInnerHTML={jsonLdScript(jsonLd)}
       />
 
+      <div className="h-1.5 w-full bg-tertiary" aria-hidden />
       <CatalogIntro
         title="Motability scooters & wheelchairs"
         subtitle="Weekly figures from your mobility allowance — not retail purchase prices. Free branch demos; home demos £195 (waived for Motability PWSS)."
@@ -125,7 +126,9 @@ export default async function MotabilityPage() {
       <section className="border-b border-border bg-white">
         <div className="container-site py-8 md:py-10">
           <div className="mb-6 flex flex-wrap items-center gap-3">
-            <MotabilityLogo height={28} />
+            <span className="inline-flex items-center rounded bg-tertiary px-2.5 py-1.5">
+              <MotabilityLogo height={28} />
+            </span>
             <p className="text-sm font-semibold text-primary">
               Why weekly Motability pricing matters
             </p>
@@ -133,7 +136,7 @@ export default async function MotabilityPage() {
           <ul className="grid gap-6 md:grid-cols-3">
             {WEEKLY_BENEFITS.map(({ icon: Icon, title, body }) => (
               <li key={title} className="flex gap-3">
-                <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent/15 text-primary">
+                <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-tertiary-soft text-primary">
                   <Icon className="h-5 w-5" aria-hidden />
                 </span>
                 <div>
@@ -147,15 +150,15 @@ export default async function MotabilityPage() {
           </ul>
           <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm font-semibold text-primary/90">
             <li className="flex items-center gap-2">
-              <BadgeCheck className="h-4 w-4 text-accent" aria-hidden />
+              <BadgeCheck className="h-4 w-4 text-tertiary" aria-hidden />
               Accredited dealer
             </li>
             <li className="flex items-center gap-2">
-              <Home className="h-4 w-4 text-accent" aria-hidden />
+              <Home className="h-4 w-4 text-tertiary" aria-hidden />
               Branch demos free
             </li>
             <li className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-accent" aria-hidden />
+              <Phone className="h-4 w-4 text-tertiary" aria-hidden />
               Heathrow &amp; Ferndown
             </li>
           </ul>

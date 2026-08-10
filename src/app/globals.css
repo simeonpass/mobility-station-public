@@ -12,7 +12,10 @@
   --buy: #8cd63f;
   --buy-hover: #a4e85a;
   --buy-foreground: #003f43;
-  --tertiary: #f5cf2e;
+  /* Warm Motability gold — used sparingly so teal + lime still lead */
+  --tertiary: #f5c12e;
+  --tertiary-soft: #fff6d6;
+  --tertiary-foreground: #003f43;
   --footer: #003f43;
   --footer-foreground: #ffffff;
 
@@ -53,6 +56,8 @@
   --color-buy-hover: var(--buy-hover);
   --color-buy-foreground: var(--buy-foreground);
   --color-tertiary: var(--tertiary);
+  --color-tertiary-soft: var(--tertiary-soft);
+  --color-tertiary-foreground: var(--tertiary-foreground);
   --color-footer: var(--footer);
   --color-footer-foreground: var(--footer-foreground);
   --color-soft: var(--soft);
