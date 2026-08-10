@@ -46,7 +46,7 @@ export const HIRE_RATE_CARD: Record<HireTierId, HireRateCard> = {
     threeDay: 95,
     weekly: 150,
     twoWeek: 250,
-    monthly: 139,
+    monthly: 140,
     deposit: 100,
     daily: 45,
   },
