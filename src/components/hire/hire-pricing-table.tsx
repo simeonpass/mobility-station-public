@@ -164,8 +164,8 @@ export function HirePricingTable({
           </p>
         ) : (
           <p>
-            The deposit comes back when the equipment is returned in good
-            condition.
+            Every short-term hire includes a £100 refundable deposit. It comes
+            back when the equipment is returned in good condition.
           </p>
         )}
       </div>

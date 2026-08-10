@@ -47,7 +47,7 @@ export const HIRE_RATE_CARD: Record<HireTierId, HireRateCard> = {
     weekly: 150,
     twoWeek: 250,
     monthly: 139,
-    deposit: 150,
+    deposit: 100,
     daily: 45,
   },
   large: {
@@ -57,7 +57,7 @@ export const HIRE_RATE_CARD: Record<HireTierId, HireRateCard> = {
     weekly: 180,
     twoWeek: 300,
     monthly: 169,
-    deposit: 200,
+    deposit: 100,
     daily: 55,
   },
   manual: {
@@ -67,18 +67,18 @@ export const HIRE_RATE_CARD: Record<HireTierId, HireRateCard> = {
     weekly: 85,
     twoWeek: 140,
     monthly: 69,
-    deposit: 75,
+    deposit: 100,
     daily: 25,
   },
   powered: {
     id: "powered",
     label: "Powered wheelchair",
-    threeDay: 110,
-    weekly: 165,
-    twoWeek: 270,
+    threeDay: 95,
+    weekly: 120,
+    twoWeek: 210,
     monthly: 149,
-    deposit: 200,
-    daily: 50,
+    deposit: 100,
+    daily: 20,
   },
 };
 
