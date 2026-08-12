@@ -47,8 +47,13 @@ export function ProductGallery({
       if (e.key === "ArrowRight") goTo(active + 1);
       if (e.key === "ArrowLeft") goTo(active - 1);
     };
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKey);
+    };
   }, [lightbox, active, goTo]);
 
   const onTouchStart = (e: TouchEvent) => {
@@ -189,60 +194,73 @@ export function ProductGallery({
 
       {lightbox ? (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-primary/95 p-4"
+          className="fixed inset-0 z-[200] flex flex-col bg-primary/95"
           role="dialog"
           aria-modal="true"
           aria-label={`${name} image lightbox`}
-          onClick={() => setLightbox(false)}
         >
-          <button
-            type="button"
-            className="absolute right-4 top-4 rounded-md bg-white px-3 py-2 text-sm font-semibold text-primary"
-            onClick={() => setLightbox(false)}
-          >
-            <span className="inline-flex items-center gap-1">
-              <X className="h-4 w-4" /> Close
-            </span>
-          </button>
-
-          {count > 1 ? (
-            <>
-              <button
-                type="button"
-                className="absolute left-3 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-primary"
-                aria-label="Previous image"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  goTo(active - 1);
-                }}
-              >
-                <ChevronLeft className="h-5 w-5" />
-              </button>
-              <button
-                type="button"
-                className="absolute right-3 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-primary"
-                aria-label="Next image"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  goTo(active + 1);
-                }}
-              >
-                <ChevronRight className="h-5 w-5" />
-              </button>
-            </>
-          ) : null}
+          {/*
+            Keep close above the image layer — on mobile the full-width image
+            box used to paint over the Close control, so taps never reached it.
+          */}
+          <div className="relative z-20 flex shrink-0 items-center justify-between gap-3 px-3 pb-2 pt-[max(0.75rem,env(safe-area-inset-top))]">
+            <p className="min-w-0 truncate px-1 text-sm font-semibold text-white/90">
+              {count > 1 ? `${active + 1} / ${count}` : "Enlarged image"}
+            </p>
+            <button
+              type="button"
+              className="inline-flex h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-full bg-white px-3.5 text-sm font-semibold text-primary shadow-md"
+              onClick={() => setLightbox(false)}
+              aria-label="Close enlarged image"
+            >
+              <X className="h-5 w-5" aria-hidden />
+              <span>Close</span>
+            </button>
+          </div>
 
           <div
-            className="relative h-[75vh] w-full max-w-4xl"
-            onClick={(e) => e.stopPropagation()}
+            className="relative z-10 flex min-h-0 flex-1 items-center justify-center px-3 pb-[max(1rem,env(safe-area-inset-bottom))]"
+            onClick={() => setLightbox(false)}
           >
-            <CatalogImage
-              src={current}
-              alt={`${name} enlarged view`}
-              fill
-              className="object-contain"
-              sizes="100vw"
-            />
+            {count > 1 ? (
+              <>
+                <button
+                  type="button"
+                  className="absolute left-2 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-primary shadow-md sm:left-4"
+                  aria-label="Previous image"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    goTo(active - 1);
+                  }}
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <button
+                  type="button"
+                  className="absolute right-2 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-primary shadow-md sm:right-4"
+                  aria-label="Next image"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    goTo(active + 1);
+                  }}
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+              </>
+            ) : null}
+
+            <div
+              className="relative h-full w-full max-w-4xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <CatalogImage
+                src={current}
+                alt={`${name} enlarged view`}
+                fill
+                className="object-contain"
+                sizes="100vw"
+              />
+            </div>
           </div>
         </div>
       ) : null}
