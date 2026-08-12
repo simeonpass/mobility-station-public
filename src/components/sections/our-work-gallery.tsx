@@ -72,41 +72,51 @@ export function OurWorkGallery({ items }: { items: PortfolioItem[] }) {
 
       {active ? (
         <div
-          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 p-4"
+          className="fixed inset-0 z-[200] flex flex-col bg-black/85"
           role="dialog"
           aria-modal="true"
-          onClick={() => setActive(null)}
+          aria-label="Photo lightbox"
         >
-          <button
-            type="button"
-            className="absolute right-4 top-4 rounded-full bg-white/10 px-3 py-1 text-sm text-white"
+          <div className="relative z-20 flex shrink-0 justify-end px-3 pb-2 pt-[max(0.75rem,env(safe-area-inset-top))]">
+            <button
+              type="button"
+              className="inline-flex h-11 min-w-11 items-center justify-center rounded-full bg-white px-3.5 text-sm font-semibold text-primary shadow-md"
+              onClick={() => setActive(null)}
+              aria-label="Close photo"
+            >
+              Close
+            </button>
+          </div>
+          <div
+            className="relative z-10 flex min-h-0 flex-1 items-center justify-center px-3 pb-[max(1rem,env(safe-area-inset-bottom))]"
             onClick={() => setActive(null)}
           >
-            Close
-          </button>
-          <div
-            className="relative max-h-[85vh] w-full max-w-4xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-black">
-              {/* eslint-disable-next-line @next/next/no-img-element -- lightbox; skip Vercel Image Optimization */}
-              <img
-                src={active.url}
-                alt={active.title || "Recent work"}
-                className="absolute inset-0 h-full w-full object-contain"
-                decoding="async"
-              />
-            </div>
-            {(active.title || active.description) && (
-              <div className="mt-3 text-center text-white">
-                {active.title ? (
-                  <p className="font-semibold">{active.title}</p>
-                ) : null}
-                {active.description ? (
-                  <p className="mt-1 text-sm text-white/80">{active.description}</p>
-                ) : null}
+            <div
+              className="relative w-full max-w-4xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-black">
+                {/* eslint-disable-next-line @next/next/no-img-element -- lightbox; skip Vercel Image Optimization */}
+                <img
+                  src={active.url}
+                  alt={active.title || "Recent work"}
+                  className="absolute inset-0 h-full w-full object-contain"
+                  decoding="async"
+                />
               </div>
-            )}
+              {(active.title || active.description) && (
+                <div className="mt-3 text-center text-white">
+                  {active.title ? (
+                    <p className="font-semibold">{active.title}</p>
+                  ) : null}
+                  {active.description ? (
+                    <p className="mt-1 text-sm text-white/80">
+                      {active.description}
+                    </p>
+                  ) : null}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       ) : null}
