@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type TouchEvent } from "react";
+import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, Expand, X } from "lucide-react";
 import { CatalogImage } from "@/components/product/catalog-image";
 import { FittingPartnerCorner } from "@/components/product/fitted-badge";
@@ -18,8 +19,13 @@ export function ProductGallery({
 }) {
   const [active, setActive] = useState(0);
   const [lightbox, setLightbox] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const thumbsRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const count = images.length;
   const current = images[active] ?? images[0];
@@ -192,78 +198,81 @@ export function ProductGallery({
         </div>
       ) : null}
 
-      {lightbox ? (
-        <div
-          className="fixed inset-0 z-[200] flex flex-col bg-primary/95"
-          role="dialog"
-          aria-modal="true"
-          aria-label={`${name} image lightbox`}
-        >
-          {/*
-            Keep close above the image layer — on mobile the full-width image
-            box used to paint over the Close control, so taps never reached it.
-          */}
-          <div className="relative z-20 flex shrink-0 items-center justify-between gap-3 px-3 pb-2 pt-[max(0.75rem,env(safe-area-inset-top))]">
-            <p className="min-w-0 truncate px-1 text-sm font-semibold text-white/90">
-              {count > 1 ? `${active + 1} / ${count}` : "Enlarged image"}
-            </p>
-            <button
-              type="button"
-              className="inline-flex h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-full bg-white px-3.5 text-sm font-semibold text-primary shadow-md"
-              onClick={() => setLightbox(false)}
-              aria-label="Close enlarged image"
-            >
-              <X className="h-5 w-5" aria-hidden />
-              <span>Close</span>
-            </button>
-          </div>
-
-          <div
-            className="relative z-10 flex min-h-0 flex-1 items-center justify-center px-3 pb-[max(1rem,env(safe-area-inset-bottom))]"
-            onClick={() => setLightbox(false)}
-          >
-            {count > 1 ? (
-              <>
-                <button
-                  type="button"
-                  className="absolute left-2 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-primary shadow-md sm:left-4"
-                  aria-label="Previous image"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    goTo(active - 1);
-                  }}
-                >
-                  <ChevronLeft className="h-5 w-5" />
-                </button>
-                <button
-                  type="button"
-                  className="absolute right-2 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-primary shadow-md sm:right-4"
-                  aria-label="Next image"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    goTo(active + 1);
-                  }}
-                >
-                  <ChevronRight className="h-5 w-5" />
-                </button>
-              </>
-            ) : null}
-
+      {mounted && lightbox
+        ? createPortal(
             <div
-              className="relative h-full w-full max-w-4xl"
-              onClick={(e) => e.stopPropagation()}
+              className="fixed inset-0 z-[300] flex flex-col bg-primary/95"
+              role="dialog"
+              aria-modal="true"
+              aria-label={`${name} image lightbox`}
             >
-              <CatalogImage
-                src={current}
-                alt={`${name} enlarged view`}
-                fill
-                className="object-contain"
-                sizes="100vw"
-              />
-            </div>
-          </div>
-        </div>
-      ) : null}
+              {/*
+                Portal to body so sticky header / main overflow cannot cover Close.
+                Keep Close in its own top bar above the image layer.
+              */}
+              <div className="relative z-20 flex shrink-0 items-center justify-between gap-3 px-3 pb-2 pt-[max(0.75rem,env(safe-area-inset-top))]">
+                <p className="min-w-0 truncate px-1 text-sm font-semibold text-white/90">
+                  {count > 1 ? `${active + 1} / ${count}` : "Enlarged image"}
+                </p>
+                <button
+                  type="button"
+                  className="inline-flex h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-full bg-white px-3.5 text-sm font-semibold text-primary shadow-md"
+                  onClick={() => setLightbox(false)}
+                  aria-label="Close enlarged image"
+                >
+                  <X className="h-5 w-5" aria-hidden />
+                  <span>Close</span>
+                </button>
+              </div>
+
+              <div
+                className="relative z-10 flex min-h-0 flex-1 items-center justify-center px-3 pb-[max(1rem,env(safe-area-inset-bottom))]"
+                onClick={() => setLightbox(false)}
+              >
+                {count > 1 ? (
+                  <>
+                    <button
+                      type="button"
+                      className="absolute left-2 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-primary shadow-md sm:left-4"
+                      aria-label="Previous image"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        goTo(active - 1);
+                      }}
+                    >
+                      <ChevronLeft className="h-5 w-5" />
+                    </button>
+                    <button
+                      type="button"
+                      className="absolute right-2 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-primary shadow-md sm:right-4"
+                      aria-label="Next image"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        goTo(active + 1);
+                      }}
+                    >
+                      <ChevronRight className="h-5 w-5" />
+                    </button>
+                  </>
+                ) : null}
+
+                <div
+                  className="relative h-full w-full max-w-4xl"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <CatalogImage
+                    src={current}
+                    alt={`${name} enlarged view`}
+                    fill
+                    className="object-contain"
+                    sizes="100vw"
+                  />
+                </div>
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   );
 }
