@@ -419,15 +419,8 @@ function DesktopMegaPanel({
 }) {
   const panelId = `nav-panel-${item.id}`;
   const titleId = useId();
+  const tiles = item.tiles ?? [];
   const cols = item.columns.length;
-  const gridClass =
-    item.featured && cols >= 2
-      ? "md:grid-cols-[1fr_1fr_14rem]"
-      : item.featured
-        ? "md:grid-cols-[1fr_14rem]"
-        : cols >= 2
-          ? "md:grid-cols-2"
-          : "md:grid-cols-1";
 
   return (
     <div
@@ -439,14 +432,14 @@ function DesktopMegaPanel({
     >
       <div className="border-b border-border bg-white shadow-[0_24px_48px_-20px_rgba(0,63,67,0.35)]">
         <div className="h-1 w-full bg-gradient-to-r from-accent/30 via-accent to-accent/30" />
-        <div className="container-site py-6 md:py-7">
-          <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+        <div className="container-site max-w-5xl py-4 md:py-5">
+          <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
             <div>
-              <p id={titleId} className="text-lg font-extrabold text-primary">
+              <p id={titleId} className="text-base font-extrabold text-primary">
                 {item.label}
               </p>
               {item.description ? (
-                <p className="mt-1 max-w-xl text-sm text-muted">
+                <p className="mt-0.5 max-w-xl text-sm text-muted">
                   {item.description}
                 </p>
               ) : null}
@@ -460,60 +453,120 @@ function DesktopMegaPanel({
             </Link>
           </div>
 
-          <div className={cn("grid gap-8", gridClass)}>
-            {item.columns.map((column) => (
-              <div key={column.title}>
-                <p className="text-xs font-bold uppercase tracking-wide text-muted">
-                  {column.title}
-                </p>
-                <ul className="mt-3 space-y-1">
-                  {column.links.map((link) => {
-                    const active = isActivePath(pathname, link.href);
-                    return (
-                      <li key={link.href + link.label}>
-                        <Link
-                          href={link.href}
-                          onClick={onClose}
-                          className={cn(
-                            "group block rounded-lg px-3 py-2.5 transition-colors",
-                            active
-                              ? "bg-primary-soft text-primary"
-                              : "hover:bg-soft",
-                          )}
-                        >
-                          <span className="text-sm font-semibold text-primary group-hover:text-primary-dark">
-                            {link.label}
-                          </span>
-                          {link.description ? (
-                            <span className="mt-0.5 block text-xs leading-snug text-muted">
-                              {link.description}
-                            </span>
-                          ) : null}
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            ))}
-
-            {item.featured ? (
-              <aside className="rounded-2xl bg-primary p-5 text-primary-foreground">
-                <p className="text-base font-extrabold">{item.featured.title}</p>
-                <p className="mt-2 text-sm leading-relaxed text-primary-foreground/80">
-                  {item.featured.body}
-                </p>
-                <Link
-                  href={item.featured.href}
-                  onClick={onClose}
+          <div
+            className={cn(
+              "grid gap-4 md:gap-5",
+              item.featured
+                ? "md:grid-cols-[minmax(0,1fr)_15rem]"
+                : "md:grid-cols-1",
+            )}
+          >
+            <div className="min-w-0 space-y-4">
+              {tiles.length ? (
+                <ul
                   className={cn(
-                    buttonVariants({ size: "sm" }),
-                    "mt-4 inline-flex rounded-full",
+                    "grid gap-2.5",
+                    tiles.length >= 3
+                      ? "grid-cols-3"
+                      : tiles.length === 2
+                        ? "grid-cols-2"
+                        : "grid-cols-1",
                   )}
                 >
-                  {item.featured.cta}
-                </Link>
-              </aside>
+                  {tiles.map((tile) => (
+                    <li key={tile.href + tile.label}>
+                      <Link
+                        href={tile.href}
+                        onClick={onClose}
+                        className="group relative block aspect-[4/3] overflow-hidden rounded-xl bg-soft"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element -- nav tile; skip Vercel Image Optimization */}
+                        <img
+                          src={tile.image}
+                          alt={tile.imageAlt}
+                          className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-[1.04]"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                        <span className="absolute inset-0 bg-gradient-to-t from-primary/85 via-primary/20 to-transparent" />
+                        <span className="absolute inset-x-0 bottom-0 p-2.5 text-sm font-bold text-white">
+                          {tile.label}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+
+              <div
+                className={cn(
+                  "grid gap-4",
+                  cols >= 2 ? "sm:grid-cols-2" : "grid-cols-1",
+                )}
+              >
+                {item.columns.map((column) => (
+                  <div key={column.title}>
+                    <p className="text-[11px] font-bold uppercase tracking-wide text-muted">
+                      {column.title}
+                    </p>
+                    <ul className="mt-2 space-y-0.5">
+                      {column.links.map((link) => {
+                        const active = isActivePath(pathname, link.href);
+                        return (
+                          <li key={link.href + link.label}>
+                            <Link
+                              href={link.href}
+                              onClick={onClose}
+                              className={cn(
+                                "block rounded-md px-2 py-1.5 text-sm font-semibold transition-colors",
+                                active
+                                  ? "bg-primary-soft text-primary"
+                                  : "text-primary hover:bg-soft",
+                              )}
+                            >
+                              {link.label}
+                            </Link>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {item.featured ? (
+              <Link
+                href={item.featured.href}
+                onClick={onClose}
+                className="group relative hidden min-h-[14rem] overflow-hidden rounded-2xl md:block"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element -- featured nav card */}
+                <img
+                  src={item.featured.image}
+                  alt={item.featured.imageAlt}
+                  className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <span className="absolute inset-0 bg-gradient-to-t from-primary via-primary/70 to-primary/20" />
+                <span className="absolute inset-x-0 bottom-0 p-4 text-primary-foreground">
+                  <span className="block text-base font-extrabold">
+                    {item.featured.title}
+                  </span>
+                  <span className="mt-1 block text-xs leading-relaxed text-primary-foreground/85">
+                    {item.featured.body}
+                  </span>
+                  <span
+                    className={cn(
+                      buttonVariants({ size: "sm" }),
+                      "mt-3 inline-flex rounded-full",
+                    )}
+                  >
+                    {item.featured.cta}
+                  </span>
+                </span>
+              </Link>
             ) : null}
           </div>
         </div>
@@ -593,7 +646,33 @@ function MobileNavItem({
         </button>
       </div>
       {isOpen ? (
-        <div className="space-y-4 border-t border-border bg-soft/40 px-3.5 py-3">
+        <div className="space-y-3 border-t border-border bg-soft/40 px-3.5 py-3">
+          {item.tiles?.length ? (
+            <ul className="grid grid-cols-3 gap-2">
+              {item.tiles.slice(0, 3).map((tile) => (
+                <li key={tile.href + tile.label}>
+                  <Link
+                    href={tile.href}
+                    onClick={onNavigate}
+                    className="relative block aspect-square overflow-hidden rounded-lg bg-white"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element -- mobile nav tile */}
+                    <img
+                      src={tile.image}
+                      alt={tile.imageAlt}
+                      className="absolute inset-0 h-full w-full object-cover"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <span className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent" />
+                    <span className="absolute inset-x-0 bottom-0 p-1.5 text-[10px] font-bold leading-tight text-white">
+                      {tile.label}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : null}
           {item.columns.map((column) => (
             <div key={column.title}>
               <p className="text-[11px] font-bold uppercase tracking-wide text-muted">
