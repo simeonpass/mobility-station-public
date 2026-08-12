@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import {
   useCallback,
   useEffect,
-  useId,
   useRef,
   useState,
   type KeyboardEvent as ReactKeyboardEvent,
@@ -15,11 +14,7 @@ import { CartButton } from "@/components/cart/cart-drawer";
 import { EnquiryDialog } from "@/components/forms/enquiry-dialog";
 import { HeaderSearch } from "@/components/layout/header-search";
 import { Button, buttonVariants } from "@/components/ui/button";
-import {
-  SITE_NAV,
-  navItemIsActive,
-  type NavItem,
-} from "@/lib/site-nav";
+import { SITE_NAV, navItemIsActive, type NavItem } from "@/lib/site-nav";
 import { SITE } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
@@ -45,7 +40,7 @@ export function SiteHeader() {
 
   const scheduleClose = useCallback(() => {
     clearCloseTimer();
-    closeTimer.current = setTimeout(() => setDesktopOpenId(null), 140);
+    closeTimer.current = setTimeout(() => setDesktopOpenId(null), 120);
   }, [clearCloseTimer]);
 
   const openMenu = useCallback(
@@ -97,7 +92,6 @@ export function SiteHeader() {
 
   return (
     <header className="relative sticky top-0 z-50 bg-white shadow-[0_8px_28px_-12px_rgba(0,63,67,0.28)]">
-      {/* Utility bar */}
       <div className="relative bg-primary text-primary-foreground">
         <div className="container-site flex h-8 items-center justify-between gap-3 text-xs font-medium">
           <p className="flex min-w-0 items-center gap-1.5 truncate">
@@ -133,7 +127,6 @@ export function SiteHeader() {
         />
       </div>
 
-      {/* Brand row */}
       <div className="border-b border-border/60 bg-white">
         <div className="container-site flex h-[4.75rem] items-center gap-3 md:h-20 md:gap-6">
           <Link
@@ -197,7 +190,6 @@ export function SiteHeader() {
         </div>
       </div>
 
-      {/* Desktop nav with dropdowns */}
       <nav
         ref={navRef}
         className="relative hidden bg-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] lg:block"
@@ -214,6 +206,7 @@ export function SiteHeader() {
               onOpen={openMenu}
               onScheduleClose={scheduleClose}
               onClearClose={clearCloseTimer}
+              onClose={() => setDesktopOpenId(null)}
             />
           ))}
         </div>
@@ -221,23 +214,8 @@ export function SiteHeader() {
           className="h-0.5 bg-gradient-to-r from-accent/40 via-accent to-accent/40"
           aria-hidden
         />
-
-        {SITE_NAV.map((item) => {
-          if (item.type !== "menu") return null;
-          if (desktopOpenId !== item.id) return null;
-          return (
-            <DesktopMegaPanel
-              key={item.id}
-              item={item}
-              pathname={pathname}
-              onMouseEnter={() => openMenu(item.id)}
-              onClose={() => setDesktopOpenId(null)}
-            />
-          );
-        })}
       </nav>
 
-      {/* Mobile drawer */}
       {open ? (
         <div
           id="mobile-nav"
@@ -311,6 +289,7 @@ function DesktopNavItem({
   onOpen,
   onScheduleClose,
   onClearClose,
+  onClose,
 }: {
   item: NavItem;
   pathname: string;
@@ -318,6 +297,7 @@ function DesktopNavItem({
   onOpen: (id: string) => void;
   onScheduleClose: () => void;
   onClearClose: () => void;
+  onClose: () => void;
 }) {
   const active = navItemIsActive(pathname, item);
 
@@ -334,7 +314,7 @@ function DesktopNavItem({
         <span
           className={cn(
             "absolute inset-x-3.5 bottom-0 h-0.5 rounded-full bg-accent transition-opacity duration-200",
-            active ? "opacity-100" : "opacity-0 group-hover:opacity-70",
+            active ? "opacity-100" : "opacity-0",
           )}
           aria-hidden
         />
@@ -359,14 +339,14 @@ function DesktopNavItem({
       >
         <Link
           href={item.href}
-          className="flex h-full items-center px-3.5 text-[13px] font-semibold tracking-wide transition-colors hover:text-white"
+          className="flex h-full items-center pl-3.5 pr-1 text-[13px] font-semibold tracking-wide transition-colors hover:text-white"
           onFocus={() => onOpen(item.id)}
         >
           {item.label}
         </Link>
         <button
           type="button"
-          className="-ml-2 flex h-full items-center pr-3.5 text-inherit transition-colors hover:text-white"
+          className="flex h-full items-center pr-3 text-inherit transition-colors hover:text-white"
           aria-expanded={isOpen}
           aria-controls={panelId}
           aria-haspopup="true"
@@ -402,175 +382,40 @@ function DesktopNavItem({
           aria-hidden
         />
       </div>
-    </div>
-  );
-}
 
-function DesktopMegaPanel({
-  item,
-  pathname,
-  onMouseEnter,
-  onClose,
-}: {
-  item: Extract<NavItem, { type: "menu" }>;
-  pathname: string;
-  onMouseEnter: () => void;
-  onClose: () => void;
-}) {
-  const panelId = `nav-panel-${item.id}`;
-  const titleId = useId();
-  const tiles = item.tiles ?? [];
-  const cols = item.columns.length;
-
-  return (
-    <div
-      id={panelId}
-      role="region"
-      aria-labelledby={titleId}
-      className="absolute inset-x-0 top-full z-50 origin-top animate-[fadeRise_180ms_ease-out]"
-      onMouseEnter={onMouseEnter}
-    >
-      <div className="border-b border-border bg-white shadow-[0_24px_48px_-20px_rgba(0,63,67,0.35)]">
-        <div className="h-1 w-full bg-gradient-to-r from-accent/30 via-accent to-accent/30" />
-        <div className="container-site max-w-5xl py-4 md:py-5">
-          <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
-            <div>
-              <p id={titleId} className="text-base font-extrabold text-primary">
-                {item.label}
-              </p>
-              {item.description ? (
-                <p className="mt-0.5 max-w-xl text-sm text-muted">
-                  {item.description}
-                </p>
-              ) : null}
-            </div>
-            <Link
-              href={item.href}
-              className="text-sm font-semibold text-primary underline-offset-4 hover:underline"
-              onClick={onClose}
-            >
-              View all →
-            </Link>
-          </div>
-
-          <div
-            className={cn(
-              "grid gap-4 md:gap-5",
-              item.featured
-                ? "md:grid-cols-[minmax(0,1fr)_15rem]"
-                : "md:grid-cols-1",
-            )}
-          >
-            <div className="min-w-0 space-y-4">
-              {tiles.length ? (
-                <ul
-                  className={cn(
-                    "grid gap-2.5",
-                    tiles.length >= 3
-                      ? "grid-cols-3"
-                      : tiles.length === 2
-                        ? "grid-cols-2"
-                        : "grid-cols-1",
-                  )}
-                >
-                  {tiles.map((tile) => (
-                    <li key={tile.href + tile.label}>
-                      <Link
-                        href={tile.href}
-                        onClick={onClose}
-                        className="group relative block aspect-[4/3] overflow-hidden rounded-xl bg-soft"
-                      >
-                        {/* eslint-disable-next-line @next/next/no-img-element -- nav tile; skip Vercel Image Optimization */}
-                        <img
-                          src={tile.image}
-                          alt={tile.imageAlt}
-                          className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-[1.04]"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                        <span className="absolute inset-0 bg-gradient-to-t from-primary/85 via-primary/20 to-transparent" />
-                        <span className="absolute inset-x-0 bottom-0 p-2.5 text-sm font-bold text-white">
-                          {tile.label}
-                        </span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
-
-              <div
-                className={cn(
-                  "grid gap-4",
-                  cols >= 2 ? "sm:grid-cols-2" : "grid-cols-1",
-                )}
-              >
-                {item.columns.map((column) => (
-                  <div key={column.title}>
-                    <p className="text-[11px] font-bold uppercase tracking-wide text-muted">
-                      {column.title}
-                    </p>
-                    <ul className="mt-2 space-y-0.5">
-                      {column.links.map((link) => {
-                        const active = isActivePath(pathname, link.href);
-                        return (
-                          <li key={link.href + link.label}>
-                            <Link
-                              href={link.href}
-                              onClick={onClose}
-                              className={cn(
-                                "block rounded-md px-2 py-1.5 text-sm font-semibold transition-colors",
-                                active
-                                  ? "bg-primary-soft text-primary"
-                                  : "text-primary hover:bg-soft",
-                              )}
-                            >
-                              {link.label}
-                            </Link>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {item.featured ? (
-              <Link
-                href={item.featured.href}
-                onClick={onClose}
-                className="group relative hidden min-h-[14rem] overflow-hidden rounded-2xl md:block"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element -- featured nav card */}
-                <img
-                  src={item.featured.image}
-                  alt={item.featured.imageAlt}
-                  className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
-                  loading="lazy"
-                  decoding="async"
-                />
-                <span className="absolute inset-0 bg-gradient-to-t from-primary via-primary/70 to-primary/20" />
-                <span className="absolute inset-x-0 bottom-0 p-4 text-primary-foreground">
-                  <span className="block text-base font-extrabold">
-                    {item.featured.title}
-                  </span>
-                  <span className="mt-1 block text-xs leading-relaxed text-primary-foreground/85">
-                    {item.featured.body}
-                  </span>
-                  <span
-                    className={cn(
-                      buttonVariants({ size: "sm" }),
-                      "mt-3 inline-flex rounded-full",
-                    )}
-                  >
-                    {item.featured.cta}
-                  </span>
-                </span>
-              </Link>
-            ) : null}
+      {isOpen ? (
+        <div
+          id={panelId}
+          role="menu"
+          className="absolute left-0 top-full z-50 pt-1"
+          onMouseEnter={() => onOpen(item.id)}
+        >
+          <div className="min-w-[13.5rem] overflow-hidden rounded-lg border border-border bg-white py-1.5 shadow-[0_16px_40px_-18px_rgba(0,63,67,0.45)] animate-[fadeRise_140ms_ease-out]">
+            <ul>
+              {item.links.map((link) => {
+                const linkActive = isActivePath(pathname, link.href);
+                return (
+                  <li key={link.href + link.label} role="none">
+                    <Link
+                      role="menuitem"
+                      href={link.href}
+                      onClick={onClose}
+                      className={cn(
+                        "block px-3.5 py-2 text-[13px] font-semibold transition-colors",
+                        linkActive
+                          ? "bg-primary-soft text-primary"
+                          : "text-primary hover:bg-soft",
+                      )}
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         </div>
-      </div>
+      ) : null}
     </div>
   );
 }
@@ -595,7 +440,7 @@ function MobileNavItem({
       <Link
         href={item.href}
         className={cn(
-          "rounded-xl px-3.5 py-3 text-sm font-semibold transition-colors",
+          "rounded-lg px-3.5 py-2.5 text-sm font-semibold transition-colors",
           active
             ? "bg-primary text-primary-foreground"
             : "text-primary hover:bg-soft",
@@ -610,12 +455,12 @@ function MobileNavItem({
   const isOpen = openId === item.id;
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border/80">
+    <div className="overflow-hidden rounded-lg border border-border/70">
       <div className="flex items-stretch">
         <Link
           href={item.href}
           className={cn(
-            "flex-1 px-3.5 py-3 text-sm font-semibold transition-colors",
+            "flex-1 px-3.5 py-2.5 text-sm font-semibold transition-colors",
             active
               ? "bg-primary text-primary-foreground"
               : "bg-white text-primary hover:bg-soft",
@@ -627,7 +472,7 @@ function MobileNavItem({
         <button
           type="button"
           className={cn(
-            "flex w-12 items-center justify-center border-l border-border/80 transition-colors",
+            "flex w-11 items-center justify-center border-l border-border/70 transition-colors",
             active
               ? "bg-primary text-primary-foreground"
               : "bg-white text-primary hover:bg-soft",
@@ -646,63 +491,19 @@ function MobileNavItem({
         </button>
       </div>
       {isOpen ? (
-        <div className="space-y-3 border-t border-border bg-soft/40 px-3.5 py-3">
-          {item.tiles?.length ? (
-            <ul className="grid grid-cols-3 gap-2">
-              {item.tiles.slice(0, 3).map((tile) => (
-                <li key={tile.href + tile.label}>
-                  <Link
-                    href={tile.href}
-                    onClick={onNavigate}
-                    className="relative block aspect-square overflow-hidden rounded-lg bg-white"
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element -- mobile nav tile */}
-                    <img
-                      src={tile.image}
-                      alt={tile.imageAlt}
-                      className="absolute inset-0 h-full w-full object-cover"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                    <span className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent" />
-                    <span className="absolute inset-x-0 bottom-0 p-1.5 text-[10px] font-bold leading-tight text-white">
-                      {tile.label}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-          {item.columns.map((column) => (
-            <div key={column.title}>
-              <p className="text-[11px] font-bold uppercase tracking-wide text-muted">
-                {column.title}
-              </p>
-              <ul className="mt-1.5 space-y-0.5">
-                {column.links.map((link) => (
-                  <li key={link.href + link.label}>
-                    <Link
-                      href={link.href}
-                      className="block rounded-lg px-2 py-2 text-sm font-semibold text-primary hover:bg-white"
-                      onClick={onNavigate}
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
+        <ul className="border-t border-border bg-soft/30 py-1">
+          {item.links.map((link) => (
+            <li key={link.href + link.label}>
+              <Link
+                href={link.href}
+                className="block px-3.5 py-2 text-sm font-semibold text-primary hover:bg-white"
+                onClick={onNavigate}
+              >
+                {link.label}
+              </Link>
+            </li>
           ))}
-          {item.featured ? (
-            <Link
-              href={item.featured.href}
-              className="block rounded-xl bg-primary px-3 py-3 text-sm font-semibold text-primary-foreground"
-              onClick={onNavigate}
-            >
-              {item.featured.cta} →
-            </Link>
-          ) : null}
-        </div>
+        </ul>
       ) : null}
     </div>
   );
