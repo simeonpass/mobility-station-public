@@ -2,46 +2,97 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { MapPin, Menu, Phone, PhoneCall, X } from "lucide-react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type KeyboardEvent as ReactKeyboardEvent,
+} from "react";
+import { ChevronDown, MapPin, Menu, Phone, PhoneCall, X } from "lucide-react";
 import { CartButton } from "@/components/cart/cart-drawer";
 import { EnquiryDialog } from "@/components/forms/enquiry-dialog";
 import { HeaderSearch } from "@/components/layout/header-search";
 import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  SITE_NAV,
+  navItemIsActive,
+  type NavItem,
+} from "@/lib/site-nav";
 import { SITE } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
-const nav = [
-  { href: "/vehicle-adaptations", label: "Vehicle Adaptations" },
-  { href: "/shop", label: "Scooters & Wheelchairs" },
-  { href: "/clearance", label: "Clearance" },
-  { href: "/hire", label: "Hire" },
-  { href: "/motability", label: "Motability" },
-  { href: "/locations", label: "Locations" },
-  { href: "/our-work", label: "Recent Work" },
-];
-
 function isActivePath(pathname: string, href: string) {
-  return (
-    pathname === href || (href !== "/" && pathname.startsWith(`${href}/`))
-  );
+  const base = href.split("?")[0].split("#")[0];
+  return pathname === base || (base !== "/" && pathname.startsWith(`${base}/`));
 }
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const [desktopOpenId, setDesktopOpenId] = useState<string | null>(null);
+  const [mobileOpenId, setMobileOpenId] = useState<string | null>(null);
   const pathname = usePathname();
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const navRef = useRef<HTMLElement>(null);
+
+  const clearCloseTimer = useCallback(() => {
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+  }, []);
+
+  const scheduleClose = useCallback(() => {
+    clearCloseTimer();
+    closeTimer.current = setTimeout(() => setDesktopOpenId(null), 140);
+  }, [clearCloseTimer]);
+
+  const openMenu = useCallback(
+    (id: string) => {
+      clearCloseTimer();
+      setDesktopOpenId(id);
+    },
+    [clearCloseTimer],
+  );
 
   useEffect(() => {
     setOpen(false);
+    setDesktopOpenId(null);
+    setMobileOpenId(null);
   }, [pathname]);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open && !desktopOpenId) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        setOpen(false);
+        setDesktopOpenId(null);
+        setMobileOpenId(null);
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
+  }, [open, desktopOpenId]);
+
+  useEffect(() => {
+    if (!desktopOpenId) return;
+    const onPointer = (e: MouseEvent) => {
+      if (!navRef.current?.contains(e.target as Node)) {
+        setDesktopOpenId(null);
+      }
+    };
+    document.addEventListener("mousedown", onPointer);
+    return () => document.removeEventListener("mousedown", onPointer);
+  }, [desktopOpenId]);
+
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
   }, [open]);
 
   return (
@@ -82,7 +133,7 @@ export function SiteHeader() {
         />
       </div>
 
-      {/* Brand row: logo · search · actions */}
+      {/* Brand row */}
       <div className="border-b border-border/60 bg-white">
         <div className="container-site flex h-[4.75rem] items-center gap-3 md:h-20 md:gap-6">
           <Link
@@ -146,50 +197,51 @@ export function SiteHeader() {
         </div>
       </div>
 
-      {/* Desktop category nav — deep teal strip */}
+      {/* Desktop nav with dropdowns */}
       <nav
-        className="hidden bg-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] lg:block"
+        ref={navRef}
+        className="relative hidden bg-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] lg:block"
         aria-label="Primary"
+        onMouseLeave={scheduleClose}
       >
-        <div className="container-site flex h-11 items-center gap-1">
-          {nav.map((item) => {
-            const active = isActivePath(pathname, item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "group relative flex h-full items-center px-3.5 text-[13px] font-semibold tracking-wide transition-colors",
-                  active
-                    ? "text-white"
-                    : "text-white/75 hover:text-white",
-                )}
-              >
-                {item.label}
-                <span
-                  className={cn(
-                    "absolute inset-x-3.5 bottom-0 h-0.5 rounded-full bg-accent transition-opacity duration-200",
-                    active
-                      ? "opacity-100"
-                      : "opacity-0 group-hover:opacity-70",
-                  )}
-                  aria-hidden
-                />
-              </Link>
-            );
-          })}
+        <div className="container-site flex h-11 items-stretch gap-0.5">
+          {SITE_NAV.map((item) => (
+            <DesktopNavItem
+              key={item.type === "menu" ? item.id : item.href}
+              item={item}
+              pathname={pathname}
+              openId={desktopOpenId}
+              onOpen={openMenu}
+              onScheduleClose={scheduleClose}
+              onClearClose={clearCloseTimer}
+            />
+          ))}
         </div>
         <div
           className="h-0.5 bg-gradient-to-r from-accent/40 via-accent to-accent/40"
           aria-hidden
         />
+
+        {SITE_NAV.map((item) => {
+          if (item.type !== "menu") return null;
+          if (desktopOpenId !== item.id) return null;
+          return (
+            <DesktopMegaPanel
+              key={item.id}
+              item={item}
+              pathname={pathname}
+              onMouseEnter={() => openMenu(item.id)}
+              onClose={() => setDesktopOpenId(null)}
+            />
+          );
+        })}
       </nav>
 
-      {/* Mobile / tablet drawer */}
+      {/* Mobile drawer */}
       {open ? (
         <div
           id="mobile-nav"
-          className="border-t border-border bg-white shadow-lg lg:hidden"
+          className="max-h-[min(78vh,40rem)] overflow-y-auto border-t border-border bg-white shadow-lg lg:hidden"
         >
           <div className="container-site space-y-4 py-4">
             <HeaderSearch
@@ -197,25 +249,17 @@ export function SiteHeader() {
               className="w-full md:hidden"
               onSubmitExtra={() => setOpen(false)}
             />
-            <nav className="flex flex-col gap-0.5" aria-label="Mobile">
-              {nav.map((item) => {
-                const active = isActivePath(pathname, item.href);
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      "rounded-xl px-3.5 py-3 text-sm font-semibold transition-colors",
-                      active
-                        ? "bg-primary text-primary-foreground"
-                        : "text-primary hover:bg-soft",
-                    )}
-                    onClick={() => setOpen(false)}
-                  >
-                    {item.label}
-                  </Link>
-                );
-              })}
+            <nav className="flex flex-col gap-1" aria-label="Mobile">
+              {SITE_NAV.map((item) => (
+                <MobileNavItem
+                  key={item.type === "menu" ? item.id : item.href}
+                  item={item}
+                  pathname={pathname}
+                  openId={mobileOpenId}
+                  setOpenId={setMobileOpenId}
+                  onNavigate={() => setOpen(false)}
+                />
+              ))}
             </nav>
             <div className="grid gap-2 border-t border-border pt-4 sm:hidden">
               <EnquiryDialog
@@ -257,5 +301,330 @@ export function SiteHeader() {
         </div>
       ) : null}
     </header>
+  );
+}
+
+function DesktopNavItem({
+  item,
+  pathname,
+  openId,
+  onOpen,
+  onScheduleClose,
+  onClearClose,
+}: {
+  item: NavItem;
+  pathname: string;
+  openId: string | null;
+  onOpen: (id: string) => void;
+  onScheduleClose: () => void;
+  onClearClose: () => void;
+}) {
+  const active = navItemIsActive(pathname, item);
+
+  if (item.type === "link") {
+    return (
+      <Link
+        href={item.href}
+        className={cn(
+          "relative flex items-center px-3.5 text-[13px] font-semibold tracking-wide transition-colors",
+          active ? "text-white" : "text-white/75 hover:text-white",
+        )}
+      >
+        {item.label}
+        <span
+          className={cn(
+            "absolute inset-x-3.5 bottom-0 h-0.5 rounded-full bg-accent transition-opacity duration-200",
+            active ? "opacity-100" : "opacity-0 group-hover:opacity-70",
+          )}
+          aria-hidden
+        />
+      </Link>
+    );
+  }
+
+  const isOpen = openId === item.id;
+  const panelId = `nav-panel-${item.id}`;
+
+  return (
+    <div
+      className="relative flex"
+      onMouseEnter={() => onOpen(item.id)}
+      onMouseLeave={onScheduleClose}
+    >
+      <div
+        className={cn(
+          "group relative inline-flex h-full items-center",
+          active || isOpen ? "text-white" : "text-white/75 hover:text-white",
+        )}
+      >
+        <Link
+          href={item.href}
+          className="flex h-full items-center px-3.5 text-[13px] font-semibold tracking-wide transition-colors hover:text-white"
+          onFocus={() => onOpen(item.id)}
+        >
+          {item.label}
+        </Link>
+        <button
+          type="button"
+          className="-ml-2 flex h-full items-center pr-3.5 text-inherit transition-colors hover:text-white"
+          aria-expanded={isOpen}
+          aria-controls={panelId}
+          aria-haspopup="true"
+          aria-label={`${item.label} menu`}
+          onClick={() => (isOpen ? onScheduleClose() : onOpen(item.id))}
+          onFocus={() => {
+            onClearClose();
+            onOpen(item.id);
+          }}
+          onKeyDown={(e: ReactKeyboardEvent) => {
+            if (e.key === "ArrowDown") {
+              e.preventDefault();
+              onOpen(item.id);
+              onClearClose();
+            }
+          }}
+        >
+          <ChevronDown
+            className={cn(
+              "h-3.5 w-3.5 opacity-80 transition-transform duration-200",
+              isOpen && "rotate-180",
+            )}
+            aria-hidden
+          />
+        </button>
+        <span
+          className={cn(
+            "pointer-events-none absolute inset-x-3.5 bottom-0 h-0.5 rounded-full bg-accent transition-opacity duration-200",
+            active || isOpen
+              ? "opacity-100"
+              : "opacity-0 group-hover:opacity-70",
+          )}
+          aria-hidden
+        />
+      </div>
+    </div>
+  );
+}
+
+function DesktopMegaPanel({
+  item,
+  pathname,
+  onMouseEnter,
+  onClose,
+}: {
+  item: Extract<NavItem, { type: "menu" }>;
+  pathname: string;
+  onMouseEnter: () => void;
+  onClose: () => void;
+}) {
+  const panelId = `nav-panel-${item.id}`;
+  const titleId = useId();
+  const cols = item.columns.length;
+  const gridClass =
+    item.featured && cols >= 2
+      ? "md:grid-cols-[1fr_1fr_14rem]"
+      : item.featured
+        ? "md:grid-cols-[1fr_14rem]"
+        : cols >= 2
+          ? "md:grid-cols-2"
+          : "md:grid-cols-1";
+
+  return (
+    <div
+      id={panelId}
+      role="region"
+      aria-labelledby={titleId}
+      className="absolute inset-x-0 top-full z-50 origin-top animate-[fadeRise_180ms_ease-out]"
+      onMouseEnter={onMouseEnter}
+    >
+      <div className="border-b border-border bg-white shadow-[0_24px_48px_-20px_rgba(0,63,67,0.35)]">
+        <div className="h-1 w-full bg-gradient-to-r from-accent/30 via-accent to-accent/30" />
+        <div className="container-site py-6 md:py-7">
+          <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p id={titleId} className="text-lg font-extrabold text-primary">
+                {item.label}
+              </p>
+              {item.description ? (
+                <p className="mt-1 max-w-xl text-sm text-muted">
+                  {item.description}
+                </p>
+              ) : null}
+            </div>
+            <Link
+              href={item.href}
+              className="text-sm font-semibold text-primary underline-offset-4 hover:underline"
+              onClick={onClose}
+            >
+              View all →
+            </Link>
+          </div>
+
+          <div className={cn("grid gap-8", gridClass)}>
+            {item.columns.map((column) => (
+              <div key={column.title}>
+                <p className="text-xs font-bold uppercase tracking-wide text-muted">
+                  {column.title}
+                </p>
+                <ul className="mt-3 space-y-1">
+                  {column.links.map((link) => {
+                    const active = isActivePath(pathname, link.href);
+                    return (
+                      <li key={link.href + link.label}>
+                        <Link
+                          href={link.href}
+                          onClick={onClose}
+                          className={cn(
+                            "group block rounded-lg px-3 py-2.5 transition-colors",
+                            active
+                              ? "bg-primary-soft text-primary"
+                              : "hover:bg-soft",
+                          )}
+                        >
+                          <span className="text-sm font-semibold text-primary group-hover:text-primary-dark">
+                            {link.label}
+                          </span>
+                          {link.description ? (
+                            <span className="mt-0.5 block text-xs leading-snug text-muted">
+                              {link.description}
+                            </span>
+                          ) : null}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ))}
+
+            {item.featured ? (
+              <aside className="rounded-2xl bg-primary p-5 text-primary-foreground">
+                <p className="text-base font-extrabold">{item.featured.title}</p>
+                <p className="mt-2 text-sm leading-relaxed text-primary-foreground/80">
+                  {item.featured.body}
+                </p>
+                <Link
+                  href={item.featured.href}
+                  onClick={onClose}
+                  className={cn(
+                    buttonVariants({ size: "sm" }),
+                    "mt-4 inline-flex rounded-full",
+                  )}
+                >
+                  {item.featured.cta}
+                </Link>
+              </aside>
+            ) : null}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MobileNavItem({
+  item,
+  pathname,
+  openId,
+  setOpenId,
+  onNavigate,
+}: {
+  item: NavItem;
+  pathname: string;
+  openId: string | null;
+  setOpenId: (id: string | null) => void;
+  onNavigate: () => void;
+}) {
+  const active = navItemIsActive(pathname, item);
+
+  if (item.type === "link") {
+    return (
+      <Link
+        href={item.href}
+        className={cn(
+          "rounded-xl px-3.5 py-3 text-sm font-semibold transition-colors",
+          active
+            ? "bg-primary text-primary-foreground"
+            : "text-primary hover:bg-soft",
+        )}
+        onClick={onNavigate}
+      >
+        {item.label}
+      </Link>
+    );
+  }
+
+  const isOpen = openId === item.id;
+
+  return (
+    <div className="overflow-hidden rounded-xl border border-border/80">
+      <div className="flex items-stretch">
+        <Link
+          href={item.href}
+          className={cn(
+            "flex-1 px-3.5 py-3 text-sm font-semibold transition-colors",
+            active
+              ? "bg-primary text-primary-foreground"
+              : "bg-white text-primary hover:bg-soft",
+          )}
+          onClick={onNavigate}
+        >
+          {item.label}
+        </Link>
+        <button
+          type="button"
+          className={cn(
+            "flex w-12 items-center justify-center border-l border-border/80 transition-colors",
+            active
+              ? "bg-primary text-primary-foreground"
+              : "bg-white text-primary hover:bg-soft",
+          )}
+          aria-expanded={isOpen}
+          aria-label={`${isOpen ? "Collapse" : "Expand"} ${item.label}`}
+          onClick={() => setOpenId(isOpen ? null : item.id)}
+        >
+          <ChevronDown
+            className={cn(
+              "h-4 w-4 transition-transform duration-200",
+              isOpen && "rotate-180",
+            )}
+            aria-hidden
+          />
+        </button>
+      </div>
+      {isOpen ? (
+        <div className="space-y-4 border-t border-border bg-soft/40 px-3.5 py-3">
+          {item.columns.map((column) => (
+            <div key={column.title}>
+              <p className="text-[11px] font-bold uppercase tracking-wide text-muted">
+                {column.title}
+              </p>
+              <ul className="mt-1.5 space-y-0.5">
+                {column.links.map((link) => (
+                  <li key={link.href + link.label}>
+                    <Link
+                      href={link.href}
+                      className="block rounded-lg px-2 py-2 text-sm font-semibold text-primary hover:bg-white"
+                      onClick={onNavigate}
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+          {item.featured ? (
+            <Link
+              href={item.featured.href}
+              className="block rounded-xl bg-primary px-3 py-3 text-sm font-semibold text-primary-foreground"
+              onClick={onNavigate}
+            >
+              {item.featured.cta} →
+            </Link>
+          ) : null}
+        </div>
+      ) : null}
+    </div>
   );
 }
