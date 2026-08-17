@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { CartProvider } from "@/components/cart/cart-provider";
 import { LightweightHeader, LightweightFooter } from "@/components/lightweight/SiteChrome";
 import "./globals.css";
 
@@ -32,9 +33,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en-GB" className={`${manrope.variable} h-full`}>
       <body className="min-h-full bg-[#fbfcfa] font-sans text-slate-950 antialiased">
-        <LightweightHeader />
-        <main>{children}</main>
-        <LightweightFooter />
+        <CartProvider>
+          <LightweightHeader />
+          <main>{children}</main>
+          <LightweightFooter />
+        </CartProvider>
         <SpeedInsights />
       </body>
     </html>
