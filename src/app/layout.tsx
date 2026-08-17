@@ -1,13 +1,7 @@
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { CartProvider } from "@/components/cart/cart-provider";
-import { CartDrawer } from "@/components/cart/cart-drawer";
-import { Analytics } from "@/components/layout/analytics";
-import { CookieConsentBanner } from "@/components/layout/cookie-consent-banner";
-import { SiteFooter } from "@/components/layout/site-footer";
-import { SiteHeader } from "@/components/layout/site-header";
-import { SITE } from "@/lib/seo";
+import { LightweightHeader, LightweightFooter } from "@/components/lightweight/SiteChrome";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -18,49 +12,30 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(SITE.url),
+  metadataBase: new URL("https://lightweightmobility.co.uk"),
   title: {
-    default: "Mobility Station | Adaptations, Scooters & Wheelchairs",
-    template: "%s | Mobility Station",
+    default: "Lightweight Mobility | Folding Scooters & Electric Wheelchairs",
+    template: "%s | Lightweight Mobility",
   },
   description:
-    "Vehicle adaptations, mobility scooters and wheelchairs from Heathrow & Ferndown. Motability accredited. Home and branch demonstrations available.",
-  icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/favicon-48x48.png", sizes: "48x48", type: "image/png" },
-      { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
-    ],
-    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
-  },
+    "UK specialists in lightweight, folding and travel-friendly mobility scooters and electric wheelchairs. Nationwide delivery and VAT relief support.",
   openGraph: {
     type: "website",
     locale: "en_GB",
-    siteName: "Mobility Station",
-    title: "Mobility Station | Adaptations, Scooters & Wheelchairs",
-    description:
-      "Vehicle adaptations, scooters and wheelchairs from Heathrow & Ferndown. Motability accredited dealer.",
+    siteName: "Lightweight Mobility",
+    title: "Lightweight Mobility | Folding Scooters & Electric Wheelchairs",
+    description: "Lightweight mobility products chosen for easier lifting, folding, travel and car-boot transport.",
   },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en-GB" className={`${manrope.variable} h-full`} data-scroll-behavior="smooth">
-      <body className="min-h-full flex flex-col font-sans antialiased">
-        <CartProvider>
-          <SiteHeader />
-          <main className="relative z-0 flex-1 overflow-x-clip">{children}</main>
-          <SiteFooter />
-          <CartDrawer />
-          <CookieConsentBanner />
-          <Analytics />
-          <SpeedInsights />
-        </CartProvider>
+    <html lang="en-GB" className={`${manrope.variable} h-full`}>
+      <body className="min-h-full bg-[#fbfcfa] font-sans text-slate-950 antialiased">
+        <LightweightHeader />
+        <main>{children}</main>
+        <LightweightFooter />
+        <SpeedInsights />
       </body>
     </html>
   );
