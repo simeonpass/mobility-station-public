@@ -27,12 +27,9 @@ export async function POST(request: Request) {
 
     const data = parsed.data;
 
-    if (data.company_website?.trim()) {
-      return NextResponse.json({
-        success: true,
-        bookingRef: newBookingRef(),
-      });
-    }
+    // Never return a fake success solely because an off-screen field was filled.
+    // Autofill tools can populate honeypots; the shared enquiry service applies
+    // its own content-based spam checks without risking a lost genuine lead.
 
     const coverage = await lookupCoverage(data.postcode);
     if (coverage.kind === "not-found") {
