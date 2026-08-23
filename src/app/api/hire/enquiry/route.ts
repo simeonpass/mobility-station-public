@@ -134,9 +134,9 @@ export async function POST(request: Request) {
     const data = parsed.data;
     const bookingRef = createBookingRef().replace(/^DEMO-/, "HIRE-");
 
-    if (data.company_website?.trim()) {
-      return NextResponse.json({ success: true, bookingRef });
-    }
+    // Do not silently discard a genuine hire enquiry if browser autofill fills
+    // the legacy off-screen honeypot. The shared enquiry service performs its
+    // own content-based spam filtering server-side.
 
     const message = `${buildHireMessage(data)}\nBooking Ref: ${bookingRef}`;
 
@@ -171,7 +171,6 @@ export async function POST(request: Request) {
         addressLine1: data.addressLine1 || undefined,
         addressLine2: data.addressLine2 || undefined,
         city: data.city || undefined,
-        company_website: data.company_website || "",
         bookingRef,
       }),
     });
