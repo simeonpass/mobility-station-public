@@ -92,7 +92,13 @@ export default async function ProductPage({ params, searchParams }: Props) {
   if (!product) notFound();
 
   const price = displayPrice(product);
-  const stock = stockStatus(product);
+  const x12InStock = [
+    "xsto-x12-all-terrain-mobility-robot",
+    "xsto-x12-pro-all-terrain-mobility-robot",
+  ].includes(product.slug);
+  const stock = x12InStock
+    ? ({ label: "In stock", available: true } as const)
+    : stockStatus(product);
   const used = isUsedCondition(product.condition);
   const adaptation = isAdaptationProduct(product);
   const adaptationSection = findSectionForCategory(product.category);
