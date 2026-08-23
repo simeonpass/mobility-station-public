@@ -2,7 +2,6 @@
 
 import { redirect } from "next/navigation";
 import { enquirySchema } from "@/lib/schema";
-import { checkEnquirySpam } from "@/lib/spam";
 import { hasSupabase } from "@/lib/supabase";
 
 export type ActionState = {
@@ -42,32 +41,6 @@ function buildEnquiryMessage(data: {
   return lines.join("\n");
 }
 
-function fakeSuccess(
-  enquiryType: string,
-  inline: boolean,
-): ActionState | never {
-  if (inline) {
-    return {
-      success: true,
-      message:
-        enquiryType === "callback"
-          ? "Thanks — we’ll call you back shortly during opening hours."
-          : "Thanks — we’ve received your message and will be in touch soon.",
-    };
-  }
-
-  const thankYouPaths: Record<string, string> = {
-    demo: "/book-a-demo/thank-you",
-    service: "/book-a-service/thank-you",
-    contact: "/contact?sent=1",
-    hire: "/contact?sent=1",
-    "trade-in": "/contact?sent=1",
-    callback: "/contact?sent=callback#callback",
-  };
-
-  redirect(thankYouPaths[enquiryType] ?? "/contact?sent=1");
-}
-
 export async function submitEnquiry(
   _prev: ActionState,
   formData: FormData,
@@ -86,18 +59,11 @@ export async function submitEnquiry(
   const data = parsed.data;
   const inline = String(formData.get("inline") ?? "") === "1";
 
-  const spam = checkEnquirySpam({
-    honeypot: data.website,
-    formStartedAt: data.form_started_at,
-    name: data.name,
-    message: data.message,
-  });
-
-  if (spam.spam) {
-    // Pretend success so bots do not learn how to bypass checks.
-    console.info("Enquiry blocked as spam", { reason: spam.reason });
-    return fakeSuccess(data.enquiry_type, inline);
-  }
+  // Do not silently discard a valid customer enquiry because an off-screen
+  // honeypot or timing field was populated unexpectedly by autofill, password
+  // managers, bfcache or hydration timing. The Supabase enquiry endpoint has a
+  // separate content-based spam filter, so genuine leads always reach the
+  // backend instead of receiving a false "success" response.
 
   const email = data.email?.trim() || "not provided";
   const message = buildEnquiryMessage({
