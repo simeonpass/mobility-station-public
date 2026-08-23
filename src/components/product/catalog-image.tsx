@@ -4,6 +4,10 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 const PLACEHOLDER = "/placeholder-product.svg";
+const MIGRATED_SUPABASE_STORAGE_PREFIX =
+  "https://evgvbvvpiculuizvvqyh.supabase.co/storage/v1/object/public/";
+const R2_PUBLIC_PREFIX =
+  "https://pub-d0fa88fa71f044d9a9fc37a3c9d5fe47.r2.dev/";
 
 function isLocalSrc(src: string) {
   return src.startsWith("/") && !src.startsWith("//");
@@ -18,6 +22,12 @@ function isHttpSrc(src: string) {
  * R2 assets are already resized by the admin pipeline.
  */
 function normalizeRemoteSrc(src: string): string {
+  // V1 storage was migrated to R2. Keep catalogue cards resilient if a stale
+  // Supabase public URL is ever written back into a product record.
+  if (src.startsWith(MIGRATED_SUPABASE_STORAGE_PREFIX)) {
+    return `${R2_PUBLIC_PREFIX}${src.slice(MIGRATED_SUPABASE_STORAGE_PREFIX.length)}`;
+  }
+
   try {
     const url = new URL(src);
     const host = url.hostname.toLowerCase();
