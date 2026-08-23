@@ -27,15 +27,9 @@ export async function POST(request: Request) {
 
     const booking = parsed.data;
 
-    // Honeypot — backend spam filter + silent discard for bots.
-    if (booking.company_website?.trim()) {
-      return NextResponse.json({
-        success: true,
-        bookingRef: newBookingRef(),
-        feeGbp: 0,
-        requiresPayment: false,
-      });
-    }
+    // Do not silently discard bookings based only on the legacy honeypot field.
+    // Browser/password-manager autofill can populate off-screen fields. The shared
+    // enquiry service still applies its content-based spam checks server-side.
 
     if (booking.location === "home") {
       const coverage = await assertHomeDemoInArea(booking.postcode);
