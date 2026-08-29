@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { BrandLogo } from "@/components/product/brand-logo";
 import { CatalogImage } from "@/components/product/catalog-image";
 import { MotabilityLogo } from "@/components/product/motability-logo";
@@ -23,16 +24,11 @@ export function ProductCard({ product }: { product: ProductListItem }) {
 
   const headline = vat.mode === "always-inc" ? vat.gross : vat.net;
   const wasHeadline = vat.mode === "always-inc" ? vat.wasGross : vat.wasNet;
-
   const clearanceMeta = used
-    ? [
-        conditionLabel(product.condition),
-        grade ? `Grade ${grade.id}` : null,
-      ]
+    ? [conditionLabel(product.condition), grade ? `Grade ${grade.id}` : null]
         .filter(Boolean)
         .join(" · ")
     : null;
-
   const saveAmount =
     wasHeadline != null && headline != null && wasHeadline > headline
       ? wasHeadline - headline
@@ -41,124 +37,113 @@ export function ProductCard({ product }: { product: ProductListItem }) {
   return (
     <Link
       href={`/products/${product.slug}`}
-      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-white transition-[border-color,box-shadow] duration-200 hover:border-primary/25 hover:shadow-[0_16px_40px_-24px_rgba(0,63,67,0.45)]"
+      className="group flex h-full flex-col overflow-hidden rounded-[1.5rem] border border-border bg-white transition-all duration-300 hover:-translate-y-0.5 hover:border-black/15 hover:shadow-[0_22px_55px_-36px_rgba(0,0,0,0.38)]"
     >
-      <div className="relative aspect-square overflow-hidden bg-white">
+      <div className="relative aspect-square overflow-hidden bg-[#f8f8f8]">
         <CatalogImage
           src={img}
           alt={product.name}
           fill
           sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
-          className="object-contain p-1.5 scale-[1.12] transition-transform duration-300 group-hover:scale-[1.16]"
+          className="object-contain p-4 transition-transform duration-500 group-hover:scale-[1.035]"
         />
 
-        {/* Hover slide-up — Lovable-style */}
-        <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 flex translate-y-full items-center justify-center bg-primary px-3 py-3 text-sm font-semibold text-primary-foreground transition-transform duration-300 ease-out group-hover:translate-y-0"
-          aria-hidden
-        >
-          View product →
-        </div>
-
         {used ? (
-          <span className="absolute left-2.5 top-2.5 rounded-md bg-error px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+          <span className="absolute left-3 top-3 rounded-full bg-black px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-white">
             Clearance
           </span>
         ) : saveAmount != null ? (
-          <span className="absolute left-2.5 top-2.5 rounded-md bg-error px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+          <span className="absolute left-3 top-3 rounded-full bg-accent px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-black">
             Save {formatGBP(saveAmount)}
           </span>
         ) : wasHeadline ? (
-          <span className="absolute left-2.5 top-2.5 rounded-md bg-primary px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary-foreground">
+          <span className="absolute left-3 top-3 rounded-full bg-black px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-white">
             Sale
           </span>
         ) : null}
 
         {!stock.available ? (
-          <div className="absolute inset-0 flex items-center justify-center bg-white/60">
-            <span className="rounded-full bg-soft px-3 py-1 text-sm font-medium text-muted">
+          <div className="absolute inset-0 flex items-center justify-center bg-white/65 backdrop-blur-[1px]">
+            <span className="rounded-full border border-border bg-white px-3 py-1 text-xs font-semibold text-muted">
               {stock.label}
             </span>
           </div>
         ) : null}
       </div>
 
-      <div className="flex flex-1 flex-col gap-3 p-5">
-        <div className="space-y-2">
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
+        <div>
           {product.category ? (
-            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted">
               {product.category}
             </p>
           ) : getBrandLogo(product.manufacturer) ? (
-            <BrandLogo manufacturer={product.manufacturer} height={24} />
+            <BrandLogo manufacturer={product.manufacturer} height={22} />
           ) : product.manufacturer ? (
-            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted">
               {product.manufacturer}
             </p>
           ) : null}
 
           {clearanceMeta ? (
-            <p className="text-xs font-medium text-muted">{clearanceMeta}</p>
+            <p className="mt-2 text-xs font-medium text-muted">{clearanceMeta}</p>
           ) : null}
 
-          <h3 className="line-clamp-2 min-h-[2.75rem] text-[15px] font-bold leading-snug text-primary">
+          <h3 className="mt-2 line-clamp-2 min-h-[2.9rem] text-base font-bold leading-snug tracking-[-0.01em] text-primary sm:text-[17px]">
             {product.name}
           </h3>
         </div>
 
-        <div className="space-y-3">
+        <div className="mt-5 border-t border-border pt-4">
           {headline != null ? (
             <div>
-              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
                 <span className="text-xs text-muted">From</span>
-                <span className="text-xl font-extrabold tabular-nums text-primary">
+                <span className="text-2xl font-extrabold tracking-[-0.03em] tabular-nums text-primary">
                   {formatGBP(headline)}
                 </span>
                 {wasHeadline ? (
-                  <span className="text-sm text-muted line-through">
+                  <span className="text-xs text-muted line-through">
                     RRP {formatGBP(wasHeadline)}
                   </span>
                 ) : null}
               </div>
               {vat.mode === "relief" ? (
-                <p className="mt-1 text-xs text-muted">ex VAT</p>
-              ) : null}
-              {vat.mode === "always-inc" ? (
-                <p className="mt-1 text-xs text-muted">inc. VAT</p>
-              ) : null}
-              {vat.mode === "no-vat" ? (
+                <p className="mt-1 text-xs text-muted">with VAT relief · ex VAT</p>
+              ) : vat.mode === "always-inc" ? (
+                <p className="mt-1 text-xs text-muted">including VAT</p>
+              ) : vat.mode === "no-vat" ? (
                 <p className="mt-1 text-xs text-muted">No VAT</p>
               ) : null}
             </div>
           ) : (
-            <span className="text-xl font-extrabold text-primary">POA</span>
+            <span className="text-2xl font-extrabold text-primary">POA</span>
           )}
 
-          {product.motability_weekly_price != null &&
-          product.motability_weekly_price > 0 ? (
-            <p className="flex flex-wrap items-center gap-2.5 text-sm text-muted">
-              <span>
-                or {formatGBP(product.motability_weekly_price)}/week on
-              </span>
-              <MotabilityLogo height={26} className="shrink-0" />
+          {product.motability_weekly_price != null && product.motability_weekly_price > 0 ? (
+            <p className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted">
+              <span>or {formatGBP(product.motability_weekly_price)}/week on</span>
+              <MotabilityLogo height={23} className="shrink-0" />
             </p>
           ) : product.motability_price === 0 ? (
-            <p className="flex flex-wrap items-center gap-2.5 text-sm text-muted">
+            <p className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted">
               <span>Free on</span>
-              <MotabilityLogo height={26} className="shrink-0" />
+              <MotabilityLogo height={23} className="shrink-0" />
             </p>
-          ) : product.motability_price != null &&
-            product.motability_price > 0 ? (
-            <p className="flex flex-wrap items-center gap-2.5 text-sm text-muted">
+          ) : product.motability_price != null && product.motability_price > 0 ? (
+            <p className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted">
               <span>{formatGBP(product.motability_price)} on</span>
-              <MotabilityLogo height={26} className="shrink-0" />
+              <MotabilityLogo height={23} className="shrink-0" />
             </p>
           ) : null}
         </div>
 
-        <span className="mt-auto inline-flex w-full items-center justify-center rounded-xl bg-primary px-3 py-3 text-sm font-semibold text-primary-foreground transition-colors group-hover:bg-primary-dark">
-          View &amp; Buy →
-        </span>
+        <div className="mt-auto flex items-center justify-between gap-3 pt-5 text-sm font-bold text-primary">
+          <span>{stock.available ? stock.label : "View details"}</span>
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-black transition-transform duration-300 group-hover:translate-x-1">
+            <ArrowRight className="h-4 w-4" aria-hidden />
+          </span>
+        </div>
       </div>
     </Link>
   );
