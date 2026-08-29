@@ -93,25 +93,63 @@ export function HomeHero({
         </div>
 
         <div className="animate-[fadeRise_850ms_ease-out]">
-          <div className="relative overflow-hidden rounded-[2rem] bg-soft">
-            {/* eslint-disable-next-line @next/next/no-img-element -- local hero asset; intentionally unoptimised for LCP */}
-            <img
-              src="/images/hero-options/06-customer-handover.png"
-              alt="Mobility Station adviser with a customer in an adapted car"
-              width={1200}
-              height={900}
-              className="aspect-[4/3] h-full w-full object-cover object-[50%_35%]"
-              decoding="async"
-              fetchPriority="high"
-            />
-            <div className="absolute inset-x-5 bottom-5 rounded-2xl bg-black/82 px-5 py-4 text-white backdrop-blur-sm sm:inset-x-7 sm:bottom-7 sm:px-6 sm:py-5">
-              <p className="text-sm font-semibold uppercase tracking-[0.12em] text-accent">
-                Two specialist branches
-              </p>
-              <p className="mt-1 text-base font-semibold sm:text-lg">
-                Heathrow &amp; Ferndown · Home demonstrations available
-              </p>
+          <div className="grid h-[480px] grid-cols-5 grid-rows-2 gap-3 sm:h-[560px] sm:gap-4 lg:h-[590px]">
+            <div className="relative col-span-3 row-span-2 overflow-hidden rounded-[2rem] bg-soft">
+              {/* eslint-disable-next-line @next/next/no-img-element -- local hero asset */}
+              <img
+                src="/images/hero-options/06-customer-handover.png"
+                alt="Mobility Station adviser with a customer in an adapted car"
+                width={900}
+                height={1200}
+                className="h-full w-full object-cover object-[50%_35%]"
+                decoding="async"
+                fetchPriority="high"
+              />
+              <div className="absolute inset-x-4 bottom-4 rounded-2xl bg-black/80 px-4 py-3 text-white backdrop-blur-sm sm:inset-x-5 sm:bottom-5 sm:px-5 sm:py-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.13em] text-accent sm:text-xs">
+                  Vehicle adaptations
+                </p>
+                <p className="mt-1 text-sm font-semibold sm:text-base">
+                  Specialist fitting &amp; support
+                </p>
+              </div>
             </div>
+
+            <div className="relative col-span-2 overflow-hidden rounded-[1.6rem] bg-soft">
+              {/* eslint-disable-next-line @next/next/no-img-element -- local hero asset */}
+              <img
+                src="/images/hero-options/03-scooter-handover.png"
+                alt="Home demonstration of a mobility scooter"
+                width={700}
+                height={500}
+                className="h-full w-full object-cover object-[55%_40%]"
+                loading="eager"
+                decoding="async"
+              />
+              <span className="absolute bottom-3 left-3 rounded-full bg-white/92 px-3 py-1.5 text-[11px] font-bold text-primary shadow-sm backdrop-blur sm:bottom-4 sm:left-4 sm:text-xs">
+                Scooters &amp; wheelchairs
+              </span>
+            </div>
+
+            <div className="relative col-span-2 overflow-hidden rounded-[1.6rem] bg-soft">
+              {/* eslint-disable-next-line @next/next/no-img-element -- local hero asset */}
+              <img
+                src="/images/hero-options/05-hand-controls.png"
+                alt="Steering aid and hand controls fitted in a vehicle"
+                width={700}
+                height={500}
+                className="h-full w-full object-cover object-center"
+                loading="eager"
+                decoding="async"
+              />
+              <span className="absolute bottom-3 left-3 rounded-full bg-black/78 px-3 py-1.5 text-[11px] font-bold text-white backdrop-blur sm:bottom-4 sm:left-4 sm:text-xs">
+                Driving controls
+              </span>
+            </div>
+          </div>
+          <div className="mt-4 flex items-center justify-between gap-4 px-1 text-xs font-semibold uppercase tracking-[0.12em] text-muted">
+            <span>Heathrow &amp; Ferndown</span>
+            <span>Home demonstrations available</span>
           </div>
         </div>
       </div>
