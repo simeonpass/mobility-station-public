@@ -1,51 +1,5 @@
 import Link from "next/link";
 import { TRUST_ITEMS } from "@/data/content";
-
 export function TrustStrip() {
-  return (
-    <section
-      className="border-y border-border bg-[#f7f7f7] py-5 text-primary"
-      aria-label="Trust highlights"
-    >
-      <div className="container-site">
-        <ul className="grid gap-x-8 gap-y-3 sm:grid-cols-2 lg:grid-cols-4">
-          {TRUST_ITEMS.map((item) => {
-            const isDemo = item === "Free Home Demonstrations";
-            return (
-              <li
-                key={item}
-                className="flex items-center gap-3 text-sm font-semibold md:text-[0.95rem]"
-              >
-                <span
-                  className="inline-block h-2 w-2 shrink-0 rounded-full bg-accent"
-                  aria-hidden
-                />
-                {isDemo ? (
-                  <Link
-                    href="/book-a-demo#demo-terms"
-                    className="transition-opacity hover:opacity-65"
-                  >
-                    Free Home Demonstrations*
-                  </Link>
-                ) : (
-                  item
-                )}
-              </li>
-            );
-          })}
-        </ul>
-        <p className="mt-3 text-[11px] leading-relaxed text-muted">
-          * Free demonstrations at our Heathrow and Ferndown branches. Home
-          demonstrations are £195 — deducted in full if you go ahead. Waived
-          for the Motability Powered Wheelchair &amp; Scooter Scheme.{" "}
-          <Link
-            href="/book-a-demo#demo-terms"
-            className="font-medium text-primary underline underline-offset-2"
-          >
-            Full terms
-          </Link>
-        </p>
-      </div>
-    </section>
-  );
+  return <section className="border-y border-border bg-[#f7f7f7] py-5 text-primary" aria-label="Trust highlights"><div className="container-site"><ul className="grid gap-x-8 gap-y-3 sm:grid-cols-2 lg:grid-cols-4">{TRUST_ITEMS.map((item) => { const isDemo = item === "Free Home Demonstrations"; return <li key={item} className="flex items-center gap-3 text-sm font-semibold md:text-[0.95rem]"><span className="inline-block h-2 w-2 shrink-0 rounded-full bg-accent" aria-hidden />{isDemo ? <Link href="/book-a-demo#demo-terms" className="transition-opacity hover:opacity-65">Free branch demonstrations</Link> : item}</li>; })}</ul><p className="mt-3 text-[11px] leading-relaxed text-muted">Branch demonstrations at Heathrow and Ferndown are free. Home demonstrations are £195 — deducted in full if you go ahead, and waived for the Motability Powered Wheelchair &amp; Scooter Scheme. <Link href="/book-a-demo#demo-terms" className="font-medium text-primary underline underline-offset-2">Full terms</Link></p></div></section>;
 }
