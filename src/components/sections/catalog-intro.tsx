@@ -19,18 +19,22 @@ export function CatalogIntro({
   subtitle: string;
   primary: CatalogCta;
   secondary: CatalogCta;
-  /** Optional popup/button instead of the primary link. */
   primaryAction?: ReactNode;
 }) {
   return (
-    <section className="border-b border-border bg-gradient-to-b from-primary-soft/80 to-white">
-      <div className="container-site py-10 md:py-14">
-        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <div className="max-w-2xl">
-            <h1 className="text-4xl font-extrabold tracking-tight text-primary md:text-5xl">
+    <section className="border-b border-border bg-white">
+      <div className="container-site py-14 md:py-20 lg:py-24">
+        <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-3xl">
+            <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-muted">
+              Mobility Station · Shop
+            </p>
+            <h1 className="text-balance text-5xl font-extrabold leading-[0.98] tracking-[-0.045em] text-primary md:text-6xl lg:text-7xl">
               {title}
             </h1>
-            <p className="mt-3 text-base text-muted md:text-lg">{subtitle}</p>
+            <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted md:text-xl">
+              {subtitle}
+            </p>
           </div>
           <div className="flex flex-wrap gap-3">
             {primaryAction ?? (
