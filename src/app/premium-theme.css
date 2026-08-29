@@ -1,0 +1,65 @@
+/*
+ * Mobility Station premium public-site theme
+ *
+ * A restrained black / white visual system with Mobility Station lime used
+ * as the buying and interaction accent. This file intentionally overrides
+ * only presentation tokens and a handful of surface treatments; checkout,
+ * product data, forms and application behaviour are untouched.
+ */
+
+:root {
+  /* Core brand */
+  --primary: #111111;
+  --primary-dark: #000000;
+  --primary-soft: #f5f5f7;
+  --accent: #8cd63f;
+  --accent-hover: #9fe253;
+  --accent-on-dark: #8cd63f;
+  --accent-on-dark-hover: #a7eb62;
+  --buy: #8cd63f;
+  --buy-hover: #9fe253;
+  --buy-foreground: #111111;
+  --tertiary: #8cd63f;
+  --footer: #111111;
+  --footer-foreground: #ffffff;
+
+  /* Premium neutral surfaces */
+  --background: #ffffff;
+  --soft: #f6f6f6;
+  --border: #e5e5e5;
+
+  /* Text */
+  --foreground: #111111;
+  --muted: #6e6e73;
+
+  /* Slightly softer geometry */
+  --radius: 0.75rem;
+}
+
+/* Keep page chrome crisp rather than coloured/shadow-heavy. */
+header {
+  box-shadow: 0 8px 28px -18px rgb(0 0 0 / 0.26) !important;
+}
+
+/* Remove the previous teal cast from the reusable hero mesh. */
+.bg-hero-mesh {
+  background:
+    radial-gradient(ellipse 70% 55% at 90% 15%, rgb(140 214 63 / 0.08), transparent 55%),
+    linear-gradient(165deg, #f6f6f6 0%, #ffffff 48%, #f5f5f7 100%);
+}
+
+/* Cards should feel editorial/product-led rather than dashboard-like. */
+:is(article, section) .shadow-sm {
+  box-shadow: 0 8px 30px -24px rgb(0 0 0 / 0.28);
+}
+
+/* Make focus states retain the Mobility Station identity without flooding UI. */
+:focus-visible {
+  outline-color: var(--accent);
+}
+
+/* Refine selection to match the new monochrome + lime system. */
+::selection {
+  background: rgb(140 214 63 / 0.34);
+  color: #111111;
+}
