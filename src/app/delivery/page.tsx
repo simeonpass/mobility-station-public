@@ -1,218 +1,23 @@
 import Link from "next/link";
-import {
-  AlertTriangle,
-  CheckCircle2,
-  Clock,
-  MapPin,
-  Package,
-  Phone,
-  RotateCcw,
-  ShieldCheck,
-  Truck,
-} from "lucide-react";
+import { AlertTriangle, CheckCircle2, Clock, MapPin, Package, Phone, RotateCcw, ShieldCheck, Truck } from "lucide-react";
 import { DeliveryChecker } from "@/components/product/delivery-checker";
 import { CtaFooter } from "@/components/sections/cta-footer";
-import { Hero } from "@/components/sections/hero";
 import { createMetadata, jsonLdScript, SITE } from "@/lib/seo";
 
-export const metadata = createMetadata({
-  title: "Free UK Delivery on Everything",
-  description:
-    "Free delivery on every order — tracked courier for small items, free kerbside pallet for large equipment. Heathrow & Ferndown local setup.",
-  path: "/delivery",
-});
+export const metadata = createMetadata({ title: "Free UK Delivery on Everything", description: "Free delivery on every order — tracked courier for small items, free kerbside pallet for large equipment. Heathrow & Ferndown local setup.", path: "/delivery" });
 
 export default function DeliveryPage() {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: SITE.url,
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Delivery Information",
-        item: `${SITE.url}/delivery`,
-      },
-    ],
-  };
-
-  return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={jsonLdScript(jsonLd)}
-      />
-      <Hero
-        compact
-        title="Free UK delivery on everything"
-        subtitle="Free tracked courier on smaller items · Free kerbside pallet on large equipment · Full manufacturer warranty included."
-      />
-
-      <section className="pb-16 md:pb-20">
-        <div className="container-site max-w-4xl space-y-10">
-          <DeliveryChecker />
-
-          <div className="grid gap-5 md:grid-cols-3">
-            {[
-              {
-                icon: Truck,
-                title: "Next-day delivery",
-                desc: "In-stock items dispatched same day via FedEx for next-day delivery.",
-              },
-              {
-                icon: Clock,
-                title: "Manufacturer direct",
-                desc: "Items shipped from the manufacturer typically arrive within 3–5 working days.",
-              },
-              {
-                icon: MapPin,
-                title: "Local delivery",
-                desc: "Large mobility equipment delivered and set up within our local service area.",
-              },
-            ].map((item) => (
-              <div
-                key={item.title}
-                className="rounded-xl border border-border bg-white p-6 text-center"
-              >
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft">
-                  <item.icon className="h-6 w-6 text-primary" />
-                </div>
-                <h2 className="mb-1 font-bold text-primary">{item.title}</h2>
-                <p className="text-sm text-muted">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-
-          <PolicyBlock
-            icon={Package}
-            title="Stocked items — next-day delivery"
-            body="Products held in our warehouse are dispatched the same working day (orders before 2pm) via FedEx for next-day delivery. You'll receive a tracking number by email."
-            bullets={[
-              "Free delivery on all stocked items",
-              "Orders before 2pm dispatched same day (Mon–Fri)",
-              "Full tracking provided via FedEx",
-              "Signature required on delivery",
-            ]}
-          />
-
-          <PolicyBlock
-            icon={Clock}
-            title="Manufacturer-shipped items — 3 to 5 working days"
-            body="Some products ship directly from the manufacturer so you receive fresh stock with full warranty. These typically arrive within 3–5 working days."
-            bullets={[
-              "Free delivery included",
-              "Shipped direct from the manufacturer",
-              "We'll keep you updated on the expected date",
-              "Full manufacturer warranty from day one",
-            ]}
-          />
-
-          <section className="rounded-xl border border-border bg-white p-6 md:p-8">
-            <div className="flex items-start gap-4">
-              <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary-soft">
-                <MapPin className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <h2 className="mb-2 text-xl font-bold text-primary">
-                  Large items — free UK pallet delivery
-                </h2>
-                <p className="mb-4 text-muted">
-                  Mobility scooters, powered wheelchairs and other large
-                  equipment ship <strong>free on a kerbside pallet</strong>{" "}
-                  anywhere in mainland UK. Inside our local{" "}
-                  <Link
-                    href="/service-area"
-                    className="font-semibold text-primary underline"
-                  >
-                    service area
-                  </Link>{" "}
-                  around Heathrow and Ferndown we&apos;ll deliver and set up in
-                  person at no extra cost.
-                </p>
-                <div className="mb-4 rounded-lg border border-warning/30 bg-warning/10 p-4">
-                  <div className="flex items-start gap-2">
-                    <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning" />
-                    <p className="text-sm text-primary">
-                      <strong>Please note:</strong> pallet deliveries are
-                      kerbside and require a signature. Highlands &amp; Islands,
-                      Northern Ireland, Isle of Man and Channel Islands may
-                      incur a surcharge — contact us before ordering.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <PolicyBlock
-            icon={ShieldCheck}
-            title="Warranty & back-to-base service"
-            body="On-site warranty service within ~30 miles of Heathrow and ~60 miles of Ferndown. Outside those areas, repairs are back-to-base — you arrange return to us; we cover the repaired return delivery."
-            bullets={[]}
-          />
-
-          <PolicyBlock
-            icon={RotateCcw}
-            title="Returns"
-            body="Under the Consumer Contracts Regulations 2013 you have 14 days from delivery to cancel, provided the product is unused and in original packaging. Made-to-order items and fitted adaptations are excluded."
-            bullets={[]}
-          />
-
-          <div className="rounded-xl bg-soft p-6 text-center">
-            <Phone className="mx-auto mb-2 h-6 w-6 text-primary" />
-            <p className="font-semibold text-primary">Questions about delivery?</p>
-            <Link
-              href="/contact?interest=callback#callback"
-              className="mt-1 inline-block text-lg font-bold text-accent-foreground hover:underline"
-            >
-              Request a callback
-            </Link>
-          </div>
-        </div>
-      </section>
-      <CtaFooter title="Book a home demonstration" />
-    </>
-  );
+  const jsonLd = { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Home", item: SITE.url }, { "@type": "ListItem", position: 2, name: "Delivery Information", item: `${SITE.url}/delivery` }] };
+  return <>
+    <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(jsonLd)} />
+    <section className="border-b border-border bg-white"><div className="container-site py-14 md:py-20 lg:py-24"><p className="text-xs font-bold uppercase tracking-[0.18em] text-muted">Mobility Station · Delivery</p><h1 className="mt-4 max-w-4xl text-balance text-5xl font-extrabold leading-[0.98] tracking-[-0.045em] text-primary md:text-6xl lg:text-7xl">Free UK delivery.</h1><p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted md:text-xl">Tracked courier for smaller products, free kerbside pallet delivery for large equipment, and local setup around Heathrow and Ferndown.</p></div></section>
+    <section className="py-14 md:py-20"><div className="container-site max-w-5xl"><div className="rounded-[2rem] border border-border bg-soft/55 p-5 md:p-7"><DeliveryChecker /></div><div className="mt-8 grid gap-4 md:grid-cols-3">{[{icon:Truck,title:"In-stock delivery",desc:"Orders before 2pm on working days can dispatch the same day for next-day delivery."},{icon:Clock,title:"Manufacturer direct",desc:"Direct-shipped products typically arrive within 3–5 working days."},{icon:MapPin,title:"Local setup",desc:"Large equipment can be delivered and set up within our local service area."}].map(({icon:Icon,title,desc}) => <div key={title} className="rounded-2xl border border-border bg-white p-6"><span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-accent-foreground"><Icon className="h-5 w-5" /></span><h2 className="mt-5 font-bold text-primary">{title}</h2><p className="mt-2 text-sm leading-relaxed text-muted">{desc}</p></div>)}</div>
+      <div className="mt-12 space-y-4"><PolicyBlock icon={Package} title="Stocked items — next-day delivery" body="Products held in our warehouse are dispatched the same working day for qualifying orders before 2pm. You’ll receive tracking by email." bullets={["Free delivery on stocked items", "Orders before 2pm dispatched same working day where available", "Tracking provided", "Signature may be required"]} /><PolicyBlock icon={Clock} title="Manufacturer-shipped items — 3 to 5 working days" body="Some products ship directly from the manufacturer so you receive fresh stock with full warranty." bullets={["Free delivery included", "Shipped direct from the manufacturer", "Expected date communicated", "Full manufacturer warranty"]} />
+      <section className="rounded-2xl border border-border bg-white p-6 md:p-8"><div className="flex items-start gap-4"><MapPin className="mt-1 h-5 w-5 shrink-0 text-primary" /><div><h2 className="text-xl font-bold text-primary">Large items — free UK pallet delivery</h2><p className="mt-3 text-muted">Mobility scooters, powered wheelchairs and other large equipment ship <strong className="text-foreground">free on a kerbside pallet</strong> across mainland UK. Inside our local <Link href="/service-area" className="font-semibold text-primary underline">service area</Link> around Heathrow and Ferndown we can deliver and set up in person.</p><div className="mt-5 rounded-xl bg-soft p-4"><div className="flex items-start gap-2"><AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-primary" /><p className="text-sm text-muted"><strong className="text-primary">Please note:</strong> pallet deliveries are kerbside and require a signature. Highlands &amp; Islands, Northern Ireland, Isle of Man and Channel Islands may incur a surcharge.</p></div></div></div></div></section>
+      <PolicyBlock icon={ShieldCheck} title="Warranty & back-to-base service" body="On-site warranty service is available within our local support areas. Outside those areas, repairs may be back-to-base; we’ll explain the process for your product." bullets={[]} /><PolicyBlock icon={RotateCcw} title="Returns" body="Consumer cancellation rights apply where relevant. Made-to-order items, used products and fitted adaptations can have different return rules, so check the product and terms before ordering." bullets={[]} /></div>
+      <div className="mt-8 rounded-2xl bg-primary p-7 text-white"><Phone className="h-5 w-5 text-accent" /><p className="mt-4 text-xl font-bold">Questions about delivery?</p><p className="mt-2 text-sm text-white/65">Tell us the product and postcode and we’ll confirm the right delivery method.</p><Link href="/contact?interest=callback#callback" className="mt-5 inline-flex rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground">Request a callback</Link></div>
+    </div></section><CtaFooter title="Book a home demonstration" />
+  </>;
 }
 
-function PolicyBlock({
-  icon: Icon,
-  title,
-  body,
-  bullets,
-}: {
-  icon: typeof Package;
-  title: string;
-  body: string;
-  bullets: string[];
-}) {
-  return (
-    <section className="rounded-xl border border-border bg-white p-6 md:p-8">
-      <div className="flex items-start gap-4">
-        <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary-soft">
-          <Icon className="h-5 w-5 text-primary" />
-        </div>
-        <div>
-          <h2 className="mb-2 text-xl font-bold text-primary">{title}</h2>
-          <p className="mb-4 text-muted">{body}</p>
-          {bullets.length ? (
-            <ul className="space-y-2 text-sm text-muted">
-              {bullets.map((b) => (
-                <li key={b} className="flex items-start gap-2">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                  {b}
-                </li>
-              ))}
-            </ul>
-          ) : null}
-        </div>
-      </div>
-    </section>
-  );
-}
+function PolicyBlock({ icon: Icon, title, body, bullets }: { icon: typeof Package; title:string; body:string; bullets:string[] }) { return <section className="rounded-2xl border border-border bg-white p-6 md:p-8"><div className="flex items-start gap-4"><Icon className="mt-1 h-5 w-5 shrink-0 text-primary" /><div><h2 className="text-xl font-bold text-primary">{title}</h2><p className="mt-3 leading-relaxed text-muted">{body}</p>{bullets.length ? <ul className="mt-5 grid gap-2 text-sm text-muted sm:grid-cols-2">{bullets.map((b) => <li key={b} className="flex items-start gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />{b}</li>)}</ul> : null}</div></div></section>; }
