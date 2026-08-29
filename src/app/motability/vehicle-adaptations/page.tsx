@@ -4,332 +4,36 @@ import { AdaptationCard } from "@/components/product/adaptation-card";
 import { MotabilityLogo } from "@/components/product/motability-logo";
 import { CatalogIntro } from "@/components/sections/catalog-intro";
 import { CtaFooter } from "@/components/sections/cta-footer";
-import {
-  getAdaptationProducts,
-  type ProductListItem,
-} from "@/lib/products";
+import { getAdaptationProducts, type ProductListItem } from "@/lib/products";
 import { createMetadata, jsonLdScript } from "@/lib/seo";
 
 export const revalidate = 300;
-
-export const metadata = createMetadata({
-  title: "Motability Vehicle Adaptations",
-  description:
-    "Motability driving, access and stowage adaptations — including £0 advance payment options. Assessed and fitted at Heathrow & Ferndown.",
-  path: "/motability/vehicle-adaptations",
-});
-
-function isMotabilityAdaptation(p: ProductListItem) {
-  return p.motability_price != null;
-}
-
+export const metadata = createMetadata({ title: "Motability Vehicle Adaptations", description: "Motability driving, access and stowage adaptations — including £0 advance payment options. Assessed and fitted at Heathrow & Ferndown.", path: "/motability/vehicle-adaptations" });
+function isMotabilityAdaptation(p: ProductListItem) { return p.motability_price != null; }
 const BENEFITS = [
-  {
-    icon: Wallet,
-    title: "Advance payment, not a shop price",
-    body: "On Motability adaptations you may see a £0 or contribution advance payment — not the private retail fitting price.",
-  },
-  {
-    icon: BadgeCheck,
-    title: "Quoted against your car",
-    body: "Compatibility matters. We check your vehicle before confirming what can be fitted on the scheme.",
-  },
-  {
-    icon: CarFront,
-    title: "Fitted by our engineers",
-    body: "Hand controls, access aids and stowage solutions are assessed and fitted from Heathrow and Ferndown.",
-  },
+  { icon: Wallet, title: "Advance payment", body: "Motability figures are scheme contributions, not the private retail fitting price." },
+  { icon: BadgeCheck, title: "Checked against your car", body: "We confirm vehicle compatibility before any adaptation is agreed." },
+  { icon: CarFront, title: "Fitted by our engineers", body: "Driving, access and stowage solutions are assessed and fitted from Heathrow and Ferndown." },
 ] as const;
-
 const FAQS = [
-  {
-    q: "What does advance payment mean?",
-    a: "It’s the Motability contribution figure for that adaptation on the scheme — not the private purchase price. Many popular adaptations are £0 advance payment where you are eligible.",
-  },
-  {
-    q: "Are Motability adaptation demos free?",
-    a: "Branch visits are free. Home demonstrations are £195 flat — non-refundable, but deducted in full from your price if you go ahead. We’ll confirm when we book.",
-  },
-  {
-    q: "Can any car be adapted on Motability?",
-    a: "Not always. We assess your vehicle first and only quote once we’ve confirmed compatibility and scheme eligibility.",
-  },
-  {
-    q: "Do you also supply Motability scooters and wheelchairs?",
-    a: "Yes — those use weekly allowance pricing on a separate Motability catalogue.",
-  },
+  { q: "What does advance payment mean?", a: "It’s the Motability contribution figure for that adaptation on the scheme, not the private purchase price. Many popular adaptations are £0 advance payment where eligible." },
+  { q: "Are Motability adaptation demos free?", a: "Branch visits are free. Home demonstrations are £195 flat, non-refundable but deducted in full if you go ahead. We’ll confirm the applicable arrangement when booking." },
+  { q: "Can any car be adapted on Motability?", a: "Not always. We assess the vehicle first and only quote once compatibility and scheme eligibility are confirmed." },
+  { q: "Do you also supply Motability scooters and wheelchairs?", a: "Yes — those use weekly allowance pricing on a separate Motability catalogue." },
 ] as const;
+function Visual() { return <div className="grid h-[390px] grid-cols-5 grid-rows-2 gap-3 sm:h-[470px] sm:gap-4 lg:h-[500px]"><div className="relative col-span-3 row-span-2 overflow-hidden rounded-[2rem] bg-soft"><img src="/images/hero-options/06-customer-handover.png" alt="Vehicle adaptation customer support" className="h-full w-full object-cover object-[50%_35%]" width={900} height={1100} /><div className="absolute inset-x-4 bottom-4 rounded-2xl bg-black/82 p-4 text-white sm:inset-x-5 sm:bottom-5 sm:p-5"><MotabilityLogo variant="white" height={20} /><p className="mt-3 text-sm font-semibold">Assessed, fitted and supported.</p></div></div><div className="relative col-span-2 overflow-hidden rounded-[1.6rem] bg-soft"><img src="/images/hero-options/05-hand-controls.png" alt="Vehicle hand controls" className="h-full w-full object-cover" width={700} height={500} /></div><div className="relative col-span-2 overflow-hidden rounded-[1.6rem] bg-soft"><img src="/images/hero-options/07-swivel-seat.png" alt="Vehicle swivel seat" className="h-full w-full object-cover" width={700} height={500} /></div></div>; }
 
 export default async function MotabilityAdaptationsPage() {
-  let products: ProductListItem[] = [];
-  try {
-    const all = await getAdaptationProducts({ limit: 300 });
-    products = all
-      .filter(isMotabilityAdaptation)
-      .sort((a, b) => {
-        const ap = a.motability_price ?? 99999;
-        const bp = b.motability_price ?? 99999;
-        return ap - bp;
-      });
-  } catch (error) {
-    console.error("Motability adaptations catalogue error:", error);
-  }
-
-  const freeOnScheme = products.filter((p) => p.motability_price === 0);
-  const withContribution = products.filter(
-    (p) => p.motability_price != null && p.motability_price > 0,
-  );
-
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: FAQS.map((item) => ({
-      "@type": "Question",
-      name: item.q,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: item.a,
-      },
-    })),
-  };
-
-  return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={jsonLdScript(jsonLd)}
-      />
-
-      <CatalogIntro
-        title="Motability vehicle adaptations"
-        subtitle="Driving, access and stowage adaptations on the Motability Scheme — including £0 advance payment options where eligible. Assessed and fitted by our engineers."
-        primary={{
-          href: "/book-a-demo?type=adaptation",
-          label: "Book an adaptation demo",
-        }}
-        secondary={{
-          href: "/contact?interest=motability#callback",
-          label: "Request a callback",
-        }}
-      />
-
-      <section className="border-b border-border bg-white">
-        <div className="container-site py-8 md:py-10">
-          <div className="mb-6 flex flex-wrap items-center gap-3">
-            <MotabilityLogo height={28} />
-            <p className="text-sm font-semibold text-primary">
-              Adaptations on the Motability Scheme
-            </p>
-          </div>
-          <ul className="grid gap-6 md:grid-cols-3">
-            {BENEFITS.map(({ icon: Icon, title, body }) => (
-              <li key={title} className="flex gap-3">
-                <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent/15 text-primary">
-                  <Icon className="h-5 w-5" aria-hidden />
-                </span>
-                <div>
-                  <h2 className="text-base font-bold text-primary">{title}</h2>
-                  <p className="mt-1.5 text-sm leading-relaxed text-muted">
-                    {body}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-8 text-sm text-muted">
-            Looking for Motability scooters or wheelchairs instead?{" "}
-            <Link
-              href="/motability"
-              className="font-semibold text-primary underline underline-offset-2"
-            >
-              View weekly Motability packages
-            </Link>
-            .
-          </p>
-        </div>
-      </section>
-
-      <section className="border-b border-border bg-soft/40 py-10 md:py-12">
-        <div className="container-site">
-          <div className="max-w-2xl">
-            <h2 className="text-2xl font-extrabold text-primary md:text-3xl">
-              How Motability adaptations work
-            </h2>
-            <p className="mt-2 text-sm text-muted md:text-base">
-              Scheme pricing for adaptations is about advance payment and
-              eligibility — we confirm the right figure against your car before
-              any work is booked.
-            </p>
-          </div>
-          <ol className="mt-8 grid gap-6 sm:grid-cols-3">
-            {[
-              {
-                step: "1",
-                title: "Tell us about your vehicle",
-                body: "Make, model and what you need help with — driving, getting in and out, or stowing a chair.",
-              },
-              {
-                step: "2",
-                title: "Assessment & demonstration",
-                body: "We’ll check compatibility and show suitable options. Branch visits are free; home demonstrations are £195 (deducted if you go ahead).",
-              },
-              {
-                step: "3",
-                title: "Fitted by our team",
-                body: "Once you’re happy and the scheme paperwork is in place, our engineers fit and support the adaptation.",
-              },
-            ].map((item) => (
-              <li key={item.step} className="flex gap-3">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-bold text-accent-foreground">
-                  {item.step}
-                </span>
-                <div>
-                  <p className="font-semibold text-primary">{item.title}</p>
-                  <p className="mt-0.5 text-sm leading-relaxed text-muted">
-                    {item.body}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ol>
-          <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm font-semibold text-primary/90">
-            <li className="flex items-center gap-2">
-              <BadgeCheck className="h-4 w-4 text-accent" aria-hidden />
-              Accredited dealer
-            </li>
-            <li className="flex items-center gap-2">
-              <Home className="h-4 w-4 text-accent" aria-hidden />
-              Heathrow &amp; Ferndown workshops
-            </li>
-            <li className="flex items-center gap-2">
-              <CarFront className="h-4 w-4 text-accent" aria-hidden />
-              Quoted against your car
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <section className="pb-16 md:pb-20">
-        <div className="container-site pt-10 md:pt-12">
-          {products.length ? (
-            <>
-              <div className="mb-8">
-                <h2 className="text-2xl font-extrabold text-primary md:text-3xl">
-                  Motability adaptations catalogue
-                </h2>
-                <p className="mt-1 text-sm text-muted">
-                  {products.length} products · Motability advance payment figures
-                  · quotation before fitting
-                </p>
-              </div>
-
-              {freeOnScheme.length ? (
-                <div id="free" className="mb-14 scroll-under-header">
-                  <div className="mb-5 flex flex-wrap items-center gap-2">
-                    <MotabilityLogo height={22} />
-                    <h3 className="text-xl font-extrabold text-primary">
-                      £0 advance payment
-                    </h3>
-                  </div>
-                  <p className="mb-5 text-sm text-muted">
-                    Subject to eligibility and assessment.
-                  </p>
-                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-                    {freeOnScheme.map((p) => (
-                      <AdaptationCard key={p.id} product={p} />
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-
-              {withContribution.length ? (
-                <div id="contribution" className="scroll-under-header">
-                  <h3 className="mb-5 text-xl font-extrabold text-primary">
-                    With Motability contribution
-                  </h3>
-                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-                    {withContribution.map((p) => (
-                      <AdaptationCard key={p.id} product={p} />
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-            </>
-          ) : (
-            <p className="rounded-xl bg-soft px-4 py-6 text-sm text-muted">
-              Motability adaptations will appear here when available.{" "}
-              <Link
-                href="/contact?interest=motability#callback"
-                className="font-semibold text-primary underline"
-              >
-                Request a callback
-              </Link>{" "}
-              for advice, or browse the full{" "}
-              <Link
-                href="/vehicle-adaptations"
-                className="font-semibold text-primary underline"
-              >
-                adaptations catalogue
-              </Link>
-              .
-            </p>
-          )}
-
-          <p className="mt-10 text-sm text-muted">
-            Prefer the full private adaptations range?{" "}
-            <Link
-              href="/vehicle-adaptations"
-              className="font-semibold text-primary underline underline-offset-2"
-            >
-              Browse all vehicle adaptations
-            </Link>
-            .
-          </p>
-        </div>
-      </section>
-
-      <section className="border-y border-border bg-soft py-14 md:py-16">
-        <div className="container-site max-w-3xl">
-          <h2 className="text-2xl font-extrabold text-primary md:text-3xl">
-            Motability adaptations FAQs
-          </h2>
-          <dl className="mt-8 space-y-6">
-            {FAQS.map((item) => (
-              <div key={item.q}>
-                <dt className="font-bold text-primary">{item.q}</dt>
-                <dd className="mt-1.5 text-sm leading-relaxed text-muted">
-                  {item.a}
-                  {item.q.includes("scooters and wheelchairs") ? (
-                    <>
-                      {" "}
-                      <Link
-                        href="/motability"
-                        className="font-semibold text-primary underline underline-offset-2"
-                      >
-                        Motability scooters &amp; wheelchairs
-                      </Link>
-                      .
-                    </>
-                  ) : null}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-      </section>
-
-      <CtaFooter
-        title="Talk to us about Motability adaptations"
-        subtitle="We’ll check your vehicle, explain advance payment figures, and book a demonstration if you want to try options."
-        primary={{
-          href: "/book-a-demo?type=adaptation",
-          label: "Book a demonstration",
-        }}
-        secondary={{
-          href: "/contact?interest=motability#callback",
-          label: "Request a callback",
-        }}
-      />
-    </>
-  );
+  let products: ProductListItem[] = []; try { const all = await getAdaptationProducts({ limit: 300 }); products = all.filter(isMotabilityAdaptation).sort((a,b) => (a.motability_price ?? 99999) - (b.motability_price ?? 99999)); } catch (error) { console.error("Motability adaptations catalogue error:", error); }
+  const freeOnScheme = products.filter((p) => p.motability_price === 0); const withContribution = products.filter((p) => p.motability_price != null && p.motability_price > 0);
+  const jsonLd = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: FAQS.map((item) => ({ "@type": "Question", name: item.q, acceptedAnswer: { "@type": "Answer", text: item.a } })) };
+  return <>
+    <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(jsonLd)} />
+    <CatalogIntro eyebrow="Motability · Vehicle adaptations" title="Adaptations on the scheme." subtitle="Driving, access and stowage adaptations on Motability — including £0 advance payment options where eligible, fitted by our specialist engineers." primary={{ href: "/book-a-demo?type=adaptation", label: "Book an adaptation demo" }} secondary={{ href: "/contact?interest=motability#callback", label: "Request a callback" }} visual={<Visual />} />
+    <section className="border-b border-border bg-soft/45"><div className="container-site py-10 md:py-12"><div className="flex items-center gap-3"><MotabilityLogo height={28} /><p className="text-sm font-semibold text-primary">Vehicle adaptations on the Motability Scheme</p></div><ul className="mt-8 grid gap-4 md:grid-cols-3">{BENEFITS.map(({icon:Icon,title,body}) => <li key={title} className="rounded-2xl border border-border bg-white p-6"><span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-accent-foreground"><Icon className="h-5 w-5" /></span><h2 className="mt-5 text-lg font-bold text-primary">{title}</h2><p className="mt-2 text-sm leading-relaxed text-muted">{body}</p></li>)}</ul><p className="mt-7 text-sm text-muted">Looking for scooters or wheelchairs? <Link href="/motability" className="font-semibold text-primary underline">View weekly Motability packages</Link>.</p></div></section>
+    <section className="border-b border-border py-14 md:py-20"><div className="container-site"><p className="text-xs font-bold uppercase tracking-[0.16em] text-muted">From assessment to fitting</p><h2 className="mt-2 text-3xl font-extrabold tracking-tight text-primary md:text-4xl">How Motability adaptations work.</h2><ol className="mt-10 grid gap-4 sm:grid-cols-3">{[["01","Tell us about your vehicle","Make, model and what you need help with — driving, access or stowage."],["02","Assessment & demonstration","We check compatibility and show suitable options before anything is agreed."],["03","Fitted by our team","Once the scheme paperwork is in place, our engineers fit and support the adaptation."]].map(([step,title,body]) => <li key={step} className="rounded-2xl border border-border p-6"><p className="text-xs font-bold text-muted">{step}</p><h3 className="mt-5 text-lg font-bold text-primary">{title}</h3><p className="mt-2 text-sm leading-relaxed text-muted">{body}</p></li>)}</ol><ul className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm font-semibold text-primary"><li className="flex items-center gap-2"><BadgeCheck className="h-4 w-4 text-accent" />Accredited dealer</li><li className="flex items-center gap-2"><Home className="h-4 w-4 text-accent" />Heathrow &amp; Ferndown</li><li className="flex items-center gap-2"><CarFront className="h-4 w-4 text-accent" />Checked against your car</li></ul></div></section>
+    <section className="pb-16 md:pb-20"><div className="container-site pt-12 md:pt-16">{products.length ? <><div className="mb-9"><p className="text-xs font-bold uppercase tracking-[0.16em] text-muted">Current scheme options</p><h2 className="mt-2 text-3xl font-extrabold tracking-tight text-primary md:text-4xl">Motability adaptations catalogue</h2><p className="mt-2 text-sm text-muted">{products.length} products · advance payment figures · vehicle check before fitting</p></div>{freeOnScheme.length ? <div id="free" className="mb-16 scroll-under-header rounded-[2rem] bg-soft/55 p-5 sm:p-7 md:p-9"><div className="mb-6 flex flex-wrap items-center gap-3"><MotabilityLogo height={22} /><h3 className="text-2xl font-extrabold text-primary">£0 advance payment</h3></div><div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 lg:gap-6">{freeOnScheme.map((p) => <AdaptationCard key={p.id} product={p} />)}</div></div> : null}{withContribution.length ? <div id="contribution" className="scroll-under-header"><h3 className="mb-6 text-2xl font-extrabold text-primary">With Motability contribution</h3><div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 lg:gap-6">{withContribution.map((p) => <AdaptationCard key={p.id} product={p} />)}</div></div> : null}</> : <p className="rounded-xl bg-soft px-4 py-6 text-sm text-muted">Motability adaptations will appear here when available. <Link href="/contact?interest=motability#callback" className="font-semibold text-primary underline">Request a callback</Link> for advice.</p>}</div></section>
+    <section className="border-y border-border bg-soft/55 py-14 md:py-20"><div className="container-site max-w-4xl"><p className="text-xs font-bold uppercase tracking-[0.16em] text-muted">Common questions</p><h2 className="mt-2 text-3xl font-extrabold tracking-tight text-primary md:text-4xl">Motability adaptations FAQs</h2><dl className="mt-9 grid gap-x-10 gap-y-8 md:grid-cols-2">{FAQS.map((item) => <div key={item.q} className="border-t border-border pt-5"><dt className="font-bold text-primary">{item.q}</dt><dd className="mt-2 text-sm leading-relaxed text-muted">{item.a}{item.q.includes("scooters and wheelchairs") ? <> <Link href="/motability" className="font-semibold text-primary underline">Motability scooters &amp; wheelchairs</Link>.</> : null}</dd></div>)}</dl></div></section>
+    <CtaFooter title="Talk to us about Motability adaptations" subtitle="We’ll check your vehicle, explain advance payment figures, and book a demonstration if you want to try options." primary={{ href: "/book-a-demo?type=adaptation", label: "Book a demonstration" }} secondary={{ href: "/contact?interest=motability#callback", label: "Request a callback" }} />
+  </>;
 }

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Truck } from "lucide-react";
+import { ShieldCheck, Truck } from "lucide-react";
 import {
   SiApplepay,
   SiGooglepay,
@@ -14,11 +14,11 @@ import { DeliveryChecker } from "@/components/product/delivery-checker";
 import { resolveDeliveryTiming } from "@/lib/delivery-timing";
 
 const PAYMENT_ICONS = [
-  { Icon: SiVisa, label: "Visa", className: "text-[#1A1F71]" },
-  { Icon: SiMastercard, label: "Mastercard", className: "text-[#EB001B]" },
-  { Icon: SiApplepay, label: "Apple Pay", className: "text-[#111111]" },
-  { Icon: SiGooglepay, label: "Google Pay", className: "text-[#4285F4]" },
-  { Icon: SiPaypal, label: "PayPal", className: "text-[#003087]" },
+  { Icon: SiVisa, label: "Visa" },
+  { Icon: SiMastercard, label: "Mastercard" },
+  { Icon: SiApplepay, label: "Apple Pay" },
+  { Icon: SiGooglepay, label: "Google Pay" },
+  { Icon: SiPaypal, label: "PayPal" },
 ] as const;
 
 /** Cutoff hour (24h) for next-day dispatch — e.g. 14 = 2 PM */
@@ -53,7 +53,7 @@ function getNextDispatchInfo(): {
 }
 
 /**
- * One delivery card for shop PDPs: timing, postcode check, and payment icons.
+ * Delivery and payment reassurance for shop product pages.
  */
 export function ProductPurchaseReassurance({
   deliveryEstimate,
@@ -88,66 +88,73 @@ export function ProductPurchaseReassurance({
   });
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-border/70 bg-white shadow-[0_4px_20px_-12px_rgba(0,63,67,0.12)]">
-      <div className="flex items-start gap-3 px-4 py-3.5 sm:px-5">
-        <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
-          <Truck className="h-4 w-4" aria-hidden />
-        </span>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-2">
-            <p className="text-sm font-bold text-primary">Free UK delivery</p>
-            <Link
-              href="/delivery"
-              className="shrink-0 text-xs font-semibold text-primary underline-offset-2 hover:underline"
-            >
-              Info
-            </Link>
+    <div className="overflow-hidden rounded-[1.35rem] border border-border bg-white shadow-[0_16px_48px_-34px_rgba(0,0,0,0.32)]">
+      <div className="grid gap-0 sm:grid-cols-2">
+        <div className="flex items-start gap-3 px-5 py-5 sm:border-r sm:border-border sm:px-6">
+          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-buy-foreground">
+            <Truck className="h-4 w-4" aria-hidden />
+          </span>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-start justify-between gap-3">
+              <p className="text-sm font-bold text-primary">Free UK delivery</p>
+              <Link
+                href="/delivery"
+                className="shrink-0 text-xs font-semibold text-muted underline-offset-3 hover:text-primary hover:underline"
+              >
+                Delivery info
+              </Link>
+            </div>
+            {timing ? (
+              <p className="mt-1.5 text-sm leading-snug text-muted">
+                {timing.prefix}{" "}
+                <span className="font-semibold text-primary">{timing.highlight}</span>
+                {timing.suffix ? ` ${timing.suffix}` : ""}
+              </p>
+            ) : (
+              <p className="mt-1.5 text-sm leading-snug text-muted">
+                Nationwide delivery available on this product.
+              </p>
+            )}
           </div>
-          {timing ? (
-            <p className="mt-1 text-sm leading-snug text-foreground/85">
-              <span className="text-muted">{timing.prefix} </span>
-              <span className="font-semibold text-primary">
-                {timing.highlight}
-              </span>
-              {timing.suffix ? (
-                <>
-                  {" "}
-                  <span className="text-muted">{timing.suffix}</span>
-                </>
-              ) : null}
+        </div>
+
+        <div className="flex items-start gap-3 border-t border-border px-5 py-5 sm:border-t-0 sm:px-6">
+          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-soft text-primary">
+            <ShieldCheck className="h-4 w-4" aria-hidden />
+          </span>
+          <div>
+            <p className="text-sm font-bold text-primary">Buy with confidence</p>
+            <p className="mt-1.5 text-sm leading-snug text-muted">
+              UK support, secure checkout and manufacturer-backed warranty where applicable.
             </p>
-          ) : null}
+          </div>
         </div>
       </div>
 
-      <div className="border-t border-border px-4 py-3.5 sm:px-5">
-        <p className="text-xs font-semibold uppercase tracking-wide text-muted">
-          Check your postcode
-        </p>
-        <p className="mt-0.5 text-xs text-muted">
-          See if we deliver locally — or choose courier / collection at
-          checkout.
-        </p>
+      <div className="border-t border-border px-5 py-5 sm:px-6">
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
+              Check delivery to you
+            </p>
+            <p className="mt-1 text-sm text-muted">
+              Enter your postcode for local delivery, courier or collection options.
+            </p>
+          </div>
+        </div>
         <div className="mt-3">
           <DeliveryChecker weight={weight} compact />
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-3 border-t border-border bg-soft/60 px-4 py-3 sm:px-5">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted">
-          Pay with
+      <div className="flex flex-col gap-3 border-t border-border bg-soft/55 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
+          Secure payment
         </p>
-        <ul
-          className="flex items-center gap-3.5"
-          aria-label="Accepted payment methods"
-        >
-          {PAYMENT_ICONS.map(({ Icon, label, className }) => (
+        <ul className="flex items-center gap-4 text-primary" aria-label="Accepted payment methods">
+          {PAYMENT_ICONS.map(({ Icon, label }) => (
             <li key={label} title={label} className="flex items-center">
-              <Icon
-                className={`h-7 w-auto ${className}`}
-                role="img"
-                aria-label={label}
-              />
+              <Icon className="h-6 w-auto" role="img" aria-label={label} />
             </li>
           ))}
         </ul>

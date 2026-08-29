@@ -80,6 +80,61 @@ const WHY_US = [
   },
 ] as const;
 
+function AdaptationsHeroVisual() {
+  return (
+    <div className="grid h-[390px] grid-cols-5 grid-rows-2 gap-3 sm:h-[470px] sm:gap-4 lg:h-[500px]">
+      <div className="relative col-span-3 row-span-2 overflow-hidden rounded-[2rem] bg-soft">
+        {/* eslint-disable-next-line @next/next/no-img-element -- local editorial asset */}
+        <img
+          src="/images/hero-options/06-customer-handover.png"
+          alt="Mobility Station specialist supporting a customer with an adapted vehicle"
+          className="h-full w-full object-cover object-[50%_35%]"
+          width={900}
+          height={1100}
+          decoding="async"
+          fetchPriority="high"
+        />
+        <div className="absolute inset-x-4 bottom-4 rounded-2xl bg-black/82 px-4 py-3 text-white backdrop-blur-sm sm:inset-x-5 sm:bottom-5 sm:px-5 sm:py-4">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent sm:text-xs">
+            Supplied &amp; fitted
+          </p>
+          <p className="mt-1 text-sm font-semibold sm:text-base">
+            Assessed for you and your vehicle
+          </p>
+        </div>
+      </div>
+      <div className="relative col-span-2 overflow-hidden rounded-[1.6rem] bg-soft">
+        {/* eslint-disable-next-line @next/next/no-img-element -- local editorial asset */}
+        <img
+          src="/images/hero-options/05-hand-controls.png"
+          alt="Hand controls and steering aid fitted to a vehicle"
+          className="h-full w-full object-cover object-center"
+          width={700}
+          height={500}
+          decoding="async"
+        />
+        <span className="absolute bottom-3 left-3 rounded-full bg-black/80 px-3 py-1.5 text-[11px] font-bold text-white backdrop-blur sm:bottom-4 sm:left-4 sm:text-xs">
+          Driving controls
+        </span>
+      </div>
+      <div className="relative col-span-2 overflow-hidden rounded-[1.6rem] bg-soft">
+        {/* eslint-disable-next-line @next/next/no-img-element -- local editorial asset */}
+        <img
+          src="/images/hero-options/07-swivel-seat.png"
+          alt="Swivel seat vehicle adaptation"
+          className="h-full w-full object-cover object-center"
+          width={700}
+          height={500}
+          decoding="async"
+        />
+        <span className="absolute bottom-3 left-3 rounded-full bg-white/92 px-3 py-1.5 text-[11px] font-bold text-primary shadow-sm backdrop-blur sm:bottom-4 sm:left-4 sm:text-xs">
+          Access &amp; seating
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export default async function VehicleAdaptationsPage() {
   let products: Awaited<ReturnType<typeof getAdaptationProducts>> = [];
   let popular: Awaited<ReturnType<typeof getPopularAdaptations>> = [];
@@ -128,15 +183,16 @@ export default async function VehicleAdaptationsPage() {
       />
 
       <CatalogIntro
-        title="Vehicle adaptations"
-        subtitle="Hand controls, boot hoists, swivel seats and more — assessed for your car, quoted free, then fitted at our workshops or mobile where possible."
+        eyebrow="Mobility Station · Vehicle adaptations"
+        title="Adapted around you."
+        subtitle="Hand controls, boot hoists, swivel seats and more — assessed for your car, quoted clearly and fitted by our specialist team."
         primary={{
           href: "/contact?interest=adaptation",
           label: "Request a quotation",
         }}
         secondary={{
           href: "/book-a-demo?type=adaptation",
-          label: "Book a home demo",
+          label: "Book a demonstration",
         }}
         primaryAction={
           <EnquiryDialog
@@ -152,18 +208,27 @@ export default async function VehicleAdaptationsPage() {
             Request a quotation
           </EnquiryDialog>
         }
+        visual={<AdaptationsHeroVisual />}
       />
+
+      <section className="border-b border-border bg-soft/45">
+        <div className="container-site grid gap-4 py-5 text-sm sm:grid-cols-3 sm:gap-6">
+          <p><strong className="text-primary">Free quotation</strong><br /><span className="text-muted">Compatibility checked before fitting</span></p>
+          <p><strong className="text-primary">Heathrow &amp; Ferndown</strong><br /><span className="text-muted">Specialist workshop installation</span></p>
+          <p><strong className="text-primary">Motability approved</strong><br /><span className="text-muted">Scheme options across many adaptations</span></p>
+        </div>
+      </section>
 
       <CatalogSearchStrip
         type="adaptations"
-        title="Looking for a specific adaptation?"
-        subtitle="Search by product, brand or category — then browse popular fittings below."
+        title="Find the right adaptation"
+        subtitle="Search by product, brand or category — or browse driving, access and stowage solutions below."
       />
 
       {!errorMessage && popular.length > 0 ? (
         <ProductSpotlight
-          title="Popular adaptations we fit"
-          subtitle="Jump straight in — featured driving controls, hoists and access solutions."
+          title="Popular adaptations"
+          subtitle="Frequently chosen driving controls, hoists and access solutions — all checked for vehicle compatibility before fitting."
           viewAllHref="#catalogue"
           viewAllLabel="Browse full catalogue"
         >
@@ -173,148 +238,72 @@ export default async function VehicleAdaptationsPage() {
         </ProductSpotlight>
       ) : null}
 
-      <div id="catalogue" className="container-site scroll-under-header py-8 md:py-12">
+      <div id="catalogue" className="container-site scroll-under-header py-10 md:py-16">
         {errorMessage ? (
-          <p className="rounded-lg bg-soft px-4 py-3 text-sm text-primary">
+          <p className="rounded-2xl border border-border bg-soft px-5 py-4 text-sm text-primary">
             {errorMessage}
           </p>
         ) : (
           <>
-            <div
-              className="inline-flex flex-wrap rounded-full border border-border bg-white p-1 shadow-[0_1px_0_rgba(0,63,67,0.04)]"
-              role="navigation"
-              aria-label="Adaptation type"
-            >
-              <a
-                href="#catalogue"
-                className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
-              >
-                All
-              </a>
-              {ADAPTATION_SECTIONS.map((section) => {
-                const count = section.categories.reduce(
-                  (sum, cat) => sum + (byCategory.get(cat)?.length ?? 0),
-                  0,
-                );
-                if (!count) return null;
-                return (
-                  <a
-                    key={section.id}
-                    href={`#${section.id}`}
-                    className="rounded-full px-4 py-2 text-sm font-semibold text-primary transition-colors hover:bg-soft"
-                  >
-                    {section.title}
-                  </a>
-                );
-              })}
-              {freeOnMotability.length ? (
-                <a
-                  href="#free-motability"
-                  className="rounded-full px-4 py-2 text-sm font-semibold text-primary transition-colors hover:bg-soft"
-                >
-                  Free on Motability
-                </a>
-              ) : null}
+            <div className="border-b border-border pb-7">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted">Browse by adaptation type</p>
+              <div className="mt-4 flex flex-wrap gap-2" role="navigation" aria-label="Adaptation type">
+                <a href="#catalogue" className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">All</a>
+                {ADAPTATION_SECTIONS.map((section) => {
+                  const count = section.categories.reduce((sum, cat) => sum + (byCategory.get(cat)?.length ?? 0), 0);
+                  if (!count) return null;
+                  return <a key={section.id} href={`#${section.id}`} className="rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold text-primary transition-colors hover:border-primary">{section.title}</a>;
+                })}
+                {freeOnMotability.length ? <a href="#free-motability" className="rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold text-primary transition-colors hover:border-primary">£0 on Motability</a> : null}
+              </div>
             </div>
 
-            <div className="mt-6 flex flex-wrap items-end justify-between gap-3 border-y border-border bg-soft/40 py-4">
+            <div className="mt-9 flex flex-wrap items-end justify-between gap-4">
               <div>
-                <h2 className="text-2xl font-extrabold text-primary md:text-3xl">
-                  Adaptation catalogue
-                </h2>
-                <p className="mt-1 text-sm text-muted">
-                  {products.length} products · indicative supplied &amp; fitted
-                  prices · quotation before fitting
-                </p>
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted">Supplied &amp; fitted</p>
+                <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-primary md:text-4xl">Adaptation catalogue</h2>
+                <p className="mt-2 text-sm text-muted">{products.length} products · indicative fitted prices · quotation before fitting</p>
               </div>
-              <p className="max-w-sm text-sm text-muted">
-                No online checkout — every fit is checked against your vehicle
-                first.
-              </p>
+              <p className="max-w-md text-sm leading-relaxed text-muted">Every installation is checked against your vehicle first, so there is no unsuitable one-click purchase.</p>
             </div>
 
             {freeOnMotability.length > 0 ? (
-              <section id="free-motability" className="mt-10 scroll-under-header">
-                <div className="mb-6">
-                  <div className="mb-2 flex flex-wrap items-center gap-2">
-                    <MotabilityLogo height={22} />
-                    <span className="text-xs font-semibold uppercase tracking-wide text-muted">
-                      £0 advance payment
-                    </span>
-                  </div>
-                  <h3 className="text-xl font-extrabold text-primary md:text-2xl">
-                    Free on Motability
-                  </h3>
-                  <p className="mt-1 text-sm text-muted">
-                    Subject to eligibility and assessment.
-                  </p>
+              <section id="free-motability" className="mt-14 scroll-under-header rounded-[2rem] bg-soft/60 p-5 sm:p-7 md:p-9">
+                <div className="mb-7">
+                  <div className="mb-3 flex flex-wrap items-center gap-3"><MotabilityLogo height={22} /><span className="text-xs font-semibold uppercase tracking-wide text-muted">£0 advance payment</span></div>
+                  <h3 className="text-2xl font-extrabold tracking-tight text-primary md:text-3xl">£0 adaptations on Motability</h3>
+                  <p className="mt-2 text-sm text-muted">Available on qualifying scheme applications, subject to assessment and vehicle compatibility.</p>
                 </div>
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 lg:gap-6">
-                  {freeOnMotability.slice(0, 12).map((p) => (
-                    <AdaptationCard key={p.id} product={p} />
-                  ))}
+                  {freeOnMotability.slice(0, 12).map((p) => <AdaptationCard key={p.id} product={p} />)}
                 </div>
               </section>
             ) : null}
 
             {ADAPTATION_SECTIONS.map((section) => {
-              const sectionProducts = section.categories.flatMap(
-                (cat) => byCategory.get(cat) ?? [],
-              );
+              const sectionProducts = section.categories.flatMap((cat) => byCategory.get(cat) ?? []);
               if (!sectionProducts.length) return null;
               const preview = sectionProducts.slice(0, 12);
               const hasMore = sectionProducts.length > preview.length;
-
               return (
-                <section
-                  key={section.id}
-                  id={section.id}
-                  className="mt-14 scroll-under-header"
-                >
-                  <div className="mb-3">
-                    <h3 className="text-xl font-extrabold text-primary md:text-2xl">
-                      {section.title}
-                    </h3>
-                    <p className="mt-1 max-w-2xl text-sm text-muted">
-                      {section.description}
-                    </p>
-                  </div>
-
-                  <div className="mb-5 flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted">
-                    {section.categories.map((cat) => {
-                      const count = byCategory.get(cat)?.length ?? 0;
-                      if (!count) return null;
-                      return (
-                        <Link
-                          key={cat}
-                          href={adaptationHref(cat)}
-                          className="hover:text-primary hover:underline"
-                        >
-                          {cat} ({count})
-                        </Link>
-                      );
-                    })}
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 lg:gap-6">
-                    {preview.map((p) => (
-                      <AdaptationCard key={p.id} product={p} />
-                    ))}
-                  </div>
-
-                  {hasMore ? (
-                    <div className="mt-6 text-center">
-                      <Link
-                        href={sectionHref(section.id)}
-                        className={cn(
-                          "inline-flex rounded-full border border-primary px-5 py-2.5 text-sm font-semibold text-primary",
-                          "hover:bg-primary hover:text-primary-foreground",
-                        )}
-                      >
-                        View all {sectionProducts.length} in {section.title}
-                      </Link>
+                <section key={section.id} id={section.id} className="mt-16 scroll-under-header border-t border-border pt-10">
+                  <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                    <div className="max-w-2xl">
+                      <h3 className="text-2xl font-extrabold tracking-tight text-primary md:text-3xl">{section.title}</h3>
+                      <p className="mt-2 text-sm leading-relaxed text-muted">{section.description}</p>
                     </div>
-                  ) : null}
+                    <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted">
+                      {section.categories.map((cat) => {
+                        const count = byCategory.get(cat)?.length ?? 0;
+                        if (!count) return null;
+                        return <Link key={cat} href={adaptationHref(cat)} className="font-medium hover:text-primary hover:underline">{cat} ({count})</Link>;
+                      })}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 lg:gap-6">
+                    {preview.map((p) => <AdaptationCard key={p.id} product={p} />)}
+                  </div>
+                  {hasMore ? <div className="mt-7"><Link href={sectionHref(section.id)} className="inline-flex rounded-full border border-primary px-5 py-2.5 text-sm font-semibold text-primary hover:bg-primary hover:text-primary-foreground">View all {sectionProducts.length} in {section.title}</Link></div> : null}
                 </section>
               );
             })}
@@ -322,72 +311,33 @@ export default async function VehicleAdaptationsPage() {
         )}
       </div>
 
-      <section className="border-y border-border bg-soft py-10 md:py-12">
+      <section className="border-y border-border bg-soft/55 py-14 md:py-20">
         <div className="container-site">
-          <div className="max-w-2xl">
-            <h2 className="text-2xl font-extrabold tracking-tight text-primary md:text-3xl">
-              How it works
-            </h2>
-            <p className="mt-2 text-sm text-muted md:text-base">
-              Every adaptation is quoted against your vehicle before we fit.
-            </p>
-          </div>
-          <ol className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="max-w-2xl"><p className="text-xs font-bold uppercase tracking-[0.16em] text-muted">From enquiry to fitting</p><h2 className="mt-2 text-3xl font-extrabold tracking-tight text-primary md:text-4xl">A straightforward process.</h2><p className="mt-3 text-muted">Every adaptation is quoted against your vehicle before we fit.</p></div>
+          <ol className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {HOW_IT_WORKS.map((item) => (
-              <li key={item.step}>
-                <p className="text-sm font-bold uppercase tracking-wider text-accent">
-                  Step {item.step}
-                </p>
-                <h3 className="mt-2 text-base font-bold text-primary">
-                  {item.title}
-                </h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-muted">
-                  {item.body}
-                  {item.href ? (
-                    <>
-                      {" "}
-                      <Link
-                        href={item.href}
-                        className="font-semibold text-primary underline underline-offset-2"
-                      >
-                        Full demo terms
-                      </Link>
-                    </>
-                  ) : null}
-                </p>
+              <li key={item.step} className="rounded-2xl border border-border bg-white p-5 sm:p-6">
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted">0{item.step}</p>
+                <h3 className="mt-5 text-lg font-bold text-primary">{item.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted">{item.body}{item.href ? <> <Link href={item.href} className="font-semibold text-primary underline underline-offset-2">Full demo terms</Link></> : null}</p>
               </li>
             ))}
           </ol>
         </div>
       </section>
 
-      <section className="py-10 md:py-12">
+      <section className="py-14 md:py-20">
         <div className="container-site">
-          <h2 className="text-2xl font-extrabold tracking-tight text-primary md:text-3xl">
-            Why fit with us
-          </h2>
-          <ul className="mt-8 grid gap-8 md:grid-cols-3">
+          <div className="max-w-2xl"><p className="text-xs font-bold uppercase tracking-[0.16em] text-muted">Specialist installation</p><h2 className="mt-2 text-3xl font-extrabold tracking-tight text-primary md:text-4xl">Why fit with Mobility Station?</h2></div>
+          <ul className="mt-10 grid gap-8 md:grid-cols-3">
             {WHY_US.map(({ icon: Icon, title, body }) => (
-              <li key={title} className="flex gap-3">
-                <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent/15 text-primary">
-                  <Icon className="h-5 w-5" aria-hidden />
-                </span>
-                <div>
-                  <h3 className="text-lg font-bold text-primary">{title}</h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-muted">
-                    {body}
-                  </p>
-                </div>
-              </li>
+              <li key={title} className="border-t border-primary pt-5"><span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-accent-foreground"><Icon className="h-5 w-5" aria-hidden /></span><h3 className="mt-5 text-xl font-bold text-primary">{title}</h3><p className="mt-2 text-sm leading-relaxed text-muted">{body}</p></li>
             ))}
           </ul>
         </div>
       </section>
 
-      <CtaFooter
-        title="Get a free adaptation quotation"
-        subtitle="Tell us your vehicle and what you need — we’ll confirm compatibility, Motability options and a firm fitted price."
-      />
+      <CtaFooter title="Get a free adaptation quotation" subtitle="Tell us your vehicle and what you need — we’ll confirm compatibility, Motability options and a firm fitted price." />
     </>
   );
 }

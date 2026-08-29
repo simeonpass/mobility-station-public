@@ -7,7 +7,7 @@ type FittingPartnerCornerProps = {
 };
 
 /**
- * Corner mark for adaptation products — authorised installer / accredited fitting.
+ * Corner mark for adaptation products — approved installer / accredited fitting.
  */
 export function FittingPartnerCorner({
   size = "gallery",
@@ -27,13 +27,13 @@ export function FittingPartnerCorner({
     >
       <div
         className={cn(
-          "rounded-sm border border-white/60 bg-primary font-semibold uppercase tracking-[0.06em] text-primary-foreground shadow-[0_6px_16px_rgba(0,63,67,0.22)]",
+          "rounded-sm border border-white/60 bg-primary font-semibold uppercase tracking-[0.06em] text-primary-foreground shadow-[0_6px_16px_rgba(0,0,0,0.18)]",
           gallery
             ? "px-2.5 py-1.5 text-[10px] sm:px-3 sm:py-2 sm:text-[11px]"
             : "px-2 py-1 text-[8px]",
         )}
       >
-        Authorised installer
+        Approved installer
       </div>
     </div>
   );

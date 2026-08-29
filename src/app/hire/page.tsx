@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Breadcrumbs } from "@/components/layout/breadcrumbs";
+import { Check } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { FLEX_SETUP_FEE_GBP } from "@/lib/hire-pricing";
 import { formatGBP } from "@/lib/products";
@@ -7,174 +7,17 @@ import { createMetadata, jsonLdScript, SITE } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
 export const revalidate = 300;
-
-export const metadata = createMetadata({
-  title: "Mobility Scooter & Wheelchair Hire | Mobility Station",
-  description:
-    "Hire a mobility scooter or wheelchair. Choose short-term hire (3–28 days) or Flex monthly hire. Heathrow and Ferndown. Book online or call us.",
-  path: "/hire",
-  absoluteTitle: true,
-});
+export const metadata = createMetadata({ title: "Mobility Scooter & Wheelchair Hire | Mobility Station", description: "Hire a mobility scooter or wheelchair. Choose short-term hire (3–28 days) or Flex monthly hire. Heathrow and Ferndown. Book online or call us.", path: "/hire", absoluteTitle: true });
 
 export default function HirePage() {
-  const breadcrumbLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: SITE.url,
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Hire",
-        item: `${SITE.url}/hire`,
-      },
-    ],
-  };
-
-  return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={jsonLdScript(breadcrumbLd)}
-      />
-
-      <section className="border-b border-border bg-soft/40">
-        <div className="container-site py-10 md:py-14">
-          <Breadcrumbs
-            items={[{ label: "Home", href: "/" }, { label: "Hire" }]}
-          />
-          <h1 className="mt-4 max-w-3xl text-4xl font-extrabold tracking-tight text-primary md:text-5xl">
-            Hire a scooter or wheelchair
-          </h1>
-          <p className="mt-5 max-w-2xl text-lg leading-relaxed text-foreground/85 md:text-xl">
-            Please choose the type of hire that fits you. We keep it simple —
-            one choice, then clear prices and booking.
-          </p>
-          <p className="mt-4 text-base text-muted md:text-lg">
-            Not sure which one? Call us and we will help:{" "}
-            <a
-              href={SITE.phoneHref}
-              className="font-bold text-primary underline underline-offset-2"
-            >
-              {SITE.phone}
-            </a>
-          </p>
-        </div>
-      </section>
-
-      <section className="py-10 md:py-14">
-        <div className="container-site grid gap-6 lg:grid-cols-2 lg:gap-8">
-          <article className="flex flex-col border border-border bg-white p-6 md:p-8">
-            <p className="text-sm font-bold uppercase tracking-wide text-muted">
-              Option 1
-            </p>
-            <h2 className="mt-2 text-3xl font-extrabold text-primary">
-              Short-term hire
-            </h2>
-            <p className="mt-4 text-lg leading-relaxed text-foreground/85">
-              For a few days or a few weeks. Holidays, hospital visits, or
-              trying a scooter before you buy.
-            </p>
-            <ul className="mt-5 space-y-3 text-base text-foreground/85">
-              <li>
-                <strong className="text-primary">How long:</strong> 3 to 28 days
-              </li>
-              <li>
-                <strong className="text-primary">You pay:</strong> hire + a
-                refundable deposit
-              </li>
-              <li>
-                <strong className="text-primary">Collect free</strong> from
-                Heathrow or Ferndown, or we can deliver
-              </li>
-            </ul>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                href="/hire/short-term"
-                className={cn(
-                  buttonVariants({ size: "lg" }),
-                  "rounded-md text-base",
-                )}
-              >
-                See short-term hire
-              </Link>
-              <Link
-                href="/hire/short-term#book"
-                className={cn(
-                  buttonVariants({ variant: "outline", size: "lg" }),
-                  "rounded-md bg-white text-base",
-                )}
-              >
-                Book short-term
-              </Link>
-            </div>
-          </article>
-
-          <article className="flex flex-col border border-border bg-white p-6 md:p-8">
-            <p className="text-sm font-bold uppercase tracking-wide text-muted">
-              Option 2
-            </p>
-            <h2 className="mt-2 text-3xl font-extrabold text-primary">
-              Flex monthly hire
-            </h2>
-            <p className="mt-4 text-lg leading-relaxed text-foreground/85">
-              For longer use. Pay each month. Servicing, batteries and
-              breakdown cover are included.
-            </p>
-            <ul className="mt-5 space-y-3 text-base text-foreground/85">
-              <li>
-                <strong className="text-primary">How long:</strong> 3 months
-                minimum, then month by month
-              </li>
-              <li>
-                <strong className="text-primary">You pay today:</strong> first
-                month + {formatGBP(FLEX_SETUP_FEE_GBP)} set-up
-              </li>
-              <li>
-                <strong className="text-primary">We deliver</strong> and show you
-                how to use it
-              </li>
-            </ul>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                href="/hire/flex"
-                className={cn(
-                  buttonVariants({ size: "lg" }),
-                  "rounded-md text-base",
-                )}
-              >
-                See Flex hire
-              </Link>
-              <Link
-                href="/hire/flex#book"
-                className={cn(
-                  buttonVariants({ variant: "outline", size: "lg" }),
-                  "rounded-md bg-white text-base",
-                )}
-              >
-                Book Flex
-              </Link>
-            </div>
-          </article>
-        </div>
-
-        <div className="container-site mt-10 max-w-3xl border-t border-border pt-8">
-          <h2 className="text-xl font-extrabold text-primary md:text-2xl">
-            Quick tip
-          </h2>
-          <p className="mt-3 text-lg leading-relaxed text-foreground/85">
-            If you only need it for under a month, choose{" "}
-            <strong>short-term</strong>. If you need it for longer,{" "}
-            <strong>Flex</strong> is usually simpler and better value — and we
-            look after servicing for you.
-          </p>
-        </div>
-      </section>
-    </>
-  );
+  const breadcrumbLd = { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Home", item: SITE.url }, { "@type": "ListItem", position: 2, name: "Hire", item: `${SITE.url}/hire` }] };
+  const options = [
+    { eyebrow: "3–28 days", title: "Short-term hire", body: "For holidays, recovery, hospital visits or when you only need equipment for a few days or weeks.", points: ["3 to 28 days", "Hire plus refundable deposit", "Free collection from Heathrow or Ferndown"], href: "/hire/short-term", book: "/hire/short-term#book", cta: "Explore short-term hire" },
+    { eyebrow: "3+ months", title: "Flex monthly hire", body: "For longer use without buying outright. Servicing, batteries and breakdown cover are included.", points: ["3 months minimum, then monthly", `First month + ${formatGBP(FLEX_SETUP_FEE_GBP)} set-up`, "Delivery and handover included"], href: "/hire/flex", book: "/hire/flex#book", cta: "Explore Flex hire" },
+  ];
+  return <>
+    <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(breadcrumbLd)} />
+    <section className="border-b border-border bg-white"><div className="container-site py-14 md:py-20 lg:py-24"><p className="text-xs font-bold uppercase tracking-[0.18em] text-muted">Mobility Station · Hire</p><h1 className="mt-4 max-w-4xl text-balance text-5xl font-extrabold leading-[0.98] tracking-[-0.045em] text-primary md:text-6xl lg:text-7xl">Mobility when you need it.</h1><p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted md:text-xl">Choose short-term hire for days or weeks, or Flex for longer-term monthly use with ongoing support included.</p><p className="mt-6 text-sm text-muted">Not sure? Call <a href={SITE.phoneHref} className="font-bold text-primary">{SITE.phone}</a> and we’ll help you choose.</p></div></section>
+    <section className="py-14 md:py-20"><div className="container-site grid gap-5 lg:grid-cols-2">{options.map((option, index) => <article key={option.title} className={cn("flex flex-col rounded-[2rem] border p-7 md:p-9", index === 1 ? "border-primary bg-primary text-white" : "border-border bg-white")}><p className={cn("text-xs font-bold uppercase tracking-[0.16em]", index === 1 ? "text-accent" : "text-muted")}>{option.eyebrow}</p><h2 className={cn("mt-3 text-3xl font-extrabold tracking-tight md:text-4xl", index === 1 ? "text-white" : "text-primary")}>{option.title}</h2><p className={cn("mt-4 text-base leading-relaxed md:text-lg", index === 1 ? "text-white/70" : "text-muted")}>{option.body}</p><ul className="mt-7 space-y-3">{option.points.map((point) => <li key={point} className={cn("flex items-center gap-3 text-sm", index === 1 ? "text-white/85" : "text-foreground/85")}><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground"><Check className="h-3.5 w-3.5" /></span>{point}</li>)}</ul><div className="mt-9 flex flex-wrap gap-3"><Link href={option.href} className={cn(buttonVariants({ size: "lg" }), "rounded-full px-6", index === 1 && "bg-accent text-accent-foreground hover:bg-accent-hover")}>{option.cta}</Link><Link href={option.book} className={cn("inline-flex h-12 items-center justify-center rounded-full border px-6 text-sm font-semibold", index === 1 ? "border-white/30 text-white hover:bg-white hover:text-primary" : "border-primary text-primary hover:bg-primary hover:text-white")}>Book now</Link></div></article>)}</div><div className="container-site mt-10"><div className="max-w-3xl border-t border-border pt-8"><p className="text-xs font-bold uppercase tracking-[0.16em] text-muted">Quick guide</p><p className="mt-3 text-lg leading-relaxed text-muted">Under a month? <strong className="text-primary">Short-term</strong> is usually the right fit. Need it for longer? <strong className="text-primary">Flex</strong> is designed for ongoing use and includes servicing support.</p></div></div></section>
+  </>;
 }
