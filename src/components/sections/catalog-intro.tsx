@@ -14,20 +14,35 @@ export function CatalogIntro({
   primary,
   secondary,
   primaryAction,
+  eyebrow = "Mobility Station · Shop",
+  visual,
 }: {
   title: string;
   subtitle: string;
   primary: CatalogCta;
   secondary: CatalogCta;
   primaryAction?: ReactNode;
+  eyebrow?: string;
+  visual?: ReactNode;
 }) {
   return (
     <section className="border-b border-border bg-white">
-      <div className="container-site py-14 md:py-20 lg:py-24">
-        <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+      <div
+        className={cn(
+          "container-site py-14 md:py-20 lg:py-24",
+          visual && "lg:py-20",
+        )}
+      >
+        <div
+          className={cn(
+            visual
+              ? "grid items-center gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16"
+              : "flex flex-col gap-8 md:flex-row md:items-end md:justify-between",
+          )}
+        >
           <div className="max-w-3xl">
             <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-muted">
-              Mobility Station · Shop
+              {eyebrow}
             </p>
             <h1 className="text-balance text-5xl font-extrabold leading-[0.98] tracking-[-0.045em] text-primary md:text-6xl lg:text-7xl">
               {title}
@@ -35,29 +50,58 @@ export function CatalogIntro({
             <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted md:text-xl">
               {subtitle}
             </p>
+            {visual ? (
+              <div className="mt-8 flex flex-wrap gap-3">
+                {primaryAction ?? (
+                  <Link
+                    href={primary.href}
+                    className={cn(
+                      buttonVariants({ size: "lg" }),
+                      "h-12 min-h-12 rounded-full px-7 text-base",
+                    )}
+                  >
+                    {primary.label}
+                  </Link>
+                )}
+                <Link
+                  href={secondary.href}
+                  className={cn(
+                    buttonVariants({ variant: "outline", size: "lg" }),
+                    "h-12 min-h-12 rounded-full bg-white px-7 text-base",
+                  )}
+                >
+                  {secondary.label}
+                </Link>
+              </div>
+            ) : null}
           </div>
-          <div className="flex flex-wrap gap-3">
-            {primaryAction ?? (
+
+          {visual ? (
+            visual
+          ) : (
+            <div className="flex flex-wrap gap-3">
+              {primaryAction ?? (
+                <Link
+                  href={primary.href}
+                  className={cn(
+                    buttonVariants({ size: "lg" }),
+                    "h-12 min-h-12 rounded-full px-7 text-base",
+                  )}
+                >
+                  {primary.label}
+                </Link>
+              )}
               <Link
-                href={primary.href}
+                href={secondary.href}
                 className={cn(
-                  buttonVariants({ size: "lg" }),
-                  "h-12 min-h-12 rounded-full px-7 text-base",
+                  buttonVariants({ variant: "outline", size: "lg" }),
+                  "h-12 min-h-12 rounded-full bg-white px-7 text-base",
                 )}
               >
-                {primary.label}
+                {secondary.label}
               </Link>
-            )}
-            <Link
-              href={secondary.href}
-              className={cn(
-                buttonVariants({ variant: "outline", size: "lg" }),
-                "h-12 min-h-12 rounded-full bg-white px-7 text-base",
-              )}
-            >
-              {secondary.label}
-            </Link>
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </section>
