@@ -1,130 +1,14 @@
 import Link from "next/link";
-import { Hero } from "@/components/sections/hero";
+import { Check } from "lucide-react";
 import { takeawayCreditBands } from "@/lib/takeaway-credit";
 import { formatGBP } from "@/lib/products";
 import { createMetadata } from "@/lib/seo";
 
-export const metadata = createMetadata({
-  title: "Old scooter takeaway | Fixed credit off your new purchase",
-  description:
-    "Buying a new mobility scooter or wheelchair? We’ll take your old one away and knock a fixed credit off your order — based on the price of what you’re buying, not a trade-in valuation.",
-  path: "/trade-in",
-});
-
+export const metadata = createMetadata({ title: "Old scooter takeaway | Fixed credit off your new purchase", description: "Buying a new mobility scooter or wheelchair? We’ll take your old one away and knock a fixed credit off your order — based on the price of what you’re buying, not a trade-in valuation.", path: "/trade-in" });
 const BANDS = takeawayCreditBands(6);
 
-export default function TradeInPage() {
-  return (
-    <>
-      <Hero
-        compact
-        title="We’ll take your old scooter away"
-        subtitle="Not a trade-in valuation — a simple fixed credit off your new purchase when we collect and dispose of (or keep) your old scooter or wheelchair."
-        primaryHref="/shop"
-        primaryLabel="Browse scooters"
-        secondaryHref="/checkout"
-        secondaryLabel="Go to checkout"
-      />
-
-      <section className="pb-16 md:pb-20">
-        <div className="container-site grid gap-10 lg:grid-cols-2">
-          <div>
-            <h2 className="text-2xl font-extrabold text-primary">
-              How the credit works
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-foreground/85">
-              When you buy a scooter or wheelchair from us, tick the takeaway
-              option at checkout. The credit is available when you{" "}
-              <strong className="font-semibold text-primary">
-                collect from Heathrow or Ferndown
-              </strong>
-              , or when we deliver in our{" "}
-              <strong className="font-semibold text-primary">
-                local service area
-              </strong>
-              . Outside that area, call us about a boxed return — the online
-              credit isn&apos;t available with nationwide courier alone.
-            </p>
-            <ul className="mt-5 space-y-3 text-sm leading-relaxed text-foreground/85">
-              <li>
-                <strong className="text-primary">Fixed bands</strong> — credit
-                depends on the price of the scooter or wheelchair you’re buying,
-                not the age or condition of your old one.
-              </li>
-              <li>
-                <strong className="text-primary">One credit per order</strong> —
-                based on the main scooter or wheelchair in your basket.
-              </li>
-              <li>
-                <strong className="text-primary">We keep or dispose</strong> —
-                once collected, the old machine is ours to reuse, recycle or
-                scrap. This isn’t a part-exchange valuation.
-              </li>
-              <li>
-                <strong className="text-primary">Coverage area</strong> —
-                collection with a local delivery or branch handover. Ask if
-                you’re unsure.
-              </li>
-            </ul>
-            <p className="mt-6 text-sm text-muted">
-              Prefer to ask first?{" "}
-              <Link
-                href="/contact?interest=Old%20scooter%20takeaway"
-                className="font-semibold text-primary underline"
-              >
-                Send us a message
-              </Link>
-              .
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-border bg-white p-6 md:p-8">
-            <h2 className="text-xl font-extrabold text-primary">
-              Credit off your new purchase
-            </h2>
-            <p className="mt-2 text-sm text-muted">
-              Based on the catalogue price (ex VAT) of the scooter or wheelchair
-              you’re buying.
-            </p>
-            <div className="mt-5 overflow-hidden rounded-xl border border-border">
-              <table className="w-full text-sm">
-                <thead className="bg-soft text-left">
-                  <tr>
-                    <th className="px-4 py-3 font-semibold text-primary">
-                      New purchase
-                    </th>
-                    <th className="px-4 py-3 font-semibold text-primary">
-                      Takeaway credit
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {BANDS.map((band) => (
-                    <tr key={band.upTo} className="border-t border-border">
-                      <td className="px-4 py-3 text-foreground/85">
-                        {band.label}
-                      </td>
-                      <td className="px-4 py-3 font-bold text-primary">
-                        {formatGBP(band.credit)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <p className="mt-4 text-xs text-muted">
-              Example: buy a £2,450 scooter → under £3,000 band →{" "}
-              {formatGBP(300)} off at checkout.
-            </p>
-            <Link
-              href="/shop"
-              className="mt-6 inline-flex rounded-xl bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground"
-            >
-              Choose a scooter or wheelchair
-            </Link>
-          </div>
-        </div>
-      </section>
-    </>
-  );
-}
+export default function TradeInPage() { return <>
+  <section className="border-b border-border bg-white"><div className="container-site py-14 md:py-20 lg:py-24"><p className="text-xs font-bold uppercase tracking-[0.18em] text-muted">Mobility Station · Old scooter takeaway</p><h1 className="mt-4 max-w-4xl text-balance text-5xl font-extrabold leading-[0.98] tracking-[-0.045em] text-primary md:text-6xl lg:text-7xl">New mobility. Old scooter sorted.</h1><p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted md:text-xl">A simple fixed credit off your new scooter or wheelchair when we collect your old one — no trade-in valuation or haggling.</p><Link href="/shop" className="mt-8 inline-flex rounded-full bg-accent px-7 py-3 font-semibold text-accent-foreground">Browse scooters &amp; wheelchairs</Link></div></section>
+  <section className="py-14 md:py-20"><div className="container-site grid gap-10 lg:grid-cols-2 lg:gap-16"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-muted">Straightforward credit</p><h2 className="mt-2 text-3xl font-extrabold tracking-tight text-primary md:text-4xl">How it works.</h2><p className="mt-4 leading-relaxed text-muted">Choose the takeaway option when buying an eligible scooter or wheelchair. It is available with branch collection or qualifying local delivery; outside the area, ask us about return options.</p><ul className="mt-8 space-y-5">{[["Fixed bands","Credit depends on the price of the new product, not the age or condition of your old one."],["One credit per order","The credit is based on the main eligible scooter or wheelchair in your basket."],["We take it away","Once collected, the old machine is ours to reuse, recycle or dispose of responsibly."],["Local handover","Available with branch collection or qualifying local delivery; ask if you’re unsure."]].map(([title,body]) => <li key={title} className="flex gap-3"><span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground"><Check className="h-3.5 w-3.5" /></span><div><h3 className="font-bold text-primary">{title}</h3><p className="mt-1 text-sm leading-relaxed text-muted">{body}</p></div></li>)}</ul><p className="mt-8 text-sm text-muted">Prefer to ask first? <Link href="/contact?interest=Old%20scooter%20takeaway" className="font-semibold text-primary underline">Send us a message</Link>.</p></div>
+  <div className="rounded-[2rem] bg-primary p-7 text-white md:p-9"><p className="text-xs font-bold uppercase tracking-[0.16em] text-accent">Your fixed credit</p><h2 className="mt-2 text-3xl font-extrabold">Credit off your new purchase.</h2><p className="mt-3 text-sm text-white/65">Based on the catalogue price excluding VAT of the eligible scooter or wheelchair you’re buying.</p><div className="mt-7 overflow-hidden rounded-2xl border border-white/15"><table className="w-full text-sm"><thead className="bg-white/10 text-left"><tr><th className="px-4 py-3 font-semibold text-white">New purchase</th><th className="px-4 py-3 font-semibold text-white">Credit</th></tr></thead><tbody>{BANDS.map((band) => <tr key={band.upTo} className="border-t border-white/10"><td className="px-4 py-3 text-white/70">{band.label}</td><td className="px-4 py-3 font-bold text-accent">{formatGBP(band.credit)}</td></tr>)}</tbody></table></div><p className="mt-4 text-xs text-white/55">Example: buy a £2,450 scooter → under £3,000 band → {formatGBP(300)} off at checkout.</p><Link href="/shop" className="mt-7 inline-flex rounded-full bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground">Choose a scooter or wheelchair</Link></div></div></section>
+</>; }
