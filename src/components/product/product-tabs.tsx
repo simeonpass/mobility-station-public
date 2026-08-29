@@ -44,15 +44,14 @@ export function ProductTabs({ sections }: { sections: Section[] }) {
     );
   }
 
-  // Desktop: premium tab panel
   if (mdUp) {
     return (
-      <div className="overflow-hidden rounded-2xl border border-border bg-white shadow-[0_18px_50px_-36px_rgba(0,63,67,0.45)]">
-        <div className="border-b border-border bg-gradient-to-b from-primary-soft/70 to-soft/40 px-3 pt-3 sm:px-4">
+      <div className="overflow-hidden rounded-[1.5rem] border border-border bg-white shadow-[0_22px_60px_-48px_rgba(0,0,0,0.38)]">
+        <div className="border-b border-border bg-white px-4 pt-4 sm:px-6">
           <div
             role="tablist"
             aria-label="Product details"
-            className="flex w-full gap-1 overflow-x-auto pb-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="flex w-full gap-7 overflow-x-auto pb-0 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {sections.map((section) => {
               const selected = section.id === active.id;
@@ -66,14 +65,15 @@ export function ProductTabs({ sections }: { sections: Section[] }) {
                   aria-controls={`product-panel-${section.id}`}
                   tabIndex={selected ? 0 : -1}
                   className={cn(
-                    "shrink-0 cursor-pointer rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-[color,background-color,box-shadow] sm:px-4 sm:text-[15px]",
-                    selected
-                      ? "bg-white text-primary shadow-sm ring-1 ring-border/80"
-                      : "text-muted hover:bg-white/55 hover:text-primary",
+                    "relative shrink-0 cursor-pointer px-0 pb-4 pt-2 text-sm font-semibold transition-colors sm:text-[15px]",
+                    selected ? "text-primary" : "text-muted hover:text-primary",
                   )}
                   onClick={() => setActiveId(section.id)}
                 >
                   {section.title}
+                  {selected ? (
+                    <span className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-accent" aria-hidden />
+                  ) : null}
                 </button>
               );
             })}
@@ -84,7 +84,7 @@ export function ProductTabs({ sections }: { sections: Section[] }) {
           role="tabpanel"
           id={`product-panel-${active.id}`}
           aria-labelledby={`product-tab-${active.id}`}
-          className="px-5 py-6 sm:px-7 sm:py-8 md:px-8 md:py-9"
+          className="px-5 py-7 sm:px-8 sm:py-9 md:px-10 md:py-10"
         >
           <div className="mx-auto max-w-4xl">{active.content}</div>
         </div>
@@ -92,9 +92,8 @@ export function ProductTabs({ sections }: { sections: Section[] }) {
     );
   }
 
-  // Mobile / SSR: accordion — easier to scan without sideways scrolling
   return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-white shadow-[0_18px_50px_-36px_rgba(0,63,67,0.45)]">
+    <div className="overflow-hidden rounded-[1.35rem] border border-border bg-white shadow-[0_18px_50px_-40px_rgba(0,0,0,0.34)]">
       <div className="divide-y divide-border">
         {sections.map((section) => {
           const open = openIds.includes(section.id);
@@ -106,10 +105,8 @@ export function ProductTabs({ sections }: { sections: Section[] }) {
                 aria-controls={`product-acc-${section.id}`}
                 id={`product-acc-btn-${section.id}`}
                 className={cn(
-                  "flex w-full items-center justify-between gap-3 px-4 py-4 text-left text-[15px] font-semibold transition-colors",
-                  open
-                    ? "bg-primary-soft/50 text-primary"
-                    : "bg-white text-primary hover:bg-soft/70",
+                  "flex w-full items-center justify-between gap-3 px-5 py-4 text-left text-[15px] font-semibold transition-colors",
+                  open ? "bg-soft/55 text-primary" : "bg-white text-primary hover:bg-soft/45",
                 )}
                 onClick={() => toggleAccordion(section.id)}
               >
@@ -127,7 +124,7 @@ export function ProductTabs({ sections }: { sections: Section[] }) {
                   id={`product-acc-${section.id}`}
                   role="region"
                   aria-labelledby={`product-acc-btn-${section.id}`}
-                  className="border-t border-border/70 bg-white px-4 py-5"
+                  className="border-t border-border/70 bg-white px-5 py-6"
                 >
                   {section.content}
                 </div>
