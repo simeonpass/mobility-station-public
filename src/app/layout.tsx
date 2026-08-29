@@ -9,6 +9,7 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SITE } from "@/lib/seo";
 import "./globals.css";
+import "./premium-theme.css";
 
 const manrope = Manrope({
   subsets: ["latin"],
