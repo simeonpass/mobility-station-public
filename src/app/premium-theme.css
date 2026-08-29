@@ -53,6 +53,101 @@ header {
   box-shadow: 0 8px 30px -24px rgb(0 0 0 / 0.28);
 }
 
+/* The shop catalogue should feel like a consumer storefront, not a control panel. */
+#catalogue {
+  padding-top: clamp(3rem, 6vw, 5.5rem);
+  padding-bottom: clamp(4rem, 7vw, 7rem);
+}
+
+#catalogue [role="tablist"] {
+  border-color: #dedede;
+  box-shadow: none !important;
+  padding: 0.25rem;
+}
+
+#catalogue [role="tablist"] button {
+  min-width: 5.5rem;
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
+}
+
+#catalogue [role="tablist"] + div {
+  margin-top: 1.75rem !important;
+  border: 1px solid #e5e5e5 !important;
+  border-radius: 1.25rem;
+  background: #f7f7f8 !important;
+  padding: 1.25rem !important;
+}
+
+#catalogue [role="tablist"] + div label {
+  letter-spacing: 0.08em;
+}
+
+#catalogue [role="tablist"] + div input,
+#catalogue [role="tablist"] + div select {
+  border-color: #dddddf;
+  box-shadow: none;
+}
+
+#catalogue [role="tablist"] + div input:focus,
+#catalogue [role="tablist"] + div select:focus {
+  border-color: #111111;
+  box-shadow: 0 0 0 3px rgb(140 214 63 / 0.18);
+}
+
+#catalogue #catalogue-results > div:first-child {
+  margin-top: 2rem !important;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid #ededed;
+}
+
+#catalogue #catalogue-results > div:nth-child(2) {
+  margin-top: 2rem !important;
+  gap: clamp(1rem, 2vw, 1.75rem) !important;
+}
+
+#catalogue nav[aria-label="Category links"] {
+  margin-top: 4.5rem !important;
+  padding-top: 2rem !important;
+  gap: 0.75rem 1rem;
+}
+
+#catalogue nav[aria-label="Category links"] a {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #e5e5e5;
+  border-radius: 999px;
+  background: #ffffff;
+  padding: 0.55rem 0.9rem;
+  color: #4f4f52;
+  text-decoration: none;
+  transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+}
+
+#catalogue nav[aria-label="Category links"] a:hover {
+  border-color: #bdbdbf;
+  background: #f7f7f8;
+  color: #111111;
+  text-decoration: none;
+}
+
+@media (max-width: 639px) {
+  #catalogue [role="tablist"] {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  #catalogue [role="tablist"] button {
+    min-width: 0;
+  }
+
+  #catalogue [role="tablist"] + div {
+    border-radius: 1rem;
+    padding: 1rem !important;
+  }
+}
+
 /* Make focus states retain the Mobility Station identity without flooding UI. */
 :focus-visible {
   outline-color: var(--accent);
