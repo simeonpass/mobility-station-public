@@ -19,6 +19,8 @@ export type ShopFilters = {
   motabilityOnly: boolean;
   clearanceOnly: boolean;
   sub: ShopSub;
+  /** 1-based number of result pages to render on the server. */
+  page: number;
 };
 
 export const SCOOTER_CATS = [
@@ -59,6 +61,7 @@ export function parseShopFilters(
   };
   const subRaw = one("sub");
   const sortRaw = one("sort");
+  const pageRaw = Number(one("page"));
   return {
     query: one("q").trim(),
     category: one("category"),
@@ -69,6 +72,7 @@ export function parseShopFilters(
     motabilityOnly: one("motability") === "1",
     clearanceOnly: one("clearance") === "1",
     sub: subRaw === "scooters" || subRaw === "wheelchairs" ? subRaw : "",
+    page: Number.isFinite(pageRaw) ? Math.min(20, Math.max(1, Math.floor(pageRaw))) : 1,
   };
 }
 
@@ -81,6 +85,7 @@ export function shopFiltersToSearchParams(filters: ShopFilters) {
   if (filters.sort !== "featured") params.set("sort", filters.sort);
   if (filters.motabilityOnly) params.set("motability", "1");
   if (filters.clearanceOnly) params.set("clearance", "1");
+  if (filters.page > 1) params.set("page", String(filters.page));
   return params;
 }
 

@@ -1,18 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  /* Brand — black type/chrome, lime CTAs (no teal) */
+  /* Brand — black type/chrome, forest green CTAs (no teal, no lime) */
   --primary: #111111;
   --primary-dark: #000000;
   --primary-soft: #f5f5f7;
-  --accent: #8cd63f;
-  --accent-hover: #9fe253;
-  --accent-on-dark: #8cd63f;
-  --accent-on-dark-hover: #a7eb62;
-  --buy: #8cd63f;
-  --buy-hover: #9fe253;
-  --buy-foreground: #111111;
-  --tertiary: #8cd63f;
+  --accent: #1f5c3a;
+  --accent-hover: #2a7048;
+  --accent-on-dark: #8fbf9a;
+  --accent-on-dark-hover: #a3cdb0;
+  --buy: #1f5c3a;
+  --buy-hover: #2a7048;
+  --buy-foreground: #ffffff;
+  --tertiary: #1f5c3a;
   --footer: #111111;
   --footer-foreground: #ffffff;
 
@@ -33,7 +33,7 @@
 
   /* Derived */
   --primary-foreground: #ffffff;
-  --accent-foreground: #111111;
+  --accent-foreground: #ffffff;
   --radius: 0.75rem;
   --ease-out-motion: cubic-bezier(0.22, 1, 0.36, 1);
   --duration-motion: 420ms;
@@ -120,7 +120,7 @@
   }
 
   ::selection {
-    background: rgb(140 214 63 / 0.34);
+    background: rgb(31 92 58 / 0.28);
     color: #111;
   }
 
@@ -155,7 +155,7 @@
 
   .bg-hero-mesh {
     background:
-      radial-gradient(ellipse 70% 55% at 90% 15%, rgb(140 214 63 / 0.07), transparent 55%),
+      radial-gradient(ellipse 70% 55% at 90% 15%, rgb(31 92 58 / 0.08), transparent 55%),
       linear-gradient(165deg, #f6f6f6 0%, #ffffff 48%, #f5f5f7 100%);
   }
 
@@ -420,7 +420,7 @@
 #catalogue [role="tablist"] + div input:focus,
 #catalogue [role="tablist"] + div select:focus {
   border-color: #111;
-  box-shadow: 0 0 0 3px rgb(140 214 63 / 0.18);
+  box-shadow: 0 0 0 3px rgb(31 92 58 / 0.18);
 }
 
 #catalogue #catalogue-results > div:first-child {
@@ -473,7 +473,7 @@ input:not([type="checkbox"]):not([type="radio"]):focus,
 select:focus,
 textarea:focus {
   border-color: #111 !important;
-  box-shadow: 0 0 0 3px rgb(140 214 63 / 0.14) !important;
+  box-shadow: 0 0 0 3px rgb(31 92 58 / 0.14) !important;
 }
 
 @media (max-width: 767px) {

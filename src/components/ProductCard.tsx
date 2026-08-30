@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Eye } from "lucide-react";
 import { BrandLogo } from "@/components/product/brand-logo";
 import { CatalogImage } from "@/components/product/catalog-image";
 import { MotabilityLogo } from "@/components/product/motability-logo";
-import { ProductQuickView } from "@/components/product/product-quick-view";
+import { quickViewPayload } from "@/lib/quick-view";
 import {
   conditionGradeMeta,
   conditionLabel,
@@ -53,7 +53,7 @@ export function ProductCard({ product }: { product: ProductListItem }) {
                 Clearance
               </span>
             ) : saveAmount != null ? (
-              <span className="absolute left-3 top-3 rounded-full bg-accent px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-black">
+              <span className="absolute left-3 top-3 rounded-full bg-accent px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-accent-foreground">
                 Save {formatGBP(saveAmount)}
               </span>
             ) : wasHeadline ? (
@@ -71,7 +71,16 @@ export function ProductCard({ product }: { product: ProductListItem }) {
             ) : null}
           </div>
         </Link>
-        <ProductQuickView product={product} />
+        <button
+          type="button"
+          data-quick-view={quickViewPayload(product)}
+          className="absolute bottom-3 right-3 z-10 inline-flex h-10 items-center gap-1.5 rounded-full border border-border bg-white/95 px-3 text-xs font-semibold text-primary shadow-sm md:opacity-0 md:transition-opacity md:group-hover:opacity-100"
+          aria-haspopup="dialog"
+          aria-label={`Quick view ${product.name}`}
+        >
+          <Eye className="h-3.5 w-3.5" aria-hidden />
+          <span className="hidden sm:inline">Quick view</span>
+        </button>
       </div>
 
       <Link href={`/products/${product.slug}`} className="flex flex-1 flex-col">
@@ -145,7 +154,7 @@ export function ProductCard({ product }: { product: ProductListItem }) {
 
           <div className="mt-auto flex items-center justify-between gap-3 pt-4 text-sm font-bold text-primary sm:pt-5">
             <span>{stock.available ? stock.label : "View details"}</span>
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-black transition-transform duration-300 group-hover:translate-x-1">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-accent-foreground transition-transform duration-300 group-hover:translate-x-1">
               <ArrowRight className="h-4 w-4" aria-hidden />
             </span>
           </div>

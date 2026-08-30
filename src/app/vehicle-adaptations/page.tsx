@@ -95,7 +95,7 @@ function AdaptationsHeroVisual() {
           fetchPriority="high"
         />
         <div className="absolute inset-x-4 bottom-4 rounded-2xl bg-black/82 px-4 py-3 text-white backdrop-blur-sm sm:inset-x-5 sm:bottom-5 sm:px-5 sm:py-4">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent sm:text-xs">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent-on-dark sm:text-xs">
             Supplied &amp; fitted
           </p>
           <p className="mt-1 text-sm font-semibold sm:text-base">

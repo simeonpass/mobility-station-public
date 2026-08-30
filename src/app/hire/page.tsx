@@ -58,7 +58,7 @@ function HireVisual() {
           height={1100}
         />
         <div className="absolute inset-x-4 bottom-4 rounded-2xl bg-black/82 p-4 text-white sm:inset-x-5 sm:bottom-5 sm:p-5">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent-on-dark">
             Short-term or Flex
           </p>
           <p className="mt-1 text-sm font-semibold">
@@ -202,7 +202,7 @@ export default function HirePage() {
               <p
                 className={cn(
                   "text-xs font-bold uppercase tracking-[0.16em]",
-                  index === 1 ? "text-accent" : "text-muted",
+                  index === 1 ? "text-accent-on-dark" : "text-muted",
                 )}
               >
                 {option.eyebrow}

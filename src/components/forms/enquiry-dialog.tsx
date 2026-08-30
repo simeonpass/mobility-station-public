@@ -8,10 +8,16 @@ import {
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
+import dynamic from "next/dynamic";
 import { X } from "lucide-react";
-import { CallbackForm } from "@/components/forms/callback-form";
-import { EnquiryForm } from "@/components/forms/enquiry-form";
 import { cn } from "@/lib/utils";
+
+const CallbackForm = dynamic(
+  () => import("@/components/forms/callback-form").then((m) => m.CallbackForm),
+);
+const EnquiryForm = dynamic(
+  () => import("@/components/forms/enquiry-form").then((m) => m.EnquiryForm),
+);
 
 type EnquiryDialogProps = {
   /** Visual style of the trigger control. */

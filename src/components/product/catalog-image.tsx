@@ -1,6 +1,3 @@
-"use client";
-
-import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 const PLACEHOLDER = "/placeholder-product.svg";
@@ -22,8 +19,6 @@ function isHttpSrc(src: string) {
  * R2 assets are already resized by the admin pipeline.
  */
 function normalizeRemoteSrc(src: string): string {
-  // V1 storage was migrated to R2. Keep catalogue cards resilient if a stale
-  // Supabase public URL is ever written back into a product record.
   if (src.startsWith(MIGRATED_SUPABASE_STORAGE_PREFIX)) {
     return `${R2_PUBLIC_PREFIX}${src.slice(MIGRATED_SUPABASE_STORAGE_PREFIX.length)}`;
   }
@@ -54,13 +49,10 @@ type CatalogImageProps = {
   src: string | null | undefined;
   alt: string;
   className?: string;
-  /** Absolutely fill the positioned parent (same contract as next/image fill). */
   fill?: boolean;
   width?: number;
   height?: number;
-  /** Kept for call-site compatibility; plain <img> ignores srcset sizes. */
   sizes?: string;
-  /** LCP / above-fold — eager load + high fetch priority. */
   priority?: boolean;
   quality?: number;
 };
@@ -68,8 +60,8 @@ type CatalogImageProps = {
 /**
  * Catalogue images from Shopify, Supabase, R2, etc.
  *
- * Plain <img> on purpose — R2 files are pre-resized, and routing them through
- * next/image burned Vercel Image Optimization quota for no gain.
+ * Server component on purpose — a client <img> on every card was hydrating
+ * dozens of islands on shop/home and making phones feel laggy.
  */
 export function CatalogImage({
   src,
@@ -81,15 +73,11 @@ export function CatalogImage({
   priority = false,
 }: CatalogImageProps) {
   const resolved = src && src.trim() ? src.trim() : PLACEHOLDER;
-  const [failed, setFailed] = useState(false);
-
-  const displaySrc = failed
-    ? PLACEHOLDER
-    : isHttpSrc(resolved)
-      ? normalizeRemoteSrc(resolved)
-      : isLocalSrc(resolved)
-        ? resolved
-        : PLACEHOLDER;
+  const displaySrc = isHttpSrc(resolved)
+    ? normalizeRemoteSrc(resolved)
+    : isLocalSrc(resolved)
+      ? resolved
+      : PLACEHOLDER;
 
   return (
     // eslint-disable-next-line @next/next/no-img-element -- intentional: bypass Vercel Image Optimization
@@ -102,7 +90,6 @@ export function CatalogImage({
       loading={priority ? "eager" : "lazy"}
       decoding="async"
       fetchPriority={priority ? "high" : "auto"}
-      onError={() => setFailed(true)}
     />
   );
 }

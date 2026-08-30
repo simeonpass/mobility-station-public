@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { createClient } from "@supabase/supabase-js";
 import {
   isAdaptationProduct,
@@ -117,12 +118,11 @@ function onlyAdaptations(items: ProductListItem[]) {
   return items.filter((p) => isAdaptationProduct(p));
 }
 
-export async function getPublishedProducts(
+async function fetchPublishedProducts(
   opts: {
     category?: string;
     limit?: number;
     offset?: number;
-    /** When true (default), vehicle adaptations are excluded from the shop catalogue. */
     shopOnly?: boolean;
   } = {},
 ): Promise<ProductListItem[]> {
@@ -163,6 +163,29 @@ export async function getPublishedProducts(
   }
   if (opts.limit) items = items.slice(0, opts.limit);
   return items;
+}
+
+export function getPublishedProducts(
+  opts: {
+    category?: string;
+    limit?: number;
+    offset?: number;
+    /** When true (default), vehicle adaptations are excluded from the shop catalogue. */
+    shopOnly?: boolean;
+  } = {},
+): Promise<ProductListItem[]> {
+  const shopOnly = opts.shopOnly !== false;
+  return unstable_cache(
+    () => fetchPublishedProducts(opts),
+    [
+      "published-products",
+      shopOnly ? "shop" : "all",
+      opts.category ?? "",
+      String(opts.limit ?? ""),
+      String(opts.offset ?? ""),
+    ],
+    { revalidate: 300 },
+  )();
 }
 
 export async function getProductsBySlugs(

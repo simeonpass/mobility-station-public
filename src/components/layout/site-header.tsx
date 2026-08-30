@@ -18,7 +18,7 @@ import {
   Search,
   X,
 } from "lucide-react";
-import { CartButton } from "@/components/cart/cart-drawer";
+import { CartButton } from "@/components/cart/cart-button";
 import { EnquiryDialog } from "@/components/forms/enquiry-dialog";
 import { HeaderSearch } from "@/components/layout/header-search";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -126,14 +126,14 @@ export function SiteHeader() {
       <div className="bg-primary text-primary-foreground">
         <div className="container-site flex h-8 items-center justify-between gap-3 text-xs font-medium">
           <p className="flex min-w-0 items-center gap-1.5 truncate">
-            <MapPin className="hidden h-3.5 w-3.5 text-accent sm:block" aria-hidden />
+            <MapPin className="hidden h-3.5 w-3.5 text-accent-on-dark sm:block" aria-hidden />
             <span className="sm:hidden">Heathrow &amp; Ferndown</span>
             <span className="hidden sm:inline">
               Heathrow &amp; Ferndown{" "}
               <span className="mx-2 text-white/25">·</span>
               <Link
                 href="/book-a-demo#demo-terms"
-                className="text-white/70 hover:text-accent"
+                className="text-white/70 hover:text-accent-on-dark"
               >
                 Free branch demos · Home demos £195*
               </Link>
@@ -141,7 +141,7 @@ export function SiteHeader() {
           </p>
           <a
             href={SITE.phoneHref}
-            className="inline-flex shrink-0 items-center gap-1.5 tabular-nums hover:text-accent"
+            className="inline-flex shrink-0 items-center gap-1.5 tabular-nums hover:text-accent-on-dark"
           >
             <Phone className="hidden h-3.5 w-3.5 sm:block" aria-hidden />
             {SITE.phone}
@@ -156,7 +156,7 @@ export function SiteHeader() {
             onClick={() => setOpen(false)}
           >
             <img
-              src="/brand/mobility-station-wordmark.png?v=20260830"
+              src="/brand/mobility-station-wordmark.png?v=20260830f"
               alt="Mobility Station"
               width={800}
               height={300}

@@ -51,7 +51,7 @@ export function HomePaths() {
                   <span className="text-sm font-semibold text-muted">
                     {path.eyebrow}
                   </span>
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white text-primary transition-colors group-hover:border-accent group-hover:bg-accent">
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white text-primary transition-colors group-hover:border-accent group-hover:bg-accent group-hover:text-accent-foreground">
                     <ArrowUpRight className="h-4 w-4" aria-hidden />
                   </span>
                 </div>

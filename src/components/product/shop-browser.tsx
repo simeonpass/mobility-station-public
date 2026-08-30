@@ -1,15 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
-import { ProductCard } from "@/components/ProductCard";
 import { Input, Select } from "@/components/ui/input";
-import { categoryToSlug, type ProductListItem } from "@/lib/products";
+import { categoryToSlug } from "@/lib/products";
 import {
   SCOOTER_CATS,
-  SHOP_PAGE_SIZE,
   SHOP_SUBS,
   WHEELCHAIR_CATS,
   shopFiltersToSearchParams,
@@ -20,14 +18,16 @@ import {
 import { cn } from "@/lib/utils";
 
 export function ShopBrowser({
-  products,
+  children,
+  visibleCount,
   totalCount,
   catalogueSize,
   categories,
   manufacturers,
   filters,
 }: {
-  products: ProductListItem[];
+  children: ReactNode;
+  visibleCount: number;
   totalCount: number;
   catalogueSize: number;
   categories: { category: string; count: number }[];
@@ -37,18 +37,12 @@ export function ShopBrowser({
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [queryInput, setQueryInput] = useState(filters.query);
-  const [extra, setExtra] = useState<ProductListItem[]>([]);
-  const [loadingMore, setLoadingMore] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
   const shouldScrollToResults = useRef(false);
 
   useEffect(() => {
     setQueryInput(filters.query);
   }, [filters.query]);
-
-  useEffect(() => {
-    setExtra([]);
-  }, [products]);
 
   useEffect(() => {
     if (queryInput === filters.query) return;
@@ -66,13 +60,15 @@ export function ShopBrowser({
     requestAnimationFrame(() => {
       resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
-  }, [filters.category, filters.manufacturer, filters.sub, filters.motabilityOnly, filters.clearanceOnly, filters.sort, products]);
+  }, [filters.category, filters.manufacturer, filters.sub, filters.motabilityOnly, filters.clearanceOnly, filters.sort, filters.page]);
 
   function replaceFilters(next: Partial<ShopFilters>) {
+    const resetPage = next.page == null;
     const params = shopFiltersToSearchParams({
       ...filters,
       ...next,
       query: (next.query ?? filters.query).trim(),
+      page: next.page ?? (resetPage ? 1 : filters.page),
     });
     const href = params.toString() ? `/shop?${params.toString()}` : "/shop";
     startTransition(() => {
@@ -94,8 +90,7 @@ export function ShopBrowser({
     return categories;
   }, [categories, filters.sub]);
 
-  const visibleProducts = [...products, ...extra];
-  const hasMore = visibleProducts.length < totalCount;
+  const hasMore = visibleCount < totalCount;
 
   const activeFilters: { key: string; label: string; clear: () => void }[] = [];
   if (filters.sub === "scooters") {
@@ -183,23 +178,8 @@ export function ShopBrowser({
     });
   }
 
-  async function loadMore() {
-    setLoadingMore(true);
-    try {
-      const params = shopFiltersToSearchParams(filters);
-      params.set("offset", String(visibleProducts.length));
-      params.set("limit", String(SHOP_PAGE_SIZE));
-      const res = await fetch(`/api/shop/products?${params.toString()}`);
-      const data = (await res.json()) as {
-        products?: ProductListItem[];
-      };
-      if (!res.ok) throw new Error("Could not load more products");
-      setExtra((current) => [...current, ...(data.products ?? [])]);
-    } catch {
-      /* keep current page */
-    } finally {
-      setLoadingMore(false);
-    }
+  function loadMore() {
+    replaceFilters({ page: filters.page + 1 });
   }
 
   return (
@@ -388,22 +368,19 @@ export function ShopBrowser({
         {totalCount ? (
           <>
             <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 lg:gap-6">
-              {visibleProducts.map((p) => (
-                <ProductCard key={p.id} product={p} />
-              ))}
+              {children}
             </div>
             {hasMore ? (
               <div className="mt-8 flex flex-col items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => void loadMore()}
-                  disabled={loadingMore}
-                  className="rounded-xl border border-primary px-6 py-3 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground disabled:opacity-60"
+                  onClick={loadMore}
+                  className="rounded-xl border border-primary px-6 py-3 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
                 >
-                  {loadingMore ? "Loading…" : "Show more products"}
+                  Show more products
                 </button>
                 <p className="text-xs text-muted">
-                  Showing {visibleProducts.length} of {totalCount}
+                  Showing {visibleCount} of {totalCount}
                 </p>
               </div>
             ) : null}
