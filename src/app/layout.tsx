@@ -5,6 +5,7 @@ import { CartProvider } from "@/components/cart/cart-provider";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { Analytics } from "@/components/layout/analytics";
 import { CookieConsentBanner } from "@/components/layout/cookie-consent-banner";
+import { MobileUtilityBar } from "@/components/layout/mobile-utility-bar";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { DEFAULT_SHARE_IMAGE, SITE } from "@/lib/seo";
@@ -64,6 +65,7 @@ export default function RootLayout({
           <SiteHeader />
           <main id="main-content" tabIndex={-1} className="relative z-0 flex-1 overflow-x-clip outline-none">{children}</main>
           <SiteFooter />
+          <MobileUtilityBar />
           <CartDrawer />
           <CookieConsentBanner />
           <Analytics />

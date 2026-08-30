@@ -1,20 +1,27 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { Search } from "lucide-react";
 
 export function HeaderSearch({
   className = "",
   size = "md",
+  autoFocus = false,
   onSubmitExtra,
 }: {
   className?: string;
   size?: "sm" | "md";
+  autoFocus?: boolean;
   onSubmitExtra?: () => void;
 }) {
   const router = useRouter();
   const [query, setQuery] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (autoFocus) inputRef.current?.focus();
+  }, [autoFocus]);
 
   function submit(e: FormEvent) {
     e.preventDefault();
@@ -38,6 +45,7 @@ export function HeaderSearch({
         aria-hidden
       />
       <input
+        ref={inputRef}
         type="search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}

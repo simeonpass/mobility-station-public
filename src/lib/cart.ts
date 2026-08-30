@@ -50,7 +50,10 @@ export function isUsedCartProduct(product: CartProduct) {
   );
 }
 
-export function isAdaptationProduct(product: CartProduct) {
+export function isAdaptationProduct(product: {
+  product_type?: string | null;
+  category?: string | null;
+}) {
   return (
     product.product_type === "vehicle_adaptation" ||
     // Keep in sync with src/lib/adaptations.ts category list for cart safety
@@ -82,6 +85,41 @@ export function isAdaptationProduct(product: CartProduct) {
       "Protective Screens",
     ].includes(product.category || "")
   );
+}
+
+/** Build a cart line from a catalogue card (no option/add-on config). */
+export function cartProductFromListItem(product: {
+  id: string;
+  name: string;
+  slug: string;
+  image_url: string | null;
+  unit_price: number | null;
+  sale_price: number | null;
+  category: string | null;
+  condition: CartProduct["condition"];
+  product_type: string | null;
+  pre_order_enabled?: boolean;
+}): CartProduct | null {
+  if (isAdaptationProduct(product)) return null;
+  const unit = Number(product.unit_price);
+  const sale = Number(product.sale_price);
+  const hasUnit = Number.isFinite(unit) && unit > 0;
+  const hasSale = Number.isFinite(sale) && sale > 0;
+  if (!hasUnit && !hasSale) return null;
+  return {
+    id: product.id,
+    stockItemId: product.id,
+    name: product.name,
+    slug: product.slug,
+    image_url: product.image_url,
+    unit_price: hasUnit ? unit : sale,
+    sale_price: hasSale ? sale : null,
+    category: product.category,
+    weight: null,
+    condition: product.condition,
+    product_type: product.product_type,
+    pre_order_enabled: product.pre_order_enabled,
+  };
 }
 
 /** Cart line id for a configured parent product (options only). */

@@ -35,6 +35,8 @@
   --primary-foreground: #ffffff;
   --accent-foreground: #111111;
   --radius: 0.75rem;
+  --ease-out-motion: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-motion: 420ms;
 }
 
 @theme inline {
@@ -67,6 +69,9 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --animate-fade-in: fade-in 200ms ease-out;
+  --animate-drawer-in-left: drawer-in-left 280ms ease-out;
+  --animate-drawer-in-right: drawer-in-right 280ms ease-out;
 }
 
 @layer base {
@@ -76,6 +81,12 @@
 
   html {
     scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
   }
 
   body {
@@ -116,6 +127,11 @@
   button,
   a {
     -webkit-tap-highlight-color: transparent;
+  }
+
+  .overscroll-contain {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
 }
 
@@ -193,6 +209,33 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes drawer-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes drawer-in-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
   }
 }
 
@@ -434,6 +477,14 @@ textarea:focus {
 }
 
 @media (max-width: 767px) {
+  body.has-mobile-utility-bar {
+    padding-bottom: calc(3.5rem + env(safe-area-inset-bottom));
+  }
+
+  body.has-mobile-utility-bar [data-cookie-banner] {
+    padding-bottom: calc(4.25rem + env(safe-area-inset-bottom));
+  }
+
   .container-site {
     padding-inline: 1rem;
   }
