@@ -22,18 +22,31 @@ export type Product = {
 };
 
 const M4_IMAGE = "https://pub-d0fa88fa71f044d9a9fc37a3c9d5fe47.r2.dev/stock-images/sq_08b2b85a-3166-4b68-a636-b7b3c099d677.webp";
+const M4B_IMAGES = [
+  "https://cdn.shopify.com/s/files/1/0904/4541/4778/files/M4B.png?v=1784395920",
+  "https://cdn.shopify.com/s/files/1/0904/4541/4778/files/M4B_1.png?v=1784395920",
+  "https://cdn.shopify.com/s/files/1/0904/4541/4778/files/M4B_2.png?v=1784395920",
+  "https://cdn.shopify.com/s/files/1/0904/4541/4778/files/M4B_3.png?v=1784395920",
+  "https://cdn.shopify.com/s/files/1/0904/4541/4778/files/M4B_4.png?v=1784395920",
+  "https://cdn.shopify.com/s/files/1/0904/4541/4778/files/M4B_5.png?v=1784395920",
+  "https://cdn.shopify.com/s/files/1/0904/4541/4778/files/M4B_6.png?v=1784395920",
+  "https://cdn.shopify.com/s/files/1/0904/4541/4778/files/M4B_7.png?v=1784395920",
+];
 
 export const fallbackProducts: Product[] = [
   {
     id: "xsto-m4b-fallback",
-    name: "XSTO M4B",
+    name: "XSTO M4B Self-Balancing Power Wheelchair",
     shortName: "M4B",
+    sku: "XSTO-M4B",
     slug: "xsto-m4b",
     unit_price: 3750,
-    image_url: M4_IMAGE,
-    description: "The latest evolution of the XSTO M4 platform, with redesigned front wheels and a new folding footrest for easier transfers and a cleaner folded footprint.",
-    features: ["New folding footrest", "Redesigned front wheels", "Self-balancing chassis", "Electric seat elevation", "Omnidirectional movement"],
-    specifications: { "Max load": "115 kg", "Range": "15 km", "Top speed": "6 km/h", "Max slope": "10°", "Seat height": "347–650 mm" },
+    retail_price: 4500,
+    image_url: M4B_IMAGES[0],
+    additional_images: M4B_IMAGES.slice(1),
+    description: "The latest evolution of the XSTO M4 platform, with redesigned front wheels and an integrated folding footrest for easier transfers and a cleaner folded footprint.",
+    features: ["New integrated folding footrest", "Redesigned front-wheel system", "Front/rear self-balancing control", "Electric seat elevation 347–650 mm", "15 km range", "6 km/h top speed"],
+    specifications: { "Range": "15 km (9.3 miles)", "Top Speed": "6 km/h (3.7 mph)", "Max Slope": "10°", "Max Load Capacity": "115 kg (254 lbs)", "Seat Height Range": "347–650 mm", "Footrest": "Integrated folding footrest" },
     delivery_estimate: "3–4 working days",
     fallback: true,
   },
@@ -56,7 +69,8 @@ export const fallbackProducts: Product[] = [
     slug: "xsto-m4-pro",
     unit_price: 4495,
     image_url: "https://wgxtyckmxpmrrghpduwm.supabase.co/storage/v1/object/public/product-images/1772057791249-M4_Pro_01.webp",
-    description: "Premium comfort, greater range and more adjustment while keeping XSTO self-balancing control.",
+    additional_images: ["https://pub-d0fa88fa71f044d9a9fc37a3c9d5fe47.r2.dev/stock-images/sq_f24a58f2-ae4f-4321-b1cc-224e0be63c7c.webp"],
+    description: "Premium comfort, greater adjustment and XSTO self-balancing control in the M4 Pro platform.",
     delivery_estimate: "1–3 days",
   },
   {
@@ -80,6 +94,11 @@ export const fallbackProducts: Product[] = [
     unit_price: 16995,
     sale_price: 14995,
     image_url: "https://pub-d0fa88fa71f044d9a9fc37a3c9d5fe47.r2.dev/stock-images/23a51d87-f0e5-4b38-9005-7abe37927e41.webp",
+    additional_images: [
+      "https://pub-d0fa88fa71f044d9a9fc37a3c9d5fe47.r2.dev/stock-images/8cbf72b9-9b2b-47d2-a0c0-717252b71e27.webp",
+      "https://pub-d0fa88fa71f044d9a9fc37a3c9d5fe47.r2.dev/stock-images/db5f4055-7eb4-4977-be82-82a30e29f093.webp",
+      "https://pub-d0fa88fa71f044d9a9fc37a3c9d5fe47.r2.dev/stock-images/0eff3af2-5a82-4eae-ba75-0f520e58bab4.webp",
+    ],
     description: "The ultimate XSTO platform: stair climbing and rough-terrain capability with Pro-level comfort and control.",
     delivery_estimate: "10 days",
   },
@@ -118,6 +137,13 @@ export async function getProducts(): Promise<Product[]> {
 export async function getProduct(slug: string) {
   const products = await getProducts();
   return products.find((p) => p.slug === slug) ?? null;
+}
+
+export function productImages(product: Product): string[] {
+  const extras = Array.isArray(product.additional_images)
+    ? product.additional_images.filter((value): value is string => typeof value === "string" && value.length > 0)
+    : [];
+  return Array.from(new Set([product.image_url, product.image_url_wide, ...extras].filter((value): value is string => typeof value === "string" && value.length > 0)));
 }
 
 export function displayPrice(product: Product) {

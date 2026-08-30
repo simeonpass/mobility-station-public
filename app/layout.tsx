@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import "./globals.css";
+import "./klym-polish.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://klym.co.uk"),
@@ -23,7 +24,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <nav className="site-nav" aria-label="Main navigation">
             <Link href="/xsto-m4b">M4B</Link><Link href="/xsto-m4">M4</Link><Link href="/xsto-m4-pro">M4 Pro</Link><Link href="/xsto-x12">X12</Link><Link href="/xsto-x12-pro">X12 Pro</Link><Link href="/compare">Compare</Link>
           </nav>
-          <div className="header-actions"><Link className="btn ghost small" href="/book-a-demo">Book a demo</Link><Link className="btn blue small" href="/xsto-m4b">Buy M4B →</Link></div>
+          <div className="header-actions"><Link className="btn ghost small" href="/book-a-demo">Book a demo</Link><Link className="btn blue small" href="/xsto-m4b">Explore M4B →</Link></div>
         </header>
         <main>{children}</main>
         <footer className="site-footer">
@@ -33,7 +34,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <div className="footer-col"><h4>Help</h4><Link href="/book-a-demo">Book a demo</Link><Link href="/vat-relief">VAT relief</Link><Link href="/compare">Compare</Link><Link href="/self-balancing-wheelchairs">Self-balancing</Link><Link href="/stair-climbing-wheelchairs">Stair climbing</Link></div>
             <div className="footer-col"><h4>KLYM</h4><p>Operated by Adaptation Station Ltd, trading as Mobility Station.</p><p>UK delivery & support.</p></div>
           </div>
-          <div className="footer-bottom"><span>© 2026 KLYM.</span><span>Built for a better tomorrow.</span></div>
+          <div className="footer-bottom"><span>© 2026 KLYM.</span><span>Advanced XSTO mobility from Mobility Station.</span></div>
         </footer>
       </body>
     </html>
