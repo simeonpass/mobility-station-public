@@ -18,10 +18,16 @@ export type Product = {
   seo_title?: string | null;
   track_stock?: boolean | null;
   quantity?: number | null;
+  video_url?: string | null;
+  video_poster_url?: string | null;
+  manual_url?: string | null;
+  manual_label?: string | null;
   fallback?: boolean;
 };
 
 const M4_IMAGE = "https://pub-d0fa88fa71f044d9a9fc37a3c9d5fe47.r2.dev/stock-images/sq_08b2b85a-3166-4b68-a636-b7b3c099d677.webp";
+const M4_MANUAL = "https://www.spinlife.com/files/M4_XSTO_OwnersManual.pdf";
+const M4B_VIDEO = "https://www.youtube.com/watch?v=D-7Pt3OUdQg";
 const M4B_IMAGES = [
   "https://cdn.shopify.com/s/files/1/0904/4541/4778/files/M4B.png?v=1784395920",
   "https://cdn.shopify.com/s/files/1/0904/4541/4778/files/M4B_1.png?v=1784395920",
@@ -44,6 +50,10 @@ export const fallbackProducts: Product[] = [
     retail_price: 4500,
     image_url: M4B_IMAGES[0],
     additional_images: M4B_IMAGES.slice(1),
+    video_url: M4B_VIDEO,
+    video_poster_url: "https://img.youtube.com/vi/D-7Pt3OUdQg/maxresdefault.jpg",
+    manual_url: M4_MANUAL,
+    manual_label: "XSTO M4 / M4B User Manual (PDF)",
     description: "The latest evolution of the XSTO M4 platform, with redesigned front wheels and an integrated folding footrest for easier transfers and a cleaner folded footprint.",
     features: ["New integrated folding footrest", "Redesigned front-wheel system", "Front/rear self-balancing control", "Electric seat elevation 347–650 mm", "15 km range", "6 km/h top speed"],
     specifications: { "Range": "15 km (9.3 miles)", "Top Speed": "6 km/h (3.7 mph)", "Max Slope": "10°", "Max Load Capacity": "115 kg (254 lbs)", "Seat Height Range": "347–650 mm", "Footrest": "Integrated folding footrest" },
@@ -58,6 +68,8 @@ export const fallbackProducts: Product[] = [
     slug: "xsto-m4",
     unit_price: 3495,
     image_url: M4_IMAGE,
+    manual_url: M4_MANUAL,
+    manual_label: "XSTO M4 / M4B User Manual (PDF)",
     description: "The original self-balancing XSTO for everyday indoor and outdoor mobility.",
     delivery_estimate: "1–3 days",
   },
