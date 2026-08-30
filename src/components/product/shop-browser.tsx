@@ -1,261 +1,205 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { ProductCard } from "@/components/ProductCard";
 import { Input, Select } from "@/components/ui/input";
-import { categoryToSlug, displayPrice, type ProductListItem } from "@/lib/products";
+import { categoryToSlug, type ProductListItem } from "@/lib/products";
+import {
+  SCOOTER_CATS,
+  SHOP_PAGE_SIZE,
+  SHOP_SUBS,
+  WHEELCHAIR_CATS,
+  shopFiltersToSearchParams,
+  type ShopFilters,
+  type ShopSortKey,
+  type ShopSub,
+} from "@/lib/shop-catalogue";
 import { cn } from "@/lib/utils";
-
-type SortKey = "featured" | "name" | "price-low" | "price-high" | "motability";
-
-const SCOOTER_CATS = [
-  "Small Scooters",
-  "Mid Size Scooters",
-  "Large Mobility Scooters",
-  "Folding Mobility Scooters",
-  "Mobility Scooters",
-];
-const WHEELCHAIR_CATS = [
-  "Manual Wheelchairs",
-  "Powered Wheelchairs",
-  "Folding Powered Wheelchairs",
-  "Wheelchairs",
-];
-
-const SUBS = [
-  { id: "", label: "All" },
-  { id: "scooters", label: "Scooters" },
-  { id: "wheelchairs", label: "Wheelchairs" },
-] as const;
 
 export function ShopBrowser({
   products,
+  totalCount,
+  catalogueSize,
   categories,
-  initialSub,
-  initialQuery = "",
+  manufacturers,
+  filters,
 }: {
   products: ProductListItem[];
+  totalCount: number;
+  catalogueSize: number;
   categories: { category: string; count: number }[];
-  initialSub?: string;
-  initialQuery?: string;
+  manufacturers: string[];
+  filters: ShopFilters;
 }) {
-  const searchParams = useSearchParams();
-  const [query, setQuery] = useState(initialQuery);
-  const [category, setCategory] = useState("");
-  const [manufacturer, setManufacturer] = useState("");
-  const [sort, setSort] = useState<SortKey>("featured");
-  const [motabilityOnly, setMotabilityOnly] = useState(false);
-  const [clearanceOnly, setClearanceOnly] = useState(false);
-  const [sub, setSub] = useState(initialSub ?? "");
-  const [visibleCount, setVisibleCount] = useState(48);
+  const router = useRouter();
+  const [, startTransition] = useTransition();
+  const [queryInput, setQueryInput] = useState(filters.query);
+  const [extra, setExtra] = useState<ProductListItem[]>([]);
+  const [loadingMore, setLoadingMore] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
   const shouldScrollToResults = useRef(false);
 
   useEffect(() => {
-    const q = searchParams.get("q");
-    if (q != null) setQuery(q);
-  }, [searchParams]);
+    setQueryInput(filters.query);
+  }, [filters.query]);
+
+  useEffect(() => {
+    setExtra([]);
+  }, [products]);
+
+  useEffect(() => {
+    if (queryInput === filters.query) return;
+    const timer = window.setTimeout(() => {
+      replaceFilters({ query: queryInput });
+    }, 400);
+    return () => window.clearTimeout(timer);
+    // filters.query is the committed URL value; queryInput is the draft.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [queryInput, filters.query]);
 
   useEffect(() => {
     if (!shouldScrollToResults.current) return;
     shouldScrollToResults.current = false;
-    // Let the filtered grid paint, then bring results up under the sticky header.
     requestAnimationFrame(() => {
       resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
-  }, [category, manufacturer, sub, motabilityOnly, clearanceOnly, sort]);
+  }, [filters.category, filters.manufacturer, filters.sub, filters.motabilityOnly, filters.clearanceOnly, filters.sort, products]);
 
-  // Reset pagination whenever the filtered set changes.
-  useEffect(() => {
-    setVisibleCount(48);
-  }, [query, category, manufacturer, sub, motabilityOnly, clearanceOnly, sort]);
+  function replaceFilters(next: Partial<ShopFilters>) {
+    const params = shopFiltersToSearchParams({
+      ...filters,
+      ...next,
+      query: (next.query ?? filters.query).trim(),
+    });
+    const href = params.toString() ? `/shop?${params.toString()}` : "/shop";
+    startTransition(() => {
+      router.replace(href, { scroll: false });
+    });
+  }
 
   function markScrollToResults() {
     shouldScrollToResults.current = true;
   }
 
-  const manufacturers = useMemo(() => {
-    const set = new Set<string>();
-    for (const p of products) {
-      if (p.manufacturer) set.add(p.manufacturer);
-    }
-    return [...set].sort((a, b) => a.localeCompare(b));
-  }, [products]);
-
   const visibleCategories = useMemo(() => {
-    if (sub === "scooters") {
+    if (filters.sub === "scooters") {
       return categories.filter((c) => SCOOTER_CATS.includes(c.category));
     }
-    if (sub === "wheelchairs") {
+    if (filters.sub === "wheelchairs") {
       return categories.filter((c) => WHEELCHAIR_CATS.includes(c.category));
     }
     return categories;
-  }, [categories, sub]);
+  }, [categories, filters.sub]);
 
-  const filtered = useMemo(() => {
-    let list = [...products];
-
-    if (sub === "scooters") {
-      list = list.filter((p) => SCOOTER_CATS.includes(p.category || ""));
-    } else if (sub === "wheelchairs") {
-      list = list.filter((p) => WHEELCHAIR_CATS.includes(p.category || ""));
-    }
-
-    if (category) list = list.filter((p) => p.category === category);
-
-    if (manufacturer) {
-      list = list.filter((p) => p.manufacturer === manufacturer);
-    }
-
-    if (query.trim()) {
-      const raw = query.trim().toLowerCase();
-      const words = raw.split(/\s+/).filter(Boolean);
-      const tokens = words.filter((t) => t.length >= 2);
-      const compounds: string[] = [];
-      for (let i = 0; i < words.length - 1; i++) {
-        const a = words[i];
-        const b = words[i + 1];
-        if (a.length <= 2 || a.includes("-") || b.includes("-")) {
-          compounds.push(`${a}-${b}`, `${a}${b}`);
-        }
-      }
-      for (const word of words) {
-        if (word.includes("-")) compounds.push(word.replace(/-/g, ""));
-      }
-      const compact = (value: string) => value.replace(/[^a-z0-9]+/g, "");
-      const phraseCompact = compact(raw);
-      list = list.filter((p) => {
-        const haystack = [p.name, p.manufacturer || "", p.category || ""]
-          .join(" ")
-          .toLowerCase();
-        const haystackCompact = compact(haystack);
-        if (phraseCompact && haystackCompact.includes(phraseCompact)) {
-          return true;
-        }
-        if (compounds.some((c) => haystack.includes(c) || haystackCompact.includes(compact(c)))) {
-          return true;
-        }
-        if (!tokens.length) return false;
-        return tokens.every((t) => haystack.includes(t));
-      });
-    }
-
-    if (motabilityOnly) {
-      list = list.filter(
-        (p) =>
-          (p.motability_weekly_price != null && p.motability_weekly_price > 0) ||
-          p.motability_price != null,
-      );
-    }
-
-    if (clearanceOnly) {
-      list = list.filter(
-        (p) =>
-          p.condition === "ex-demo" ||
-          p.condition === "refurbished" ||
-          p.condition === "pre-owned",
-      );
-    }
-
-    list.sort((a, b) => {
-      if (sort === "name") return a.name.localeCompare(b.name);
-      if (sort === "price-low" || sort === "price-high") {
-        const pa = displayPrice(a).current ?? Number.POSITIVE_INFINITY;
-        const pb = displayPrice(b).current ?? Number.POSITIVE_INFINITY;
-        return sort === "price-low" ? pa - pb : pb - pa;
-      }
-      if (sort === "motability") {
-        const ma = a.motability_weekly_price ?? a.motability_price ?? 99999;
-        const mb = b.motability_weekly_price ?? b.motability_price ?? 99999;
-        return ma - mb;
-      }
-      if (a.is_featured !== b.is_featured) return a.is_featured ? -1 : 1;
-      return a.name.localeCompare(b.name);
-    });
-
-    return list;
-  }, [
-    products,
-    query,
-    category,
-    manufacturer,
-    sort,
-    motabilityOnly,
-    clearanceOnly,
-    sub,
-  ]);
-
-  const visibleProducts = filtered.slice(0, visibleCount);
-  const hasMore = visibleCount < filtered.length;
+  const visibleProducts = [...products, ...extra];
+  const hasMore = visibleProducts.length < totalCount;
 
   const activeFilters: { key: string; label: string; clear: () => void }[] = [];
-  if (sub === "scooters") {
+  if (filters.sub === "scooters") {
     activeFilters.push({
       key: "sub",
       label: "Scooters",
       clear: () => {
-        setSub("");
-        setCategory("");
+        markScrollToResults();
+        replaceFilters({ sub: "", category: "" });
       },
     });
   }
-  if (sub === "wheelchairs") {
+  if (filters.sub === "wheelchairs") {
     activeFilters.push({
       key: "sub",
       label: "Wheelchairs",
       clear: () => {
-        setSub("");
-        setCategory("");
+        markScrollToResults();
+        replaceFilters({ sub: "", category: "" });
       },
     });
   }
-  if (category) {
+  if (filters.category) {
     activeFilters.push({
       key: "category",
-      label: category,
-      clear: () => setCategory(""),
+      label: filters.category,
+      clear: () => {
+        markScrollToResults();
+        replaceFilters({ category: "" });
+      },
     });
   }
-  if (manufacturer) {
+  if (filters.manufacturer) {
     activeFilters.push({
       key: "brand",
-      label: manufacturer,
-      clear: () => setManufacturer(""),
+      label: filters.manufacturer,
+      clear: () => {
+        markScrollToResults();
+        replaceFilters({ manufacturer: "" });
+      },
     });
   }
-  if (query.trim()) {
+  if (filters.query) {
     activeFilters.push({
       key: "query",
-      label: `“${query.trim()}”`,
-      clear: () => setQuery(""),
+      label: `“${filters.query}”`,
+      clear: () => {
+        setQueryInput("");
+        replaceFilters({ query: "" });
+      },
     });
   }
-  if (motabilityOnly) {
+  if (filters.motabilityOnly) {
     activeFilters.push({
       key: "motability",
       label: "Motability",
-      clear: () => setMotabilityOnly(false),
+      clear: () => {
+        markScrollToResults();
+        replaceFilters({ motabilityOnly: false });
+      },
     });
   }
-  if (clearanceOnly) {
+  if (filters.clearanceOnly) {
     activeFilters.push({
       key: "clearance",
       label: "Clearance",
-      clear: () => setClearanceOnly(false),
+      clear: () => {
+        markScrollToResults();
+        replaceFilters({ clearanceOnly: false });
+      },
     });
   }
 
   function clearAll() {
-    setQuery("");
-    setCategory("");
-    setManufacturer("");
-    setMotabilityOnly(false);
-    setClearanceOnly(false);
-    setSub("");
-    setSort("featured");
+    setQueryInput("");
+    markScrollToResults();
+    replaceFilters({
+      query: "",
+      category: "",
+      manufacturer: "",
+      motabilityOnly: false,
+      clearanceOnly: false,
+      sub: "",
+      sort: "featured",
+    });
+  }
+
+  async function loadMore() {
+    setLoadingMore(true);
+    try {
+      const params = shopFiltersToSearchParams(filters);
+      params.set("offset", String(visibleProducts.length));
+      params.set("limit", String(SHOP_PAGE_SIZE));
+      const res = await fetch(`/api/shop/products?${params.toString()}`);
+      const data = (await res.json()) as {
+        products?: ProductListItem[];
+      };
+      if (!res.ok) throw new Error("Could not load more products");
+      setExtra((current) => [...current, ...(data.products ?? [])]);
+    } catch {
+      /* keep current page */
+    } finally {
+      setLoadingMore(false);
+    }
   }
 
   return (
@@ -265,8 +209,8 @@ export function ShopBrowser({
         role="tablist"
         aria-label="Product type"
       >
-        {SUBS.map((item) => {
-          const active = sub === item.id;
+        {SHOP_SUBS.map((item) => {
+          const active = filters.sub === item.id;
           return (
             <button
               key={item.id || "all"}
@@ -275,8 +219,7 @@ export function ShopBrowser({
               aria-selected={active}
               onClick={() => {
                 markScrollToResults();
-                setSub(item.id);
-                setCategory("");
+                replaceFilters({ sub: item.id as ShopSub, category: "" });
               }}
               className={cn(
                 "rounded-full px-4 py-2 text-sm font-semibold transition-colors",
@@ -298,8 +241,8 @@ export function ShopBrowser({
           </label>
           <div className="relative">
             <Input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              value={queryInput}
+              onChange={(e) => setQueryInput(e.target.value)}
               placeholder="Name or brand…"
               aria-label="Search by name or brand"
               className="bg-white pr-11"
@@ -317,10 +260,10 @@ export function ShopBrowser({
             Type
           </label>
           <Select
-            value={category}
+            value={filters.category}
             onChange={(e) => {
               markScrollToResults();
-              setCategory(e.target.value);
+              replaceFilters({ category: e.target.value });
             }}
             className="bg-white"
           >
@@ -337,10 +280,10 @@ export function ShopBrowser({
             Brand
           </label>
           <Select
-            value={manufacturer}
+            value={filters.manufacturer}
             onChange={(e) => {
               markScrollToResults();
-              setManufacturer(e.target.value);
+              replaceFilters({ manufacturer: e.target.value });
             }}
             className="bg-white"
           >
@@ -357,10 +300,10 @@ export function ShopBrowser({
             Sort
           </label>
           <Select
-            value={sort}
+            value={filters.sort}
             onChange={(e) => {
               markScrollToResults();
-              setSort(e.target.value as SortKey);
+              replaceFilters({ sort: e.target.value as ShopSortKey });
             }}
             className="bg-white"
           >
@@ -380,10 +323,10 @@ export function ShopBrowser({
               <input
                 type="checkbox"
                 className="h-4 w-4 shrink-0 rounded border-border text-primary focus:ring-accent"
-                checked={motabilityOnly}
+                checked={filters.motabilityOnly}
                 onChange={(e) => {
                   markScrollToResults();
-                  setMotabilityOnly(e.target.checked);
+                  replaceFilters({ motabilityOnly: e.target.checked });
                 }}
               />
               Motability
@@ -392,10 +335,10 @@ export function ShopBrowser({
               <input
                 type="checkbox"
                 className="h-4 w-4 shrink-0 rounded border-border text-primary focus:ring-accent"
-                checked={clearanceOnly}
+                checked={filters.clearanceOnly}
                 onChange={(e) => {
                   markScrollToResults();
-                  setClearanceOnly(e.target.checked);
+                  replaceFilters({ clearanceOnly: e.target.checked });
                 }}
               />
               Clearance
@@ -409,102 +352,103 @@ export function ShopBrowser({
         id="catalogue-results"
         className="scroll-under-header"
       >
-      <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-muted">
-          <span className="font-semibold text-primary">{filtered.length}</span>{" "}
-          product{filtered.length === 1 ? "" : "s"}
-          {filtered.length !== products.length ? (
-            <span> matching your filters</span>
-          ) : null}
-        </p>
-        {activeFilters.length ? (
-          <div className="flex flex-wrap items-center gap-2">
-            {activeFilters.map((f) => (
-              <button
-                key={f.key + f.label}
-                type="button"
-                onClick={f.clear}
-                className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary"
-                aria-label={`Remove ${f.label} filter`}
-              >
-                {f.label}
-                <span aria-hidden>×</span>
-              </button>
-            ))}
-            <button
-              type="button"
-              className="text-xs font-semibold text-muted underline underline-offset-2"
-              onClick={clearAll}
-            >
-              Clear all
-            </button>
-          </div>
-        ) : null}
-      </div>
-
-      {filtered.length ? (
-        <>
-          <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 lg:gap-6">
-            {visibleProducts.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
-          </div>
-          {hasMore ? (
-            <div className="mt-8 flex flex-col items-center gap-2">
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-muted">
+            <span className="font-semibold text-primary">{totalCount}</span>{" "}
+            product{totalCount === 1 ? "" : "s"}
+            {totalCount !== catalogueSize ? (
+              <span> matching your filters</span>
+            ) : null}
+          </p>
+          {activeFilters.length ? (
+            <div className="flex flex-wrap items-center gap-2">
+              {activeFilters.map((f) => (
+                <button
+                  key={f.key + f.label}
+                  type="button"
+                  onClick={f.clear}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary"
+                  aria-label={`Remove ${f.label} filter`}
+                >
+                  {f.label}
+                  <span aria-hidden>×</span>
+                </button>
+              ))}
               <button
                 type="button"
-                onClick={() => setVisibleCount((n) => n + 48)}
-                className="rounded-xl border border-primary px-6 py-3 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+                className="text-xs font-semibold text-muted underline underline-offset-2"
+                onClick={clearAll}
               >
-                Show more products
+                Clear all
               </button>
-              <p className="text-xs text-muted">
-                Showing {visibleProducts.length} of {filtered.length}
-              </p>
             </div>
           ) : null}
-        </>
-      ) : (
-        <div className="mt-8 border border-border bg-soft px-5 py-10 text-center">
-          <p className="font-semibold text-primary">
-            No products match these filters
-          </p>
-          <p className="mt-2 text-sm text-muted">
-            This page only covers scooters and wheelchairs.
-            {query.trim() ? (
-              <>
-                {" "}
-                <Link
-                  href={`/search?q=${encodeURIComponent(query.trim())}`}
-                  className="font-semibold text-primary underline"
-                >
-                  Search all products &amp; vehicle adaptations for “
-                  {query.trim()}”
-                </Link>
-              </>
-            ) : (
-              <>
-                {" "}
-                Looking for hand controls or hoists? Browse{" "}
-                <Link
-                  href="/vehicle-adaptations"
-                  className="font-semibold text-primary underline"
-                >
-                  vehicle adaptations
-                </Link>
-                .
-              </>
-            )}
-          </p>
-          <button
-            type="button"
-            onClick={clearAll}
-            className="mt-4 text-sm font-semibold text-primary underline underline-offset-2"
-          >
-            Clear all filters
-          </button>
         </div>
-      )}
+
+        {totalCount ? (
+          <>
+            <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 lg:gap-6">
+              {visibleProducts.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+            {hasMore ? (
+              <div className="mt-8 flex flex-col items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => void loadMore()}
+                  disabled={loadingMore}
+                  className="rounded-xl border border-primary px-6 py-3 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground disabled:opacity-60"
+                >
+                  {loadingMore ? "Loading…" : "Show more products"}
+                </button>
+                <p className="text-xs text-muted">
+                  Showing {visibleProducts.length} of {totalCount}
+                </p>
+              </div>
+            ) : null}
+          </>
+        ) : (
+          <div className="mt-8 border border-border bg-soft px-5 py-10 text-center">
+            <p className="font-semibold text-primary">
+              No products match these filters
+            </p>
+            <p className="mt-2 text-sm text-muted">
+              This page only covers scooters and wheelchairs.
+              {filters.query ? (
+                <>
+                  {" "}
+                  <Link
+                    href={`/search?q=${encodeURIComponent(filters.query)}`}
+                    className="font-semibold text-primary underline"
+                  >
+                    Search all products &amp; vehicle adaptations for “
+                    {filters.query}”
+                  </Link>
+                </>
+              ) : (
+                <>
+                  {" "}
+                  Looking for hand controls or hoists? Browse{" "}
+                  <Link
+                    href="/vehicle-adaptations"
+                    className="font-semibold text-primary underline"
+                  >
+                    vehicle adaptations
+                  </Link>
+                  .
+                </>
+              )}
+            </p>
+            <button
+              type="button"
+              onClick={clearAll}
+              className="mt-4 text-sm font-semibold text-primary underline underline-offset-2"
+            >
+              Clear all filters
+            </button>
+          </div>
+        )}
       </div>
 
       <nav

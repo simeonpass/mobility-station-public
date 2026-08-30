@@ -2,7 +2,7 @@ import {
   HIRE_PRICING_CATEGORIES,
   type HirePricingCategoryId,
 } from "@/lib/hire-pricing";
-import { getPublishedProducts } from "@/lib/products";
+import { getProductsBySlugs } from "@/lib/products";
 
 export type HireCategoryImage = {
   id: HirePricingCategoryId;
@@ -105,11 +105,10 @@ export const HIRE_CATEGORY_PRODUCT_SLUGS: Partial<
 export async function getHireCategoryImages(): Promise<HireCategoryImage[]> {
   let bySlug = new Map<string, { name: string; image_url: string | null }>();
   try {
-    const products = await getPublishedProducts({ limit: 500, shopOnly: true });
+    const slugs = Object.values(HIRE_CATEGORY_IMAGE_SOURCES).map((source) => source.slug);
+    const products = await getProductsBySlugs(slugs);
     bySlug = new Map(
-      products
-        .filter((p) => p.slug)
-        .map((p) => [p.slug, { name: p.name, image_url: p.image_url }]),
+      products.map((p) => [p.slug, { name: p.name, image_url: p.image_url }]),
     );
   } catch {
     bySlug = new Map();

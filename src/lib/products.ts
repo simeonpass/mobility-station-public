@@ -165,6 +165,25 @@ export async function getPublishedProducts(
   return items;
 }
 
+export async function getProductsBySlugs(
+  slugs: string[],
+): Promise<ProductListItem[]> {
+  const unique = [...new Set(slugs.filter(Boolean))];
+  if (!unique.length) return [];
+
+  const supabase = getClient();
+  const { data, error } = await supabase
+    .from("stock_items")
+    .select(LIST_COLUMNS)
+    .in("slug", unique)
+    .eq("published_to_website", true)
+    .eq("website_visible", true)
+    .neq("product_type", "archived");
+
+  if (error) throw error;
+  return (data ?? []).map((row) => mapListItem(row as Record<string, unknown>));
+}
+
 export async function getAdaptationProducts(
   opts: {
     category?: string;
