@@ -4,6 +4,7 @@ import "./globals.css";
 import "./klym-polish.css";
 import "./klym-shop.css";
 import "./klym-apple.css";
+import "./klym-visual.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://klym.co.uk"),
