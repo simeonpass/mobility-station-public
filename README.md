@@ -1,60 +1,15 @@
-# Mobility Station Public Website
+# KLYM Mobility storefront
 
-Premium SEO-first public site for [mobilitystation.co.uk](https://mobilitystation.co.uk), built with Next.js App Router, TypeScript and Tailwind CSS v4.
+Focused XSTO storefront for KLYM / Mobility Station.
 
-## Stack
+- Next.js App Router
+- Premium black / white / #0171E3 visual system
+- M4B-first commercial homepage
+- Public catalogue sync from the Mobility Station V1 `klym-catalog` Supabase Edge Function
+- Demo and sales enquiries write to V1 through `klym-enquiry`
+- Product pages for M4, M4B, M4 Pro, X12 and X12 Pro
+- Comparison, VAT relief and SEO landing pages
+- sitemap.xml and robots.txt
 
-- Next.js (App Router) + React 19
-- Tailwind CSS v4 with Mobility Station brand tokens
-- Supabase (read products/content; insert enquiries)
-- Leaflet + OpenStreetMap for branch maps
-- Vercel Speed Insights + optional GA4
-
-## Getting started
-
-```bash
-npm install
-cp .env.example .env.local
-npm run dev
-```
-
-Without Supabase credentials the site serves curated fallback content so pages and forms still work in development.
-
-## Environment
-
-```env
-SUPABASE_URL=
-SUPABASE_PUBLIC_SITE_KEY=
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-NEXT_PUBLIC_SITE_URL=https://mobilitystation.co.uk
-NEXT_PUBLIC_GA_ID=
-```
-
-`NEXT_PUBLIC_SUPABASE_*` mirror the project URL and public site key so Care Plan
-checkout can run in the browser (Stripe return URLs on mobilitystation.co.uk).
-
-Run `supabase/public_site_grants.sql` in Supabase to create the minimum `public_site` grants.
-
-## Key routes
-
-| Route | Purpose |
-| --- | --- |
-| `/` | Homepage |
-| `/vehicle-adaptations` | Adaptations hub + service pages |
-| `/shop` | Scooters & wheelchairs listing |
-| `/{category}/{slug}` | Root-level product URLs |
-| `/locations` | Heathrow & Ferndown |
-| `/book-a-demo` | Multi-step demo booking (£195 home fee via DNA; branch/PWSS free) |
-| `/book-a-service` | Service booking |
-| `/blog` | Advice articles |
-| `/lightweight-folding-mobility` | Lightweight hub + spin-off CTA |
-| `/trade-in` | Old scooter takeaway credit (fixed bands at checkout) |
-| `/sitemap.xml` / `/robots.txt` | SEO |
-
-## Notes
-
-- Brand colours and Manrope typography are enforced via CSS variables / theme tokens
-- Forms validate with Zod on the server and write to Supabase `enquiries`
-- Do not generate `og:image` in code unless an absolute HTTPS asset URL is supplied
-- Knowledge FAQs (`/faq` + `/faq/[slug]`) can be seeded locally or published from Lovable via Supabase `knowledge_faqs` after PII stripping and human review (`supabase/knowledge_faqs.sql`)
+## Important launch note
+M4B is not yet a `stock_items` record in V1. The storefront has an M4B content/pricing fallback so the site can be built now, but its product record and correct image should be added to V1 before production launch. The current preview deliberately does not create a second product admin.
