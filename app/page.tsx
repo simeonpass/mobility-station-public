@@ -1,81 +1,134 @@
 import Link from "next/link";
-import { displayPrice, gbp, getProducts, productImages } from "@/lib/catalog";
+import { displayPrice, gbp, getProducts, productImages, type Product } from "@/lib/catalog";
 
 export const dynamic = "force-dynamic";
 
-const featureStrip = [
-  ["◎", "Self balancing", "Stable, controlled movement"],
-  ["↕", "Electric seat lift", "Rise to a useful height"],
-  ["⌁", "Folds for transport", "Designed for everyday travel"],
-  ["360°", "Omnidirectional", "Move precisely in tight spaces"],
+const m4bCampaignImages = [
+  "/klym/m4b/m4b-hero.webp",
+  "/klym/m4b/m4b-front-three-quarter.webp",
+  "/klym/m4b/m4b-left-profile.webp",
+  "/klym/m4b/m4b-rear-three-quarter.webp",
 ];
+
+function imagesFor(product: Product) {
+  return product.shortName === "M4B" ? m4bCampaignImages : productImages(product);
+}
+
+const labels: Partial<Record<Product["shortName"], string>> = {
+  M4B: "NEW",
+  X12: "STAIR CLIMBER",
+  "X12 Pro": "FLAGSHIP",
+};
+
+const subtitles: Record<Product["shortName"], string> = {
+  M4: "Compact self-balancing mobility",
+  M4B: "The latest M4 evolution",
+  "M4 Pro": "Premium comfort and adjustment",
+  X12: "Stair-climbing all-terrain mobility",
+  "X12 Pro": "Flagship all-terrain XSTO",
+};
 
 export default async function Home() {
   const products = await getProducts();
+  const x12 = products.find((p) => p.shortName === "X12")!;
+  const x12Pro = products.find((p) => p.shortName === "X12 Pro")!;
   const m4b = products.find((p) => p.shortName === "M4B")!;
-  const m4bImages = productImages(m4b);
-  const shot = (index: number) => m4bImages[index] ?? m4bImages[0];
+  const x12Images = productImages(x12);
+  const m4bImages = imagesFor(m4b);
 
   return (
-    <>
-      <section className="hero">
-        <div className="hero-copy">
-          <div className="eyebrow"><span>NEW</span> XSTO M4B</div>
-          <h1>Move <em>differently.</em></h1>
-          <p className="hero-lede">Self-balancing mobility, redesigned around everyday independence. Meet the XSTO M4B with redesigned front wheels and an integrated folding footrest.</p>
-          <div className="mini-features">{featureStrip.map(([icon,title]) => <div key={title}><b>{icon}</b><span>{title}</span></div>)}</div>
-          <div className="hero-price"><small>From</small><strong>{gbp(displayPrice(m4b))}</strong><span>with VAT relief</span></div>
-          <div className="cta-row"><Link className="btn blue" href="/xsto-m4b">Explore M4B →</Link><Link className="btn outline" href="/book-a-demo">Book a demonstration</Link></div>
-          <div className="trust-line"><span>● Available now</span><span>✓ UK delivery</span><span>✓ UK warranty & support</span></div>
+    <div className="shop-home">
+      <section className="shop-hero">
+        <div className="shop-hero-copy">
+          <p className="shop-overline">XSTO X12 · STAIR-CLIMBING MOBILITY</p>
+          <h1>Go beyond the <span>ordinary.</span></h1>
+          <p className="shop-hero-lede">The X12 combines wheels, tracks and active levelling in one extraordinary mobility platform — built for demanding terrain and compatible stairs.</p>
+          <div className="shop-price-row">
+            <div><small>From</small><strong>{gbp(displayPrice(x12))}</strong><span>with VAT relief</span></div>
+            <p>VAT relief is subject to eligibility.</p>
+          </div>
+          <div className="shop-actions">
+            <Link className="shop-button primary" href="/xsto-x12">Shop X12</Link>
+            <Link className="shop-button secondary" href="/xsto-x12-pro">View X12 Pro</Link>
+          </div>
+          <div className="shop-hero-meta">
+            <span>Stair-capable platform</span>
+            <span>All-terrain drive modes</span>
+            <span>UK sales & support</span>
+          </div>
         </div>
-        <div className="hero-media">
-          <div className="halo" />
-          <img src={shot(0)} alt="XSTO M4B self-balancing powered wheelchair" />
-          <div className="new-cards"><div><b>Integrated folding footrest</b><small>NEW</small></div><div><b>Redesigned front-wheel system</b><small>NEW</small></div></div>
+        <div className="shop-hero-product">
+          <div className="shop-product-stage">
+            <span className="shop-stage-badge">X12</span>
+            <img src={x12Images[0]} alt="XSTO X12 stair-climbing all-terrain mobility robot" />
+          </div>
         </div>
       </section>
 
-      <section className="feature-strip">{featureStrip.map(([icon,title,text]) => <div key={title}><b>{icon}</b><span><strong>{title}</strong><small>{text}</small></span></div>)}</section>
-
-      <section className="dark-showcase">
-        <div className="orbital"><div className="chair-orbit"><img src={shot(1)} alt="XSTO M4B front-wheel and self-balancing design" /></div></div>
-        <div className="showcase-copy"><p className="eyebrow plain">ADVANCED XSTO TECHNOLOGY</p><h2>This isn’t a wheelchair as you know it.</h2><p>Self-balancing control works continuously beneath you, while the compact wheel layout is designed for precise movement indoors and confident everyday use outdoors.</p><Link href="/self-balancing-wheelchairs" className="btn ghost">Discover self-balancing →</Link></div>
+      <section className="launch-section">
+        <div className="launch-media">
+          <span className="launch-badge">NEW M4B</span>
+          <img src={m4bImages[0]} alt="New XSTO M4B self-balancing powered wheelchair" />
+        </div>
+        <div className="launch-copy">
+          <p className="shop-overline">NEW PRODUCT LAUNCH</p>
+          <h2>The M4, refined for everyday life.</h2>
+          <p>Meet the new M4B with a folding footrest, redesigned front-wheel system and the compact self-balancing XSTO platform.</p>
+          <div className="launch-price"><strong>{gbp(displayPrice(m4b))}</strong><span>with VAT relief</span></div>
+          <div className="launch-points"><span>Folding footrest</span><span>Electric seat elevation</span><span>Self-balancing control</span></div>
+          <div className="shop-actions">
+            <Link className="shop-button primary" href="/xsto-m4b">Shop M4B</Link>
+            {m4b.manual_url && <a className="shop-text-link" href={m4b.manual_url} target="_blank" rel="noreferrer">Download user manual ↓</a>}
+          </div>
+        </div>
       </section>
 
-      <section className="rise-section">
-        <div><p className="eyebrow plain">ELECTRIC ELEVATION</p><h2>Rise above.</h2><p>Raise the M4B seat from 347 mm to 650 mm. Get closer to worktops, tables and eye-level conversations without giving up the compact XSTO footprint.</p><Link className="text-link" href="/xsto-m4b">See every M4B feature →</Link></div>
-        <div className="rise-visual"><img src={shot(2)} alt="XSTO M4B electric seat elevation" /><div className="measure"><span>650 mm</span><i /></div></div>
+      <section className="collection-section" id="range">
+        <div className="collection-heading">
+          <div><p className="shop-overline">SHOP THE RANGE</p><h2>Choose your XSTO.</h2></div>
+          <Link href="/compare">Compare all models →</Link>
+        </div>
+        <div className="shop-product-grid">
+          {products.map((product) => {
+            const badge = labels[product.shortName];
+            return (
+              <Link href={`/${product.slug}`} className="shop-product-card" key={product.slug}>
+                <div className="shop-card-media">
+                  {badge && <span className="shop-card-badge">{badge}</span>}
+                  <img src={imagesFor(product)[0]} alt={product.name} />
+                </div>
+                <div className="shop-card-body">
+                  <div><h3>{product.shortName}</h3><p>{subtitles[product.shortName]}</p></div>
+                  <div className="shop-card-price"><strong>{gbp(displayPrice(product))}</strong><small>with VAT relief</small></div>
+                </div>
+                <span className="shop-card-link">View product →</span>
+              </Link>
+            );
+          })}
+        </div>
       </section>
 
-      <section className="m4b-detail-band">
-        <div className="detail-media"><img src={shot(3)} alt="XSTO M4B integrated folding footrest" /></div>
-        <div className="detail-copy"><p className="eyebrow plain">NEW M4B DESIGN</p><h2>Made easier to live with.</h2><p>The integrated folding footrest moves neatly away for transfers and transport. Revised front-wheel hardware gives the M4B its own, updated stance while retaining the M4 platform’s compact movement.</p><div className="detail-points"><span>Folding footrest</span><span>Redesigned front wheels</span><span>Compact transport</span></div><Link className="btn blue" href="/xsto-m4b">View the M4B gallery →</Link></div>
+      <section className="shop-value-strip">
+        <div><strong>VAT relief available</strong><span>0% VAT for eligible customers</span></div>
+        <div><strong>Nationwide delivery</strong><span>UK delivery options across the range</span></div>
+        <div><strong>Product manuals</strong><span>Downloads available on product pages</span></div>
+        <div><strong>UK after-sales support</strong><span>Backed by Mobility Station</span></div>
       </section>
 
-      <section className="m4b-image-strip" aria-label="XSTO M4B product gallery">
-        {[4,5,6].map((index) => <div key={index}><img src={shot(index)} alt={`XSTO M4B product detail ${index - 3}`} /></div>)}
+      <section className="premium-feature-banner">
+        <div className="premium-banner-copy">
+          <p className="shop-overline light">X12 PRO</p>
+          <h2>More comfort. Same extraordinary capability.</h2>
+          <p>The flagship XSTO combines the X12 wheel-track platform with the highest-specification seating and adjustment package in the range.</p>
+          <Link className="shop-button light" href="/xsto-x12-pro">Shop X12 Pro</Link>
+        </div>
+        <div className="premium-banner-media"><img src={productImages(x12Pro)[0]} alt="XSTO X12 Pro" /></div>
       </section>
 
-      <section className="range-section" id="range">
-        <div className="section-heading"><div><p className="eyebrow plain">FIVE MODELS. ONE IDEA.</p><h2>Find your XSTO.</h2></div><Link className="btn outline small" href="/compare">Compare all models →</Link></div>
-        <div className="product-grid">{products.map((product) => (
-          <Link href={`/${product.slug}`} className={`product-card ${product.shortName === "M4B" ? "featured" : ""}`} key={product.shortName}>
-            {product.shortName === "M4B" && <span className="pick">OUR PICK</span>}
-            <div className="product-image"><img src={productImages(product)[0]} alt={product.name} /></div>
-            <h3>{product.shortName}</h3><p>{product.description?.split(".")[0]}.</p><strong>From {gbp(displayPrice(product))}</strong><small>with VAT relief</small><span className="card-arrow">→</span>
-          </Link>
-        ))}</div>
+      <section className="shop-compare-section">
+        <div><p className="shop-overline">NOT SURE WHICH MODEL?</p><h2>Compare the complete XSTO range.</h2><p>See prices, key differences and where each model sits in the range before you choose.</p></div>
+        <Link className="shop-button primary" href="/compare">Compare XSTO models</Link>
       </section>
-
-      <section className="seo-intro">
-        <p className="eyebrow plain">KLYM × XSTO</p><h2>Advanced powered mobility, explained properly.</h2>
-        <p>KLYM focuses on just five XSTO models: M4, M4B, M4 Pro, X12 and X12 Pro. From compact self-balancing mobility to stair-climbing all-terrain technology, every page is built to make the differences easy to understand.</p>
-        <div className="seo-links"><Link href="/self-balancing-wheelchairs">Self-balancing wheelchairs →</Link><Link href="/stair-climbing-wheelchairs">Stair-climbing wheelchairs →</Link><Link href="/vat-relief">VAT relief on powered wheelchairs →</Link></div>
-      </section>
-
-      <section className="benefits"><div><b>🇬🇧</b><strong>UK specialist</strong><small>Expert advice & support</small></div><div><b>✓</b><strong>VAT relief</strong><small>0% VAT if eligible</small></div><div><b>▣</b><strong>UK delivery</strong><small>Delivered nationwide</small></div><div><b>◇</b><strong>UK warranty</strong><small>Support after purchase</small></div><div><b>▦</b><strong>Book a demo</strong><small>Try before you choose</small></div></section>
-
-      <section className="final-cta"><p className="eyebrow plain">READY WHEN YOU ARE</p><h2>Try the M4B for yourself.</h2><p>Talk to the KLYM team about availability, VAT relief, delivery or a demonstration.</p><div className="cta-row center"><Link className="btn blue" href="/xsto-m4b">Explore M4B →</Link><Link className="btn outline" href="/book-a-demo">Book a demo</Link></div></section>
-    </>
+    </div>
   );
 }
