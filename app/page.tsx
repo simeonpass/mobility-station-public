@@ -39,49 +39,114 @@ export default async function Home() {
   const x12 = products.find((p) => p.shortName === "X12")!;
   const x12Pro = products.find((p) => p.shortName === "X12 Pro")!;
   const m4b = products.find((p) => p.shortName === "M4B")!;
-  const m4Pro = products.find((p) => p.shortName === "M4 Pro")!;
   const x12Images = imagesFor(x12);
-  const x12ProImages = imagesFor(x12Pro);
   const m4bImages = imagesFor(m4b);
-  const m4ProImages = imagesFor(m4Pro);
+  const heroVideo = x12.video_url && /\.(mp4|webm)(?:\?|$)/i.test(x12.video_url) ? x12.video_url : null;
+
+  const heroImage = imageAt(x12Images, 2);
+  const stairImage = imageAt(x12Images, 3);
+  const liftImage = imageAt(x12Images, 5);
+  const terrainImage = imageAt(x12Images, 6);
+  const safetyImage = imageAt(x12Images, 8);
+  const lifestyleImage = imageAt(x12Images, 7);
+  const lidarImage = imageAt(x12Images, 9);
 
   return (
-    <div className="shop-home">
-      <section className="shop-hero">
-        <div className="shop-hero-copy">
-          <p className="shop-overline">XSTO X12</p>
-          <h1>Beyond ordinary.</h1>
-          <p className="shop-hero-lede">Stairs, changing terrain and routes that ask more from powered mobility. Meet the X12.</p>
-          <div className="shop-price-row">
-            <div><small>From</small><strong>{gbp(displayPrice(x12))}</strong><span>with VAT relief</span></div>
-            <p>VAT relief is subject to eligibility.</p>
+    <div className="shop-home x12-led-home">
+      <section className="x12-campaign-hero">
+        <div className="x12-hero-media" aria-hidden="true">
+          {heroVideo ? (
+            <video autoPlay muted loop playsInline poster={heroImage}>
+              <source src={heroVideo} />
+            </video>
+          ) : (
+            <img src={heroImage} alt="" />
+          )}
+        </div>
+        <div className="x12-hero-shade" />
+        <div className="x12-hero-content">
+          <p className="x12-kicker">X12 STAIR-CLIMBING MOBILITY</p>
+          <h1>Built for the route that changes beneath you.</h1>
+          <p className="x12-hero-copy">Stairs, uneven ground and routes that demand more from powered mobility. X12 combines wheel and track drive modes with active seat control in one extraordinary platform.</p>
+          <div className="x12-hero-price">
+            <span>From</span>
+            <strong>{gbp(displayPrice(x12))}</strong>
+            <small>with VAT relief</small>
           </div>
-          <div className="shop-actions">
+          <div className="x12-hero-actions">
             <Link className="shop-button primary" href="/xsto-x12">Shop X12</Link>
-            <Link className="shop-button secondary" href="/xsto-x12-pro">Explore X12 Pro</Link>
-          </div>
-          <div className="shop-hero-meta">
-            <span>Stair-capable platform</span>
-            <span>All-terrain drive modes</span>
-            <span>UK sales & support</span>
+            {x12.video_url ? (
+              <a className="x12-watch-button" href={x12.video_url} target="_blank" rel="noreferrer"><i>▶</i> Watch it in action</a>
+            ) : (
+              <a className="x12-watch-button" href="#x12-capability"><i>▶</i> See what it can do</a>
+            )}
           </div>
         </div>
-        <div className="shop-hero-product">
-          <div className="shop-product-stage">
-            <span className="shop-stage-badge">X12 · STAIR CLIMBING · ALL TERRAIN</span>
-            <img src={imageAt(x12Images, 0)} alt="XSTO X12 stair-climbing all-terrain mobility robot" />
-          </div>
+        <a className="x12-hero-play" href={x12.video_url || "#x12-capability"} target={x12.video_url ? "_blank" : undefined} rel={x12.video_url ? "noreferrer" : undefined} aria-label="Watch X12 in action"><span>▶</span><b>See X12 in action</b></a>
+      </section>
+
+      <section className="x12-feature-grid" id="x12-capability">
+        <Link href="/xsto-x12" className="x12-feature-card">
+          <div className="x12-feature-copy"><h2>Stair capable.</h2><p>Designed for compatible steps up to 200 mm high.</p></div>
+          <img src={stairImage} alt="XSTO X12 negotiating a step" />
+          <span>Learn more →</span>
+        </Link>
+        <Link href="/xsto-x12" className="x12-feature-card">
+          <div className="x12-feature-copy"><h2>Reach higher.</h2><p>Powered seat elevation from 490 to 762 mm.</p></div>
+          <img src={liftImage} alt="XSTO X12 elevated seating position" />
+          <span>Learn more →</span>
+        </Link>
+        <Link href="/xsto-x12" className="x12-feature-card">
+          <div className="x12-feature-copy"><h2>All-terrain freedom.</h2><p>Wheel and track modes for changing ground conditions.</p></div>
+          <img src={terrainImage} alt="XSTO X12 travelling outdoors" />
+          <span>Learn more →</span>
+        </Link>
+        <Link href="/xsto-x12" className="x12-feature-card">
+          <div className="x12-feature-copy"><h2>Smart & safe.</h2><p>LiDAR-supported collision and anti-fall safety alerts.</p></div>
+          <img src={safetyImage} alt="XSTO X12 safety sensing system" />
+          <span>Learn more →</span>
+        </Link>
+      </section>
+
+      <section className="x12-capability-strip" aria-label="X12 key specifications">
+        <div><strong>≤200 mm</strong><span>Compatible step height</span></div>
+        <div><strong>35 km</strong><span>Flat-ground range</span></div>
+        <div><strong>490–762 mm</strong><span>Seat lift range</span></div>
+        <div><strong>LiDAR</strong><span>Collision & anti-fall alerts</span></div>
+        <div><strong>UK</strong><span>Delivery & after-sales support</span></div>
+        <div><strong>0% VAT</strong><span>For eligible customers</span></div>
+      </section>
+
+      <section className="x12-editorial-panel">
+        <div className="x12-editorial-image"><img src={lifestyleImage} alt="XSTO X12 in an everyday home setting" /></div>
+        <div className="x12-editorial-copy">
+          <p className="shop-overline">DESIGNED AROUND YOU</p>
+          <h2>Independence looks different for everyone.</h2>
+          <p>From everyday routines to more demanding routes, X12 is built to adapt around the way you move.</p>
+          <ul><li>Adjustable seating and powered lift</li><li>Wheel and track drive configurations</li><li>Indoor and outdoor mobility</li></ul>
+          <Link className="shop-button primary" href="/xsto-x12">Discover X12</Link>
         </div>
       </section>
 
-      <section className="launch-section">
+      <section className="x12-safety-panel">
+        <div className="x12-safety-copy">
+          <p className="shop-overline">TECHNOLOGY THAT PROTECTS</p>
+          <h2>See more. Sense more. Move with confidence.</h2>
+          <p>X12 combines high-precision sensing with intelligent control to help identify hazards as the environment changes.</p>
+          <ul><li>Collision warning support</li><li>Drop-off and anti-fall alerts</li><li>Proximity sensing for changing routes</li></ul>
+          <Link className="shop-button secondary" href="/xsto-x12">Explore X12 technology</Link>
+        </div>
+        <div className="x12-safety-image"><img src={lidarImage} alt="XSTO X12 LiDAR and obstacle sensing" /></div>
+      </section>
+
+      <section className="launch-section m4b-premium-launch">
         <div className="launch-media">
           <span className="launch-badge">NEW</span>
           <img src={imageAt(m4bImages, 0)} alt="New XSTO M4B self-balancing powered wheelchair" />
         </div>
         <div className="launch-copy">
-          <p className="shop-overline">XSTO M4B</p>
-          <h2>New M4B. The M4, refined.</h2>
+          <p className="shop-overline">NEW XSTO M4B</p>
+          <h2>The M4, refined.</h2>
           <p>A folding footrest, redesigned front-wheel system and the compact self-balancing XSTO platform.</p>
           <div className="launch-price"><strong>{gbp(displayPrice(m4b))}</strong><span>with VAT relief</span></div>
           <div className="launch-points"><span>Folding footrest</span><span>Electric seat elevation</span><span>Self-balancing control</span></div>
@@ -89,23 +154,6 @@ export default async function Home() {
             <Link className="shop-button primary" href="/xsto-m4b">Shop M4B</Link>
             {m4b.manual_url && <a className="shop-text-link" href={m4b.manual_url} target="_blank" rel="noreferrer">User manual ↓</a>}
           </div>
-        </div>
-      </section>
-
-      <section className="visual-story-section" aria-label="Explore XSTO product photography">
-        <Link href="/xsto-x12" className="visual-tile visual-tile-large">
-          <img src={imageAt(x12Images, 2)} alt="XSTO X12 all-terrain stair-climbing detail" />
-          <div className="visual-tile-copy"><span>X12</span><h2>Made for more demanding routes.</h2><b>Explore X12 →</b></div>
-        </Link>
-        <div className="visual-tile-stack">
-          <Link href="/xsto-m4b" className="visual-tile">
-            <img src={imageAt(m4bImages, 1)} alt="XSTO M4B premium product view" />
-            <div className="visual-tile-copy dark-copy"><span>NEW M4B</span><h3>Designed around everyday use.</h3><b>Explore M4B →</b></div>
-          </Link>
-          <Link href="/xsto-m4-pro" className="visual-tile">
-            <img src={imageAt(m4ProImages, 3)} alt="XSTO M4 Pro premium seating detail" />
-            <div className="visual-tile-copy dark-copy"><span>M4 PRO</span><h3>Comfort, elevated.</h3><b>Explore M4 Pro →</b></div>
-          </Link>
         </div>
       </section>
 
@@ -134,26 +182,9 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="shop-value-strip">
-        <div><strong>VAT relief available</strong><span>0% VAT for eligible customers</span></div>
-        <div><strong>Nationwide delivery</strong><span>UK delivery options across the range</span></div>
-        <div><strong>Product manuals</strong><span>Downloads on individual product pages</span></div>
-        <div><strong>UK after-sales support</strong><span>Backed by Mobility Station</span></div>
-      </section>
-
-      <section className="premium-feature-banner">
-        <div className="premium-banner-copy">
-          <p className="shop-overline light">X12 PRO</p>
-          <h2>More comfort. More control.</h2>
-          <p>The flagship XSTO combines the X12 wheel-track platform with the highest-specification seating and adjustment package in the range.</p>
-          <Link className="shop-button light" href="/xsto-x12-pro">Explore X12 Pro</Link>
-        </div>
-        <div className="premium-banner-media"><img src={imageAt(x12ProImages, 4)} alt="XSTO X12 Pro" /></div>
-      </section>
-
-      <section className="shop-compare-section">
-        <div><p className="shop-overline">COMPARE</p><h2>Which XSTO is right for you?</h2><p>See the five models side by side, including prices, key differences and intended use.</p></div>
-        <Link className="shop-button primary" href="/compare">Compare models</Link>
+      <section className="x12-final-cta">
+        <div><p className="shop-overline">READY TO GO FURTHER?</p><h2>Choose the X12 that fits your journey.</h2><p>Compare the X12 and X12 Pro, or explore the complete KLYM range.</p></div>
+        <div className="x12-final-actions"><Link className="shop-button primary" href="/xsto-x12">Shop X12</Link><Link className="shop-button secondary" href={`/${x12Pro.slug}`}>Explore X12 Pro</Link></div>
       </section>
     </div>
   );
