@@ -248,7 +248,7 @@ export function HireCheckoutClient({ bookingId }: { bookingId: string }) {
       return;
     }
     if (!signatureDataUrl) {
-      setError("Please sign in the box");
+      setError("Please draw your signature or type your name");
       return;
     }
     setSigning(true);
@@ -490,7 +490,11 @@ export function HireCheckoutClient({ bookingId }: { bookingId: string }) {
                 onChange={(e) => setSignedName(e.target.value)}
               />
             </div>
-            <SignaturePad onChange={setSignatureDataUrl} />
+            <SignaturePad
+              onChange={setSignatureDataUrl}
+              typedName={signedName}
+              onTypedNameChange={setSignedName}
+            />
             <Button className="w-full" onClick={() => void sign()} disabled={signing}>
               {signing ? "Saving signature…" : "Sign & continue"}
             </Button>
