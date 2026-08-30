@@ -25,7 +25,7 @@ const subtitles: Record<Product["shortName"], string> = {
   M4B: "The latest M4 evolution",
   "M4 Pro": "Premium comfort and adjustment",
   X12: "Stair-climbing all-terrain mobility",
-  "X12 Pro": "Flagship all-terrain XSTO",
+  "X12 Pro": "The flagship XSTO platform",
 };
 
 export default async function Home() {
@@ -40,16 +40,16 @@ export default async function Home() {
     <div className="shop-home">
       <section className="shop-hero">
         <div className="shop-hero-copy">
-          <p className="shop-overline">XSTO X12 · STAIR-CLIMBING MOBILITY</p>
-          <h1>Go beyond the <span>ordinary.</span></h1>
-          <p className="shop-hero-lede">The X12 combines wheels, tracks and active levelling in one extraordinary mobility platform — built for demanding terrain and compatible stairs.</p>
+          <p className="shop-overline">XSTO X12</p>
+          <h1>Beyond ordinary.</h1>
+          <p className="shop-hero-lede">Stairs, changing terrain and routes that ask more from powered mobility. Meet the X12.</p>
           <div className="shop-price-row">
             <div><small>From</small><strong>{gbp(displayPrice(x12))}</strong><span>with VAT relief</span></div>
             <p>VAT relief is subject to eligibility.</p>
           </div>
           <div className="shop-actions">
             <Link className="shop-button primary" href="/xsto-x12">Shop X12</Link>
-            <Link className="shop-button secondary" href="/xsto-x12-pro">View X12 Pro</Link>
+            <Link className="shop-button secondary" href="/xsto-x12-pro">Explore X12 Pro</Link>
           </div>
           <div className="shop-hero-meta">
             <span>Stair-capable platform</span>
@@ -59,7 +59,7 @@ export default async function Home() {
         </div>
         <div className="shop-hero-product">
           <div className="shop-product-stage">
-            <span className="shop-stage-badge">X12</span>
+            <span className="shop-stage-badge">X12 · STAIR CLIMBING · ALL TERRAIN</span>
             <img src={x12Images[0]} alt="XSTO X12 stair-climbing all-terrain mobility robot" />
           </div>
         </div>
@@ -67,25 +67,25 @@ export default async function Home() {
 
       <section className="launch-section">
         <div className="launch-media">
-          <span className="launch-badge">NEW M4B</span>
+          <span className="launch-badge">NEW</span>
           <img src={m4bImages[0]} alt="New XSTO M4B self-balancing powered wheelchair" />
         </div>
         <div className="launch-copy">
-          <p className="shop-overline">NEW PRODUCT LAUNCH</p>
-          <h2>The M4, refined for everyday life.</h2>
-          <p>Meet the new M4B with a folding footrest, redesigned front-wheel system and the compact self-balancing XSTO platform.</p>
+          <p className="shop-overline">XSTO M4B</p>
+          <h2>New M4B. The M4, refined.</h2>
+          <p>A folding footrest, redesigned front-wheel system and the compact self-balancing XSTO platform.</p>
           <div className="launch-price"><strong>{gbp(displayPrice(m4b))}</strong><span>with VAT relief</span></div>
           <div className="launch-points"><span>Folding footrest</span><span>Electric seat elevation</span><span>Self-balancing control</span></div>
           <div className="shop-actions">
             <Link className="shop-button primary" href="/xsto-m4b">Shop M4B</Link>
-            {m4b.manual_url && <a className="shop-text-link" href={m4b.manual_url} target="_blank" rel="noreferrer">Download user manual ↓</a>}
+            {m4b.manual_url && <a className="shop-text-link" href={m4b.manual_url} target="_blank" rel="noreferrer">User manual ↓</a>}
           </div>
         </div>
       </section>
 
       <section className="collection-section" id="range">
         <div className="collection-heading">
-          <div><p className="shop-overline">SHOP THE RANGE</p><h2>Choose your XSTO.</h2></div>
+          <div><p className="shop-overline">THE RANGE</p><h2>Choose your XSTO.</h2></div>
           <Link href="/compare">Compare all models →</Link>
         </div>
         <div className="shop-product-grid">
@@ -101,7 +101,7 @@ export default async function Home() {
                   <div><h3>{product.shortName}</h3><p>{subtitles[product.shortName]}</p></div>
                   <div className="shop-card-price"><strong>{gbp(displayPrice(product))}</strong><small>with VAT relief</small></div>
                 </div>
-                <span className="shop-card-link">View product →</span>
+                <span className="shop-card-link">Learn more →</span>
               </Link>
             );
           })}
@@ -111,23 +111,23 @@ export default async function Home() {
       <section className="shop-value-strip">
         <div><strong>VAT relief available</strong><span>0% VAT for eligible customers</span></div>
         <div><strong>Nationwide delivery</strong><span>UK delivery options across the range</span></div>
-        <div><strong>Product manuals</strong><span>Downloads available on product pages</span></div>
+        <div><strong>Product manuals</strong><span>Downloads on individual product pages</span></div>
         <div><strong>UK after-sales support</strong><span>Backed by Mobility Station</span></div>
       </section>
 
       <section className="premium-feature-banner">
         <div className="premium-banner-copy">
           <p className="shop-overline light">X12 PRO</p>
-          <h2>More comfort. Same extraordinary capability.</h2>
+          <h2>More comfort. More control.</h2>
           <p>The flagship XSTO combines the X12 wheel-track platform with the highest-specification seating and adjustment package in the range.</p>
-          <Link className="shop-button light" href="/xsto-x12-pro">Shop X12 Pro</Link>
+          <Link className="shop-button light" href="/xsto-x12-pro">Explore X12 Pro</Link>
         </div>
         <div className="premium-banner-media"><img src={productImages(x12Pro)[0]} alt="XSTO X12 Pro" /></div>
       </section>
 
       <section className="shop-compare-section">
-        <div><p className="shop-overline">NOT SURE WHICH MODEL?</p><h2>Compare the complete XSTO range.</h2><p>See prices, key differences and where each model sits in the range before you choose.</p></div>
-        <Link className="shop-button primary" href="/compare">Compare XSTO models</Link>
+        <div><p className="shop-overline">COMPARE</p><h2>Which XSTO is right for you?</h2><p>See the five models side by side, including prices, key differences and intended use.</p></div>
+        <Link className="shop-button primary" href="/compare">Compare models</Link>
       </section>
     </div>
   );
