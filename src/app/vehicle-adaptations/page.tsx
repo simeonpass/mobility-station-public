@@ -86,7 +86,7 @@ function AdaptationsHeroVisual() {
       <div className="relative col-span-3 row-span-2 overflow-hidden rounded-[2rem] bg-soft">
         {/* eslint-disable-next-line @next/next/no-img-element -- local editorial asset */}
         <img
-          src="/images/hero-options/06-customer-handover.png"
+          src="/images/hero-options/06-customer-handover.webp"
           alt="Mobility Station specialist supporting a customer with an adapted vehicle"
           className="h-full w-full object-cover object-[50%_35%]"
           width={900}
@@ -106,7 +106,7 @@ function AdaptationsHeroVisual() {
       <div className="relative col-span-2 overflow-hidden rounded-[1.6rem] bg-soft">
         {/* eslint-disable-next-line @next/next/no-img-element -- local editorial asset */}
         <img
-          src="/images/hero-options/05-hand-controls.png"
+          src="/images/hero-options/05-hand-controls.webp"
           alt="Hand controls and steering aid fitted to a vehicle"
           className="h-full w-full object-cover object-center"
           width={700}
@@ -120,7 +120,7 @@ function AdaptationsHeroVisual() {
       <div className="relative col-span-2 overflow-hidden rounded-[1.6rem] bg-soft">
         {/* eslint-disable-next-line @next/next/no-img-element -- local editorial asset */}
         <img
-          src="/images/hero-options/07-swivel-seat.png"
+          src="/images/hero-options/07-swivel-seat.webp"
           alt="Swivel seat vehicle adaptation"
           className="h-full w-full object-cover object-center"
           width={700}

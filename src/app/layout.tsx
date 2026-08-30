@@ -7,7 +7,7 @@ import { Analytics } from "@/components/layout/analytics";
 import { CookieConsentBanner } from "@/components/layout/cookie-consent-banner";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
-import { SITE } from "@/lib/seo";
+import { DEFAULT_SHARE_IMAGE, SITE } from "@/lib/seo";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -41,6 +41,11 @@ export const metadata: Metadata = {
     title: "Mobility Station | Adaptations, Scooters & Wheelchairs",
     description:
       "Vehicle adaptations, scooters and wheelchairs from Heathrow & Ferndown. Motability accredited dealer.",
+    images: [{ url: DEFAULT_SHARE_IMAGE, width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: [DEFAULT_SHARE_IMAGE],
   },
 };
 

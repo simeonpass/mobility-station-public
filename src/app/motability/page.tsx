@@ -24,7 +24,7 @@ const FAQS = [
   { q: "Do you also do Motability vehicle adaptations?", a: "Yes. Many driving, access and stowage adaptations are available on the scheme, including £0 advance payment where eligible." },
 ] as const;
 
-function MotabilityVisual() { return <div className="relative h-[390px] overflow-hidden rounded-[2rem] bg-soft sm:h-[470px] lg:h-[500px]"><img src="/images/hero-options/03-scooter-handover.png" alt="Mobility scooter demonstration" className="h-full w-full object-cover object-center" width={1000} height={800} /><div className="absolute inset-x-5 bottom-5 rounded-2xl bg-black/82 p-5 text-white backdrop-blur-sm"><MotabilityLogo variant="white" height={22} /><p className="mt-3 text-lg font-bold">Choose with confidence.</p><p className="mt-1 text-sm text-white/70">Demonstrations, assessment and ongoing support from our accredited team.</p></div></div>; }
+function MotabilityVisual() { return <div className="relative h-[390px] overflow-hidden rounded-[2rem] bg-soft sm:h-[470px] lg:h-[500px]"><img src="/images/hero-options/03-scooter-handover.webp" alt="Mobility scooter demonstration" className="h-full w-full object-cover object-center" width={1000} height={800} /><div className="absolute inset-x-5 bottom-5 rounded-2xl bg-black/82 p-5 text-white backdrop-blur-sm"><MotabilityLogo variant="white" height={22} /><p className="mt-3 text-lg font-bold">Choose with confidence.</p><p className="mt-1 text-sm text-white/70">Demonstrations, assessment and ongoing support from our accredited team.</p></div></div>; }
 
 export default async function MotabilityPage() {
   let products: ProductListItem[] = [];

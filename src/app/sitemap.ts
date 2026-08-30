@@ -5,7 +5,7 @@ import {
   categoryToSlug as adaptationCategoryToSlug,
 } from "@/lib/adaptations";
 import { getBlogPosts, getKnowledgeFaqs } from "@/lib/data";
-import { getAllPublishedSlugs } from "@/lib/products";
+import { categoryToSlug, getAllPublishedSlugs, getCategories } from "@/lib/products";
 import { listAllRecentWork } from "@/lib/recent-work";
 import { SITE } from "@/lib/seo";
 
@@ -159,6 +159,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("Sitemap recent work fetch failed:", error);
   }
 
+  let shopCategories: Awaited<ReturnType<typeof getCategories>> = [];
+  try {
+    shopCategories = await getCategories({ shopOnly: true });
+  } catch (error) {
+    console.error("Sitemap shop category fetch failed:", error);
+  }
+
   const townRoutes = LOCATION_PAGES.map((loc) => ({
     url: `${SITE.url}/service-area/${loc.slug}`,
     changeFrequency: "monthly" as const,
@@ -180,9 +187,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ),
   ];
 
+  const shopCategoryRoutes = shopCategories.map((c) => ({
+    url: `${SITE.url}/shop/${categoryToSlug(c.category)}`,
+    changeFrequency: "weekly" as const,
+    priority: 0.75,
+  }));
+
   return [
     ...staticRoutes,
     ...townRoutes,
+    ...shopCategoryRoutes,
     ...adaptationRoutes,
     ...products.map((p) =>
       withLastMod(

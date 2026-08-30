@@ -1,5 +1,23 @@
 import type { Metadata } from "next";
+import type { Branch } from "@/lib/types";
 import { absoluteUrl } from "@/lib/utils";
+
+export const DEFAULT_SHARE_IMAGE = "/brand/og-default.jpg";
+
+const BRANCH_OPENING_HOURS = [
+  {
+    "@type": "OpeningHoursSpecification",
+    dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday"],
+    opens: "09:00",
+    closes: "17:00",
+  },
+  {
+    "@type": "OpeningHoursSpecification",
+    dayOfWeek: "Friday",
+    opens: "09:00",
+    closes: "16:00",
+  },
+] as const;
 
 type PageSeo = {
   title: string;
@@ -32,11 +50,10 @@ export function createMetadata({
   const safeDescription =
     description.length > 160 ? `${description.slice(0, 157)}…` : description;
   const url = absoluteUrl(path);
-  const imageUrl = image
-    ? image.startsWith("http")
-      ? image
-      : absoluteUrl(image)
-    : undefined;
+  const resolvedImage = image ?? DEFAULT_SHARE_IMAGE;
+  const imageUrl = resolvedImage.startsWith("http")
+    ? resolvedImage
+    : absoluteUrl(resolvedImage);
 
   return {
     title: absoluteTitle ? { absolute: safeTitle } : safeTitle,
@@ -50,16 +67,16 @@ export function createMetadata({
       url,
       siteName: "Mobility Station",
       locale: "en_GB",
-      ...(imageUrl ? { images: [{ url: imageUrl }] } : {}),
+      images: [{ url: imageUrl, width: 1200, height: 630 }],
       ...(publishedTime ? { publishedTime } : {}),
       ...(modifiedTime ? { modifiedTime } : {}),
       ...(tags?.length ? { tags } : {}),
     },
     twitter: {
-      card: imageUrl ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title: safeTitle,
       description: safeDescription,
-      ...(imageUrl ? { images: [imageUrl] } : {}),
+      images: [imageUrl],
     },
   };
 }
@@ -80,3 +97,80 @@ export const SITE = {
   url: "https://mobilitystation.co.uk",
   lightweightUrl: "https://lightweightmobility.co.uk",
 } as const;
+
+export function websiteJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${SITE.url}/#website`,
+    name: SITE.name,
+    url: SITE.url,
+    publisher: { "@id": `${SITE.url}/#business` },
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${SITE.url}/search?q={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
+  };
+}
+
+export function localBusinessJsonLd({
+  branches,
+  averageRating,
+  totalReviews,
+}: {
+  branches: Branch[];
+  averageRating?: number | null;
+  totalReviews?: number;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "@id": `${SITE.url}/#business`,
+    name: SITE.name,
+    legalName: SITE.legalName,
+    url: SITE.url,
+    telephone: SITE.phone,
+    email: SITE.email,
+    image: `${SITE.url}${DEFAULT_SHARE_IMAGE}`,
+    logo: `${SITE.url}/brand/mobility-station-wordmark.png`,
+    areaServed: "GB",
+    ...(averageRating && totalReviews
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: Number(averageRating.toFixed(1)),
+            reviewCount: totalReviews,
+            bestRating: 5,
+            worstRating: 1,
+          },
+        }
+      : {}),
+    department: branches.map((branch) => ({
+      "@type": "LocalBusiness",
+      "@id": `${SITE.url}/locations#${branch.slug}`,
+      name: branch.name,
+      telephone: branch.phone,
+      email: branch.email,
+      image: `${SITE.url}${DEFAULT_SHARE_IMAGE}`,
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: [branch.addressLine1, branch.addressLine2]
+          .filter(Boolean)
+          .join(", "),
+        addressLocality: branch.addressLocality,
+        postalCode: branch.postalCode,
+        addressCountry: "GB",
+      },
+      geo: {
+        "@type": "GeoCoordinates",
+        latitude: branch.lat,
+        longitude: branch.lng,
+      },
+      openingHoursSpecification: BRANCH_OPENING_HOURS,
+    })),
+  };
+}

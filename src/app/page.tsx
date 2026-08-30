@@ -14,7 +14,7 @@ import {
   getPopularAdaptations,
 } from "@/lib/products";
 import { listRecentWork } from "@/lib/recent-work";
-import { createMetadata, jsonLdScript, SITE } from "@/lib/seo";
+import { createMetadata, jsonLdScript, localBusinessJsonLd, websiteJsonLd } from "@/lib/seo";
 
 export const metadata = createMetadata({
   title: "Mobility Station | Vehicle Adaptations & Mobility",
@@ -48,23 +48,14 @@ export default async function HomePage() {
     console.error("Homepage catalogue error:", error);
   }
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    name: SITE.name,
-    url: SITE.url,
-    telephone: SITE.phone,
-    image: `${SITE.url}/brand/mobility-station-wordmark.png`,
-    logo: `${SITE.url}/brand/mobility-station-wordmark.png`,
-    areaServed: "GB",
-    address: branches.map((b) => ({
-      "@type": "PostalAddress",
-      streetAddress: [b.addressLine1, b.addressLine2].filter(Boolean).join(", "),
-      addressLocality: b.addressLocality,
-      postalCode: b.postalCode,
-      addressCountry: "GB",
-    })),
-  };
+  const jsonLd = [
+    localBusinessJsonLd({
+      branches,
+      averageRating: reviewSummary.averageRating,
+      totalReviews: reviewSummary.totalReviews,
+    }),
+    websiteJsonLd(),
+  ];
 
   return (
     <>
@@ -72,7 +63,8 @@ export default async function HomePage() {
       <link
         rel="preload"
         as="image"
-        href="/images/hero-options/06-customer-handover.png"
+        href="/images/hero-options/06-customer-handover.webp"
+        type="image/webp"
         fetchPriority="high"
       />
       <script
