@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { DemoBookingForm } from "@/components/forms/demo-booking-form";
+import { isAdaptationProduct } from "@/lib/adaptations";
 import { DEMO_PRICING_STRIP, HOME_DEMO_FEE_GBP } from "@/lib/demo-booking";
+import { getProductBySlug } from "@/lib/products";
 import { createMetadata } from "@/lib/seo";
 
 export const metadata = createMetadata({ title: "Book a Demo | Home Demonstrations", description: "Book a free branch demonstration or a £195 home demonstration for scooters, wheelchairs or vehicle adaptations. Fee deducted if you buy; waived for Motability PWSS.", path: "/book-a-demo" });
@@ -9,10 +11,25 @@ export const metadata = createMetadata({ title: "Book a Demo | Home Demonstratio
 export default async function BookADemoPage({ searchParams }: { searchParams: Promise<{ product?: string; type?: string }> }) {
   const { product, type } = await searchParams;
   const productSlug = product?.trim() || undefined;
-  const defaultProductName = productSlug ? productSlug.replace(/-/g, " ") : "";
-  const defaultCategory = type === "adaptation" ? ("vehicle_adaptation" as const) : undefined;
+  let linkedProduct: Awaited<ReturnType<typeof getProductBySlug>> = null;
+  if (productSlug) {
+    try {
+      linkedProduct = await getProductBySlug(productSlug);
+    } catch {
+      linkedProduct = null;
+    }
+  }
+  const defaultProductName = linkedProduct?.name ?? "";
+  const defaultCategory =
+    type === "adaptation" || (linkedProduct && isAdaptationProduct(linkedProduct))
+      ? ("vehicle_adaptation" as const)
+      : linkedProduct
+        ? ("scooter_wheelchair" as const)
+        : undefined;
+  const productHref = linkedProduct ? `/products/${linkedProduct.slug}` : null;
   return <>
     <section className="border-b border-border bg-white"><div className="container-site py-14 md:py-20 lg:py-24"><p className="text-xs font-bold uppercase tracking-[0.18em] text-muted">Try before you decide</p><h1 className="mt-4 max-w-4xl text-balance text-5xl font-extrabold leading-[0.98] tracking-[-0.045em] text-primary md:text-6xl lg:text-7xl">Book a demonstration.</h1><p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted md:text-xl">{DEMO_PRICING_STRIP}</p><a href="#form" className="mt-8 inline-flex rounded-full bg-accent px-7 py-3 font-semibold text-accent-foreground hover:bg-accent-hover">Start booking</a></div></section>
+    {defaultProductName ? <div className="border-b border-border bg-soft/55"><div className="container-site flex flex-wrap items-center justify-between gap-3 py-4 text-sm"><p className="text-primary"><span className="font-semibold">Booking a demo of:</span> {productHref ? <Link href={productHref} className="font-bold underline underline-offset-2">{defaultProductName}</Link> : <span className="font-bold">{defaultProductName}</span>}</p>{productHref ? <Link href={productHref} className="font-semibold text-primary hover:underline">View product →</Link> : null}</div></div> : null}
     <section id="form" className="py-14 md:py-20"><div className="container-site grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-muted">Choose what suits you</p><h2 className="mt-2 text-3xl font-extrabold tracking-tight text-primary md:text-4xl">Demo options.</h2><ul className="mt-8 space-y-5">{[
       ["Branch demonstration", "Always free at Heathrow or Ferndown."],
       ["Home demonstration", `£${HOME_DEMO_FEE_GBP} flat. Non-refundable, but deducted in full from your purchase price if you go ahead.`],

@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { submitEnquiry, type ActionState } from "@/lib/actions";
 import { FormSpamTraps } from "@/components/forms/form-spam-traps";
+import { FieldError, FormError, fieldValidity } from "@/components/forms/field-error";
 import { Input, Label, Select, Textarea } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -63,17 +64,25 @@ export function EnquiryForm({
       <div className="grid gap-4 md:grid-cols-2">
         <div>
           <Label htmlFor="name">Full name</Label>
-          <Input id="name" name="name" required autoComplete="name" />
-          {state.errors?.name ? (
-            <p className="mt-1 text-xs text-error">{state.errors.name[0]}</p>
-          ) : null}
+          <Input
+            id="name"
+            name="name"
+            required
+            autoComplete="name"
+            {...fieldValidity("name-error", state.errors?.name?.[0])}
+          />
+          <FieldError id="name-error" message={state.errors?.name?.[0]} />
         </div>
         <div>
           <Label htmlFor="phone">Phone</Label>
-          <Input id="phone" name="phone" required autoComplete="tel" />
-          {state.errors?.phone ? (
-            <p className="mt-1 text-xs text-error">{state.errors.phone[0]}</p>
-          ) : null}
+          <Input
+            id="phone"
+            name="phone"
+            required
+            autoComplete="tel"
+            {...fieldValidity("phone-error", state.errors?.phone?.[0])}
+          />
+          <FieldError id="phone-error" message={state.errors?.phone?.[0]} />
         </div>
         <div>
           <Label htmlFor="email">Email</Label>
@@ -83,10 +92,9 @@ export function EnquiryForm({
             type="email"
             required
             autoComplete="email"
+            {...fieldValidity("email-error", state.errors?.email?.[0])}
           />
-          {state.errors?.email ? (
-            <p className="mt-1 text-xs text-error">{state.errors.email[0]}</p>
-          ) : null}
+          <FieldError id="email-error" message={state.errors?.email?.[0]} />
         </div>
         {showPostcode ? (
           <div>
@@ -96,12 +104,9 @@ export function EnquiryForm({
               name="postcode"
               required
               autoComplete="postal-code"
+              {...fieldValidity("postcode-error", state.errors?.postcode?.[0])}
             />
-            {state.errors?.postcode ? (
-              <p className="mt-1 text-xs text-error">
-                {state.errors.postcode[0]}
-              </p>
-            ) : null}
+            <FieldError id="postcode-error" message={state.errors?.postcode?.[0]} />
           </div>
         ) : (
           <input type="hidden" name="postcode" value="UB7 8EB" />
@@ -117,10 +122,9 @@ export function EnquiryForm({
           name="interest"
           required
           defaultValue={defaultInterest}
+          {...fieldValidity("interest-error", state.errors?.interest?.[0])}
         />
-        {state.errors?.interest ? (
-          <p className="mt-1 text-xs text-error">{state.errors.interest[0]}</p>
-        ) : null}
+        <FieldError id="interest-error" message={state.errors?.interest?.[0]} />
       </div>
 
       {showBranch ? (
@@ -153,9 +157,7 @@ export function EnquiryForm({
         <Textarea id="message" name="message" rows={compact ? 3 : 4} />
       </div>
 
-      {state.message && !state.success ? (
-        <p className="text-sm text-error">{state.message}</p>
-      ) : null}
+      <FormError message={!state.success ? state.message : null} />
 
       <Button type="submit" size="lg" disabled={pending} className="w-full">
         {pending ? "Sending…" : "Submit enquiry"}

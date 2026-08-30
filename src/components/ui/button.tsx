@@ -14,7 +14,7 @@ const buttonVariants = cva(
           "border border-primary bg-transparent text-primary hover:bg-soft",
         ghost: "text-primary hover:bg-soft",
         phone: "bg-primary text-primary-foreground hover:bg-primary-dark",
-        link: "text-accent underline-offset-4 hover:underline",
+        link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
         default: "h-11 px-5 py-2",

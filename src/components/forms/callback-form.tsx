@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { submitEnquiry, type ActionState } from "@/lib/actions";
 import { FormSpamTraps } from "@/components/forms/form-spam-traps";
+import { FieldError, FormError, fieldValidity } from "@/components/forms/field-error";
 import { Input, Label, Select, Textarea } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -77,26 +78,38 @@ export function CallbackForm({
       <div className="grid gap-4 md:grid-cols-2">
         <div>
           <Label htmlFor="cb-name">Full name</Label>
-          <Input id="cb-name" name="name" required autoComplete="name" />
-          {state.errors?.name ? (
-            <p className="mt-1 text-xs text-error">{state.errors.name[0]}</p>
-          ) : null}
+          <Input
+            id="cb-name"
+            name="name"
+            required
+            autoComplete="name"
+            {...fieldValidity("cb-name-error", state.errors?.name?.[0])}
+          />
+          <FieldError id="cb-name-error" message={state.errors?.name?.[0]} />
         </div>
         <div>
           <Label htmlFor="cb-phone">Phone to call you on</Label>
-          <Input id="cb-phone" name="phone" required autoComplete="tel" />
-          {state.errors?.phone ? (
-            <p className="mt-1 text-xs text-error">{state.errors.phone[0]}</p>
-          ) : null}
+          <Input
+            id="cb-phone"
+            name="phone"
+            required
+            autoComplete="tel"
+            {...fieldValidity("cb-phone-error", state.errors?.phone?.[0])}
+          />
+          <FieldError id="cb-phone-error" message={state.errors?.phone?.[0]} />
         </div>
       </div>
 
       <div>
         <Label htmlFor="cb-email">Email (optional)</Label>
-        <Input id="cb-email" name="email" type="email" autoComplete="email" />
-        {state.errors?.email ? (
-          <p className="mt-1 text-xs text-error">{state.errors.email[0]}</p>
-        ) : null}
+        <Input
+          id="cb-email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          {...fieldValidity("cb-email-error", state.errors?.email?.[0])}
+        />
+        <FieldError id="cb-email-error" message={state.errors?.email?.[0]} />
       </div>
 
       <div>
@@ -130,9 +143,7 @@ export function CallbackForm({
         />
       </div>
 
-      {state.message && !state.success ? (
-        <p className="text-sm text-error">{state.message}</p>
-      ) : null}
+      <FormError message={!state.success ? state.message : null} />
 
       <Button type="submit" size="lg" disabled={pending} className="w-full">
         {pending ? "Sending…" : "Request callback"}

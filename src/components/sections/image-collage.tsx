@@ -67,7 +67,7 @@ export function ImageCollage({
           {areas.map(({ tile, area }, i) => (
             <div
               key={`${area}-${tile.src}`}
-              className="collage-tile relative min-h-0 overflow-hidden rounded-2xl border border-border/60 bg-white shadow-[0_8px_24px_rgb(0_63_67_/_0.07)]"
+              className="collage-tile relative min-h-0 overflow-hidden rounded-2xl border border-border/60 bg-white shadow-[0_8px_24px_rgb(0_0_0_/_0.07)]"
               style={{
                 gridArea: area,
                 animationDelay: `${80 + i * 70}ms`,

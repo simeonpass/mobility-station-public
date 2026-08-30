@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { startTransition, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { FieldError, FormError, fieldValidity } from "@/components/forms/field-error";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select, Textarea } from "@/components/ui/input";
 import { useDnaPaymentsSdk } from "@/hooks/use-dna-payments-sdk";
@@ -873,15 +874,12 @@ export function DemoBookingForm({
                 </div>
               ) : null}
               {coverage?.kind === "not-found" ? (
-                <p className="text-sm text-error">
-                  Postcode not found — please check and try again.
-                </p>
+                <FormError message="Postcode not found — please check and try again." />
               ) : null}
               {coverage?.kind === "error" ? (
-                <p className="text-sm text-error">
-                  We couldn&apos;t check that postcode just now. Please try
-                  again, or call {SITE.phone}.
-                </p>
+                <FormError
+                  message={`We couldn't check that postcode just now. Please try again, or call ${SITE.phone}.`}
+                />
               ) : null}
             </div>
           ) : null}
@@ -940,10 +938,9 @@ export function DemoBookingForm({
                 autoComplete="name"
                 value={form.name}
                 onChange={(e) => update("name", e.target.value)}
+                {...fieldValidity("name-error", fieldErrors.name?.[0])}
               />
-              {fieldErrors.name ? (
-                <p className="mt-1 text-xs text-error">{fieldErrors.name[0]}</p>
-              ) : null}
+              <FieldError id="name-error" message={fieldErrors.name?.[0]} />
             </div>
             <div>
               <Label htmlFor="phone">Phone</Label>
@@ -952,7 +949,9 @@ export function DemoBookingForm({
                 autoComplete="tel"
                 value={form.phone}
                 onChange={(e) => update("phone", e.target.value)}
+                {...fieldValidity("phone-error", fieldErrors.phone?.[0])}
               />
+              <FieldError id="phone-error" message={fieldErrors.phone?.[0]} />
             </div>
             <div className="md:col-span-2">
               <Label htmlFor="email">Email</Label>
@@ -962,7 +961,9 @@ export function DemoBookingForm({
                 autoComplete="email"
                 value={form.email}
                 onChange={(e) => update("email", e.target.value)}
+                {...fieldValidity("email-error", fieldErrors.email?.[0])}
               />
+              <FieldError id="email-error" message={fieldErrors.email?.[0]} />
             </div>
             <div className="md:col-span-2">
               <Label htmlFor="addressLine1">Address line 1</Label>
@@ -998,7 +999,9 @@ export function DemoBookingForm({
                 autoComplete="postal-code"
                 value={form.postcode}
                 onChange={(e) => update("postcode", e.target.value)}
+                {...fieldValidity("postcode-error", fieldErrors.postcode?.[0])}
               />
+              <FieldError id="postcode-error" message={fieldErrors.postcode?.[0]} />
             </div>
             <div className="md:col-span-2">
               <Label htmlFor="productName">Product of interest</Label>
@@ -1006,7 +1009,9 @@ export function DemoBookingForm({
                 id="productName"
                 value={form.productName}
                 onChange={(e) => update("productName", e.target.value)}
+                {...fieldValidity("productName-error", fieldErrors.productName?.[0])}
               />
+              <FieldError id="productName-error" message={fieldErrors.productName?.[0]} />
             </div>
             {form.productCategory === "vehicle_adaptation" ? (
               <>
@@ -1127,15 +1132,12 @@ export function DemoBookingForm({
             <p className="text-sm text-muted">Loading secure card payment…</p>
           ) : null}
           {dnaFailed ? (
-            <p className="text-sm text-error">
-              Card payments could not load. Refresh the page or call 0800 772
-              3870.
-            </p>
+            <FormError message="Card payments could not load. Refresh the page or call 0800 772 3870." />
           ) : null}
         </div>
       ) : null}
 
-      {error ? <p className="text-sm text-error">{error}</p> : null}
+      <FormError message={error} />
 
       <div className="flex flex-wrap gap-3">
         {step > 1 && !showOutOfAreaForm ? (

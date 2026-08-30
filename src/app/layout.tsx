@@ -9,7 +9,6 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SITE } from "@/lib/seo";
 import "./globals.css";
-import "./premium-theme.css";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -28,12 +27,12 @@ export const metadata: Metadata = {
     "Vehicle adaptations, mobility scooters and wheelchairs from Heathrow & Ferndown. Motability accredited. Home and branch demonstrations available.",
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/favicon-48x48.png", sizes: "48x48", type: "image/png" },
-      { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
+      { url: "/favicon.ico?v=20260830d", sizes: "any" },
+      { url: "/favicon-32x32.png?v=20260830d", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-48x48.png?v=20260830d", sizes: "48x48", type: "image/png" },
+      { url: "/favicon-96x96.png?v=20260830d", sizes: "96x96", type: "image/png" },
     ],
-    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+    apple: [{ url: "/apple-touch-icon.png?v=20260830d", sizes: "180x180", type: "image/png" }],
   },
   openGraph: {
     type: "website",
@@ -54,8 +53,11 @@ export default function RootLayout({
     <html lang="en-GB" className={`${manrope.variable} h-full`} data-scroll-behavior="smooth">
       <body className="min-h-full flex flex-col font-sans antialiased">
         <CartProvider>
+          <a href="#main-content" className="skip-to-content">
+            Skip to main content
+          </a>
           <SiteHeader />
-          <main className="relative z-0 flex-1 overflow-x-clip">{children}</main>
+          <main id="main-content" tabIndex={-1} className="relative z-0 flex-1 overflow-x-clip outline-none">{children}</main>
           <SiteFooter />
           <CartDrawer />
           <CookieConsentBanner />

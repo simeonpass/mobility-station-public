@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode, type RefObject } from "react";
 import Link from "next/link";
 import { useCart } from "@/components/cart/cart-provider";
 import { Button } from "@/components/ui/button";
@@ -95,23 +95,11 @@ export function StickyBuyBar({
 }: {
   product: CartProduct;
   priceLabel: string;
-  observeRef: React.RefObject<HTMLElement | null>;
+  observeRef: RefObject<HTMLElement | null>;
   onAdd?: () => void;
 }) {
-  const [visible, setVisible] = useState(false);
+  const visible = useStickyAfterScroll(observeRef);
   const { addItem } = useCart();
-
-  useEffect(() => {
-    const target = observeRef.current;
-    if (!target) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => setVisible(!entry.isIntersecting),
-      { rootMargin: "-80px 0px 0px 0px", threshold: 0 },
-    );
-    observer.observe(target);
-    return () => observer.disconnect();
-  }, [observeRef]);
 
   if (!visible) return null;
 
@@ -136,6 +124,54 @@ export function StickyBuyBar({
         >
           Callback
         </a>
+      </div>
+    </div>
+  );
+}
+
+function useStickyAfterScroll(observeRef: RefObject<HTMLElement | null>) {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const target = observeRef.current;
+    if (!target) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setVisible(!entry.isIntersecting),
+      { rootMargin: "-80px 0px 0px 0px", threshold: 0 },
+    );
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [observeRef]);
+
+  return visible;
+}
+
+export function StickyEnquiryBar({
+  productName,
+  priceLabel,
+  observeRef,
+  primary,
+  secondary,
+}: {
+  productName: string;
+  priceLabel: string;
+  observeRef: RefObject<HTMLElement | null>;
+  primary: ReactNode;
+  secondary?: ReactNode;
+}) {
+  const visible = useStickyAfterScroll(observeRef);
+  if (!visible) return null;
+
+  return (
+    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-white/96 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-12px_36px_rgba(0,0,0,0.10)] backdrop-blur-xl md:hidden">
+      <div className="container-site flex items-center gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-[11px] font-medium text-muted">{productName}</p>
+          <p className="text-lg font-extrabold tracking-tight text-primary">{priceLabel}</p>
+        </div>
+        {primary}
+        {secondary}
       </div>
     </div>
   );

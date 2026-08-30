@@ -261,7 +261,7 @@ export function ShopBrowser({
   return (
     <div>
       <div
-        className="inline-flex rounded-full border border-border bg-white p-1 shadow-[0_1px_0_rgba(0,63,67,0.04)]"
+        className="inline-flex rounded-full border border-border bg-white p-1 shadow-[0_1px_0_rgba(0,0,0,0.04)]"
         role="tablist"
         aria-label="Product type"
       >

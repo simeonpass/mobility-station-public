@@ -6,6 +6,7 @@ import { Check, Phone, Shield, Truck } from "lucide-react";
 import {
   AddToCartButton,
   StickyBuyBar,
+  StickyEnquiryBar,
 } from "@/components/product/add-to-cart-button";
 import { BrandLogo } from "@/components/product/brand-logo";
 import { ProductTabs } from "@/components/product/product-tabs";
@@ -398,7 +399,7 @@ export function ProductDetailView(props: ProductDetailViewProps) {
     : [];
 
   const panelClass =
-    "overflow-hidden rounded-2xl border border-border/70 bg-white shadow-[0_8px_32px_-12px_rgba(0,63,67,0.14)]";
+    "overflow-hidden rounded-2xl border border-border/70 bg-white shadow-[0_8px_32px_-12px_rgba(0,0,0,0.14)]";
 
   const hasMotabilityFigure =
     (motabilityWeekly != null && motabilityWeekly >= 0) ||
@@ -924,9 +925,69 @@ export function ProductDetailView(props: ProductDetailViewProps) {
           observeRef={buyRef}
           onAdd={hasConfigurableOptions ? handleAddConfigured : undefined}
         />
+      ) : motabilityMode ? (
+        <StickyEnquiryBar
+          productName={props.name}
+          priceLabel={
+            motabilityWeekly != null && motabilityWeekly > 0
+              ? `${formatGBP(motabilityWeekly)} / week`
+              : motabilityWeekly === 0 || motabilityPrice === 0
+                ? "£0 / week"
+                : "On request"
+          }
+          observeRef={buyRef}
+          primary={
+            <Link
+              href={`/book-a-demo?product=${encodeURIComponent(props.slug)}`}
+              className="inline-flex h-11 shrink-0 items-center justify-center rounded-full bg-accent px-5 text-sm font-semibold text-accent-foreground hover:bg-accent-hover"
+            >
+              Book a demo
+            </Link>
+          }
+          secondary={
+            <EnquiryDialog
+              mode="callback"
+              title="Contact us about this model"
+              defaultTopic="Motability"
+              productSlug={props.slug}
+              productLabel={props.name}
+              triggerClassName="inline-flex h-11 shrink-0 items-center justify-center rounded-full border border-primary/25 px-4 text-sm font-semibold text-primary"
+            >
+              Callback
+            </EnquiryDialog>
+          }
+        />
+      ) : props.isAdaptation ? (
+        <StickyEnquiryBar
+          productName={props.name}
+          priceLabel={priceLabel}
+          observeRef={buyRef}
+          primary={
+            <EnquiryDialog
+              mode="enquiry"
+              enquiryType="contact"
+              title="Get a free quotation"
+              defaultInterest={`Vehicle adaptation quotation — ${props.name}`}
+              productSlug={props.slug}
+              triggerClassName="inline-flex h-11 shrink-0 items-center justify-center rounded-full bg-accent px-5 text-sm font-semibold text-accent-foreground hover:bg-accent-hover"
+            >
+              Get a quote
+            </EnquiryDialog>
+          }
+          secondary={
+            <Link
+              href={`/book-a-demo?type=adaptation&product=${encodeURIComponent(props.slug)}`}
+              className="inline-flex h-11 shrink-0 items-center justify-center rounded-full border border-primary/25 px-4 text-sm font-semibold text-primary"
+            >
+              Demo
+            </Link>
+          }
+        />
       ) : null}
 
-      {canBuy ? <div className="h-20 md:hidden" aria-hidden /> : null}
+      {canBuy || motabilityMode || props.isAdaptation ? (
+        <div className="h-20 md:hidden" aria-hidden />
+      ) : null}
     </>
   );
 

@@ -46,7 +46,7 @@ export function HeaderSearch({
         className={`w-full rounded-full border border-border/80 bg-soft/70 text-foreground placeholder:text-muted transition-[box-shadow,border-color,background-color] focus-visible:border-primary/25 focus-visible:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 ${
           compact
             ? "h-10 py-2 pl-9 pr-3 text-sm"
-            : "h-11 py-2 pl-10 pr-4 text-sm shadow-[inset_0_1px_2px_rgba(0,63,67,0.04)]"
+            : "h-11 py-2 pl-10 pr-4 text-sm shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)]"
         }`}
       />
     </form>
