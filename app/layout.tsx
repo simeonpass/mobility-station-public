@@ -3,6 +3,7 @@ import Link from "next/link";
 import "./globals.css";
 import "./klym-polish.css";
 import "./klym-shop.css";
+import "./klym-apple.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://klym.co.uk"),
@@ -25,12 +26,13 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <Link className="shop-logo" href="/"><Logo /></Link>
           <nav className="site-nav shop-nav" aria-label="Main navigation">
             <Link href="/#range">Shop</Link>
-            <Link href="/xsto-x12">Stair Climbers</Link>
+            <Link href="/xsto-x12">X12</Link>
+            <Link href="/xsto-x12-pro">X12 Pro</Link>
             <Link href="/xsto-m4b">M4 Series <span className="nav-new">NEW</span></Link>
             <Link href="/compare">Compare</Link>
             <Link href="/vat-relief">VAT Relief</Link>
           </nav>
-          <div className="header-actions shop-header-actions"><Link className="shop-header-link" href="/xsto-m4b">M4B Launch</Link><Link className="shop-button primary compact" href="/xsto-x12">Shop X12</Link></div>
+          <div className="header-actions shop-header-actions"><Link className="shop-header-link" href="/xsto-m4b">New M4B</Link><Link className="shop-button primary compact" href="/xsto-x12">Shop X12</Link></div>
         </header>
         <main>{children}</main>
         <footer className="site-footer shop-footer">
