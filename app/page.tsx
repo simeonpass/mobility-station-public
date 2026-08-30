@@ -11,7 +11,13 @@ const m4bCampaignImages = [
 ];
 
 function imagesFor(product: Product) {
-  return product.shortName === "M4B" ? m4bCampaignImages : productImages(product);
+  return product.shortName === "M4B"
+    ? Array.from(new Set([...m4bCampaignImages, ...productImages(product)]))
+    : productImages(product);
+}
+
+function imageAt(images: string[], index: number) {
+  return images[index] ?? images[0];
 }
 
 const labels: Partial<Record<Product["shortName"], string>> = {
@@ -33,8 +39,11 @@ export default async function Home() {
   const x12 = products.find((p) => p.shortName === "X12")!;
   const x12Pro = products.find((p) => p.shortName === "X12 Pro")!;
   const m4b = products.find((p) => p.shortName === "M4B")!;
-  const x12Images = productImages(x12);
+  const m4Pro = products.find((p) => p.shortName === "M4 Pro")!;
+  const x12Images = imagesFor(x12);
+  const x12ProImages = imagesFor(x12Pro);
   const m4bImages = imagesFor(m4b);
+  const m4ProImages = imagesFor(m4Pro);
 
   return (
     <div className="shop-home">
@@ -60,7 +69,7 @@ export default async function Home() {
         <div className="shop-hero-product">
           <div className="shop-product-stage">
             <span className="shop-stage-badge">X12 · STAIR CLIMBING · ALL TERRAIN</span>
-            <img src={x12Images[0]} alt="XSTO X12 stair-climbing all-terrain mobility robot" />
+            <img src={imageAt(x12Images, 0)} alt="XSTO X12 stair-climbing all-terrain mobility robot" />
           </div>
         </div>
       </section>
@@ -68,7 +77,7 @@ export default async function Home() {
       <section className="launch-section">
         <div className="launch-media">
           <span className="launch-badge">NEW</span>
-          <img src={m4bImages[0]} alt="New XSTO M4B self-balancing powered wheelchair" />
+          <img src={imageAt(m4bImages, 0)} alt="New XSTO M4B self-balancing powered wheelchair" />
         </div>
         <div className="launch-copy">
           <p className="shop-overline">XSTO M4B</p>
@@ -80,6 +89,23 @@ export default async function Home() {
             <Link className="shop-button primary" href="/xsto-m4b">Shop M4B</Link>
             {m4b.manual_url && <a className="shop-text-link" href={m4b.manual_url} target="_blank" rel="noreferrer">User manual ↓</a>}
           </div>
+        </div>
+      </section>
+
+      <section className="visual-story-section" aria-label="Explore XSTO product photography">
+        <Link href="/xsto-x12" className="visual-tile visual-tile-large">
+          <img src={imageAt(x12Images, 2)} alt="XSTO X12 all-terrain stair-climbing detail" />
+          <div className="visual-tile-copy"><span>X12</span><h2>Made for more demanding routes.</h2><b>Explore X12 →</b></div>
+        </Link>
+        <div className="visual-tile-stack">
+          <Link href="/xsto-m4b" className="visual-tile">
+            <img src={imageAt(m4bImages, 1)} alt="XSTO M4B premium product view" />
+            <div className="visual-tile-copy dark-copy"><span>NEW M4B</span><h3>Designed around everyday use.</h3><b>Explore M4B →</b></div>
+          </Link>
+          <Link href="/xsto-m4-pro" className="visual-tile">
+            <img src={imageAt(m4ProImages, 3)} alt="XSTO M4 Pro premium seating detail" />
+            <div className="visual-tile-copy dark-copy"><span>M4 PRO</span><h3>Comfort, elevated.</h3><b>Explore M4 Pro →</b></div>
+          </Link>
         </div>
       </section>
 
@@ -95,7 +121,7 @@ export default async function Home() {
               <Link href={`/${product.slug}`} className="shop-product-card" key={product.slug}>
                 <div className="shop-card-media">
                   {badge && <span className="shop-card-badge">{badge}</span>}
-                  <img src={imagesFor(product)[0]} alt={product.name} />
+                  <img src={imageAt(imagesFor(product), 0)} alt={product.name} />
                 </div>
                 <div className="shop-card-body">
                   <div><h3>{product.shortName}</h3><p>{subtitles[product.shortName]}</p></div>
@@ -122,7 +148,7 @@ export default async function Home() {
           <p>The flagship XSTO combines the X12 wheel-track platform with the highest-specification seating and adjustment package in the range.</p>
           <Link className="shop-button light" href="/xsto-x12-pro">Explore X12 Pro</Link>
         </div>
-        <div className="premium-banner-media"><img src={productImages(x12Pro)[0]} alt="XSTO X12 Pro" /></div>
+        <div className="premium-banner-media"><img src={imageAt(x12ProImages, 4)} alt="XSTO X12 Pro" /></div>
       </section>
 
       <section className="shop-compare-section">
