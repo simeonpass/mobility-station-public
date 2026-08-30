@@ -132,10 +132,10 @@ export function SiteHeader() {
               Heathrow &amp; Ferndown{" "}
               <span className="mx-2 text-white/25">·</span>
               <Link
-                href="/book-a-demo#demo-terms"
+                href="/book-a-demo"
                 className="text-white/70 hover:text-accent-on-dark"
               >
-                Free branch demos · Home demos £195*
+                Free branch demos · We&apos;ll come to you
               </Link>
             </span>
           </p>
