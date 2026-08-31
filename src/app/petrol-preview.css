@@ -1,0 +1,29 @@
+:root {
+  /* Preview only — deep petrol palette for Mobility Station */
+  --accent: #0f5c5e;
+  --accent-hover: #146b6f;
+  --accent-on-dark: #8cc7c9;
+  --accent-on-dark-hover: #a4d5d6;
+  --buy: #0f5c5e;
+  --buy-hover: #146b6f;
+  --tertiary: #0f5c5e;
+}
+
+::selection {
+  background: rgb(15 92 94 / 0.28);
+  color: #111111;
+}
+
+.bg-hero-mesh {
+  background:
+    radial-gradient(ellipse 70% 55% at 90% 15%, rgb(15 92 94 / 0.09), transparent 55%),
+    linear-gradient(165deg, #f6f6f6 0%, #ffffff 48%, #f5f5f7 100%);
+}
+
+#catalogue [role="tablist"] + div input:focus,
+#catalogue [role="tablist"] + div select:focus,
+input:not([type="checkbox"]):not([type="radio"]):focus,
+select:focus,
+textarea:focus {
+  box-shadow: 0 0 0 3px rgb(15 92 94 / 0.15) !important;
+}
