@@ -7,7 +7,7 @@ const homepageImages: Record<Product["shortName"], string> = {
   M4: "https://pub-d0fa88fa71f044d9a9fc37a3c9d5fe47.r2.dev/stock-images/sq_08b2b85a-3166-4b68-a636-b7b3c099d677.webp",
   M4B: "https://cdn.shopify.com/s/files/1/0904/4541/4778/files/M4B.png?v=1784395920",
   "M4 Pro": "https://wgxtyckmxpmrrghpduwm.supabase.co/storage/v1/object/public/product-images/1772057791249-M4_Pro_01.webp",
-  X12: "https://pub-d0fa88fa71f044d9a9fc37a3c9d5fe47.r2.dev/stock-images/sq_81b50b59-109d-4159-8c8f-a123e932c944.webp",
+  X12: "https://cdn.shopify.com/s/files/1/0904/4541/4778/files/x12-all-terrain-mobility-robot-8874875.jpg?v=1770295862",
   "X12 Pro": "https://pub-d0fa88fa71f044d9a9fc37a3c9d5fe47.r2.dev/stock-images/23a51d87-f0e5-4b38-9005-7abe37927e41.webp",
 };
 
