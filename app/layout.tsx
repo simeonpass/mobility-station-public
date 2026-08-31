@@ -7,6 +7,7 @@ import "./klym-apple.css";
 import "./klym-visual.css";
 import "./klym-x12-campaign.css";
 import "./klym-balanced-home.css";
+import "./klym-premium-v2.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://klym.co.uk"),
