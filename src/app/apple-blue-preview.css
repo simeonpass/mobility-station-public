@@ -1,0 +1,52 @@
+/* Preview-only Mobility Station palette: 90% neutral, 10% #0171E3 accent. */
+:root {
+  --primary: #111111;
+  --primary-dark: #000000;
+  --primary-soft: #f5f5f7;
+  --accent: #0171e3;
+  --accent-hover: #005fcc;
+  --accent-on-dark: #67aef6;
+  --accent-on-dark-hover: #8bc2fa;
+  --buy: #0171e3;
+  --buy-hover: #005fcc;
+  --buy-foreground: #ffffff;
+  --tertiary: #0171e3;
+  --footer: #111111;
+  --footer-foreground: #ffffff;
+}
+
+::selection {
+  background: rgb(1 113 227 / 0.22);
+  color: #111111;
+}
+
+.bg-hero-mesh {
+  background:
+    radial-gradient(ellipse 70% 55% at 90% 15%, rgb(1 113 227 / 0.07), transparent 55%),
+    linear-gradient(165deg, #f6f6f6 0%, #ffffff 48%, #f5f5f7 100%);
+}
+
+#catalogue [role="tablist"] + div input:focus,
+#catalogue [role="tablist"] + div select:focus {
+  box-shadow: 0 0 0 3px rgb(1 113 227 / 0.16);
+}
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+select:focus,
+textarea:focus {
+  box-shadow: 0 0 0 3px rgb(1 113 227 / 0.14) !important;
+}
+
+/* Keep the site overwhelmingly neutral; reserve blue for interactions and small details. */
+a.text-accent,
+.text-accent {
+  color: #0171e3 !important;
+}
+
+.border-accent {
+  border-color: #0171e3 !important;
+}
+
+.ring-accent {
+  --tw-ring-color: #0171e3 !important;
+}
