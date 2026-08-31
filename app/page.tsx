@@ -11,155 +11,79 @@ const homepageImages: Record<Product["shortName"], string> = {
   "X12 Pro": "https://pub-d0fa88fa71f044d9a9fc37a3c9d5fe47.r2.dev/stock-images/23a51d87-f0e5-4b38-9005-7abe37927e41.webp",
 };
 
-const productCopy: Record<Product["shortName"], { eyebrow: string; title: string; description: string; badge?: string }> = {
-  M4: {
-    eyebrow: "SELF-BALANCING MOBILITY",
-    title: "Compact. Capable. Original.",
-    description: "The original XSTO M4 combines self-balancing control, electric seat elevation and precise everyday manoeuvrability.",
-  },
-  M4B: {
-    eyebrow: "NEW",
-    title: "The M4, refined.",
-    description: "The latest M4 evolution, with a redesigned front-wheel system and integrated folding footrest.",
-    badge: "NEW",
-  },
-  "M4 Pro": {
-    eyebrow: "PREMIUM COMFORT",
-    title: "More comfort. More adjustment.",
-    description: "The M4 platform with enhanced seating, adjustment and support for customers who want more from everyday mobility.",
-  },
-  X12: {
-    eyebrow: "STAIR-CLIMBING MOBILITY",
-    title: "Go beyond the pavement.",
-    description: "Advanced wheel-and-track mobility designed for stairs, changing terrain and more demanding routes.",
-  },
-  "X12 Pro": {
-    eyebrow: "FLAGSHIP",
-    title: "The ultimate XSTO.",
-    description: "The advanced X12 platform with the highest-specification seating, comfort and powered adjustment package in the range.",
-  },
+const productCopy: Record<Product["shortName"], { line1: string; line2: string }> = {
+  M4: { line1: "Compact self-balancing mobility.", line2: "Everyday freedom." },
+  M4B: { line1: "The latest M4 evolution.", line2: "Refined for everyday use." },
+  "M4 Pro": { line1: "More comfort. More adjustment.", line2: "Premium M4 mobility." },
+  X12: { line1: "Stair-climbing mobility.", line2: "Built for demanding routes." },
+  "X12 Pro": { line1: "The flagship XSTO.", line2: "Maximum capability." },
 };
 
 export default async function Home() {
   const products = await getProducts();
-  const m4 = products.find((p) => p.shortName === "M4")!;
-  const m4b = products.find((p) => p.shortName === "M4B")!;
-  const m4Pro = products.find((p) => p.shortName === "M4 Pro")!;
-  const x12 = products.find((p) => p.shortName === "X12")!;
-  const x12Pro = products.find((p) => p.shortName === "X12 Pro")!;
-  const ordered = [m4, m4b, m4Pro, x12, x12Pro];
+  const ordered = (["M4", "M4B", "M4 Pro", "X12", "X12 Pro"] as Product["shortName"][])
+    .map((name) => products.find((p) => p.shortName === name))
+    .filter((product): product is Product => Boolean(product));
 
   return (
-    <div className="balanced-home">
-      <section className="range-hero">
-        <div className="range-hero-copy-block">
-          <p className="range-kicker">KLYM · XSTO MOBILITY</p>
-          <h1>Extraordinary mobility.<span>Five ways to move.</span></h1>
-          <p className="range-hero-copy">Explore the complete XSTO range — from compact self-balancing mobility to advanced stair-climbing technology.</p>
-          <div className="range-hero-actions">
-            <a className="shop-button primary" href="#models">Explore the range</a>
+    <div className="approved-home">
+      <section className="approved-hero">
+        <div className="approved-hero-copy">
+          <p className="approved-kicker">KLYM · XSTO MOBILITY</p>
+          <h1>Extraordinary mobility.<br />Five ways to move.</h1>
+          <p>Explore the complete XSTO range — from compact self-balancing mobility to advanced stair-climbing technology.</p>
+          <div className="approved-hero-actions">
+            <a className="shop-button primary" href="#models">Explore the range <span>→</span></a>
             <Link className="shop-button secondary" href="/compare">Compare all models</Link>
           </div>
         </div>
 
-        <div className="range-family-stage" aria-label="The five XSTO models">
+        <div className="approved-stage" aria-label="The complete XSTO range">
+          <div className="stage-ring stage-ring-one" />
+          <div className="stage-ring stage-ring-two" />
+          <div className="stage-podium stage-podium-left" />
+          <div className="stage-podium stage-podium-right" />
           {ordered.map((product) => (
-            <Link className={`family-stage-product family-stage-${product.slug}`} href={`/${product.slug}`} key={product.slug}>
-              <img src={homepageImages[product.shortName]} alt={`XSTO ${product.shortName}`} />
+            <Link key={product.slug} href={`/${product.slug}`} className={`stage-model stage-model-${product.slug}`}>
               <span>{product.shortName}</span>
+              <img src={homepageImages[product.shortName]} alt={`XSTO ${product.shortName}`} />
             </Link>
           ))}
         </div>
       </section>
 
-      <section className="range-products" id="models">
-        <div className="range-section-heading">
-          <p className="shop-overline">THE XSTO RANGE</p>
-          <h2>Find the one that fits you.</h2>
-          <p>Five distinct models. One straightforward route to the product that suits the way you want to move.</p>
-        </div>
-
-        <div className="model-showcase" aria-label="XSTO product range">
-          {ordered.map((product) => {
-            const copy = productCopy[product.shortName];
-            return (
-              <article className="model-showcase-card" key={product.slug}>
-                <Link href={`/${product.slug}`} className="model-media" aria-label={`Explore XSTO ${product.shortName}`}>
-                  {copy.badge && <span className="model-badge">{copy.badge}</span>}
-                  <img src={homepageImages[product.shortName]} alt={`XSTO ${product.shortName}`} />
-                </Link>
-                <div className="model-card-copy">
-                  <p className="model-eyebrow">{copy.eyebrow}</p>
-                  <h2>{product.shortName}</h2>
-                  <h3>{copy.title}</h3>
-                  <p>{copy.description}</p>
-                  <div className="model-price"><strong>{gbp(displayPrice(product))}</strong><span>with VAT relief</span></div>
-                  <Link className="model-primary-link" href={`/${product.slug}`}>Explore {product.shortName} <span>→</span></Link>
-                </div>
-              </article>
-            );
-          })}
-        </div>
+      <section className="approved-products" id="models" aria-label="Shop XSTO range">
+        {ordered.map((product) => {
+          const copy = productCopy[product.shortName];
+          return (
+            <article className="approved-product-card" key={product.slug}>
+              <Link className="approved-product-image" href={`/${product.slug}`}>
+                <img src={homepageImages[product.shortName]} alt={`XSTO ${product.shortName}`} />
+              </Link>
+              <div className="approved-product-copy">
+                <h2>{product.shortName}</h2>
+                <p>{copy.line1}<br />{copy.line2}</p>
+                <strong>{gbp(displayPrice(product))}</strong>
+                <small>with VAT relief</small>
+                <Link href={`/${product.slug}`}>View product <span>→</span></Link>
+              </div>
+            </article>
+          );
+        })}
       </section>
 
-      <section className="family-intro">
-        <div className="family-heading">
-          <p className="shop-overline">CHOOSE YOUR PLATFORM</p>
-          <h2>Two families. Five ways to move.</h2>
-        </div>
-        <div className="family-grid">
-          <Link href="/self-balancing-wheelchairs" className="family-card family-m4">
-            <div className="family-copy">
-              <span>M4 SERIES</span>
-              <h3>Compact intelligence.</h3>
-              <p>Self-balancing powered mobility designed around everyday movement, manoeuvrability and independence.</p>
-              <b>M4 · M4B · M4 Pro</b>
-              <em>Explore the M4 Series →</em>
-            </div>
-            <div className="family-products">
-              {[m4, m4b, m4Pro].map((product) => <img key={product.slug} src={homepageImages[product.shortName]} alt={`XSTO ${product.shortName}`} />)}
-            </div>
-          </Link>
-
-          <Link href="/stair-climbing-wheelchairs" className="family-card family-x12">
-            <div className="family-copy">
-              <span>X12 SERIES</span>
-              <h3>Go further.</h3>
-              <p>Wheel-and-track mobility engineered for customers who need capability beyond a conventional powered wheelchair.</p>
-              <b>X12 · X12 Pro</b>
-              <em>Explore the X12 Series →</em>
-            </div>
-            <div className="family-products two">
-              {[x12, x12Pro].map((product) => <img key={product.slug} src={homepageImages[product.shortName]} alt={`XSTO ${product.shortName}`} />)}
-            </div>
-          </Link>
-        </div>
-      </section>
-
-      <section className="compare-home-panel">
-        <div>
-          <p className="shop-overline">COMPARE</p>
-          <h2>Not sure which XSTO is right for you?</h2>
-          <p>Compare all five models side-by-side, including pricing, key features, intended use and important differences.</p>
-        </div>
+      <section className="approved-compare">
+        <p className="shop-overline">THE COMPLETE RANGE</p>
+        <h2>Not sure which XSTO is right for you?</h2>
+        <p>Compare all five models side by side, then open the individual product page for videos, detailed galleries, specifications, manuals and ordering.</p>
         <Link className="shop-button primary" href="/compare">Compare all models</Link>
       </section>
 
-      <section className="balanced-benefits" aria-label="Buying from KLYM">
-        <div><strong>VAT relief available</strong><span>Eligible customers can purchase qualifying mobility products without VAT.</span></div>
-        <div><strong>UK delivery</strong><span>Nationwide delivery options across the XSTO range.</span></div>
-        <div><strong>User manuals</strong><span>Manuals and product information available directly from each product page.</span></div>
-        <div><strong>UK after-sales support</strong><span>Sales and ongoing support from Mobility Station.</span></div>
-      </section>
-
-      <section className="range-final-cta">
-        <p className="shop-overline">KLYM · XSTO</p>
-        <h2>Ready to find your XSTO?</h2>
-        <p>Explore each model in detail or compare the complete range side-by-side.</p>
-        <div className="range-final-actions">
-          <a className="shop-button primary" href="#models">Shop the range</a>
-          <Link className="shop-button secondary" href="/compare">Compare models</Link>
-        </div>
+      <section className="approved-benefits" aria-label="Buying from KLYM">
+        <div><strong>VAT relief</strong><span>Available for eligible customers</span></div>
+        <div><strong>UK delivery</strong><span>Nationwide delivery options</span></div>
+        <div><strong>User manuals</strong><span>Downloads on product pages</span></div>
+        <div><strong>UK support</strong><span>After-sales support from Mobility Station</span></div>
       </section>
     </div>
   );
