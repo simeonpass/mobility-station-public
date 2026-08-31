@@ -25,17 +25,15 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en-GB">
       <body>
         <div className="announcement-bar"><span>VAT relief available for eligible customers</span><span>UK delivery</span><span>UK after-sales support</span></div>
-        <header className="site-header shop-header">
+        <header className="site-header shop-header approved-shop-header">
           <Link className="shop-logo" href="/"><Logo /></Link>
-          <nav className="site-nav shop-nav" aria-label="Main navigation">
-            <Link href="/xsto-m4">M4</Link>
-            <Link href="/xsto-m4b">M4B <span className="nav-new">NEW</span></Link>
-            <Link href="/xsto-m4-pro">M4 Pro</Link>
-            <Link href="/xsto-x12">X12</Link>
-            <Link href="/xsto-x12-pro">X12 Pro</Link>
+          <nav className="site-nav shop-nav approved-shop-nav" aria-label="Main navigation">
+            <Link href="/#models">XSTO Range</Link>
             <Link href="/compare">Compare</Link>
+            <Link href="/vat-relief">VAT Relief</Link>
+            <Link href="/support">Support</Link>
           </nav>
-          <div className="header-actions shop-header-actions"><Link className="shop-header-link" href="/vat-relief">VAT Relief</Link><Link className="shop-button primary compact" href="/#models">Shop range</Link></div>
+          <div className="header-actions shop-header-actions"><Link className="shop-button primary compact" href="/#models">Shop XSTO</Link></div>
         </header>
         <main>{children}</main>
         <footer className="site-footer shop-footer">
