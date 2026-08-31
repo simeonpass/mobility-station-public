@@ -3,6 +3,7 @@ import { displayPrice, gbp, getProducts, type Product } from "@/lib/catalog";
 
 export const dynamic = "force-dynamic";
 
+// KLYM homepage product cutouts are local transparent assets.
 const homepageImages: Record<Product["shortName"], string> = {
   M4: "/klym/range/m4-cutout.webp",
   M4B: "/klym/range/m4b-cutout.webp",
