@@ -1,0 +1,44 @@
+/* Final Mobility Station brand system: 90% black/white/soft grey + 10% #0171E3. */
+:root {
+  --accent: #0171e3;
+  --accent-hover: #005fcc;
+  --accent-on-dark: #66afff;
+  --accent-on-dark-hover: #8ac3ff;
+  --buy: #0171e3;
+  --buy-hover: #005fcc;
+  --tertiary: #0171e3;
+}
+
+:focus-visible { outline-color: #0171e3; }
+::selection { background: rgb(1 113 227 / 0.24); color: #111111; }
+
+.bg-hero-mesh {
+  background:
+    radial-gradient(ellipse 70% 55% at 90% 15%, rgb(1 113 227 / 0.06), transparent 55%),
+    linear-gradient(165deg, #f6f6f6 0%, #ffffff 48%, #f5f5f7 100%);
+}
+
+#catalogue [role="tablist"] + div input:focus,
+#catalogue [role="tablist"] + div select:focus,
+input:not([type="checkbox"]):not([type="radio"]):focus,
+select:focus,
+textarea:focus {
+  box-shadow: 0 0 0 3px rgb(1 113 227 / 0.14) !important;
+}
+
+/* Use the final supplied blue wordmark everywhere the legacy green image was used. */
+img[src*="mobility-station-wordmark.png"],
+img[src*="mobility-station-wordmark-on-dark.png"] {
+  content: url('/brand/mobility-station-wordmark-blue.svg');
+}
+
+/* The supplied wordmark uses black lettering, so give it a clean white keyline on dark footer chrome. */
+footer img[src*="mobility-station-wordmark-on-dark.png"] {
+  box-sizing: content-box;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 6px 10px;
+}
+
+/* Keep blue as a restrained interaction colour, not a large-section fill. */
+a.text-accent:hover { color: #005fcc; }
