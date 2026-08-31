@@ -44,11 +44,7 @@ footer img[src*="mobility-station-wordmark-on-dark.png"] {
 /* Keep blue as a restrained interaction colour, not a large-section fill. */
 a.text-accent:hover { color: #005fcc; }
 
-/* Sale and reduced prices use retail red, keeping blue reserved for actions. */
-article .flex:has(> .line-through) > .text-primary,
-.flex:has(> span.line-through) > span.text-primary {
-  color: var(--sale) !important;
-}
+/* Keep product prices in the normal dark text; only the sale indicators are red. */
 
 /* Savings badges on product cards. */
 article .relative.aspect-square > span.absolute.bg-accent {
