@@ -9,7 +9,7 @@ const INITIAL_COUNT = 3;
 function StarRow({ rating }: { rating: number }) {
   return (
     <span
-      className="flex gap-0.5 text-tertiary"
+      className="flex gap-0.5 text-[#F5B301]"
       aria-label={`${rating} out of 5 stars`}
     >
       {Array.from({ length: 5 }).map((_, i) => (
@@ -17,7 +17,7 @@ function StarRow({ rating }: { rating: number }) {
           key={i}
           className={`h-3.5 w-3.5 ${
             i < rating
-              ? "fill-tertiary text-tertiary"
+              ? "fill-[#F5B301] text-[#F5B301]"
               : "fill-transparent text-border"
           }`}
           aria-hidden
