@@ -8,7 +8,6 @@ import { AdaptationCard } from "@/components/product/adaptation-card";
 import { MotabilityLogo } from "@/components/product/motability-logo";
 import { EnquiryDialog } from "@/components/forms/enquiry-dialog";
 import { CatalogIntro } from "@/components/sections/catalog-intro";
-import { CatalogSearchStrip } from "@/components/sections/catalog-search-strip";
 import { CtaFooter } from "@/components/sections/cta-footer";
 import { ProductSpotlight } from "@/components/sections/product-spotlight";
 import { buttonVariants } from "@/components/ui/button";
@@ -218,12 +217,6 @@ export default async function VehicleAdaptationsPage() {
           <p><strong className="text-primary">Motability approved</strong><br /><span className="text-muted">Scheme options across many adaptations</span></p>
         </div>
       </section>
-
-      <CatalogSearchStrip
-        type="adaptations"
-        title="Find the right adaptation"
-        subtitle="Search by product, brand or category — or browse driving, access and stowage solutions below."
-      />
 
       {!errorMessage && popular.length > 0 ? (
         <ProductSpotlight

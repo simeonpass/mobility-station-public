@@ -15,7 +15,6 @@ import {
   Menu,
   Phone,
   PhoneCall,
-  Search,
   X,
 } from "lucide-react";
 import { CartButton } from "@/components/cart/cart-button";
@@ -34,7 +33,6 @@ function isActivePath(pathname: string, href: string) {
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
   const [desktopOpenId, setDesktopOpenId] = useState<string | null>(null);
   const [mobileOpenId, setMobileOpenId] = useState<string | null>(null);
   const [compact, setCompact] = useState(false);
@@ -63,23 +61,21 @@ export function SiteHeader() {
 
   useEffect(() => {
     setOpen(false);
-    setSearchOpen(false);
     setDesktopOpenId(null);
     setMobileOpenId(null);
   }, [pathname]);
   useEffect(() => {
-    if (!open && !desktopOpenId && !searchOpen) return;
+    if (!open && !desktopOpenId) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setOpen(false);
-        setSearchOpen(false);
         setDesktopOpenId(null);
         setMobileOpenId(null);
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, desktopOpenId, searchOpen]);
+  }, [open, desktopOpenId]);
   useEffect(() => {
     if (!desktopOpenId) return;
     const onPointer = (e: MouseEvent) => {
@@ -94,7 +90,7 @@ export function SiteHeader() {
   }, [open]);
 
   useEffect(() => {
-    if (open || searchOpen) {
+    if (open) {
       setCompact(false);
       return;
     }
@@ -114,7 +110,7 @@ export function SiteHeader() {
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, [open, searchOpen]);
+  }, [open]);
 
   return (
     <header
@@ -149,7 +145,7 @@ export function SiteHeader() {
         </div>
       </div>
       <div className="border-b border-border bg-white">
-        <div className="container-site flex h-[4.6rem] items-center gap-3 md:h-[4.9rem] md:gap-6">
+        <div className="container-site flex h-[4.6rem] items-center gap-2 md:h-[4.9rem] md:gap-6">
           <Link
             href="/"
             className="flex shrink-0 items-center"
@@ -160,14 +156,14 @@ export function SiteHeader() {
               alt="Mobility Station"
               width={800}
               height={300}
-              className="h-11 w-auto md:h-12"
+              className="h-8 w-auto sm:h-11 md:h-12"
               decoding="async"
               fetchPriority="high"
             />
           </Link>
-          <HeaderSearch className="mx-auto hidden min-w-0 max-w-lg flex-1 md:block" />
-          <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
-            <div className="hidden items-center gap-2 sm:flex">
+          <HeaderSearch className="min-w-0 flex-1 md:mx-auto md:max-w-xl" />
+          <div className="flex shrink-0 items-center gap-1 sm:gap-2">
+            <div className="hidden items-center gap-2 md:flex">
               <EnquiryDialog
                 mode="callback"
                 title="Request a callback"
@@ -191,21 +187,6 @@ export function SiteHeader() {
                 <span className="hidden lg:inline">Book a demo</span>
               </Link>
             </div>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="rounded-full text-primary hover:bg-soft md:hidden"
-              aria-expanded={searchOpen}
-              aria-controls="mobile-search"
-              aria-label={searchOpen ? "Close search" : "Open search"}
-              onClick={() => {
-                setOpen(false);
-                setSearchOpen((v) => !v);
-              }}
-            >
-              {searchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
-            </Button>
             <CartButton />
             <Button
               type="button"
@@ -215,31 +196,10 @@ export function SiteHeader() {
               aria-expanded={open}
               aria-controls="mobile-nav"
               aria-label={open ? "Close menu" : "Open menu"}
-              onClick={() => {
-                setSearchOpen(false);
-                setOpen((v) => !v);
-              }}
+              onClick={() => setOpen((v) => !v)}
             >
               {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
-          </div>
-        </div>
-        <div
-          id="mobile-search"
-          className={cn(
-            "grid md:hidden motion-safe:transition-[grid-template-rows] motion-safe:duration-[420ms] motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)]",
-            searchOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
-          )}
-        >
-          <div className="overflow-hidden">
-            <div className="border-t border-border bg-white px-4 py-3">
-              <HeaderSearch
-                size="sm"
-                autoFocus={searchOpen}
-                className="w-full"
-                onSubmitExtra={() => setSearchOpen(false)}
-              />
-            </div>
           </div>
         </div>
       </div>
@@ -285,11 +245,6 @@ export function SiteHeader() {
           </Button>
         </div>
         <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-4">
-          <HeaderSearch
-            size="sm"
-            className="w-full"
-            onSubmitExtra={() => setOpen(false)}
-          />
           <nav id="mobile-nav" className="flex flex-col gap-1" aria-label="Mobile">
             {SITE_NAV.map((item) => (
               <MobileNavItem
