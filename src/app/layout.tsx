@@ -11,7 +11,6 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { QuickViewHost } from "@/components/product/product-quick-view";
 import { DEFAULT_SHARE_IMAGE, SITE } from "@/lib/seo";
 import "./globals.css";
-import "./mobility-blue-theme.css";
 
 const manrope = Manrope({
   subsets: ["latin"],
