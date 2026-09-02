@@ -285,11 +285,6 @@ export function SiteHeader() {
           </Button>
         </div>
         <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-4">
-          <HeaderSearch
-            size="sm"
-            className="w-full"
-            onSubmitExtra={() => setOpen(false)}
-          />
           <nav id="mobile-nav" className="flex flex-col gap-1" aria-label="Mobile">
             {SITE_NAV.map((item) => (
               <MobileNavItem
