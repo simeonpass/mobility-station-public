@@ -118,7 +118,7 @@ export function SiteFooter() {
         <div className="container-site py-7 md:py-9">
           <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#8fbf9a]">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-accent-on-dark">
                 Here when you need us
               </p>
               <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-white md:text-3xl">
@@ -168,7 +168,7 @@ export function SiteFooter() {
             <div className="mt-6 space-y-2.5 text-sm">
               <a
                 href={SITE.phoneHref}
-                className="flex w-fit items-center gap-2 font-semibold text-white transition hover:text-[#8fbf9a]"
+                className="flex w-fit items-center gap-2 font-semibold text-white transition hover:text-accent-on-dark"
               >
                 <Phone className="h-4 w-4 text-white/45" />
                 {SITE.phone}
@@ -192,7 +192,7 @@ export function SiteFooter() {
                 loading="lazy"
                 decoding="async"
               />
-              <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#8fbf9a]">
+              <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-accent-on-dark">
                 <ShieldCheck className="h-3.5 w-3.5" /> Accredited dealer
               </span>
             </Link>
@@ -219,7 +219,7 @@ export function SiteFooter() {
               className="group rounded-2xl border border-white/10 bg-white/[0.035] p-4 transition hover:border-white/18 hover:bg-white/[0.055] md:p-5"
             >
               <div className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/7 text-[#8fbf9a]">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/7 text-accent-on-dark">
                   <MapPin className="h-4 w-4" />
                 </span>
                 <div className="min-w-0">
