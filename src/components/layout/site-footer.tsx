@@ -5,31 +5,24 @@ import { EnquiryDialog } from "@/components/forms/enquiry-dialog";
 import { SITE } from "@/lib/seo";
 import { BRANCHES } from "@/data/content";
 
-const columns = [
+const FOOTER_GROUPS = [
   {
-    title: "Shop",
-    links: [
-      { href: "/shop", label: "Scooters & wheelchairs" },
-      { href: "/clearance", label: "Clearance" },
-      { href: "/hire", label: "Hire & Flex Hire" },
-      { href: "/trade-in", label: "Old scooter takeaway" },
-    ],
-  },
-  {
-    title: "Adaptations",
+    title: "Explore",
     links: [
       { href: "/vehicle-adaptations", label: "Vehicle adaptations" },
+      { href: "/shop", label: "Scooters & wheelchairs" },
       { href: "/motability", label: "Motability" },
-      { href: "/book-a-demo", label: "Book a demonstration" },
+      { href: "/hire", label: "Hire & Flex Hire" },
+      { href: "/clearance", label: "Clearance" },
     ],
   },
   {
-    title: "Help & support",
+    title: "Support",
     links: [
-      { href: "/delivery", label: "Delivery" },
-      { href: "/vat-relief", label: "VAT relief" },
       { href: "/servicing", label: "Servicing & Care Plans" },
       { href: "/book-a-service", label: "Book a service" },
+      { href: "/delivery", label: "Delivery" },
+      { href: "/vat-relief", label: "VAT relief" },
       { href: "/faq", label: "FAQs" },
     ],
   },
@@ -43,7 +36,7 @@ const columns = [
       { href: "/contact", label: "Contact" },
     ],
   },
-];
+] as const;
 
 const PAYMENT_ICONS = [
   { Icon: SiVisa, label: "Visa" },
@@ -53,103 +46,49 @@ const PAYMENT_ICONS = [
   { Icon: SiPaypal, label: "PayPal" },
 ];
 
-function FooterLinks({ mobile = false }: { mobile?: boolean }) {
-  return columns.map((col) => {
-    const links = (
-      <ul className={mobile ? "space-y-2.5 pb-4 pt-1" : "mt-4 space-y-2.5"}>
-        {col.links.map((link) => (
-          <li key={link.href}>
-            <Link
-              href={link.href}
-              className="text-sm text-white/68 transition-colors hover:text-white"
+export function SiteFooter() {
+  return (
+    <footer className="mt-auto bg-[#0b0b0b] text-white">
+      <div className="border-b border-white/10 bg-[#111111]">
+        <div className="container-site flex flex-col gap-6 py-8 lg:flex-row lg:items-center lg:justify-between lg:py-10">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-white/45">
+              Speak to a specialist
+            </p>
+            <h2 className="mt-2 text-2xl font-extrabold tracking-[-0.025em] text-white md:text-3xl">
+              Not sure what you need? We’ll help you work it out.
+            </h2>
+          </div>
+
+          <div className="flex flex-wrap gap-2.5 lg:shrink-0">
+            <a
+              href={SITE.phoneHref}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-white px-5 text-sm font-bold text-[#111111] transition hover:bg-white/90"
             >
-              {link.label}
-            </Link>
-          </li>
-        ))}
-        {col.title === "Adaptations" ? (
-          <li>
+              <Phone className="h-4 w-4" aria-hidden />
+              {SITE.phone}
+            </a>
             <EnquiryDialog
               mode="enquiry"
               enquiryType="contact"
               title="Get a quotation"
               defaultInterest="Vehicle adaptation quotation"
-              triggerClassName="text-sm text-white/68 transition-colors hover:text-white"
+              triggerClassName="inline-flex h-11 items-center justify-center rounded-full border border-white/20 px-5 text-sm font-bold text-white transition hover:border-white/40 hover:bg-white/[0.06]"
             >
-              Get a quotation
+              Get a quote
             </EnquiryDialog>
-          </li>
-        ) : null}
-      </ul>
-    );
-
-    if (mobile) {
-      return (
-        <details key={col.title} className="group border-t border-white/10 first:border-t-0">
-          <summary className="flex cursor-pointer list-none items-center justify-between py-3.5 text-sm font-semibold text-white marker:hidden">
-            <span>{col.title}</span>
-            <span
-              className="text-xl font-light text-white/40 transition-transform duration-200 group-open:rotate-45"
-              aria-hidden
+            <Link
+              href="/contact"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-white/20 px-5 text-sm font-bold text-white transition hover:border-white/40 hover:bg-white/[0.06]"
             >
-              +
-            </span>
-          </summary>
-          {links}
-        </details>
-      );
-    }
-
-    return (
-      <div key={col.title}>
-        <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-white/38">
-          {col.title}
-        </p>
-        {links}
-      </div>
-    );
-  });
-}
-
-export function SiteFooter() {
-  return (
-    <footer className="mt-auto bg-[#111111] text-white">
-      <div className="border-b border-white/10 bg-[#161616]">
-        <div className="container-site py-7 md:py-9">
-          <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#8fbf9a]">
-                Here when you need us
-              </p>
-              <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-white md:text-3xl">
-                Need help choosing the right solution?
-              </h2>
-              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-white/58 md:text-base">
-                Speak to our team for straightforward advice on mobility products, vehicle adaptations, demonstrations and servicing.
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-2.5 sm:flex-row md:shrink-0">
-              <a
-                href={SITE.phoneHref}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-white px-5 text-sm font-bold text-[#111111] transition hover:bg-white/90"
-              >
-                <Phone className="h-4 w-4" />
-                {SITE.phone}
-              </a>
-              <Link
-                href="/contact"
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-white/20 px-5 text-sm font-bold text-white transition hover:border-white/40 hover:bg-white/5"
-              >
-                Contact us <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
+              Contact us <ArrowRight className="h-4 w-4" aria-hidden />
+            </Link>
           </div>
         </div>
       </div>
 
-      <div className="container-site py-8 md:py-14">
-        <div className="grid gap-9 lg:grid-cols-[1.35fr_2.65fr] lg:gap-16">
+      <div className="container-site py-11 md:py-14 lg:py-16">
+        <div className="grid gap-12 lg:grid-cols-[1.05fr_1.95fr] lg:gap-20">
           <div>
             <img
               src="/brand/mobility-station-wordmark-on-dark.png?v=20260830f"
@@ -161,28 +100,83 @@ export function SiteFooter() {
               decoding="async"
             />
 
-            <p className="mt-5 max-w-sm text-sm leading-6 text-white/58">
-              Mobility scooters, wheelchairs and specialist vehicle adaptations from our Heathrow and Ferndown teams.
+            <p className="mt-5 max-w-md text-sm leading-6 text-white/55">
+              Specialist vehicle adaptations, mobility scooters and wheelchairs, supplied and supported by our Heathrow and Ferndown teams.
             </p>
 
-            <div className="mt-6 space-y-2.5 text-sm">
+            <div className="mt-6 flex flex-col gap-2.5 text-sm">
               <a
                 href={SITE.phoneHref}
-                className="flex w-fit items-center gap-2 font-semibold text-white transition hover:text-[#8fbf9a]"
+                className="flex w-fit items-center gap-2 font-semibold text-white transition hover:text-white/75"
               >
-                <Phone className="h-4 w-4 text-white/45" />
+                <Phone className="h-4 w-4 text-white/38" aria-hidden />
                 {SITE.phone}
               </a>
               <a
                 href={`mailto:${SITE.email}`}
-                className="flex w-fit items-center gap-2 text-white/68 transition hover:text-white"
+                className="flex w-fit items-center gap-2 text-white/62 transition hover:text-white"
               >
-                <Mail className="h-4 w-4 text-white/45" />
+                <Mail className="h-4 w-4 text-white/38" aria-hidden />
                 {SITE.email}
               </a>
             </div>
+          </div>
 
-            <Link href="/motability" className="mt-7 inline-flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.035] px-4 py-3 transition hover:bg-white/[0.06]">
+          <nav aria-label="Footer" className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3 lg:gap-x-12">
+            {FOOTER_GROUPS.map((group) => (
+              <div key={group.title}>
+                <p className="text-xs font-bold uppercase tracking-[0.14em] text-white/38">
+                  {group.title}
+                </p>
+                <ul className="mt-4 space-y-3">
+                  {group.links.map((link) => (
+                    <li key={link.href}>
+                      <Link
+                        href={link.href}
+                        className="text-sm text-white/64 transition-colors hover:text-white"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </nav>
+        </div>
+
+        <div className="mt-12 border-t border-white/10 pt-8 md:mt-14 md:pt-9">
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+            <div className="min-w-0">
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-white/38">
+                Visit us
+              </p>
+              <div className="mt-4 grid gap-5 sm:grid-cols-2 sm:gap-10">
+                {BRANCHES.map((branch) => (
+                  <Link
+                    key={branch.id}
+                    href="/locations"
+                    className="group flex items-start gap-3"
+                  >
+                    <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-white/35" aria-hidden />
+                    <div>
+                      <p className="text-sm font-bold text-white">{branch.name}</p>
+                      <p className="mt-1 text-sm leading-5 text-white/52">
+                        {branch.addressLine1}, {branch.postalCode}
+                      </p>
+                      <p className="mt-1.5 text-xs font-semibold text-white/62 transition group-hover:text-white">
+                        View location
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <Link
+              href="/motability"
+              className="inline-flex w-fit items-center gap-3 border-l border-white/10 pl-0 lg:pl-6"
+            >
               <img
                 src="/brand/motability-scheme-white.png"
                 alt="Motability Scheme"
@@ -192,66 +186,36 @@ export function SiteFooter() {
                 loading="lazy"
                 decoding="async"
               />
-              <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#8fbf9a]">
-                <ShieldCheck className="h-3.5 w-3.5" /> Accredited dealer
+              <span className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/48">
+                <ShieldCheck className="h-3.5 w-3.5" aria-hidden /> Accredited dealer
               </span>
             </Link>
           </div>
-
-          <div>
-            <div className="md:hidden">
-              <div className="border-y border-white/10">
-                <FooterLinks mobile />
-              </div>
-            </div>
-
-            <div className="hidden grid-cols-4 gap-7 md:grid">
-              <FooterLinks />
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-10 grid gap-3 border-t border-white/10 pt-7 md:mt-12 md:grid-cols-2 md:gap-5 md:pt-8">
-          {BRANCHES.map((branch) => (
-            <Link
-              key={branch.id}
-              href="/locations"
-              className="group rounded-2xl border border-white/10 bg-white/[0.035] p-4 transition hover:border-white/18 hover:bg-white/[0.055] md:p-5"
-            >
-              <div className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/7 text-[#8fbf9a]">
-                  <MapPin className="h-4 w-4" />
-                </span>
-                <div className="min-w-0">
-                  <p className="font-bold text-white">{branch.name}</p>
-                  <p className="mt-1 text-sm leading-5 text-white/55">
-                    {branch.addressLine1}, {branch.postalCode}
-                  </p>
-                  <p className="mt-2 text-xs font-semibold text-white/72 transition group-hover:text-white">
-                    View location <ArrowRight className="ml-1 inline h-3.5 w-3.5" />
-                  </p>
-                </div>
-              </div>
-            </Link>
-          ))}
         </div>
       </div>
 
       <div className="border-t border-white/10">
-        <div className="container-site flex flex-col gap-5 py-5 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-white/35">Secure payments</p>
-            <ul className="mt-2 flex items-center gap-4" aria-label="Accepted payment methods">
+        <div className="container-site flex flex-col gap-6 py-6 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-4">
+            <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-white/32">
+              Secure payments
+            </span>
+            <ul className="flex items-center gap-3.5" aria-label="Accepted payment methods">
               {PAYMENT_ICONS.map(({ Icon, label }) => (
                 <li key={label}>
-                  <Icon className="h-5 w-auto text-white/68" role="img" aria-label={label} />
+                  <Icon className="h-4.5 w-auto text-white/58" role="img" aria-label={label} />
                 </li>
               ))}
             </ul>
           </div>
 
-          <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-white/50">
-            <a href={SITE.lightweightUrl} className="transition hover:text-white" rel="noopener noreferrer" target="_blank">
+          <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-white/45">
+            <a
+              href={SITE.lightweightUrl}
+              className="transition hover:text-white"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
               Lightweight store
             </a>
             <Link href="/privacy-policy" className="transition hover:text-white">Privacy</Link>
@@ -262,9 +226,9 @@ export function SiteFooter() {
       </div>
 
       <div className="border-t border-white/[0.07]">
-        <div className="container-site py-4 text-[11px] leading-relaxed text-white/35 md:flex md:items-center md:justify-between md:text-xs">
+        <div className="container-site flex flex-col gap-1 py-4 text-[11px] leading-relaxed text-white/30 md:flex-row md:items-center md:justify-between md:text-xs">
           <p>© {new Date().getFullYear()} {SITE.name}. All rights reserved.</p>
-          <p className="mt-1 md:mt-0">{SITE.name} is a trading name of {SITE.legalName}.</p>
+          <p>{SITE.name} is a trading name of {SITE.legalName}.</p>
         </div>
       </div>
     </footer>
