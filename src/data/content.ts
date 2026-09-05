@@ -549,10 +549,3 @@ export const SOLUTIONS = [
     description: "Steps, grab handles, transfer plates and seating mods.",
   },
 ] as const;
-
-export const TRUST_ITEMS = [
-  "Vehicle Adaptations",
-  "Scooters & Wheelchairs",
-  "Motability Accredited",
-  "Free Home Demonstrations",
-] as const;
