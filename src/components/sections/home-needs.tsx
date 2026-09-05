@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Armchair, Accessibility, Wrench } from "lucide-react";
+import { ArrowRight, Accessibility, Wrench } from "lucide-react";
 import type { ComponentType, SVGProps } from "react";
 
 type IconProps = SVGProps<SVGSVGElement>;
@@ -23,6 +23,20 @@ function SteeringWheelIcon(props: IconProps) {
       <circle cx="12" cy="12" r="8.5" />
       <circle cx="12" cy="12" r="2.2" />
       <path d="M3.8 10.4h5.9M14.3 10.4h5.9M12 14.2v6.1" />
+    </svg>
+  );
+}
+
+function SwivelCarSeatIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M8.2 4.2h3.1c1.2 0 2.1 1 2.1 2.1v5.2" />
+      <path d="M7.2 5.3v6.6c0 1.1.9 2 2 2h7.2" />
+      <path d="M9.2 13.9 7.8 18" />
+      <path d="M15.8 13.9 17 18" />
+      <path d="M6.3 18h11.5" />
+      <path d="M12 20.2a5.7 5.7 0 0 0 5.1-2.5" />
+      <path d="m16.4 20 .7-2.3 2.3.7" />
     </svg>
   );
 }
@@ -63,7 +77,7 @@ const NEEDS: Array<{
     title: "I struggle getting in or out of the car",
     text: "Swivel seats to make transferring into and out of the vehicle easier.",
     href: "/vehicle-adaptations/swivel-seats#products",
-    icon: Armchair,
+    icon: SwivelCarSeatIcon,
   },
   {
     title: "I need to lift a scooter or wheelchair",
