@@ -89,9 +89,9 @@ export default async function AdaptationCategoryPage({ params }: Props) {
           </div>
         </header>
 
-        <div className="flex flex-wrap items-center justify-between gap-4 py-6">
+        <div id="products" className="scroll-under-header flex flex-wrap items-center justify-between gap-4 py-6">
           <p className="text-sm text-muted"><strong className="text-primary">{products.length}</strong> compatible products listed · vehicle check before fitting</p>
-          {section ? <nav className="flex flex-wrap gap-2" aria-label={`${section.title} categories`}>{section.categories.map((cat) => { const count = byCategory.get(cat)?.length ?? 0; if (!count) return null; return <Link key={cat} href={adaptationHref(cat)} className="rounded-full border border-border bg-white px-3.5 py-2 text-xs font-semibold text-primary hover:border-primary">{cat} ({count})</Link>; })}</nav> : null}
+          {section ? <nav className="flex flex-wrap gap-2" aria-label={`${section.title} categories`}>{section.categories.map((cat) => { const count = byCategory.get(cat)?.length ?? 0; if (!count) return null; return <Link key={cat} href={`${adaptationHref(cat)}#products`} className="rounded-full border border-border bg-white px-3.5 py-2 text-xs font-semibold text-primary hover:border-primary">{cat} ({count})</Link>; })}</nav> : null}
         </div>
 
         {products.length ? <div className="grid grid-cols-2 gap-4 pb-16 sm:gap-5 lg:grid-cols-4 lg:gap-6">{products.map((p) => <AdaptationCard key={p.id} product={p} />)}</div> : <p className="pb-16 text-muted">No published products in this category yet. <Link href="/contact" className="font-semibold text-primary underline">Contact us</Link> for advice.</p>}
