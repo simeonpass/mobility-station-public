@@ -5,31 +5,31 @@ const NEEDS = [
   {
     title: "I struggle using the pedals",
     text: "Hand controls, left-foot accelerators and driving solutions.",
-    href: "/vehicle-adaptations",
+    href: "/vehicle-adaptations#driving-controls",
     icon: CarFront,
   },
   {
     title: "I struggle steering or using controls",
     text: "Steering aids and secondary control solutions.",
-    href: "/vehicle-adaptations",
+    href: "/vehicle-adaptations#driving-controls",
     icon: Route,
   },
   {
     title: "I struggle getting in or out of the car",
     text: "Swivel seats, transfer aids and vehicle access solutions.",
-    href: "/vehicle-adaptations",
+    href: "/vehicle-adaptations#vehicle-access",
     icon: PersonStanding,
   },
   {
     title: "I need to lift a scooter or wheelchair",
     text: "Boot hoists, stowage systems and loading solutions.",
-    href: "/vehicle-adaptations",
+    href: "/vehicle-adaptations#hoists-stowage",
     icon: PackageOpen,
   },
   {
     title: "I need something lightweight or folding",
     text: "Portable scooters and powerchairs for cars and travel.",
-    href: "/shop",
+    href: "/shop?q=folding#catalogue",
     icon: Accessibility,
   },
   {
