@@ -3,6 +3,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { BranchMap } from "@/components/sections/branch-map";
 import { CtaFooter } from "@/components/sections/cta-footer";
 import { HomeHero } from "@/components/sections/home-hero";
+import { HomeNeeds } from "@/components/sections/home-needs";
 import { HomePaths } from "@/components/sections/home-paths";
 import { ProductScroller } from "@/components/sections/product-scroller";
 import { RecentWorkStrip } from "@/components/sections/recent-work-strip";
@@ -37,8 +38,8 @@ export default async function HomePage() {
   let recentWork: Awaited<ReturnType<typeof listRecentWork>>["projects"] = [];
   try {
     const [adaptationRows, scooterRows, work] = await Promise.all([
-      getPopularAdaptations(14),
-      getFeaturedProducts(14),
+      getPopularAdaptations(6),
+      getFeaturedProducts(6),
       listRecentWork({ limit: 6 }),
     ]);
     adaptations = adaptationRows;
@@ -59,7 +60,6 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* LCP: first collage tile — static hero, not Vercel-optimised */}
       <link
         rel="preload"
         as="image"
@@ -78,10 +78,11 @@ export default async function HomePage() {
       />
       <TrustStrip />
       <HomePaths />
+      <HomeNeeds />
 
       <ProductScroller
         title="Popular vehicle adaptations"
-        subtitle="Hand controls, hoists and access solutions we fit most often."
+        subtitle="A few of the solutions we fit most often. If you are unsure what you need, start with the problem above."
         viewAllHref="/vehicle-adaptations"
         viewAllLabel="See all adaptations"
         tone="white"
@@ -93,9 +94,9 @@ export default async function HomePage() {
 
       <ProductScroller
         title="Popular scooters & wheelchairs"
-        subtitle="Featured models ready for a home demonstration."
+        subtitle="A smaller selection of popular models, with the full range available in the shop."
         viewAllHref="/shop"
-        viewAllLabel="See all"
+        viewAllLabel="Shop all mobility"
         tone="soft"
       >
         {scooters.map((p) => (
@@ -104,7 +105,6 @@ export default async function HomePage() {
       </ProductScroller>
 
       <RecentWorkStrip items={recentWork} />
-
       <BranchMap branches={branches} />
       <Testimonials
         reviews={reviewSummary.reviews}
@@ -114,8 +114,8 @@ export default async function HomePage() {
         profiles={reviewSummary.profiles}
       />
       <CtaFooter
-        title="Book a home demonstration"
-        subtitle="Whether you need a vehicle adaptation or a scooter or wheelchair — we come to you from Heathrow or Ferndown."
+        title="Not sure what you need? Talk to someone who does."
+        subtitle="Our teams at Heathrow and Ferndown can help with vehicle adaptations, scooters, wheelchairs, demonstrations, servicing and repairs."
       />
     </>
   );
