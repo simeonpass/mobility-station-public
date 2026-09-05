@@ -59,7 +59,12 @@ export function HomePaths() {
                       dark ? "bg-primary text-white" : "bg-[#f4f1ec] text-primary",
                     )}
                   >
-                    <h2 className="text-2xl font-extrabold tracking-[-0.03em] sm:text-[1.7rem]">
+                    <h2
+                      className={cn(
+                        "text-2xl font-extrabold tracking-[-0.03em] sm:text-[1.7rem]",
+                        dark ? "text-white" : "text-primary",
+                      )}
+                    >
                       {path.title}
                     </h2>
                     <p
