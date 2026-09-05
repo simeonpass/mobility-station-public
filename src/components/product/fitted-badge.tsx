@@ -56,7 +56,7 @@ export function FittedBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-sm bg-primary font-semibold text-primary-foreground shadow-sm",
+        "inline-flex items-center gap-1.5 rounded-full border border-border bg-soft font-semibold text-primary",
         compact
           ? "px-2.5 py-1 text-[10px] uppercase tracking-wide"
           : "px-3 py-1.5 text-xs",
