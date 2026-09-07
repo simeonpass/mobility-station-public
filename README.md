@@ -31,8 +31,9 @@ NEXT_PUBLIC_SITE_URL=https://mobilitystation.co.uk
 NEXT_PUBLIC_GA_ID=
 ```
 
-`NEXT_PUBLIC_SUPABASE_*` mirror the project URL and public site key so Care Plan
-checkout can run in the browser (Stripe return URLs on mobilitystation.co.uk).
+Care Plan checkout and verification use same-origin `/api/care-plan/*` routes
+and the existing server-side `SUPABASE_URL` / `SUPABASE_PUBLIC_SITE_KEY` settings.
+They do not require browser-exposed Supabase credentials.
 
 Run `supabase/public_site_grants.sql` in Supabase to create the minimum `public_site` grants.
 
@@ -54,7 +55,7 @@ Run `supabase/public_site_grants.sql` in Supabase to create the minimum `public_
 
 ## Notes
 
-- Brand colours and Manrope typography are enforced via CSS variables / theme tokens
+- Brand colours are midnight navy `#001933`, orange `#F47B20`, warm white `#F7F5F2`, white and slate `#51606F`; Manrope typography and shared CSS tokens apply site-wide. Orange button labels use navy; orange links on light surfaces use the darker `accent-ink` token for contrast.
 - Forms validate with Zod on the server and write to Supabase `enquiries`
 - Do not generate `og:image` in code unless an absolute HTTPS asset URL is supplied
 - Knowledge FAQs (`/faq` + `/faq/[slug]`) can be seeded locally or published from Lovable via Supabase `knowledge_faqs` after PII stripping and human review (`supabase/knowledge_faqs.sql`)

@@ -11,7 +11,6 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { QuickViewHost } from "@/components/product/product-quick-view";
 import { DEFAULT_SHARE_IMAGE, SITE } from "@/lib/seo";
 import "./globals.css";
-import "./mobility-blue-theme.css";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -29,8 +28,8 @@ export const metadata: Metadata = {
   description:
     "Vehicle adaptations, mobility scooters and wheelchairs from Heathrow & Ferndown. Motability accredited. Home and branch demonstrations available.",
   icons: {
-    icon: [{ url: "/brand/mobility-station-favicon-blue.svg?v=20260831", type: "image/svg+xml" }],
-    apple: [{ url: "/brand/mobility-station-favicon-blue.svg?v=20260831" }],
+    icon: [{ url: "/brand/mobility-station-icon.svg?v=20260907", type: "image/svg+xml" }],
+    apple: [{ url: "/apple-touch-icon.png?v=20260907" }],
   },
   openGraph: {
     type: "website",

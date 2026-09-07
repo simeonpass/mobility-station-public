@@ -53,7 +53,7 @@ export function ProductCard({ product }: { product: ProductListItem }) {
                 Clearance
               </span>
             ) : saveAmount != null ? (
-              <span className="absolute left-3 top-3 rounded-full bg-accent px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-accent-foreground">
+              <span className="absolute left-3 top-3 rounded-full bg-error px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-white">
                 Save {formatGBP(saveAmount)}
               </span>
             ) : wasHeadline ? (

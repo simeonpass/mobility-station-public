@@ -1,15 +1,4 @@
-/** Browser-side helpers for Care Plan Stripe checkout / verify. */
-
-function supabasePublicConfig() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/, "");
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key) {
-    throw new Error(
-      "Care Plans need NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY",
-    );
-  }
-  return { url, key };
-}
+/** Same-origin Care Plan requests use the site's existing server configuration. */
 
 export type CarePlanCheckoutPayload = {
   planKey: string;
@@ -24,18 +13,10 @@ export type CarePlanCheckoutPayload = {
 };
 
 export async function startCarePlanCheckout(payload: CarePlanCheckoutPayload) {
-  // Silent bot trap — do not call Stripe if honeypot filled.
-  if (payload.website?.trim()) {
-    return { url: `${window.location.origin}/care-plan/success?bot=1` };
-  }
-
-  const { url, key } = supabasePublicConfig();
-  const res = await fetch(`${url}/functions/v1/care-plan-checkout`, {
+  const res = await fetch("/api/care-plan/checkout", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      apikey: key,
-      Authorization: `Bearer ${key}`,
     },
     body: JSON.stringify({
       planKey: payload.planKey,
@@ -45,7 +26,7 @@ export async function startCarePlanCheckout(payload: CarePlanCheckoutPayload) {
       postcode: payload.postcode.trim(),
       equipment: payload.equipment.trim(),
       notes: payload.notes?.trim() || undefined,
-      website: "",
+      website: payload.website || "",
     }),
   });
 
@@ -82,20 +63,18 @@ export async function pollCarePlanVerify(
   attempts = 8,
   delayMs = 1500,
 ): Promise<CarePlanVerifyResult> {
-  const { url, key } = supabasePublicConfig();
   let last: CarePlanVerifyResult = { status: "pending" };
 
   for (let i = 0; i < attempts; i++) {
-    const res = await fetch(`${url}/functions/v1/care-plan-verify`, {
+    const res = await fetch("/api/care-plan/verify", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        apikey: key,
-        Authorization: `Bearer ${key}`,
       },
       body: JSON.stringify({ sessionId }),
     });
     last = (await res.json().catch(() => ({}))) as CarePlanVerifyResult;
+    if (!res.ok) return { status: "error", error: last.error || "We couldn’t confirm your plan. Please try again or call us." };
     if (last.status === "active") return last;
     if (last.error && last.status !== "pending") return last;
     if (i < attempts - 1) {

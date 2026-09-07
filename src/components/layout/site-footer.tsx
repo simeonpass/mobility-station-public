@@ -48,11 +48,11 @@ const PAYMENT_ICONS = [
 
 export function SiteFooter() {
   return (
-    <footer className="mt-auto bg-[#0b0b0b] text-white">
-      <div className="border-b border-white/10 bg-[#111111]">
+    <footer className="mt-auto bg-footer text-white">
+      <div className="border-b border-white/10 bg-primary">
         <div className="container-site flex flex-col gap-6 py-8 lg:flex-row lg:items-center lg:justify-between lg:py-10">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-white/45">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-white/75">
               Speak to a specialist
             </p>
             <h2 className="mt-2 text-2xl font-extrabold tracking-[-0.025em] text-white md:text-3xl">
@@ -63,7 +63,7 @@ export function SiteFooter() {
           <div className="flex flex-wrap gap-2.5 lg:shrink-0">
             <a
               href={SITE.phoneHref}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-white px-5 text-sm font-bold text-[#111111] transition hover:bg-white/90"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-white px-5 text-sm font-bold text-primary transition hover:bg-white/90"
             >
               <Phone className="h-4 w-4" aria-hidden />
               {SITE.phone}
@@ -91,16 +91,17 @@ export function SiteFooter() {
         <div className="grid gap-12 lg:grid-cols-[1.05fr_1.95fr] lg:gap-20">
           <div>
             <img
-              src="/brand/mobility-station-wordmark-on-dark.png?v=20260830f"
+              src="/brand/mobility-station-logo-light.svg"
               alt="Mobility Station"
-              width={800}
-              height={300}
-              className="h-9 w-auto md:h-10"
+              width={740}
+              height={263}
+              className="h-auto w-52"
               loading="lazy"
               decoding="async"
             />
 
-            <p className="mt-5 max-w-md text-sm leading-6 text-white/55">
+            <p className="mt-4 text-base font-semibold text-accent-on-dark">Keeping you moving.</p>
+            <p className="mt-5 max-w-md text-sm leading-6 text-white/75">
               Specialist vehicle adaptations, mobility scooters and wheelchairs, supplied and supported by our Heathrow and Ferndown teams.
             </p>
 
@@ -109,14 +110,14 @@ export function SiteFooter() {
                 href={SITE.phoneHref}
                 className="flex w-fit items-center gap-2 font-semibold text-white transition hover:text-white/75"
               >
-                <Phone className="h-4 w-4 text-white/38" aria-hidden />
+                <Phone className="h-4 w-4 text-white/75" aria-hidden />
                 {SITE.phone}
               </a>
               <a
                 href={`mailto:${SITE.email}`}
-                className="flex w-fit items-center gap-2 text-white/62 transition hover:text-white"
+                className="flex w-fit items-center gap-2 text-white/75 transition hover:text-white"
               >
-                <Mail className="h-4 w-4 text-white/38" aria-hidden />
+                <Mail className="h-4 w-4 text-white/75" aria-hidden />
                 {SITE.email}
               </a>
             </div>
@@ -125,7 +126,7 @@ export function SiteFooter() {
           <nav aria-label="Footer" className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3 lg:gap-x-12">
             {FOOTER_GROUPS.map((group) => (
               <div key={group.title}>
-                <p className="text-xs font-bold uppercase tracking-[0.14em] text-white/38">
+                <p className="text-xs font-bold uppercase tracking-[0.14em] text-white/75">
                   {group.title}
                 </p>
                 <ul className="mt-4 space-y-3">
@@ -133,7 +134,7 @@ export function SiteFooter() {
                     <li key={link.href}>
                       <Link
                         href={link.href}
-                        className="text-sm text-white/64 transition-colors hover:text-white"
+                        className="text-sm text-white/75 transition-colors hover:text-white"
                       >
                         {link.label}
                       </Link>
@@ -148,7 +149,7 @@ export function SiteFooter() {
         <div className="mt-12 border-t border-white/10 pt-8 md:mt-14 md:pt-9">
           <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <div className="min-w-0">
-              <p className="text-xs font-bold uppercase tracking-[0.14em] text-white/38">
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-white/75">
                 Visit us
               </p>
               <div className="mt-4 grid gap-5 sm:grid-cols-2 sm:gap-10">
@@ -158,13 +159,13 @@ export function SiteFooter() {
                     href="/locations"
                     className="group flex items-start gap-3"
                   >
-                    <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-white/35" aria-hidden />
+                    <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-white/75" aria-hidden />
                     <div>
                       <p className="text-sm font-bold text-white">{branch.name}</p>
-                      <p className="mt-1 text-sm leading-5 text-white/52">
+                      <p className="mt-1 text-sm leading-5 text-white/75">
                         {branch.addressLine1}, {branch.postalCode}
                       </p>
-                      <p className="mt-1.5 text-xs font-semibold text-white/62 transition group-hover:text-white">
+                      <p className="mt-1.5 text-xs font-semibold text-white/75 transition group-hover:text-white">
                         View location
                       </p>
                     </div>
@@ -186,7 +187,7 @@ export function SiteFooter() {
                 loading="lazy"
                 decoding="async"
               />
-              <span className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/48">
+              <span className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/75">
                 <ShieldCheck className="h-3.5 w-3.5" aria-hidden /> Accredited dealer
               </span>
             </Link>
@@ -197,19 +198,19 @@ export function SiteFooter() {
       <div className="border-t border-white/10">
         <div className="container-site flex flex-col gap-6 py-6 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-4">
-            <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-white/32">
+            <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-white/75">
               Secure payments
             </span>
             <ul className="flex items-center gap-3.5" aria-label="Accepted payment methods">
               {PAYMENT_ICONS.map(({ Icon, label }) => (
                 <li key={label}>
-                  <Icon className="h-4.5 w-auto text-white/58" role="img" aria-label={label} />
+                  <Icon className="h-4.5 w-auto text-white/75" role="img" aria-label={label} />
                 </li>
               ))}
             </ul>
           </div>
 
-          <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-white/45">
+          <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-white/75">
             <a
               href={SITE.lightweightUrl}
               className="transition hover:text-white"
@@ -226,7 +227,7 @@ export function SiteFooter() {
       </div>
 
       <div className="border-t border-white/[0.07]">
-        <div className="container-site flex flex-col gap-1 py-4 text-[11px] leading-relaxed text-white/30 md:flex-row md:items-center md:justify-between md:text-xs">
+        <div className="container-site flex flex-col gap-1 py-4 text-[11px] leading-relaxed text-white/75 md:flex-row md:items-center md:justify-between md:text-xs">
           <p>© {new Date().getFullYear()} {SITE.name}. All rights reserved.</p>
           <p>{SITE.name} is a trading name of {SITE.legalName}.</p>
         </div>

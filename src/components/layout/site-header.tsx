@@ -135,7 +135,7 @@ export function SiteHeader() {
                 href="/book-a-demo"
                 className="text-white/70 hover:text-accent-on-dark"
               >
-                Free branch demos · We&apos;ll come to you
+                Free branch demonstrations
               </Link>
             </span>
           </p>
@@ -149,37 +149,46 @@ export function SiteHeader() {
         </div>
       </div>
       <div className="border-b border-border bg-white">
-        <div className="container-site flex h-[4.6rem] items-center gap-3 md:h-[4.9rem] md:gap-6">
+        <div className="container-site flex h-[4.6rem] items-center gap-3 lg:h-[5.4rem] md:gap-4">
           <Link
             href="/"
             className="flex shrink-0 items-center"
             onClick={() => setOpen(false)}
           >
             <img
-              src="/brand/mobility-station-wordmark.png?v=20260830f"
+              src="/brand/mobility-station-logo.svg"
               alt="Mobility Station"
-              width={800}
-              height={300}
-              className="h-11 w-auto md:h-12"
+              width={740}
+              height={263}
+              className="h-auto w-[142px] sm:w-[162px] lg:w-[172px]"
               decoding="async"
               fetchPriority="high"
             />
           </Link>
-          <HeaderSearch className="mx-auto hidden min-w-0 max-w-lg flex-1 md:block" />
+                <nav
+        ref={navRef}
+        className="relative hidden min-w-0 flex-1 lg:block"
+        aria-label="Primary"
+        onMouseLeave={scheduleClose}
+      >
+        <div className="flex h-[5.4rem] items-stretch justify-center">
+          {SITE_NAV.map((item) => (
+            <DesktopNavItem
+              key={item.type === "menu" ? item.id : item.href}
+              item={item}
+              pathname={pathname}
+              openId={desktopOpenId}
+              onOpen={openMenu}
+              onScheduleClose={scheduleClose}
+              onClearClose={clearCloseTimer}
+              onClose={() => setDesktopOpenId(null)}
+            />
+          ))}
+        </div>
+      </nav>
           <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
-            <div className="hidden items-center gap-2 sm:flex">
-              <EnquiryDialog
-                mode="callback"
-                title="Request a callback"
-                triggerClassName={cn(
-                  buttonVariants({ variant: "outline", size: "sm" }),
-                  "rounded-full border-border bg-white text-primary hover:border-primary",
-                )}
-              >
-                <PhoneCall className="h-4 w-4" aria-hidden />
-                <span className="hidden lg:inline">Request a callback</span>
-                <span className="lg:hidden">Callback</span>
-              </EnquiryDialog>
+            <div className="hidden items-center gap-2 xl:flex">
+
               <Link
                 href="/book-a-demo"
                 className={cn(
@@ -195,9 +204,9 @@ export function SiteHeader() {
               type="button"
               variant="ghost"
               size="icon"
-              className="rounded-full text-primary hover:bg-soft md:hidden"
+              className="rounded-full text-primary hover:bg-soft"
               aria-expanded={searchOpen}
-              aria-controls="mobile-search"
+              aria-controls="site-search"
               aria-label={searchOpen ? "Close search" : "Open search"}
               onClick={() => {
                 setOpen(false);
@@ -225,9 +234,9 @@ export function SiteHeader() {
           </div>
         </div>
         <div
-          id="mobile-search"
+          id="site-search"
           className={cn(
-            "grid md:hidden motion-safe:transition-[grid-template-rows] motion-safe:duration-[420ms] motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)]",
+            "grid motion-safe:transition-[grid-template-rows] motion-safe:duration-[420ms] motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)]",
             searchOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
           )}
         >
@@ -236,34 +245,14 @@ export function SiteHeader() {
               <HeaderSearch
                 size="sm"
                 autoFocus={searchOpen}
-                className="w-full"
+                className="mx-auto w-full max-w-2xl"
                 onSubmitExtra={() => setSearchOpen(false)}
               />
             </div>
           </div>
         </div>
       </div>
-      <nav
-        ref={navRef}
-        className="relative hidden border-b border-border bg-white lg:block"
-        aria-label="Primary"
-        onMouseLeave={scheduleClose}
-      >
-        <div className="container-site flex h-11 items-stretch gap-0.5">
-          {SITE_NAV.map((item) => (
-            <DesktopNavItem
-              key={item.type === "menu" ? item.id : item.href}
-              item={item}
-              pathname={pathname}
-              openId={desktopOpenId}
-              onOpen={openMenu}
-              onScheduleClose={scheduleClose}
-              onClearClose={clearCloseTimer}
-              onClose={() => setDesktopOpenId(null)}
-            />
-          ))}
-        </div>
-      </nav>
+
       <SwipeSheet
         open={open}
         onClose={() => setOpen(false)}
@@ -353,7 +342,7 @@ function DesktopNavItem({
       <Link
         href={item.href}
         className={cn(
-          "relative flex items-center px-3.5 text-[13px] font-semibold tracking-wide transition-colors",
+          "relative flex items-center px-2.5 text-[13px] font-semibold transition-colors",
           active ? "text-primary" : "text-muted hover:text-primary",
         )}
       >
@@ -383,7 +372,7 @@ function DesktopNavItem({
       >
         <Link
           href={item.href}
-          className="flex h-full items-center pl-3.5 pr-1 text-[13px] font-semibold tracking-wide"
+          className="flex h-full items-center pl-2.5 pr-1 text-[13px] font-semibold"
           onFocus={() => onOpen(item.id)}
         >
           {item.label}
