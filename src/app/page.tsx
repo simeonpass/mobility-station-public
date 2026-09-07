@@ -63,7 +63,7 @@ export default async function HomePage() {
       <link
         rel="preload"
         as="image"
-        href="/images/hero-options/06-customer-handover.webp"
+        href="/images/redesign/hero.webp"
         type="image/webp"
         fetchPriority="high"
       />

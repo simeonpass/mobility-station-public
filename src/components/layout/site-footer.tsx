@@ -1,3 +1,4 @@
+import { BrandLogo } from "@/components/layout/brand-logo";
 import Link from "next/link";
 import { ArrowRight, Mail, MapPin, Phone, ShieldCheck } from "lucide-react";
 import { SiApplepay, SiGooglepay, SiMastercard, SiPaypal, SiVisa } from "react-icons/si";
@@ -48,8 +49,8 @@ const PAYMENT_ICONS = [
 
 export function SiteFooter() {
   return (
-    <footer className="mt-auto bg-[#0b0b0b] text-white">
-      <div className="border-b border-white/10 bg-[#111111]">
+    <footer className="ms-footer mt-auto bg-footer text-white">
+      <div className="border-b border-white/10 bg-primary">
         <div className="container-site flex flex-col gap-6 py-8 lg:flex-row lg:items-center lg:justify-between lg:py-10">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-white/45">
@@ -90,15 +91,7 @@ export function SiteFooter() {
       <div className="container-site py-11 md:py-14 lg:py-16">
         <div className="grid gap-12 lg:grid-cols-[1.05fr_1.95fr] lg:gap-20">
           <div>
-            <img
-              src="/brand/mobility-station-wordmark-on-dark.png?v=20260830f"
-              alt="Mobility Station"
-              width={800}
-              height={300}
-              className="h-9 w-auto md:h-10"
-              loading="lazy"
-              decoding="async"
-            />
+            <BrandLogo />
 
             <p className="mt-5 max-w-md text-sm leading-6 text-white/55">
               Specialist vehicle adaptations, mobility scooters and wheelchairs, supplied and supported by our Heathrow and Ferndown teams.

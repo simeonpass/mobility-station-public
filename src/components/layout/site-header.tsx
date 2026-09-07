@@ -1,4 +1,5 @@
 "use client";
+import { BrandLogo } from "@/components/layout/brand-logo";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -150,21 +151,7 @@ export function SiteHeader() {
       </div>
       <div className="border-b border-border bg-white">
         <div className="container-site flex h-[4.6rem] items-center gap-3 md:h-[4.9rem] md:gap-6">
-          <Link
-            href="/"
-            className="flex shrink-0 items-center"
-            onClick={() => setOpen(false)}
-          >
-            <img
-              src="/brand/mobility-station-wordmark.png?v=20260830f"
-              alt="Mobility Station"
-              width={800}
-              height={300}
-              className="h-11 w-auto md:h-12"
-              decoding="async"
-              fetchPriority="high"
-            />
-          </Link>
+          <BrandLogo onNavigate={() => setOpen(false)} />
           <HeaderSearch className="mx-auto hidden min-w-0 max-w-lg flex-1 md:block" />
           <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
             <div className="hidden items-center gap-2 sm:flex">

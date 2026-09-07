@@ -26,7 +26,7 @@ export function CatalogIntro({
   visual?: ReactNode;
 }) {
   return (
-    <section className="border-b border-border bg-white">
+    <section className="ms-catalog-intro border-b border-border">
       <div
         className={cn(
           "container-site py-14 md:py-20 lg:py-24",

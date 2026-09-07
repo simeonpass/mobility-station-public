@@ -1,0 +1,92 @@
+/* Shared Mobility Station identity, September 2026. */
+:root {
+  --primary:#102c46; --primary-dark:#0b2034; --primary-soft:#edf3ff;
+  --accent:#246bfe; --accent-hover:#1458dc; --accent-foreground:#fff;
+  --accent-on-dark:#d6f366; --accent-on-dark-hover:#e4f7a4;
+  --buy:#246bfe; --buy-hover:#1458dc; --buy-foreground:#fff; --tertiary:#246bfe;
+  --footer:#102c46; --footer-foreground:#fff; --foreground:#102c46;
+  --soft:#f3f6f8; --border:#d8e1e7; --muted:#526577;
+  --brand-navy:#102c46; --brand-blue:#246bfe; --brand-lime:#d6f366;
+}
+::selection {background:#d6f366;color:#102c46}
+:focus-visible {outline-color:#246bfe}
+.container-site {max-width:1416px;padding-inline:48px}
+.ms-logo {display:inline-flex;align-items:center;gap:9px;flex-shrink:0;font-size:1.65rem;font-weight:780;letter-spacing:-1.2px;line-height:.89;color:var(--primary)}
+.ms-logo-bottom {display:block}
+.ms-brand-dot {color:#246bfe}
+.ms-logo-mark {display:block;width:65px;height:44px;overflow:hidden;position:relative;flex:none}
+.ms-logo-mark img {position:absolute;max-width:none;width:73px;height:73px;top:-16px;left:-5px}
+.ms-footer .ms-logo {color:#fff}
+.ms-footer .ms-logo-mark {background:#fff;border-radius:5px}
+.ms-footer .ms-logo-mark img {content:normal;padding:0;background:none;border-radius:0}
+.ms-footer {background:#102c46}
+.ms-footer a:hover {color:#d6f366}
+.ms-hero {display:grid;grid-template-columns:1.05fr 1fr;align-items:center;gap:50px;padding-top:40px;padding-bottom:45px}
+.ms-hero-copy {padding-block:25px}
+.ms-eyebrow {display:flex;align-items:center;gap:10px;font-size:.75rem;font-weight:750;letter-spacing:1.8px;line-height:1.6;text-transform:uppercase}
+.ms-eyebrow i {width:7px;height:7px;background:#246bfe;border-radius:100%}
+.ms-hero h1 {font-size:clamp(3.1rem,5.7vw,5.45rem);line-height:1.05;letter-spacing:-4.5px;font-weight:750;margin:24px 0}
+.ms-hero h1 span {color:#246bfe}
+.ms-hero-description {font-size:1.125rem;color:#526577;max-width:460px;line-height:1.8}
+.ms-hero-actions {display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.ms-button {display:inline-flex;align-items:center;justify-content:center;gap:18px;min-height:54px;padding:14px 22px;background:#102c46;border:1px solid #102c46;color:#fff;border-radius:7px;font-size:.875rem;font-weight:650;transition:background .2s,transform .2s}
+.ms-button:hover {background:#246bfe;border-color:#246bfe;transform:translateY(-2px)}
+.ms-button-secondary {background:#fff;color:#102c46;border-color:#ccd7df}
+.ms-button-secondary:hover {background:#edf3ff;color:#102c46}
+.ms-reassurance {display:flex;align-items:center;gap:12px;font-size:.8125rem;color:#526577;margin-top:35px;line-height:1.65}
+.ms-reassurance strong {font-weight:600;color:#102c46}
+.ms-reassurance>span {border-radius:50%;width:39px;height:39px;background:#eff6df;display:grid;place-items:center;color:#102c46}
+.ms-hero-visual {height:510px;position:relative;border-radius:20px 20px 76px 20px;background:#e4edf5;isolation:isolate}
+.ms-hero-photo {object-fit:cover;object-position:50% 35%;border-radius:inherit}
+.ms-image-kicker {position:absolute;right:22px;top:22px;background:#fff;color:#102c46;border-radius:100px;padding:10px 15px;display:flex;gap:12px;align-items:center;font-size:.75rem;letter-spacing:1.2px;font-weight:750;text-transform:uppercase}
+.ms-hero-note {position:absolute;left:-24px;bottom:25px;display:flex;align-items:center;gap:15px;background:#d6f366;padding:20px 23px;border-radius:10px;box-shadow:0 8px 25px #102c4610;transition:transform .2s}
+.ms-hero-note:hover {transform:translateY(-3px)}
+.ms-hero-note strong {font-size:1.05rem;display:block}
+.ms-hero-note small {font-size:.75rem;display:block;margin-top:2px}
+.ms-note-icon {width:43px;height:43px;border:1px solid #102c4630;border-radius:50%;display:grid;place-items:center;flex:none}
+.ms-trust {display:flex;align-items:center;justify-content:space-between;border-top:1px solid #dce4e9;border-bottom:1px solid #dce4e9;padding-block:25px;gap:18px}
+.ms-trust span {display:flex;align-items:center;gap:10px;font-size:.8125rem;font-weight:600}
+.ms-trust svg {width:21px;height:21px;color:#246bfe;stroke-width:1.7;flex:none}
+.ms-section {padding-block:85px}
+.ms-section-heading {display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:33px}
+.ms-section-heading h2 {font-size:clamp(1.9rem,3.1vw,2.8rem);letter-spacing:-1.5px;line-height:1.18;font-weight:700;margin-top:12px}
+.ms-section-heading>p {color:#526577;font-size:.9375rem}
+.ms-service-grid {display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.ms-service-card {background:#edf3ff;border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.ms-service-card>img {width:100%;height:225px;object-fit:cover;transition:transform .3s}
+.ms-service-card:hover>img {transform:scale(1.025)}
+.ms-service-card>div {padding:28px 32px 30px;position:relative;background:inherit}
+.ms-service-card h3 {font-size:1.8rem;letter-spacing:-.8px;margin:10px 0}
+.ms-service-card h3+p {color:#526577;font-size:.9375rem;line-height:1.6}
+.ms-service-lime {background:#f0f6df}
+.ms-service-card>div>span {display:inline-flex;gap:28px;align-items:center;font-size:.875rem;font-weight:650;margin-top:22px}
+.ms-cta {background:#d6f366}
+.ms-catalog-intro {background:#edf3ff}
+.ms-catalog-intro h1 {line-height:1.05;font-weight:750}
+.bg-hero-mesh {background:#edf3ff}
+input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:focus {box-shadow:0 0 0 3px rgb(36 107 254 / .14)!important}
+@media(min-width:1550px) {.ms-hero {padding-block:55px}.ms-hero-visual {height:570px}}
+@media(max-width:1150px) {.container-site {padding-inline:30px}.ms-hero {gap:32px}.ms-hero h1 {letter-spacing:-3px}.ms-hero-visual {height:485px}.ms-button {padding-inline:17px}.ms-hero-note {left:-14px;padding:16px}.ms-trust {flex-wrap:wrap}.ms-trust span {width:calc(50% - 10px)}}
+@media(max-width:780px) {
+  .container-site {padding-inline:20px}
+  .ms-logo {font-size:1.5rem}
+  .ms-hero {grid-template-columns:1fr;padding-top:20px;gap:30px;padding-bottom:35px}
+  .ms-hero-copy {padding:15px 0 0}
+  .ms-hero h1 {font-size:clamp(3.2rem,10.5vw,4.8rem);letter-spacing:-2.8px;margin:20px 0}
+  .ms-hero-description {max-width:540px;font-size:1.0625rem}
+  .ms-hero-visual {height:440px;width:100%}
+  .ms-hero-note {left:12px;bottom:18px;right:12px;gap:12px;padding:17px}
+  .ms-hero-note>svg {margin-left:auto;width:18px}
+  .ms-image-kicker {right:14px;top:15px}
+  .ms-reassurance {margin-top:23px}
+  .ms-trust {padding-block:20px;gap:18px}
+  .ms-trust span {font-size:.75rem;align-items:flex-start}
+  .ms-section {padding-block:55px}
+  .ms-section-heading {display:block;margin-bottom:26px}
+  .ms-section-heading>p {margin-top:18px}
+  .ms-service-grid {grid-template-columns:1fr}
+  .ms-service-card>img {height:230px}
+  .ms-service-card>div {padding:25px}
+}
+@media(max-width:420px) {.ms-hero-visual {height:360px}.ms-note-icon {display:none}.ms-image-kicker {font-size:.65rem}.ms-hero-actions {flex-direction:column;align-items:stretch}.ms-logo-mark {width:56px}.ms-logo {font-size:1.35rem}}
+@media(prefers-reduced-motion:reduce) {.ms-button,.ms-hero-note,.ms-service-card>img {transition:none}.ms-button:hover,.ms-hero-note:hover {transform:none}}

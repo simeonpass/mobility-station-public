@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Manrope } from "next/font/google";
+import { Geist } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { CartProvider } from "@/components/cart/cart-provider";
 import { CartDrawer } from "@/components/cart/cart-drawer";
@@ -12,10 +12,11 @@ import { QuickViewHost } from "@/components/product/product-quick-view";
 import { DEFAULT_SHARE_IMAGE, SITE } from "@/lib/seo";
 import "./globals.css";
 import "./mobility-blue-theme.css";
+import "./brand-redesign.css";
 
-const manrope = Manrope({
+const manrope = Geist({
   subsets: ["latin"],
-  weight: ["400", "600", "700", "800"],
+  weight: "variable",
   variable: "--font-manrope",
   display: "swap",
 });
@@ -29,8 +30,8 @@ export const metadata: Metadata = {
   description:
     "Vehicle adaptations, mobility scooters and wheelchairs from Heathrow & Ferndown. Motability accredited. Home and branch demonstrations available.",
   icons: {
-    icon: [{ url: "/brand/mobility-station-favicon-blue.svg?v=20260831", type: "image/svg+xml" }],
-    apple: [{ url: "/brand/mobility-station-favicon-blue.svg?v=20260831" }],
+    icon: [{ url: "/brand/mobility-station-approved-mark.png", type: "image/png" }],
+    apple: [{ url: "/brand/mobility-station-approved-mark.png" }],
   },
   openGraph: {
     type: "website",
