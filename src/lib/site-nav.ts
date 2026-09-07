@@ -29,7 +29,7 @@ export const SITE_NAV: NavItem[] = [
     type: "menu",
     id: "adaptations",
     href: "/vehicle-adaptations",
-    label: "Vehicle Adaptations",
+    label: "Vehicle adaptations",
     links: [
       { href: "/vehicle-adaptations", label: "All adaptations" },
       ...ADAPTATION_SECTIONS.map((section) => ({
@@ -49,7 +49,7 @@ export const SITE_NAV: NavItem[] = [
     type: "menu",
     id: "shop",
     href: "/shop",
-    label: "Scooters & Wheelchairs",
+    label: "Scooters & wheelchairs",
     links: [
       { href: "/shop", label: "Shop all" },
       { href: "/shop?sub=scooters", label: "Mobility scooters" },
@@ -87,6 +87,7 @@ export const SITE_NAV: NavItem[] = [
       { href: "/book-a-demo", label: "Book a demo" },
     ],
   },
+  { type: "link", href: "/locations", label: "Our locations" },
   {
     type: "menu",
     id: "support",

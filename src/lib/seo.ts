@@ -136,7 +136,7 @@ export function localBusinessJsonLd({
     telephone: SITE.phone,
     email: SITE.email,
     image: `${SITE.url}${DEFAULT_SHARE_IMAGE}`,
-    logo: `${SITE.url}/brand/mobility-station-wordmark.png`,
+    logo: `${SITE.url}/brand/mobility-station-logo.svg`,
     areaServed: "GB",
     ...(averageRating && totalReviews
       ? {

@@ -16,7 +16,7 @@ export function CtaFooter({
   secondary?: Cta;
 }) {
   return (
-    <section className="border-y border-[#005fc2] bg-[#0171E3] py-14 text-white md:py-20">
+    <section className="border-y border-primary bg-primary py-14 text-white md:py-20">
       <div className="container-site flex flex-col items-start justify-between gap-8 md:flex-row md:items-center">
         <div className="max-w-2xl">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-white/72">
@@ -35,7 +35,7 @@ export function CtaFooter({
             href={primary.href}
             className={cn(
               buttonVariants({ size: "lg" }),
-              "rounded-full border border-white bg-white px-7 text-[#0b0b0b] hover:bg-white/90",
+              "rounded-lg px-7",
             )}
           >
             {primary.label}
@@ -44,7 +44,7 @@ export function CtaFooter({
             href={secondary.href}
             className={cn(
               buttonVariants({ variant: "outline", size: "lg" }),
-              "rounded-full border-white/45 bg-transparent px-7 text-white hover:border-white hover:bg-white hover:text-[#0b0b0b]",
+              "rounded-full border-white/45 bg-transparent px-7 text-white hover:border-white hover:bg-white hover:text-primary",
             )}
           >
             {secondary.label}

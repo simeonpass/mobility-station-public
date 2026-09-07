@@ -1,39 +1,32 @@
 @import "tailwindcss";
 
 :root {
-  /* Brand — black type/chrome, forest green CTAs (no teal, no lime) */
-  --primary: #111111;
-  --primary-dark: #000000;
-  --primary-soft: #f5f5f7;
-  --accent: #1f5c3a;
-  --accent-hover: #2a7048;
-  --accent-on-dark: #8fbf9a;
-  --accent-on-dark-hover: #a3cdb0;
-  --buy: #1f5c3a;
-  --buy-hover: #2a7048;
-  --buy-foreground: #ffffff;
-  --tertiary: #1f5c3a;
-  --footer: #111111;
+  /* Mobility Station: midnight navy, warm orange and warm white. */
+  --primary: #001933;
+  --primary-dark: #001124;
+  --primary-soft: #f7f5f2;
+  --accent: #f47b20;
+  --accent-hover: #ff923d;
+  --accent-on-dark: #f47b20;
+  --accent-on-dark-hover: #ffac6a;
+  --accent-ink: #a63d00;
+  --buy: #f47b20;
+  --buy-hover: #ff923d;
+  --buy-foreground: #001933;
+  --tertiary: #f47b20;
+  --footer: #001933;
   --footer-foreground: #ffffff;
-
-  /* Surfaces */
   --background: #ffffff;
-  --soft: #f6f6f6;
-  --border: #e5e5e5;
-
-  /* Text */
-  --foreground: #111111;
-  --muted: #6e6e73;
-
-  /* Functional — AA on white (4.5:1+) */
+  --soft: #f7f5f2;
+  --border: #d8dce0;
+  --foreground: #001933;
+  --muted: #51606f;
   --success: #166534;
   --info: #075985;
   --warning: #92400e;
   --error: #b91c1c;
-
-  /* Derived */
   --primary-foreground: #ffffff;
-  --accent-foreground: #ffffff;
+  --accent-foreground: #001933;
   --radius: 0.75rem;
   --ease-out-motion: cubic-bezier(0.22, 1, 0.36, 1);
   --duration-motion: 420ms;
@@ -47,6 +40,7 @@
   --color-primary-soft: var(--primary-soft);
   --color-primary-foreground: var(--primary-foreground);
   --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
   --color-accent-hover: var(--accent-hover);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent-on-dark: var(--accent-on-dark);
@@ -115,13 +109,13 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--accent);
+    outline: 2px solid var(--primary);
     outline-offset: 2px;
   }
 
   ::selection {
-    background: rgb(31 92 58 / 0.28);
-    color: #111;
+    background: rgb(244 123 32 / 0.28);
+    color: var(--primary);
   }
 
   button,
@@ -155,8 +149,8 @@
 
   .bg-hero-mesh {
     background:
-      radial-gradient(ellipse 70% 55% at 90% 15%, rgb(31 92 58 / 0.08), transparent 55%),
-      linear-gradient(165deg, #f6f6f6 0%, #ffffff 48%, #f5f5f7 100%);
+      radial-gradient(ellipse 70% 55% at 90% 15%, rgb(244 123 32 / 0.08), transparent 55%),
+      linear-gradient(165deg, #f7f5f2 0%, #ffffff 48%, #f7f5f2 100%);
   }
 
   /* Sticky header is ~9.5–10rem tall — keep in-page jumps clear of it. */
@@ -403,7 +397,7 @@
   margin-top: 1.75rem !important;
   border: 1px solid var(--border) !important;
   border-radius: 1.25rem;
-  background: #f7f7f8 !important;
+  background: #f7f5f2 !important;
   padding: 1.25rem !important;
 }
 
@@ -419,8 +413,8 @@
 
 #catalogue [role="tablist"] + div input:focus,
 #catalogue [role="tablist"] + div select:focus {
-  border-color: #111;
-  box-shadow: 0 0 0 3px rgb(31 92 58 / 0.18);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgb(244 123 32 / 0.18);
 }
 
 #catalogue #catalogue-results > div:first-child {
@@ -457,8 +451,8 @@
 
 #catalogue nav[aria-label="Category links"] a:hover {
   border-color: #bdbdbf;
-  background: #f7f7f8;
-  color: #111;
+  background: #f7f5f2;
+  color: var(--primary);
   text-decoration: none;
 }
 
@@ -472,8 +466,8 @@ textarea {
 input:not([type="checkbox"]):not([type="radio"]):focus,
 select:focus,
 textarea:focus {
-  border-color: #111 !important;
-  box-shadow: 0 0 0 3px rgb(31 92 58 / 0.14) !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgb(244 123 32 / 0.14) !important;
 }
 
 @media (max-width: 767px) {
