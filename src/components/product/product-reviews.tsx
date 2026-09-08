@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Star } from "lucide-react";
+import { LeaveGoogleReview } from "@/components/sections/leave-google-review";
 import type { Review } from "@/lib/types";
 
 const INITIAL_COUNT = 3;
@@ -43,12 +44,15 @@ export function ProductReviews({ reviews }: { reviews: Review[] }) {
         <h2 className="text-xl font-extrabold tracking-tight text-primary md:text-2xl">
           Customer reviews
         </h2>
+        <div className="flex flex-col items-start gap-2 sm:items-end">
         <p className="text-sm text-muted">
           <span className="font-semibold text-primary">
             {average.toFixed(1)}★
           </span>{" "}
           · {reviews.length} review{reviews.length === 1 ? "" : "s"}
         </p>
+        <LeaveGoogleReview label="Review our service on Google" align="end" />
+        </div>
       </div>
 
       <ul className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

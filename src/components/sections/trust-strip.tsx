@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LeaveGoogleReview } from "./leave-google-review";
 import { ShieldCheck, Wrench, HeartHandshake, MapPin, Star } from "lucide-react";
 import type { ReviewsSummary } from "@/lib/types";
 
@@ -15,11 +16,14 @@ export function TrustStrip({ reviews }: { reviews?: ReviewsSummary }) {
     <div className="ms-trust">
       <span><ShieldCheck aria-hidden="true" />Motability accredited</span>
       <span><Wrench aria-hidden="true" />Specialist fitting &amp; aftercare</span>
-      {hasGoogleRating && reviews ? (
+      {reviews ? (
+        <div className="ms-trust-review-group">
         <Link href="/about-us#google-reviews" className="ms-trust-reviews">
           <Star aria-hidden="true" />
-          <span>{reviews.averageRating!.toFixed(1)} / 5 · {reviews.totalReviews.toLocaleString("en-GB")} Google reviews</span>
+          <span>{hasGoogleRating ? `${reviews.averageRating!.toFixed(1)} / 5 · ${reviews.totalReviews.toLocaleString("en-GB")} Google reviews` : "Read our Google reviews"}</span>
         </Link>
+        <LeaveGoogleReview />
+        </div>
       ) : (
         <span><HeartHandshake aria-hidden="true" />Advice that puts you first</span>
       )}
