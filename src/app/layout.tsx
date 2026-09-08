@@ -28,8 +28,8 @@ export const metadata: Metadata = {
   description:
     "Vehicle adaptations, mobility scooters and wheelchairs from Heathrow & Ferndown. Motability accredited. Home and branch demonstrations available.",
   icons: {
-    icon: [{ url: "/brand/mobility-station-approved-mark.png", type: "image/png" }],
-    apple: [{ url: "/brand/mobility-station-approved-mark.png" }],
+    icon: [{ url: "/brand/refined-a/icon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/brand/refined-a/apple-touch-icon.png", sizes: "180x180" }],
   },
   openGraph: {
     type: "website",
