@@ -12,8 +12,8 @@ export function TrustStrip({ reviews }: { reviews?: ReviewsSummary }) {
     Number.isFinite(reviews.totalReviews) && reviews.totalReviews > 0
   );
 
-  return <section className="container-site" aria-label="Our service">
-    <div className="ms-trust">
+  return <section className={reviews ? "ms-home-trust" : "container-site"} aria-label="Our service">
+    <div className={reviews ? "ms-trust container-site" : "ms-trust"}>
       <span><ShieldCheck aria-hidden="true" />Motability accredited</span>
       <span><Wrench aria-hidden="true" />Specialist fitting &amp; aftercare</span>
       {reviews ? (

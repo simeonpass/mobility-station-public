@@ -374,3 +374,13 @@ h3 {font-weight:650}
 .ms-review-options a:hover {text-decoration:underline;text-underline-offset:3px}
 
 @media(min-width:640px){.ms-leave-review-end .ms-review-options {left:auto;right:0}}
+
+/* Give the homepage a calm colour transition from header to content. */
+.ms-hero-backdrop {background:linear-gradient(115deg,#eaf1f4 0%,#eef3f4 60%,#eff3e6 100%)}
+.ms-home-trust {background:#102c46;color:#fff}
+.ms-home-trust .ms-trust {border:0;padding-block:20px}
+.ms-home-trust .ms-trust svg {color:#d6f366}
+.ms-home-trust .ms-trust-reviews,.ms-home-trust .ms-leave-review>summary {color:#fff}
+.ms-home-trust .ms-review-options svg {color:#102c46}
+.ms-home-trust .ms-trust-reviews:focus-visible,.ms-home-trust .ms-leave-review>summary:focus-visible {outline-color:#d6f366}
+@media(max-width:780px){.ms-home-trust .ms-trust {padding-block:22px}}
