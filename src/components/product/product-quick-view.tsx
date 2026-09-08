@@ -147,8 +147,9 @@ function QuickViewSheet({
             ) : (
               <p className="mt-2 text-2xl font-extrabold text-primary">POA</p>
             )}
+            {headline != null && wasHeadline != null && wasHeadline > headline && <p className="ms-offer-badge mt-2">Save {formatGBP(wasHeadline - headline)}</p>}
             <MotabilitySummary weekly={shown.motability_weekly_price} price={shown.motability_price} id={shown.adaptation_id} />
-            <p className="mt-2 text-xs font-semibold text-muted">{stock.label}</p>
+            {stock.label !== "Order online" && <p className="mt-2 text-xs font-semibold text-muted">{stock.label}</p>}
           </div>
         </div>
 

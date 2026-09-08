@@ -326,3 +326,17 @@ h3 {font-weight:650}
 
 .ms-adaptations-search{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center;margin-bottom:35px}.ms-adaptations-search h2{font-size:2.4rem;letter-spacing:-1px;margin:10px 0}.ms-adaptations-search p:not(.ms-eyebrow){color:#607284;max-width:560px;font-size:.9375rem}.ms-adaptation-categories{max-width:460px;font-size:.8125rem;color:#526577}.ms-adaptation-categories summary{cursor:pointer;padding:10px 0}.ms-adaptation-scheme{margin-top:65px;padding:30px 0;border-block:1px solid #d8e1e7;display:flex;align-items:center;justify-content:space-between;gap:35px}.ms-adaptation-scheme h2{font-size:1.65rem;font-weight:600;letter-spacing:-.5px}.ms-adaptation-scheme p{font-size:.875rem;color:#607284;margin-top:8px;max-width:690px}.ms-adaptation-scheme>a{flex-shrink:0}.ms-shop-types{display:flex;flex-wrap:wrap;gap:8px}.ms-shop-types button{border:1px solid #d8e1e7;font-weight:500}.ms-shop-refinements{border-block:1px solid #d8e1e7;margin-top:25px}.ms-shop-refinements summary{display:flex;align-items:center;justify-content:space-between;padding:19px 0;cursor:pointer;font-size:.9375rem;list-style:none}.ms-shop-refinements summary::-webkit-details-marker{display:none}.ms-shop-refinements[open] summary>span{transform:rotate(45deg)}
 @media(max-width:780px){.ms-adaptations-search{grid-template-columns:1fr;gap:23px}.ms-adaptations-search h2{font-size:2rem}.ms-adaptation-scheme{display:block}.ms-adaptation-scheme>a{margin-top:20px}}
+
+/* Clear offers and a compact hire journey. */
+.ms-offer-badge{display:inline-flex;align-items:center;padding:6px 11px;border-radius:4px;background:#d6f366;color:#102c46;font-size:.8125rem;line-height:1.35;font-weight:700;letter-spacing:0}
+.ms-offer-image{position:absolute;top:10px;left:10px;z-index:2;pointer-events:none}
+.ms-clearance-nav{border-bottom:2px solid #a9c63c}
+.ms-clearance-link{font-size:.9375rem;font-weight:650;text-decoration:underline;text-underline-offset:5px}
+.ms-hire-booking{position:relative;max-width:1000px;margin:0 auto}
+.ms-hire-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;font-size:.8125rem;color:#607284}
+.ms-hire-steps li{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:2px solid #e7ebee}
+.ms-hire-steps li[aria-current]{color:#102c46;border-color:#246bfe;font-weight:650}
+.ms-hire-steps span{font-size:.75rem}
+.ms-hire-selection{padding:20px;background:#f5f7f8;border-radius:6px}
+@media(max-width:600px){.ms-hire-steps{gap:8px;font-size:.6875rem}.ms-hire-steps li{display:block}.ms-hire-steps span{display:block;margin-bottom:4px}.ms-offer-image{top:7px;left:7px;font-size:.6875rem;padding:5px 7px}.ms-hire-selection{padding:16px}}
+@media(min-width:1001px) and (max-width:1450px){.ms-header-phone{display:none}.ms-desktop-nav{gap:19px}}

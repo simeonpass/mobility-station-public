@@ -14,6 +14,7 @@ import { SITE } from "@/lib/seo";
 const navigation = [
   ["Vehicle adaptations", "/vehicle-adaptations"],
   ["Scooters & wheelchairs", "/shop"],
+  ["Clearance", "/clearance"],
   ["Hire", "/hire"],
   ["Motability", "/motability"],
   ["Support", "/support"],
@@ -35,7 +36,7 @@ function HeaderNavigation({ pathname }: { pathname: string }) {
       <div className="container-site ms-header-inner">
         <BrandLogo />
         <nav className="ms-desktop-nav" aria-label="Primary">
-          {navigation.map(([label, href]) => <Link key={href} href={href} aria-current={pathname === href ? "page" : undefined}>{label}</Link>)}
+          {navigation.map(([label, href]) => <Link key={href} href={href} className={href === "/clearance" ? "ms-clearance-nav" : undefined} aria-current={pathname === href ? "page" : undefined}>{label}</Link>)}
         </nav>
         <a className="ms-header-phone" href={SITE.phoneHref}><Phone size={18} aria-hidden /><span>Let’s talk<strong>{SITE.phone}</strong></span></a>
         <div className="ms-header-tools">

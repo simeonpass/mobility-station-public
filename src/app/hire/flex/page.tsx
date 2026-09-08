@@ -1,23 +1,6 @@
-import Link from "next/link";
-import { HireFaq } from "@/components/hire/hire-faq";
-import { HirePricingTable } from "@/components/hire/hire-pricing-table";
-import { HireSelfServeForm } from "@/components/hire/hire-self-serve-form";
-import { getHireCategoryImages } from "@/lib/hire-images";
-import { FLEX_FAQS, FLEX_SETUP_FEE_GBP, type HirePricingCategoryId } from "@/lib/hire-pricing";
-import { formatGBP } from "@/lib/products";
-import { createMetadata, jsonLdScript, SITE } from "@/lib/seo";
+import { HireDetailPage } from "@/components/hire/hire-detail-page";
+import { createMetadata } from "@/lib/seo";
 
 export const revalidate = 300;
 export const metadata = createMetadata({ title: "Flex Monthly Mobility Scooter & Wheelchair Hire | Mobility Station", description: "Flex monthly hire for scooters and wheelchairs. Servicing, batteries and breakdown cover included. Book online from Heathrow and Ferndown.", path: "/hire/flex", absoluteTitle: true });
-export default async function FlexHirePage() {
-  const imagesList=await getHireCategoryImages(); const images=Object.fromEntries(imagesList.map((img)=>[img.id,{src:img.src,alt:img.alt}])) as Record<HirePricingCategoryId,{src:string|null;alt:string}>;
-  const breadcrumbLd={"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"Home",item:SITE.url},{"@type":"ListItem",position:2,name:"Hire",item:`${SITE.url}/hire`},{"@type":"ListItem",position:3,name:"Flex hire",item:`${SITE.url}/hire/flex`}]}; const faqLd={"@context":"https://schema.org","@type":"FAQPage",mainEntity:FLEX_FAQS.map((faq)=>({"@type":"Question",name:faq.q,acceptedAnswer:{"@type":"Answer",text:faq.a}}))};
-  return <><script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(breadcrumbLd)} /><script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(faqLd)} />
-  <section className="border-b border-border bg-white"><div className="container-site py-14 md:py-20 lg:py-24"><p className="text-xs font-bold uppercase tracking-[0.18em] text-muted">Flex monthly hire · 3+ months</p><h1 className="mt-4 max-w-4xl text-balance text-5xl font-extrabold leading-[0.98] tracking-[-0.045em] text-primary md:text-6xl lg:text-7xl">Use it monthly. We look after it.</h1><p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted md:text-xl">Longer-term scooter and wheelchair hire with servicing, batteries and breakdown support included.</p><div className="mt-8 flex flex-wrap gap-3"><a href="#book" className="rounded-full bg-accent px-7 py-3 font-semibold text-accent-foreground">Book Flex hire</a><a href="#prices" className="rounded-full border border-primary px-7 py-3 font-semibold text-primary">See monthly prices</a></div><p className="mt-6 text-sm text-muted">Only need it for under a month? <Link href="/hire/short-term" className="font-bold text-primary underline">See short-term hire</Link>.</p></div></section>
-
-  <section className="container-site py-8"><p className="max-w-3xl text-muted">Three months minimum, then monthly. Pay your first month plus {formatGBP(FLEX_SETUP_FEE_GBP)} set-up today, then monthly in advance. Delivery and handover, annual servicing, worn batteries, breakdown repairs and a loan machine if needed are included. You can change model or cancel after the initial three months.</p></section>
-  <section id="prices" className="scroll-mt-24 border-b border-border py-14 md:py-20"><div className="container-site"><HirePricingTable images={images} lockedMode="flex" /></div></section>
-  <section className="border-b border-border py-14 md:py-20"><div className="container-site"><HireFaq title="Flex hire questions" faqs={FLEX_FAQS} /></div></section>
-  <section id="book" className="scroll-mt-24 border-b border-border py-14 md:py-20"><div className="container-site grid gap-10 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-muted">Secure online booking</p><h2 className="mt-2 text-3xl font-extrabold tracking-tight text-primary md:text-4xl">Book Flex hire.</h2><p className="mt-4 text-muted">Pay the first month and set-up online. We deliver, set up and show you how to use the machine.</p><p className="mt-5 text-sm text-muted">Prefer to talk? Call <a href={SITE.phoneHref} className="font-bold text-primary">{SITE.phone}</a>. · <Link href="/hire/terms" className="font-semibold text-primary underline">Hire terms</Link></p></div><div className="border-t border-border pt-6"><HireSelfServeForm defaultHireType="flex" lockHireType /></div></div></section>
-  <section id="enquiry-fallback" className="container-site py-8"><p className="text-muted">Want to talk before booking? <Link href="/contact?interest=hire&mode=callback#enquire" className="font-semibold text-primary underline underline-offset-4">Ask our team to call you</Link>.</p></section></>;
-}
+export default function Page() { return <HireDetailPage mode="flex" />; }

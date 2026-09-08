@@ -13,11 +13,13 @@ export function ProductCard({ product }: { product: ProductListItem }) {
   const stock = stockStatus(product);
   const headline = vat.mode === "always-inc" ? vat.gross : vat.net;
   const wasHeadline = vat.mode === "always-inc" ? vat.wasGross : vat.wasNet;
+  const saving = headline != null && wasHeadline != null && wasHeadline > headline ? wasHeadline - headline : 0;
   const clearanceMeta = used ? [conditionLabel(product.condition), grade ? `Grade ${grade.id}` : null].filter(Boolean).join(" · ") : null;
 
   return (
     <article className="ms-catalog-card group">
       <div className="ms-catalog-image">
+        {saving > 0 ? <span className="ms-offer-badge ms-offer-image">Save {formatGBP(saving).replace(/\.00$/, "")}</span> : used ? <span className="ms-offer-badge ms-offer-image">Clearance</span> : null}
         <Link href={`/products/${product.slug}`} className="absolute inset-0">
           <CatalogImage src={primaryImage(product)} alt={product.name} fill
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
@@ -33,8 +35,8 @@ export function ProductCard({ product }: { product: ProductListItem }) {
         <h3>{product.name}</h3>
         {clearanceMeta ? <p className="ms-tax-note">{clearanceMeta}</p> : null}
         <p className="ms-catalog-price">
-          {headline != null ? <><small>From </small>{formatGBP(headline).replace(/\.00$/, "")}</> : "Price on request"}
-          {wasHeadline ? <del>RRP {formatGBP(wasHeadline).replace(/\.00$/, "")}</del> : null}
+          {headline != null ? <>{formatGBP(headline).replace(/\.00$/, "")}</> : "Price on request"}
+          {saving > 0 && wasHeadline != null ? <del>RRP {formatGBP(wasHeadline).replace(/\.00$/, "")}</del> : null}
         </p>
         <p className="ms-tax-note">{vat.mode === "relief" ? "With VAT relief · ex VAT" : vat.mode === "always-inc" ? "Including VAT" : "No VAT"}</p>
         <MotabilitySummary weekly={product.motability_weekly_price} price={product.motability_price} id={product.adaptation_id} />

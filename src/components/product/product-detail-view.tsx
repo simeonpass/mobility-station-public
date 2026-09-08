@@ -143,6 +143,7 @@ export function ProductDetailView(props: ProductDetailViewProps) {
       : vat.mode === "relief" && showIncVat
         ? wasGross
         : wasNet;
+  const saving = headline != null && wasHeadline != null && wasHeadline > headline ? wasHeadline - headline : 0;
   const priceLabel = headline == null ? "POA" : formatGBP(headline);
 
   const motabilityFromVariant = selectedOptions.find(
@@ -324,9 +325,10 @@ export function ProductDetailView(props: ProductDetailViewProps) {
               </>
             ) : (
               <>
+                {saving > 0 && <p className="ms-offer-badge mb-3">Save {formatGBP(saving).replace(/\.00$/, "")}</p>}
                 <p className="ms-detail-price">
-                  {headline != null ? <><small>{props.isAdaptation || !hasConfigurableOptions ? "From " : ""}</small>{formatGBP(headline).replace(/\.00$/, "")}</> : "Quotation on request"}
-                  {wasHeadline ? <del>RRP {formatGBP(wasHeadline).replace(/\.00$/, "")}</del> : null}
+                  {headline != null ? <><small>{props.isAdaptation ? "From " : ""}</small>{formatGBP(headline).replace(/\.00$/, "")}</> : "Quotation on request"}
+                  {saving > 0 && wasHeadline != null ? <del>RRP {formatGBP(wasHeadline).replace(/\.00$/, "")}</del> : null}
                 </p>
                 {headline != null ? <p className="ms-tax-note">
                   {vat.mode === "relief" ? showIncVat ? `Including ${UK_VAT_PERCENT}% VAT` : "With VAT relief · ex VAT" : vat.mode === "always-inc" ? `Including ${UK_VAT_PERCENT}% VAT` : "No VAT"}
@@ -342,7 +344,7 @@ export function ProductDetailView(props: ProductDetailViewProps) {
                 ) : null}
                 {addonTotal > 0 ? <p className="ms-tax-note">+ {formatGBP(addonTotal)} selected extras</p> : null}
                 <MotabilitySummary weekly={motabilityWeekly} price={motabilityPrice} id={adaptationId} />
-                {!props.isAdaptation && props.stockLabel ? <p className={`ms-stock-note ${stockAvailable ? "" : "text-error"}`}>{optionsOutOfStock ? "Selected option out of stock" : props.stockLabel}</p> : null}
+                {!props.isAdaptation && props.stockLabel && (props.stockLabel !== "Order online" || optionsOutOfStock) ? <p className={`ms-stock-note ${stockAvailable ? "" : "text-error"}`}>{optionsOutOfStock ? "Selected option out of stock" : props.stockLabel}</p> : null}
               </>
             )}
           </div>

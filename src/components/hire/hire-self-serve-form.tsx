@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { startTransition, useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { startTransition, useEffect, useMemo, useState, useRef, type FormEvent, type InputHTMLAttributes } from "react";
+import { CatalogImage } from "@/components/product/catalog-image";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select, Textarea } from "@/components/ui/input";
 import { useDnaPaymentsSdk } from "@/hooks/use-dna-payments-sdk";
@@ -88,12 +88,13 @@ function readRetryForm(hireType: HireType): HireFormState {
 export function HireSelfServeForm({
   defaultHireType = "short",
   lockHireType = false,
+  images,
 }: {
   defaultHireType?: HireType;
+  images?: Partial<Record<HirePricingCategoryId, { src: string | null; alt: string }>>;
   /** Hide the short/Flex switch when this page is for one product only. */
   lockHireType?: boolean;
 }) {
-  const router = useRouter();
   const { ready: dnaReady, failed: dnaFailed } = useDnaPaymentsSdk();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -222,342 +223,127 @@ export function HireSelfServeForm({
     }
   }
 
+
+  const [step, setStep] = useState(0);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const selectedCategory = HIRE_PRICING_CATEGORIES.find(c => c.id === form.categoryId) ?? HIRE_PRICING_CATEGORIES[0];
+  const selectedImage = images?.[selectedCategory.id];
+  const steps = ["Equipment", "Your details", "Collection / delivery", "Review"];
+  const today = new Date();
+  const minDate = [today.getFullYear(), String(today.getMonth() + 1).padStart(2, "0"), String(today.getDate()).padStart(2, "0")].join("-");
+
+  function goTo(next: number) {
+    setStep(next);
+    setError(null);
+    requestAnimationFrame(() => headingRef.current?.focus());
+  }
+
+  function advance(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (step === 0 && !quote) {
+      try {
+        buildHireQuote({ hireType: form.hireType, categoryId: form.categoryId, startDate: form.startDate, endDate: form.endDate, delivery: "collect_heathrow", vatRelief: form.vatRelief });
+      } catch (reason) {
+        setError(reason instanceof Error ? reason.message : "Please check your dates.");
+      }
+      return;
+    }
+    if (step === 1) {
+      const digits = form.phone.replace(/\D/g, "");
+      if (!/^[\d\s+()-]{10,20}$/.test(form.phone) || !(digits.startsWith("0") && digits.length >= 10 || digits.startsWith("44") && digits.length >= 12)) { setError("Please enter a valid UK phone number starting with 0 or +44."); return; }
+    }
+    if (step === 2 && form.delivery === "deliver" && deliveryMiles == null) {
+      setError(coverageNote || "Please wait while we check delivery to your postcode. If it cannot be checked, choose collection or contact us.");
+      return;
+    }
+    if (step < 3) goTo(step + 1);
+    else void pay();
+  }
+
+  function field(key: "name" | "email" | "phone" | "userHeight" | "userWeight" | "addressLine1" | "addressLine2" | "city" | "postcode", label: string, options: InputHTMLAttributes<HTMLInputElement> = {}) {
+    return <div key={key}><Label htmlFor={key}>{label}</Label><Input id={key} name={key} required={key !== "addressLine2"} {...options} value={form[key]} onChange={e => update(key, key === "postcode" ? e.target.value.toUpperCase() : e.target.value)} /></div>;
+  }
+
   return (
-    <div className="relative space-y-5">
-      <div
-        className="absolute -left-[9999px] h-0 w-0 overflow-hidden opacity-0"
-        aria-hidden="true"
-      >
+    <form onSubmit={advance} className="ms-hire-booking">
+      <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden opacity-0" aria-hidden="true">
         <label htmlFor="hire-pay-honeypot">Company website</label>
-        <input
-          id="hire-pay-honeypot"
-          tabIndex={-1}
-          autoComplete="off"
-          value={form.company_website}
-          onChange={(e) => update("company_website", e.target.value)}
-        />
+        <input id="hire-pay-honeypot" tabIndex={-1} autoComplete="off" value={form.company_website} onChange={e => update("company_website", e.target.value)} />
       </div>
+      <ol className="ms-hire-steps" aria-label="Booking progress">{steps.map((label, index) => <li key={label} aria-current={step === index ? "step" : undefined}><span>{index + 1}</span>{label}</li>)}</ol>
+      <h2 ref={headingRef} tabIndex={-1} className="mt-7 text-2xl font-semibold outline-none">{steps[step]}</h2>
 
-      <div>
-        <h2 className="text-2xl font-extrabold text-primary">
-          Book and pay online
-        </h2>
-        <p className="mt-2 text-base text-muted">
-          {form.hireType === "flex"
-            ? "Choose your equipment, pay the first month and set-up by card, and we will deliver and show you how to use it."
-            : "Choose your equipment and dates, pay by card, and we will deliver or get it ready for free collection."}
-        </p>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2">
-        {!lockHireType ? (
-          <div>
-            <Label>Hire type</Label>
-            <div className="mt-1 grid grid-cols-2 gap-2">
-              {(
-                [
-                  ["short", "Short-term"],
-                  ["flex", "Flex"],
-                ] as const
-              ).map(([id, label]) => (
-                <button
-                  key={id}
-                  type="button"
-                  className={`rounded-md border px-3 py-2 text-base font-semibold ${
-                    form.hireType === id
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-border bg-white text-primary"
-                  }`}
-                  onClick={() => update("hireType", id)}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
+      {step === 0 && <div className="mt-6 grid gap-8 md:grid-cols-[1fr_0.8fr]">
+        <div className="space-y-5">
+          {!lockHireType && <div><Label htmlFor="hireType">Hire type</Label><Select id="hireType" value={form.hireType} onChange={e => update("hireType", e.target.value as HireType)}><option value="short">Short-term</option><option value="flex">Flex monthly</option></Select></div>}
+          <div><Label htmlFor="categoryId">Choose your equipment</Label><Select id="categoryId" value={form.categoryId} onChange={e => update("categoryId", e.target.value as HirePricingCategoryId)}>
+            <optgroup label="Mobility scooters">{HIRE_PRICING_CATEGORIES.filter(c => c.id.includes("scooter")).map(c => <option key={c.id} value={c.id}>{c.label}</option>)}</optgroup>
+            <optgroup label="Wheelchairs">{HIRE_PRICING_CATEGORIES.filter(c => !c.id.includes("scooter")).map(c => <option key={c.id} value={c.id}>{c.label}</option>)}</optgroup>
+          </Select></div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div><Label htmlFor="startDate">Start date</Label><Input id="startDate" type="date" required min={minDate} value={form.startDate} onChange={e => update("startDate", e.target.value)} /></div>
+            {form.hireType === "short" && <div><Label htmlFor="endDate">End date</Label><Input id="endDate" type="date" required min={form.startDate || minDate} value={form.endDate} onChange={e => update("endDate", e.target.value)} /></div>}
           </div>
-        ) : (
-          <div>
-            <Label>You are booking</Label>
-            <p className="mt-1 rounded-md border border-border bg-soft px-3 py-2.5 text-base font-semibold text-primary">
-              {form.hireType === "flex" ? "Flex monthly hire" : "Short-term hire"}
-            </p>
-          </div>
-        )}
-        <div>
-          <Label htmlFor="categoryId">Equipment</Label>
-          <Select
-            id="categoryId"
-            value={form.categoryId}
-            onChange={(e) =>
-              update("categoryId", e.target.value as HirePricingCategoryId)
-            }
-          >
-            {HIRE_PRICING_CATEGORIES.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.label}
-              </option>
-            ))}
-          </Select>
+          <p className="text-sm text-muted">{form.hireType === "flex" ? "Three months minimum, then monthly. Delivery and handover are included in the set-up fee." : "Hire for 3–28 days. Collect free from either branch or choose delivery later."}</p>
         </div>
-        <div>
-          <Label htmlFor="startDate">Start date</Label>
-          <Input
-            id="startDate"
-            type="date"
-            required
-            value={form.startDate}
-            onChange={(e) => update("startDate", e.target.value)}
-          />
+        <aside className="ms-hire-selection" aria-live="polite">
+          {selectedImage?.src && <CatalogImage src={selectedImage.src} alt={selectedImage.alt} className="h-36 w-full object-contain" />}
+          <p className="mt-3 text-sm text-muted">For users {selectedCategory.userWeight}. Image shows an example model.</p>
+          <p className="mt-4 text-3xl font-semibold">{formatGBP(form.hireType === "flex" ? selectedCategory.flexMonthly : quote?.hireChargeExVat ?? selectedCategory.threeDay)}<span className="ml-2 text-sm font-normal text-muted">{form.hireType === "flex" ? "/ month" : quote ? "for " + quote.days + " days" : "for 3 days"}</span></p>
+          <p className="mt-2 text-sm text-muted">{form.hireType === "flex" ? "+ " + formatGBP(FLEX_SETUP_FEE_GBP) + " one-off set-up" : "+ " + formatGBP(selectedCategory.deposit) + " refundable deposit"}. Prices before VAT.</p>
+          <p className="mt-2 text-sm text-muted">VAT relief can be selected at review if you qualify.</p>
+        </aside>
+      </div>}
+
+      {step === 1 && <div className="mt-6 grid gap-4 sm:grid-cols-2">
+        {field("name", "Full name", { autoComplete: "name", minLength: 2 })}
+        {field("phone", "Phone", { type: "tel", autoComplete: "tel", minLength: 10, maxLength: 20 })}
+        {field("email", "Email", { type: "email", autoComplete: "email" })}
+        {field("userHeight", "Equipment user's height", { placeholder: "e.g. 5ft 6in" })}
+        {field("userWeight", "Equipment user's weight", { placeholder: "e.g. 15 st" })}
+        <p className="self-center text-sm text-muted">These measurements help us match suitable equipment.</p>
+      </div>}
+
+      {step === 2 && <div className="mt-6 space-y-5">
+        <div><Label htmlFor="delivery">How would you like to receive it?</Label><Select id="delivery" value={form.delivery} onChange={e => update("delivery", e.target.value as HireDeliveryMode)}>
+          <option value="collect_heathrow">Collect from Heathrow</option><option value="collect_ferndown">Collect from Ferndown</option>
+          <option value="deliver">{form.hireType === "flex" ? "Delivery — included in set-up" : "Delivery — from £45 before VAT"}</option>
+        </Select></div>
+        <p className="text-sm text-muted">{form.delivery === "deliver" ? "Enter the delivery address. We’ll check your area before you continue." : "Your address is needed for the hire agreement, even when collecting."}</p>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {field("addressLine1", "Address line 1", { autoComplete: "address-line1", minLength: 2 })}
+          {field("addressLine2", "Address line 2 (optional)", { autoComplete: "address-line2" })}
+          {field("city", "Town / city", { autoComplete: "address-level2", minLength: 2 })}
+          {field("postcode", "Postcode", { autoComplete: "postal-code", pattern: "(?:GIR ?0AA|[A-Za-z]{1,2}[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2})", title: "Enter a valid UK postcode" })}
         </div>
-        <div>
-          <Label htmlFor="endDate">
-            {form.hireType === "flex" ? "Minimum term" : "End date"}
-          </Label>
-          {form.hireType === "flex" ? (
-            <Input value="3 months, then rolling" readOnly className="bg-soft" />
-          ) : (
-            <Input
-              id="endDate"
-              type="date"
-              required
-              value={form.endDate}
-              onChange={(e) => update("endDate", e.target.value)}
-            />
-          )}
+        {coverageNote && <p role="status" className="text-sm text-muted">{coverageNote}</p>}
+        <details><summary className="cursor-pointer text-sm font-semibold">Add a note (optional)</summary><Label htmlFor="notes" className="mt-3">Anything else we should know?</Label><Textarea id="notes" rows={2} maxLength={2000} value={form.notes} onChange={e => update("notes", e.target.value)} /></details>
+      </div>}
+
+      {step === 3 && <div className="mt-6 grid gap-8 md:grid-cols-2">
+        <div className="space-y-5">
+          <p className="text-sm text-muted">{selectedCategory.label}<br />From {form.startDate}{form.hireType === "short" ? " to " + form.endDate : " · three months minimum"}<br />{form.name} · {form.email}</p>
+          <label className="flex cursor-pointer items-start gap-3 text-sm"><input type="checkbox" className="mt-1 h-4 w-4 shrink-0" checked={form.vatRelief} onChange={e => update("vatRelief", e.target.checked)} /><span><strong>Claim VAT relief</strong><span className="mt-2 block text-muted">{VAT_RELIEF_DECLARATION}</span></span></label>
+          <label className="flex items-start gap-3 text-sm"><input type="checkbox" required className="mt-1 h-4 w-4 shrink-0" checked={form.termsAccepted} onChange={e => update("termsAccepted", e.target.checked)} /><span>I agree to the <Link href="/hire/terms" target="_blank" className="underline">hire terms &amp; conditions</Link>.</span></label>
+          <div><Label htmlFor="signedName">Type your full name to sign</Label><Input id="signedName" required minLength={2} value={form.signedName} onChange={e => update("signedName", e.target.value)} /></div>
         </div>
-        <div>
-          <Label htmlFor="userHeight">User height</Label>
-          <Input
-            id="userHeight"
-            required
-            placeholder="e.g. 5ft 6in"
-            value={form.userHeight}
-            onChange={(e) => update("userHeight", e.target.value)}
-          />
-        </div>
-        <div>
-          <Label htmlFor="userWeight">User weight</Label>
-          <Input
-            id="userWeight"
-            required
-            placeholder="e.g. 15 st"
-            value={form.userWeight}
-            onChange={(e) => update("userWeight", e.target.value)}
-          />
-        </div>
-        <div className="md:col-span-2">
-          <Label htmlFor="delivery">Delivery or collection</Label>
-          <Select
-            id="delivery"
-            value={form.delivery}
-            onChange={(e) =>
-              update("delivery", e.target.value as HireDeliveryMode)
-            }
-          >
-            <option value="collect_heathrow">
-              Collect from Heathrow — free
-            </option>
-            <option value="collect_ferndown">
-              Collect from Ferndown — free
-            </option>
-            <option value="deliver">
-              {form.hireType === "flex"
-                ? `Deliver to me — included in ${formatGBP(FLEX_SETUP_FEE_GBP)} set-up`
-                : "Deliver to me — from £45 local"}
-            </option>
-          </Select>
-          {coverageNote ? (
-            <p className="mt-2 text-sm text-muted">{coverageNote}</p>
-          ) : null}
-        </div>
-        <div>
-          <Label htmlFor="name">Full name</Label>
-          <Input
-            id="name"
-            required
-            autoComplete="name"
-            value={form.name}
-            onChange={(e) => update("name", e.target.value)}
-          />
-        </div>
-        <div>
-          <Label htmlFor="phone">Phone</Label>
-          <Input
-            id="phone"
-            required
-            autoComplete="tel"
-            value={form.phone}
-            onChange={(e) => update("phone", e.target.value)}
-          />
-        </div>
-        <div className="md:col-span-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            required
-            autoComplete="email"
-            value={form.email}
-            onChange={(e) => update("email", e.target.value)}
-          />
-        </div>
-        <div className="md:col-span-2">
-          <Label htmlFor="addressLine1">Address line 1</Label>
-          <Input
-            id="addressLine1"
-            required
-            autoComplete="address-line1"
-            value={form.addressLine1}
-            onChange={(e) => update("addressLine1", e.target.value)}
-          />
-        </div>
-        <div className="md:col-span-2">
-          <Label htmlFor="addressLine2">Address line 2 (optional)</Label>
-          <Input
-            id="addressLine2"
-            autoComplete="address-line2"
-            value={form.addressLine2}
-            onChange={(e) => update("addressLine2", e.target.value)}
-          />
-        </div>
-        <div>
-          <Label htmlFor="city">Town / city</Label>
-          <Input
-            id="city"
-            required
-            autoComplete="address-level2"
-            value={form.city}
-            onChange={(e) => update("city", e.target.value)}
-          />
-        </div>
-        <div>
-          <Label htmlFor="postcode">Postcode</Label>
-          <Input
-            id="postcode"
-            required
-            className="uppercase"
-            autoComplete="postal-code"
-            value={form.postcode}
-            onChange={(e) => update("postcode", e.target.value.toUpperCase())}
-          />
-        </div>
-        <div className="md:col-span-2">
-          <Label htmlFor="notes">Notes (optional)</Label>
-          <Textarea
-            id="notes"
-            rows={2}
-            value={form.notes}
-            onChange={(e) => update("notes", e.target.value)}
-          />
-        </div>
+        {quote && <div className="ms-hire-selection">
+          <h3 className="text-xl font-semibold">Your total today</h3>
+          <ul className="mt-4 space-y-3 text-sm">{quote.lineItems.map(line => <li key={line.label} className="flex justify-between gap-5"><span className="text-muted">{line.label}</span><strong className="shrink-0">{formatGBP(line.amount)}</strong></li>)}</ul>
+          <p className="mt-5 flex justify-between border-t border-border pt-4 text-2xl font-semibold"><span>Total</span><span>{formatGBP(quote.total)}</span></p>
+          <p className="mt-4 text-sm text-muted">{form.hireType === "flex" ? "Then " + formatGBP(quote.category.flexMonthly * (form.vatRelief ? 1 : 1.2)) + " each month in advance. Three months minimum, then monthly." : "Your damage deposit is refundable when the equipment is returned in good condition."}</p>
+        </div>}
+      </div>}
+
+      {error && <p role="alert" className="mt-5 text-sm text-error">{error}</p>}
+      {step === 3 && !dnaReady && <p role="status" className="mt-5 text-sm text-muted">{dnaFailed ? "Card payments could not load. Please refresh or contact us to arrange your hire." : "Loading secure card payments…"}</p>}
+      <div className="mt-7 flex items-center gap-4">
+        {step > 0 && <button type="button" className="ms-text-link" disabled={submitting} onClick={() => goTo(step - 1)}>Back</button>}
+        <Button type="submit" size="lg" disabled={submitting || (step === 3 && (!dnaReady || !quote))} className="ml-auto">
+          {step < 3 ? "Continue →" : submitting ? "Opening secure payment…" : "Pay " + formatGBP(quote?.total ?? 0) + " & book"}
+        </Button>
       </div>
-
-      <label className="flex cursor-pointer items-start gap-3 border-t border-border pt-4 text-sm leading-relaxed">
-        <input
-          type="checkbox"
-          className="mt-1 h-4 w-4 accent-[var(--primary)]"
-          checked={form.vatRelief}
-          onChange={(e) => update("vatRelief", e.target.checked)}
-        />
-        <span>
-          <strong className="text-primary">VAT relief</strong> — tick if this is
-          for a disabled person&apos;s personal use.{" "}
-          <span className="text-muted">{VAT_RELIEF_DECLARATION}</span>
-        </span>
-      </label>
-
-      <label className="flex cursor-pointer items-start gap-3 text-sm leading-relaxed">
-        <input
-          type="checkbox"
-          className="mt-1 h-4 w-4 accent-[var(--primary)]"
-          checked={form.termsAccepted}
-          onChange={(e) => update("termsAccepted", e.target.checked)}
-        />
-        <span>
-          I agree to the{" "}
-          <Link
-            href="/hire/terms"
-            className="font-semibold text-primary underline underline-offset-2"
-            target="_blank"
-          >
-            hire terms &amp; conditions
-          </Link>
-          .
-        </span>
-      </label>
-
-      <div>
-        <Label htmlFor="signedName">Type your name to sign</Label>
-        <Input
-          id="signedName"
-          required
-          value={form.signedName}
-          onChange={(e) => update("signedName", e.target.value)}
-          placeholder="Full name as signature"
-        />
-      </div>
-
-      {quote ? (
-        <div className="border border-border bg-soft/50 p-4">
-          <h3 className="font-extrabold text-primary">Pay today</h3>
-          <ul className="mt-3 space-y-1.5 text-sm">
-            {quote.lineItems.map((line) => (
-              <li
-                key={line.label}
-                className="flex items-baseline justify-between gap-3"
-              >
-                <span className="text-muted">{line.label}</span>
-                <span className="tabular-nums font-semibold text-primary">
-                  {formatGBP(line.amount)}
-                </span>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-3 flex items-baseline justify-between border-t border-border pt-3 text-base font-extrabold text-primary">
-            <span>Total</span>
-            <span className="tabular-nums">{formatGBP(quote.total)}</span>
-          </p>
-          {form.hireType === "flex" ? (
-            <p className="mt-2 text-xs text-muted">
-              Then {formatGBP(quote.category.flexMonthly)} each month in advance.
-              After 3 months, cancel when you are ready — no tie-in.
-            </p>
-          ) : (
-            <p className="mt-2 text-xs text-muted">
-              Damage deposit is refunded when the equipment comes back as it went
-              out.
-            </p>
-          )}
-        </div>
-      ) : null}
-
-      {error ? <p className="text-sm text-error">{error}</p> : null}
-
-      <Button
-        type="button"
-        size="lg"
-        variant="buy"
-        className="w-full"
-        disabled={submitting || !dnaReady || !quote}
-        onClick={() => void pay()}
-      >
-        {submitting
-          ? "Starting payment…"
-          : quote
-            ? `Pay ${formatGBP(quote.total)} and book`
-            : "Complete the form to pay"}
-      </Button>
-      <p className="text-center text-xs text-muted">
-        Secure card payment via DNA Payments. Prefer to talk it through?{" "}
-        <button
-          type="button"
-          className="font-semibold text-primary underline"
-          onClick={() => router.push("#enquiry-fallback")}
-        >
-          Send an enquiry instead
-        </button>
-        .
-      </p>
-    </div>
+      <p className="mt-5 text-sm text-muted">Need help choosing? <Link href={"/contact?interest=" + encodeURIComponent(form.hireType === "flex" ? "Flex monthly hire" : "Short-term hire") + "&mode=callback#enquire"} className="font-semibold underline">Ask us to call you</Link>.</p>
+    </form>
   );
 }
