@@ -36,7 +36,7 @@ export function ProductCard({ product }: { product: ProductListItem }) {
       : null;
 
   return (
-    <article className="group relative flex h-full flex-col overflow-hidden rounded-[1.5rem] border border-border bg-white motion-safe:transition-[transform,box-shadow,border-color] motion-safe:duration-300 motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)] max-md:active:scale-[0.985] [@media(hover:hover)]:hover:-translate-y-0.5 [@media(hover:hover)]:hover:border-black/15 [@media(hover:hover)]:hover:shadow-[0_22px_55px_-36px_rgba(0,0,0,0.38)]">
+    <article className="ms-clean-product-card group relative flex h-full flex-col overflow-hidden rounded-[1.5rem] border border-border bg-white motion-safe:transition-[transform,box-shadow,border-color] motion-safe:duration-300 motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)] max-md:active:scale-[0.985] [@media(hover:hover)]:hover:-translate-y-0.5 [@media(hover:hover)]:hover:border-black/15 [@media(hover:hover)]:hover:shadow-[0_22px_55px_-36px_rgba(0,0,0,0.38)]">
       <div className="relative">
         <Link href={`/products/${product.slug}`} className="block">
           <div className="relative aspect-square overflow-hidden bg-[#f8f8f8]">

@@ -1,3 +1,5 @@
+import { CatalogIntro } from "@/components/sections/catalog-intro";
+import { TrustStrip } from "@/components/sections/trust-strip";
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { CtaFooter } from "@/components/sections/cta-footer";
@@ -45,57 +47,6 @@ const OPTIONS = [
   },
 ] as const;
 
-function HireVisual() {
-  return (
-    <div className="grid h-[390px] grid-cols-5 grid-rows-2 gap-3 sm:h-[470px] sm:gap-4 lg:h-[500px]">
-      <div className="relative col-span-3 row-span-2 overflow-hidden rounded-[2rem] bg-soft">
-        {/* eslint-disable-next-line @next/next/no-img-element -- static editorial asset */}
-        <img
-          src="/images/hero-options/03-scooter-handover.webp"
-          alt="Mobility scooter demonstration"
-          className="h-full w-full object-cover object-center"
-          width={900}
-          height={1100}
-        />
-        <div className="absolute inset-x-4 bottom-4 rounded-2xl bg-black/82 p-4 text-white sm:inset-x-5 sm:bottom-5 sm:p-5">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent-on-dark">
-            Short-term or Flex
-          </p>
-          <p className="mt-1 text-sm font-semibold">
-            Scooters and wheelchairs from Heathrow &amp; Ferndown
-          </p>
-        </div>
-      </div>
-      <div className="relative col-span-2 overflow-hidden rounded-[1.6rem] bg-soft">
-        {/* eslint-disable-next-line @next/next/no-img-element -- static editorial asset */}
-        <img
-          src="/images/hero-options/02-wav-powerchair.webp"
-          alt="Powered wheelchair"
-          className="h-full w-full object-cover"
-          width={700}
-          height={500}
-        />
-        <span className="absolute bottom-3 left-3 rounded-full bg-white/92 px-3 py-1.5 text-[11px] font-bold text-primary">
-          Wheelchairs
-        </span>
-      </div>
-      <div className="relative col-span-2 overflow-hidden rounded-[1.6rem] bg-soft">
-        {/* eslint-disable-next-line @next/next/no-img-element -- static editorial asset */}
-        <img
-          src="/images/hero-options/06-customer-handover.webp"
-          alt="Mobility Station customer support"
-          className="h-full w-full object-cover"
-          width={700}
-          height={500}
-        />
-        <span className="absolute bottom-3 left-3 rounded-full bg-black/80 px-3 py-1.5 text-[11px] font-bold text-white">
-          Handover included
-        </span>
-      </div>
-    </div>
-  );
-}
-
 export default function HirePage() {
   const breadcrumbLd = {
     "@context": "https://schema.org",
@@ -112,44 +63,7 @@ export default function HirePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLdScript(breadcrumbLd)}
       />
-      <section className="border-b border-border bg-white">
-        <div className="container-site grid items-center gap-12 py-14 md:py-20 lg:grid-cols-[minmax(0,.95fr)_minmax(0,1.05fr)] lg:gap-16 lg:py-24">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted">
-              Mobility Station · Hire
-            </p>
-            <h1 className="mt-4 max-w-4xl text-balance text-5xl font-extrabold leading-[0.98] tracking-[-0.045em] text-primary md:text-6xl lg:text-7xl">
-              Mobility when you need it.
-            </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted md:text-xl">
-              Choose short-term hire for days or weeks, or Flex for longer-term
-              monthly use with ongoing support included.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                href="/hire/short-term#book"
-                className="rounded-full bg-accent px-7 py-3 font-semibold text-accent-foreground hover:bg-accent-hover"
-              >
-                Book short-term
-              </Link>
-              <Link
-                href="/hire/flex#book"
-                className="rounded-full border border-primary px-7 py-3 font-semibold text-primary hover:bg-primary hover:text-white"
-              >
-                Book Flex
-              </Link>
-            </div>
-            <p className="mt-6 text-sm text-muted">
-              Not sure? Call{" "}
-              <a href={SITE.phoneHref} className="font-bold text-primary">
-                {SITE.phone}
-              </a>{" "}
-              and we’ll help you choose.
-            </p>
-          </div>
-          <HireVisual />
-        </div>
-      </section>
+      <CatalogIntro breadcrumb="Hire" eyebrow="Hire, on your terms" title={<>Freedom for now.<br />Support for the journey.</>} subtitle="A few days away or a longer stretch at home. Hire a scooter or wheelchair with the help you need from our Heathrow and Ferndown teams." primary={{ href: "#hire-options", label: "Find your hire option" }} image={{ src: "/images/redesign/scooter.webp", alt: "Mobility scooter customer demonstration" }} /><TrustStrip />
 
       <section className="border-b border-border py-14 md:py-20">
         <div className="container-site max-w-4xl">
@@ -187,7 +101,7 @@ export default function HirePage() {
         </div>
       </section>
 
-      <section className="py-14 md:py-20">
+      <section id="hire-options" className="py-14 md:py-20 scroll-under-header">
         <div className="container-site grid gap-5 lg:grid-cols-2">
           {OPTIONS.map((option, index) => (
             <article

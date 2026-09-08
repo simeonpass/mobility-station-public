@@ -6,12 +6,11 @@ import {
 } from "lucide-react";
 import { AdaptationCard } from "@/components/product/adaptation-card";
 import { MotabilityLogo } from "@/components/product/motability-logo";
-import { EnquiryDialog } from "@/components/forms/enquiry-dialog";
+
 import { CatalogIntro } from "@/components/sections/catalog-intro";
 import { CatalogSearchStrip } from "@/components/sections/catalog-search-strip";
 import { CtaFooter } from "@/components/sections/cta-footer";
-import { ProductSpotlight } from "@/components/sections/product-spotlight";
-import { buttonVariants } from "@/components/ui/button";
+import { TrustStrip } from "@/components/sections/trust-strip";
 import {
   ADAPTATION_SECTIONS,
   adaptationHref,
@@ -19,10 +18,8 @@ import {
 } from "@/lib/adaptations";
 import {
   getAdaptationProducts,
-  getPopularAdaptations,
 } from "@/lib/products";
 import { createMetadata, jsonLdScript, SITE } from "@/lib/seo";
-import { cn } from "@/lib/utils";
 
 export const revalidate = 300;
 
@@ -80,71 +77,12 @@ const WHY_US = [
   },
 ] as const;
 
-function AdaptationsHeroVisual() {
-  return (
-    <div className="grid h-[390px] grid-cols-5 grid-rows-2 gap-3 sm:h-[470px] sm:gap-4 lg:h-[500px]">
-      <div className="relative col-span-3 row-span-2 overflow-hidden rounded-[2rem] bg-soft">
-        {/* eslint-disable-next-line @next/next/no-img-element -- local editorial asset */}
-        <img
-          src="/images/hero-options/06-customer-handover.webp"
-          alt="Mobility Station specialist supporting a customer with an adapted vehicle"
-          className="h-full w-full object-cover object-[50%_35%]"
-          width={900}
-          height={1100}
-          decoding="async"
-          fetchPriority="high"
-        />
-        <div className="absolute inset-x-4 bottom-4 rounded-2xl bg-black/82 px-4 py-3 text-white backdrop-blur-sm sm:inset-x-5 sm:bottom-5 sm:px-5 sm:py-4">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent-on-dark sm:text-xs">
-            Supplied &amp; fitted
-          </p>
-          <p className="mt-1 text-sm font-semibold sm:text-base">
-            Assessed for you and your vehicle
-          </p>
-        </div>
-      </div>
-      <div className="relative col-span-2 overflow-hidden rounded-[1.6rem] bg-soft">
-        {/* eslint-disable-next-line @next/next/no-img-element -- local editorial asset */}
-        <img
-          src="/images/hero-options/05-hand-controls.webp"
-          alt="Hand controls and steering aid fitted to a vehicle"
-          className="h-full w-full object-cover object-center"
-          width={700}
-          height={500}
-          decoding="async"
-        />
-        <span className="absolute bottom-3 left-3 rounded-full bg-black/80 px-3 py-1.5 text-[11px] font-bold text-white backdrop-blur sm:bottom-4 sm:left-4 sm:text-xs">
-          Driving controls
-        </span>
-      </div>
-      <div className="relative col-span-2 overflow-hidden rounded-[1.6rem] bg-soft">
-        {/* eslint-disable-next-line @next/next/no-img-element -- local editorial asset */}
-        <img
-          src="/images/hero-options/07-swivel-seat.webp"
-          alt="Swivel seat vehicle adaptation"
-          className="h-full w-full object-cover object-center"
-          width={700}
-          height={500}
-          decoding="async"
-        />
-        <span className="absolute bottom-3 left-3 rounded-full bg-white/92 px-3 py-1.5 text-[11px] font-bold text-primary shadow-sm backdrop-blur sm:bottom-4 sm:left-4 sm:text-xs">
-          Access &amp; seating
-        </span>
-      </div>
-    </div>
-  );
-}
-
 export default async function VehicleAdaptationsPage() {
   let products: Awaited<ReturnType<typeof getAdaptationProducts>> = [];
-  let popular: Awaited<ReturnType<typeof getPopularAdaptations>> = [];
   let errorMessage: string | null = null;
 
   try {
-    [products, popular] = await Promise.all([
-      getAdaptationProducts(),
-      getPopularAdaptations(8),
-    ]);
+    products = await getAdaptationProducts();
   } catch (error) {
     console.error("Adaptations catalogue error:", error);
     errorMessage =
@@ -182,42 +120,9 @@ export default async function VehicleAdaptationsPage() {
         dangerouslySetInnerHTML={jsonLdScript(jsonLd)}
       />
 
-      <CatalogIntro
-        eyebrow="Mobility Station · Vehicle adaptations"
-        title="Adapted around you."
-        subtitle="Hand controls, boot hoists, swivel seats and more — assessed for your car, quoted clearly and fitted by our specialist team."
-        primary={{
-          href: "/contact?interest=adaptation",
-          label: "Request a quotation",
-        }}
-        secondary={{
-          href: "/book-a-demo?type=adaptation",
-          label: "Book a demonstration",
-        }}
-        primaryAction={
-          <EnquiryDialog
-            mode="enquiry"
-            enquiryType="contact"
-            title="Request a quotation"
-            defaultInterest="Vehicle adaptation quotation"
-            triggerClassName={cn(
-              buttonVariants({ size: "lg" }),
-              "h-12 min-h-12 rounded-full px-7 text-base",
-            )}
-          >
-            Request a quotation
-          </EnquiryDialog>
-        }
-        visual={<AdaptationsHeroVisual />}
-      />
+      <CatalogIntro breadcrumb="Vehicle adaptations" eyebrow="Your car. Your possibilities." title={<>A better way<br />to get going.</>} subtitle="Vehicle adaptations that make driving, getting in and out, and taking your equipment with you easier. Assessed, supplied and fitted by our specialist team." primary={{ href: "/book-a-demo?type=adaptation", label: "Try it with a demonstration" }} secondary={{ href: "/contact?interest=adaptation", label: "Request a quotation" }} image={{ src: "/images/redesign/seat.webp", alt: "Swivel seat fitted to a vehicle" }} />
 
-      <section className="border-b border-border bg-soft/45">
-        <div className="container-site grid gap-4 py-5 text-sm sm:grid-cols-3 sm:gap-6">
-          <p><strong className="text-primary">Free quotation</strong><br /><span className="text-muted">Compatibility checked before fitting</span></p>
-          <p><strong className="text-primary">Heathrow &amp; Ferndown</strong><br /><span className="text-muted">Specialist workshop installation</span></p>
-          <p><strong className="text-primary">Motability approved</strong><br /><span className="text-muted">Scheme options across many adaptations</span></p>
-        </div>
-      </section>
+      <TrustStrip />
 
       <CatalogSearchStrip
         type="adaptations"
@@ -225,18 +130,7 @@ export default async function VehicleAdaptationsPage() {
         subtitle="Search by product, brand or category — or browse driving, access and stowage solutions below."
       />
 
-      {!errorMessage && popular.length > 0 ? (
-        <ProductSpotlight
-          title="Popular adaptations"
-          subtitle="Frequently chosen driving controls, hoists and access solutions — all checked for vehicle compatibility before fitting."
-          viewAllHref="#catalogue"
-          viewAllLabel="Browse full catalogue"
-        >
-          {popular.map((p) => (
-            <AdaptationCard key={p.id} product={p} />
-          ))}
-        </ProductSpotlight>
-      ) : null}
+
 
       <div id="catalogue" className="container-site scroll-under-header py-10 md:py-16">
         {errorMessage ? (
