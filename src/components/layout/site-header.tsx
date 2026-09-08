@@ -29,7 +29,7 @@ function HeaderNavigation({ pathname }: { pathname: string }) {
   return <>
     <div className="ms-utility"><div className="container-site">
       <span><MapPin size={14} aria-hidden />Your local experts in Heathrow &amp; Ferndown</span>
-      <Link href="/locations">Visit our branches <ArrowUpRight size={14} aria-hidden /></Link>
+      <Link href="/contact#locations">Visit our branches <ArrowUpRight size={14} aria-hidden /></Link>
     </div></div>
     <header className="ms-header">
       <div className="container-site ms-header-inner">
@@ -52,7 +52,7 @@ function HeaderNavigation({ pathname }: { pathname: string }) {
             <Link className="ms-mobile-main" href={item.href} onClick={() => setOpen(false)}>{item.label}</Link>
             {item.type === "menu" && <details><summary>More options</summary><div>{item.links.map(link => <Link key={link.href + link.label} href={link.href} onClick={() => setOpen(false)}>{link.label}</Link>)}</div></details>}
           </div>)}
-          <Link href="/locations" onClick={() => setOpen(false)}>Contact &amp; locations</Link>
+          <Link href="/contact#locations" onClick={() => setOpen(false)}>Contact &amp; locations</Link>
         </nav>
         <div className="ms-menu-contact"><a href={SITE.phoneHref}><Phone size={18} aria-hidden />{SITE.phone}</a><Link href="/book-a-demo" className="ms-button" onClick={() => setOpen(false)}>Book a demonstration <ArrowUpRight size={18} /></Link><EnquiryDialog mode="callback" title="Request a callback" triggerClassName="ms-text-link">Request a callback</EnquiryDialog></div>
       </SwipeSheet>

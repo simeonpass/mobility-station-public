@@ -1,46 +1,68 @@
 import Link from "next/link";
-import { CalendarCheck, MessageSquare, PhoneCall, Wrench } from "lucide-react";
 import { CallbackForm } from "@/components/forms/callback-form";
 import { EnquiryForm } from "@/components/forms/enquiry-form";
-import { BRANCHES } from "@/data/content";
+import { getBranches } from "@/lib/data";
 import { getProductBySlug } from "@/lib/products";
-import { createMetadata, jsonLdScript, SITE } from "@/lib/seo";
+import { createMetadata, SITE } from "@/lib/seo";
 
-export const metadata = createMetadata({ title: "Contact Mobility Station", description: "Contact Mobility Station for scooters, wheelchairs and vehicle adaptations. Request a callback, message the team, or visit Heathrow & Ferndown.", path: "/contact" });
+export const metadata = createMetadata({ title: "Contact & Locations", description: "Contact Mobility Station or visit our Heathrow and Ferndown branches. Addresses, opening hours and directions.", path: "/contact" });
+const PRESETS: Record<string, string> = { adaptation: "Vehicle adaptation quotation", adaptations: "Vehicle adaptation quotation", scooter: "Mobility scooter", wheelchair: "Wheelchair", motability: "Motability enquiry", service: "Service / repair", "trade-in": "Old scooter takeaway", hire: "Hire / Flex Hire", callback: "General enquiry" };
 
-const INTEREST_PRESETS: Record<string, string> = { adaptation: "Vehicle adaptation quotation", adaptations: "Vehicle adaptation quotation", scooter: "Mobility scooter", wheelchair: "Wheelchair", motability: "Motability enquiry", service: "Service / repair", "trade-in": "Old scooter takeaway", callback: "Request a callback", hire: "Hire / Flex Hire" };
-const ROUTES = [
-  { icon: PhoneCall, title: "Request a callback", body: "Leave your number and a good time. One of our team will call you back.", href: "#callback", label: "Request a callback" },
-  { icon: MessageSquare, title: "Send an enquiry", body: "Questions, quotations and product advice — send us the details online.", href: "#enquire", label: "Send a message" },
-  { icon: CalendarCheck, title: "Book a demonstration", body: "Try equipment at a branch or arrange a home demonstration where suitable.", href: "/book-a-demo", label: "Book a demonstration" },
-  { icon: Wrench, title: "Service & repair", body: "Servicing and repairs for scooters, wheelchairs and vehicle adaptations.", href: "/book-a-service", label: "Book a service" },
-] as const;
-
-export default async function ContactPage({ searchParams }: { searchParams: Promise<{ sent?: string; interest?: string; product?: string }> }) {
-  const { sent, interest, product: productSlugParam } = await searchParams;
-  const interestKey = interest?.toLowerCase() ?? "";
-  const isCallback = interestKey === "callback" || sent === "callback";
-  const productSlug = productSlugParam?.trim() || "";
-  let linkedProduct: Awaited<ReturnType<typeof getProductBySlug>> = null;
-  if (productSlug) { try { linkedProduct = await getProductBySlug(productSlug); } catch { linkedProduct = null; } }
-  const productLabel = linkedProduct?.name ?? null;
-  const resolvedSlug = linkedProduct?.slug ?? (productSlug || undefined);
-  const productHref = resolvedSlug ? `/products/${resolvedSlug}` : null;
-  const baseInterest = interest ? (INTEREST_PRESETS[interestKey] ?? interest) : "General enquiry";
-  const presetInterest = productLabel ? interestKey === "motability" || baseInterest.toLowerCase().includes("motability") ? `Motability — ${productLabel}` : `${baseInterest} — ${productLabel}` : baseInterest;
-  const callbackTopic = productLabel ? `Motability — ${productLabel}` : isCallback && presetInterest !== "Request a callback" ? presetInterest : "";
-  const jsonLd = { "@context": "https://schema.org", "@type": "ContactPage", name: "Contact Mobility Station", url: `${SITE.url}/contact`, mainEntity: { "@type": "Organization", name: SITE.name, telephone: SITE.phone, email: SITE.email, url: SITE.url } };
-
+export default async function ContactPage({ searchParams }: { searchParams: Promise<{ sent?: string; interest?: string; product?: string; mode?: string }> }) {
+  const { sent, interest, product, mode } = await searchParams;
+  const branches = await getBranches();
+  const isCallback = mode === "callback" || (mode !== "message" && (interest === "callback" || sent === "callback"));
+  const linkedProduct = product ? await getProductBySlug(product).catch(() => null) : null;
+  const slug = linkedProduct?.slug ?? product;
+  const topic = (PRESETS[interest?.toLowerCase() ?? ""] ?? interest ?? "General enquiry") + (linkedProduct ? " — " + linkedProduct.name : "");
+  const modeHref = (value: string) => {
+    const params = new URLSearchParams({ mode: value });
+    if (interest) params.set("interest", interest);
+    if (slug) params.set("product", slug);
+    return "/contact?" + params.toString() + "#enquire";
+  };
   return <>
-    <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(jsonLd)} />
-    <section className="container-site ms-contact-intro"><nav className="ms-breadcrumb" aria-label="Breadcrumb"><Link href="/">Home</Link><span aria-hidden>/</span>Contact &amp; locations</nav><p className="ms-eyebrow">A real conversation. A helpful next step.</p><h1>Let’s work it out.<br /><span>Together.</span></h1><p>Questions about your car, choosing a scooter or keeping things running?<br />Our team is here to help.</p><div className="ms-intro-actions"><a href="#callback" className="ms-button">Request a callback</a><a href="#enquire" className="ms-text-link">Send a message</a></div></section>
-
-    {productLabel || productSlug ? <div className="border-b border-border bg-soft/55"><div className="container-site flex flex-wrap items-center justify-between gap-3 py-4 text-sm"><p className="text-primary"><span className="font-semibold">Enquiring about:</span> {productHref ? <Link href={productHref} className="font-bold underline underline-offset-2">{productLabel ?? productSlug}</Link> : <span className="font-bold">{productLabel ?? productSlug}</span>}</p>{productHref ? <Link href={productHref} className="font-semibold text-primary hover:underline">View product →</Link> : null}</div></div> : null}
-
-    <section className="py-12 md:py-16"><div className="container-site"><ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{ROUTES.map(({ icon: Icon, title, body, href, label }) => <li key={title}><Link href={href} className="group flex h-full flex-col rounded-2xl border border-border bg-white p-6 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-sm"><span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-accent-foreground"><Icon className="h-5 w-5" aria-hidden /></span><h2 className="mt-5 text-lg font-bold text-primary">{title}</h2><p className="mt-2 flex-1 text-sm leading-relaxed text-muted">{body}</p><span className="mt-5 text-sm font-semibold text-primary">{label} →</span></Link></li>)}</ul><p className="mt-7 text-sm text-muted">Branch demonstrations are free. Home demonstrations are £195 — deducted in full if you go ahead, and waived for the Motability Powered Wheelchair &amp; Scooter Scheme. <Link href="/book-a-demo#demo-terms" className="font-semibold text-primary underline underline-offset-2">Full demo terms</Link>.</p></div></section>
-
-    <section id="callback" className="scroll-mt-24 border-y border-border bg-soft/55 py-14 md:py-20"><div className="container-site grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-muted">Prefer to speak?</p><h2 className="mt-2 text-3xl font-extrabold tracking-tight text-primary md:text-4xl">We’ll call you back.</h2><p className="mt-4 max-w-md text-sm leading-relaxed text-muted md:text-base">Leave your number and what you need help with. Our team will call at a time that suits you.</p><p className="mt-5 text-sm text-muted">Or call freephone: <a href={SITE.phoneHref} className="font-bold text-primary">{SITE.phone}</a></p></div><div className="rounded-[2rem] border border-border bg-white p-6 md:p-8">{sent === "callback" ? <p className="mb-6 rounded-xl bg-soft px-4 py-3 text-sm font-medium text-primary">Thanks — we’ve got your callback request and will ring you soon.</p> : null}<CallbackForm defaultTopic={callbackTopic} productSlug={resolvedSlug} productLabel={productLabel ?? undefined} /></div></div></section>
-
-    <section id="enquire" className="scroll-mt-24 py-14 md:py-20"><div className="container-site grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-muted">Email or visit</p><h2 className="mt-2 text-3xl font-extrabold tracking-tight text-primary md:text-4xl">Branches &amp; email.</h2><a href={`mailto:${SITE.email}`} className="mt-4 inline-block font-semibold text-primary">{SITE.email}</a><ul className="mt-8 space-y-6">{BRANCHES.map((branch) => <li key={branch.id} className="border-t border-border pt-5"><h3 className="text-xl font-bold text-primary">{branch.name}</h3><p className="mt-2 text-sm text-muted">{branch.addressLine1}, {branch.addressLocality}, {branch.postalCode}</p><a href={`tel:${branch.phone.replace(/\s/g, "")}`} className="mt-2 inline-block text-sm font-semibold text-primary">{branch.phone}</a></li>)}</ul><p className="mt-6 text-sm text-muted">Opening hours and maps are on our <Link href="/locations" className="font-semibold text-primary underline underline-offset-2">locations page</Link>.</p></div><div className="rounded-[2rem] border border-border bg-soft/55 p-6 md:p-8">{sent === "1" ? <p className="mb-6 rounded-xl bg-white px-4 py-3 text-sm font-medium text-primary">Thanks — your message has been sent. We will reply shortly.</p> : null}<EnquiryForm enquiryType="contact" title="Send a message" defaultInterest={isCallback && !productLabel ? "General enquiry" : presetInterest} productSlug={resolvedSlug} /></div></div></section>
+    <section className="container-site py-12 md:py-16">
+      <nav className="flex gap-3 text-sm text-muted" aria-label="Breadcrumb"><Link href="/">Home</Link><span aria-hidden>/</span>Contact &amp; locations</nav>
+      <h1 className="mt-6 text-4xl tracking-tight md:text-6xl">Let’s talk.</h1>
+      <p className="mt-4 max-w-xl text-lg text-muted">A question, a quotation or a visit to our team. Everything you need is here.</p>
+    </section>
+    <section id="enquire" className="container-site scroll-mt-28 grid gap-10 pb-16 lg:grid-cols-2 lg:gap-20">
+      <div>
+        <h2 className="text-2xl font-bold">How can we help?</h2>
+        <a href={SITE.phoneHref} className="mt-5 block text-2xl font-semibold">{SITE.phone}</a>
+        <a href={"mailto:" + SITE.email} className="mt-2 inline-block break-all text-muted underline underline-offset-4">{SITE.email}</a>
+        <p className="mt-8 text-muted">Prefer to visit? <a href="#locations" className="font-semibold text-primary underline underline-offset-4">Find our branches below.</a></p>
+        <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 border-t border-border pt-6 text-sm font-semibold">
+          <Link href="/book-a-demo" className="underline underline-offset-4">Book a demonstration</Link>
+          <Link href="/book-a-service" className="underline underline-offset-4">Book a service</Link>
+        </div>
+      </div>
+      <div id="callback" className="scroll-mt-28">
+        <nav aria-label="Contact method" className="mb-6 flex gap-6 border-b border-border">
+          <Link href={modeHref("message")} aria-current={!isCallback ? "page" : undefined} className={"pb-3 font-semibold " + (!isCallback ? "border-b-2 border-primary" : "text-muted")}>Send a message</Link>
+          <Link href={modeHref("callback")} aria-current={isCallback ? "page" : undefined} className={"pb-3 font-semibold " + (isCallback ? "border-b-2 border-primary" : "text-muted")}>Call me back</Link>
+        </nav>
+        {slug && <p className="mb-5 text-sm text-muted">About: <Link href={"/products/" + slug} className="text-primary underline">{linkedProduct?.name ?? slug}</Link></p>}
+        {sent ? <p role="status" className="py-6">Thanks — {sent === "callback" ? "we’ll call you back during opening hours." : "your message has been sent. We’ll be in touch soon."}</p> : isCallback ?
+          <CallbackForm key={"callback-" + topic} defaultTopic={topic} productSlug={slug} inline compact /> :
+          <EnquiryForm key={"message-" + topic} enquiryType="contact" defaultInterest={topic} productSlug={slug} showBranch={false} showDate={false} showInterest={false} inline compact />}
+      </div>
+    </section>
+    <section id="locations" className="scroll-mt-28 border-t border-border py-12 md:py-16">
+      <div className="container-site">
+        <h2 className="text-3xl font-bold tracking-tight">Come and see us.</h2>
+        <div className="mt-8 grid gap-10 md:grid-cols-2">
+          {branches.map(branch => <article key={branch.id}>
+            <h3 className="text-2xl font-semibold">{branch.name}</h3>
+            <p className="mt-3 text-muted">{[branch.addressLine1, branch.addressLine2].filter(Boolean).join(", ")}<br />{branch.addressLocality}, {branch.postalCode}</p>
+            <a href={"tel:" + branch.phone.replace(/\s/g, "")} className="mt-3 inline-block font-semibold">{branch.phone}</a>
+            <ul className="mt-4 space-y-1 text-sm text-muted">{branch.openingHours.map(line => <li key={line}>{line}</li>)}</ul>
+            <a href={"https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent([branch.addressLine1, branch.addressLocality, branch.postalCode].join(", "))} target="_blank" rel="noreferrer" className="mt-5 inline-block font-semibold underline underline-offset-4">Maps &amp; directions ↗</a>
+          </article>)}
+        </div>
+        <p className="mt-10 border-t border-border pt-6 text-sm text-muted">Need a home visit or delivery? <Link href="/service-area" className="text-primary underline underline-offset-4">Check our coverage</Link> or read our <Link href="/delivery" className="text-primary underline underline-offset-4">delivery information</Link>.</p>
+      </div>
+    </section>
   </>;
 }

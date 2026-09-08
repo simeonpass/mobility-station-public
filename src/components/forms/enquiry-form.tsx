@@ -15,6 +15,7 @@ type EnquiryFormProps = {
   defaultInterest?: string;
   productSlug?: string;
   showBranch?: boolean;
+  showInterest?: boolean;
   showDate?: boolean;
   showPostcode?: boolean;
   /** Stay on the page / in a dialog instead of redirecting. */
@@ -29,6 +30,7 @@ export function EnquiryForm({
   defaultInterest = "",
   productSlug,
   showBranch = true,
+  showInterest = true,
   showDate = true,
   showPostcode = true,
   inline = false,
@@ -113,7 +115,7 @@ export function EnquiryForm({
         )}
       </div>
 
-      <div>
+      {showInterest ? <div>
         <Label htmlFor="interest">
           {enquiryType === "service" ? "Service needed" : "Product / interest"}
         </Label>
@@ -125,7 +127,7 @@ export function EnquiryForm({
           {...fieldValidity("interest-error", state.errors?.interest?.[0])}
         />
         <FieldError id="interest-error" message={state.errors?.interest?.[0]} />
-      </div>
+      </div> : <input type="hidden" name="interest" value={defaultInterest || "General enquiry"} />}
 
       {showBranch ? (
         <div>
