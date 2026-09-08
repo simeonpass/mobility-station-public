@@ -1,109 +1,19 @@
+import Image from "next/image";
 import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import type { ReactNode } from "react";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-
-type CatalogCta = {
-  href: string;
-  label: string;
-};
-
-export function CatalogIntro({
-  title,
-  subtitle,
-  primary,
-  secondary,
-  primaryAction,
-  eyebrow = "Mobility Station · Shop",
-  visual,
-}: {
-  title: string;
-  subtitle: string;
-  primary: CatalogCta;
-  secondary: CatalogCta;
-  primaryAction?: ReactNode;
-  eyebrow?: string;
-  visual?: ReactNode;
+type CatalogCta = { href: string; label: string };
+export function CatalogIntro({ title, subtitle, primary, secondary, primaryAction, eyebrow = "Mobility Station", visual, image, tone = "navy", breadcrumb }: {
+  title: ReactNode; subtitle: string; primary?: CatalogCta; secondary?: CatalogCta; primaryAction?: ReactNode;
+  eyebrow?: string; visual?: ReactNode; image?: { src: string; alt: string }; tone?: "navy" | "soft"; breadcrumb?: string;
 }) {
-  return (
-    <section className="border-b border-border bg-white">
-      <div
-        className={cn(
-          "container-site py-14 md:py-20 lg:py-24",
-          visual && "lg:py-20",
-        )}
-      >
-        <div
-          className={cn(
-            visual
-              ? "grid items-center gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16"
-              : "flex flex-col gap-8 md:flex-row md:items-end md:justify-between",
-          )}
-        >
-          <div className="max-w-3xl">
-            <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-muted">
-              {eyebrow}
-            </p>
-            <h1 className="text-balance text-5xl font-extrabold leading-[0.98] tracking-[-0.045em] text-primary md:text-6xl lg:text-7xl">
-              {title}
-            </h1>
-            <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted md:text-xl">
-              {subtitle}
-            </p>
-            {visual ? (
-              <div className="mt-8 flex flex-wrap gap-3">
-                {primaryAction ?? (
-                  <Link
-                    href={primary.href}
-                    className={cn(
-                      buttonVariants({ size: "lg" }),
-                      "h-12 min-h-12 rounded-full px-7 text-base",
-                    )}
-                  >
-                    {primary.label}
-                  </Link>
-                )}
-                <Link
-                  href={secondary.href}
-                  className={cn(
-                    buttonVariants({ variant: "outline", size: "lg" }),
-                    "h-12 min-h-12 rounded-full bg-white px-7 text-base",
-                  )}
-                >
-                  {secondary.label}
-                </Link>
-              </div>
-            ) : null}
-          </div>
-
-          {visual ? (
-            visual
-          ) : (
-            <div className="flex flex-wrap gap-3">
-              {primaryAction ?? (
-                <Link
-                  href={primary.href}
-                  className={cn(
-                    buttonVariants({ size: "lg" }),
-                    "h-12 min-h-12 rounded-full px-7 text-base",
-                  )}
-                >
-                  {primary.label}
-                </Link>
-              )}
-              <Link
-                href={secondary.href}
-                className={cn(
-                  buttonVariants({ variant: "outline", size: "lg" }),
-                  "h-12 min-h-12 rounded-full bg-white px-7 text-base",
-                )}
-              >
-                {secondary.label}
-              </Link>
-            </div>
-          )}
-        </div>
-      </div>
-    </section>
-  );
+  return <section className={`ms-page-intro ms-intro-${tone}`}><div className={`container-site ${image || visual ? "ms-intro-grid" : "ms-intro-simple"}`}>
+    <div>
+      <nav className="ms-breadcrumb" aria-label="Breadcrumb"><Link href="/">Home</Link><span aria-hidden>/</span><span>{breadcrumb ?? eyebrow.replace("Mobility Station · ", "")}</span></nav>
+      <p className="ms-eyebrow">{eyebrow}</p>
+      <h1>{title}</h1><p className="ms-intro-description">{subtitle}</p>
+      {(primary || primaryAction || secondary) && <div className="ms-intro-actions">{primaryAction ?? (primary && <Link href={primary.href} className="ms-button">{primary.label}<ArrowUpRight size={19} aria-hidden /></Link>)}{secondary && <Link href={secondary.href} className="ms-intro-secondary">{secondary.label}<ArrowUpRight size={17} aria-hidden /></Link>}</div>}
+    </div>
+    {image ? <div className="ms-intro-image"><Image src={image.src} alt={image.alt} fill sizes="(max-width: 780px) 100vw, 48vw" priority /></div> : visual}
+  </div></section>;
 }

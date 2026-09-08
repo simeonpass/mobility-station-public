@@ -4,26 +4,22 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, Expand, X } from "lucide-react";
 import { CatalogImage } from "@/components/product/catalog-image";
-import { FittingPartnerCorner } from "@/components/product/fitted-badge";
 import { GallerySwipe } from "@/components/product/gallery-swipe";
 import { LightboxZoom } from "@/components/product/lightbox-zoom";
-import { cn } from "@/lib/utils";
 
 export function ProductGallery({
   images,
   name,
-  showFittingPartner = false,
+  adaptation = false,
 }: {
   images: string[];
   name: string;
-  showFittingPartner?: boolean;
+  adaptation?: boolean;
 }) {
   const [active, setActive] = useState(0);
   const [lightbox, setLightbox] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const thumbsRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => setMounted(true), []);
 
   const count = images.length;
   const current = images[active] ?? images[0];
@@ -68,109 +64,40 @@ export function ProductGallery({
     );
   }
 
+
   return (
-    <div className="min-w-0">
-      <div className="relative w-full overflow-hidden rounded-[2rem] border border-border bg-soft/30">
-        <GallerySwipe
-          count={count}
-          active={active}
-          onChange={goTo}
-          onTap={() => setLightbox(true)}
-        >
+    <div className="ms-product-gallery">
+      <div className={`ms-gallery-image ${adaptation ? "ms-gallery-adaptation" : ""}`}>
+        <GallerySwipe count={count} active={active} onChange={goTo} onTap={() => setLightbox(true)}>
           {images.map((src, index) => (
-            <div
-              key={src + index}
-              className="relative h-full w-[var(--slide-width)] shrink-0"
-            >
-              <CatalogImage
-                src={src}
-                alt={`${name} mobility product ${index + 1}`}
-                fill
-                priority={index === 0}
-                className="object-contain p-4 sm:p-6"
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
+            <div key={src + index} className="relative h-full w-[var(--slide-width)] shrink-0">
+              <CatalogImage src={src} alt={`${name} — image ${index + 1}`} fill priority={index === 0}
+                className={adaptation ? "object-cover" : "object-contain"} sizes="(max-width: 768px) 100vw, 50vw" />
             </div>
           ))}
         </GallerySwipe>
-        {showFittingPartner ? <FittingPartnerCorner size="gallery" /> : null}
-        <button
-          type="button"
-          className="absolute left-4 top-4 z-10 inline-flex items-center gap-1.5 rounded-full border border-border bg-white/95 px-3 py-2 text-xs font-semibold text-primary shadow-sm"
-          onClick={() => setLightbox(true)}
-          aria-label="Enlarge image"
-        >
-          <Expand className="h-3.5 w-3.5" />
-          <span className="hidden sm:inline">Enlarge</span>
+        <button type="button" className="ms-gallery-enlarge" onClick={() => setLightbox(true)} aria-label="Enlarge image">
+          <Expand size={18} aria-hidden />
         </button>
-        {count > 1 ? (
-          <>
-            <button
-              type="button"
-              className="absolute left-3 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-primary shadow-sm sm:flex"
-              aria-label="Previous image"
-              onClick={() => goTo(active - 1)}
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-            <button
-              type="button"
-              className="absolute right-3 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-primary shadow-sm sm:flex"
-              aria-label="Next image"
-              onClick={() => goTo(active + 1)}
-            >
-              <ChevronRight className="h-5 w-5" />
-            </button>
-            <div className="pointer-events-none absolute bottom-4 left-4 right-16 flex gap-1.5">
-              {images.map((_, index) => (
-                <span
-                  key={index}
-                  className={cn(
-                    "h-1.5 rounded-full transition-[width,background-color] duration-300",
-                    index === active ? "w-5 bg-primary" : "w-1.5 bg-primary/30",
-                  )}
-                />
-              ))}
-            </div>
-          </>
-        ) : null}
-        {count > 1 ? (
-          <p className="absolute right-4 top-4 rounded-full border border-border bg-white/95 px-2.5 py-1.5 text-xs font-semibold text-primary shadow-sm">
-            {active + 1} / {count}
-          </p>
-        ) : null}
       </div>
       {count > 1 ? (
-        <div
-          ref={thumbsRef}
-          className="mt-3 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {images.map((src, index) => (
-            <button
-              key={src + index}
-              type="button"
-              className={cn(
-                "relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border bg-white",
-                index === active
-                  ? "border-primary ring-1 ring-primary"
-                  : "border-border",
-              )}
-              onClick={() => goTo(index)}
-              aria-label={`Show image ${index + 1}`}
-              aria-current={index === active}
-            >
-              <CatalogImage
-                src={src}
-                alt={`${name} thumbnail ${index + 1}`}
-                fill
-                className="object-contain p-1"
-                sizes="64px"
-              />
-            </button>
-          ))}
+        <div className="ms-gallery-navigation">
+          <div ref={thumbsRef} className="ms-gallery-thumbnails">
+            {images.map((src, index) => (
+              <button key={src + index} type="button" onClick={() => goTo(index)}
+                aria-label={`Show image ${index + 1}`} aria-current={index === active}>
+                <CatalogImage src={src} alt="" fill className={adaptation ? "object-cover" : "object-contain"} sizes="56px" />
+              </button>
+            ))}
+          </div>
+          <div className="ms-gallery-pagination">
+            <button type="button" aria-label="Previous image" onClick={() => goTo(active - 1)}><ChevronLeft size={18} aria-hidden /></button>
+            <span aria-live="polite">{active + 1} / {count}</span>
+            <button type="button" aria-label="Next image" onClick={() => goTo(active + 1)}><ChevronRight size={18} aria-hidden /></button>
+          </div>
         </div>
       ) : null}
-      {mounted && lightbox
+      {lightbox
         ? createPortal(
             <div
               className="fixed inset-0 z-[300] flex flex-col bg-black/96"
@@ -199,6 +126,7 @@ export function ProductGallery({
                   <>
                     <button
                       type="button"
+                      aria-label="Previous image"
                       className="absolute left-2 top-1/2 z-20 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-primary sm:flex"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -209,6 +137,7 @@ export function ProductGallery({
                     </button>
                     <button
                       type="button"
+                      aria-label="Next image"
                       className="absolute right-2 top-1/2 z-20 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-primary sm:flex"
                       onClick={(e) => {
                         e.stopPropagation();

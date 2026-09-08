@@ -33,6 +33,7 @@ export type ProductListItem = {
   sale_price: number | null;
   motability_price: number | null;
   motability_weekly_price: number | null;
+  adaptation_id?: string | null;
   is_featured: boolean;
   image_url: string | null;
   seo_title?: string | null;
@@ -89,7 +90,7 @@ export type ProductDetail = ProductListItem & {
 
 const LIST_COLUMNS = `
   id, name, slug, category, manufacturer, unit_price, sale_price,
-  motability_price, motability_weekly_price, is_featured, image_url,
+  motability_price, motability_weekly_price, adaptation_id, is_featured, image_url,
   product_type, quantity, track_stock,
   condition, condition_grade, pre_order_enabled
 `;
@@ -444,7 +445,7 @@ export async function getProductBySlug(
       description, features, specifications, suitability_info,
       weight, dimensions, colour_options, delivery_estimate,
       pre_order_message, video_url, sku, location,
-      is_discontinued, discontinued_message, adaptation_id,
+      is_discontinued, discontinued_message,
       variant_group_id, variant_label
     `,
     )

@@ -1,5 +1,33 @@
 import Link from "next/link";
-import { TRUST_ITEMS } from "@/data/content";
-export function TrustStrip() {
-  return <section className="border-y border-border bg-[#f7f7f7] py-5 text-primary" aria-label="Trust highlights"><div className="container-site"><ul className="grid gap-x-8 gap-y-3 sm:grid-cols-2 lg:grid-cols-4">{TRUST_ITEMS.map((item) => { const isDemo = item === "Free Home Demonstrations"; return <li key={item} className="flex items-center gap-3 text-sm font-semibold md:text-[0.95rem]"><span className="inline-block h-2 w-2 shrink-0 rounded-full bg-accent" aria-hidden />{isDemo ? <Link href="/book-a-demo#demo-terms" className="transition-opacity hover:opacity-65">Free branch demonstrations</Link> : item}</li>; })}</ul><p className="mt-3 text-[11px] leading-relaxed text-muted">Branch demonstrations at Heathrow and Ferndown are free. Home demonstrations are £195 — deducted in full if you go ahead, and waived for the Motability Powered Wheelchair &amp; Scooter Scheme. <Link href="/book-a-demo#demo-terms" className="font-medium text-primary underline underline-offset-2">Full terms</Link></p></div></section>;
+import { LeaveGoogleReview } from "./leave-google-review";
+import { ShieldCheck, Wrench, HeartHandshake, MapPin, Star } from "lucide-react";
+import type { ReviewsSummary } from "@/lib/types";
+
+export function TrustStrip({ reviews }: { reviews?: ReviewsSummary }) {
+  const hasGoogleRating = Boolean(
+    reviews?.profiles?.length &&
+    reviews.averageRating != null &&
+    Number.isFinite(reviews.averageRating) &&
+    reviews.averageRating > 0 && reviews.averageRating <= 5 &&
+    Number.isFinite(reviews.totalReviews) && reviews.totalReviews > 0
+  );
+
+  return <section className="container-site" aria-label="Our service">
+    <div className="ms-trust">
+      <span><ShieldCheck aria-hidden="true" />Motability accredited</span>
+      <span><Wrench aria-hidden="true" />Specialist fitting &amp; aftercare</span>
+      {reviews ? (
+        <div className="ms-trust-review-group">
+        <Link href="/about-us#google-reviews" className="ms-trust-reviews">
+          <Star aria-hidden="true" />
+          <span>{hasGoogleRating ? `${reviews.averageRating!.toFixed(1)} / 5 · ${reviews.totalReviews.toLocaleString("en-GB")} Google reviews` : "Read our Google reviews"}</span>
+        </Link>
+        <LeaveGoogleReview />
+        </div>
+      ) : (
+        <span><HeartHandshake aria-hidden="true" />Advice that puts you first</span>
+      )}
+      <span><MapPin aria-hidden="true" />Two local branches</span>
+    </div>
+  </section>;
 }

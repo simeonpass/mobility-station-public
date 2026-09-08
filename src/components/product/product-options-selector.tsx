@@ -74,7 +74,7 @@ export function ProductOptionsSelector({
   if (!groupNames.length && !addons.length) return null;
 
   return (
-    <div className="space-y-5 border-t border-border pt-5">
+    <div className="ms-product-options space-y-5">
       {groupNames.map((group) => {
         const items = grouped[group];
         const selected = selectedByGroup[group];
@@ -185,10 +185,8 @@ export function ProductOptionsSelector({
       })}
 
       {addons.length > 0 ? (
-        <div>
-          <p className="mb-1.5 text-sm font-medium text-primary">
-            Optional extras
-          </p>
+        <details className="ms-option-extras">
+          <summary>Optional extras{selectedAddons.length ? ` (${selectedAddons.length} selected)` : ""}</summary>
           <ul className="divide-y divide-border rounded-lg border border-border">
             {addons.map((addon) => {
               const isSelected = selectedAddons.some((a) => a.id === addon.id);
@@ -226,7 +224,7 @@ export function ProductOptionsSelector({
               );
             })}
           </ul>
-        </div>
+        </details>
       ) : null}
     </div>
   );

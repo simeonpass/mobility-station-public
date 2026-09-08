@@ -1,6 +1,6 @@
 import { displayPrice, type ProductListItem } from "@/lib/products";
 
-export const SHOP_PAGE_SIZE = 48;
+export const SHOP_PAGE_SIZE = 12;
 
 export type ShopSortKey =
   | "featured"

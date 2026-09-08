@@ -54,12 +54,12 @@ export const SITE_NAV: NavItem[] = [
       { href: "/shop", label: "Shop all" },
       { href: "/shop?sub=scooters", label: "Mobility scooters" },
       { href: "/shop?sub=wheelchairs", label: "Wheelchairs & powerchairs" },
-      { href: "/clearance", label: "Clearance" },
       { href: "/lightweight-folding-mobility", label: "Lightweight & folding" },
       { href: "/book-a-demo", label: "Book a demo" },
       { href: "/vat-relief", label: "VAT relief" },
     ],
   },
+  { type: "link", href: "/clearance", label: "Clearance" },
   {
     type: "menu",
     id: "hire",

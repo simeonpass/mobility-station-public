@@ -14,6 +14,7 @@ export function quickViewPayload(product: ProductListItem) {
     sale_price: product.sale_price,
     motability_price: product.motability_price,
     motability_weekly_price: product.motability_weekly_price,
+    adaptation_id: product.adaptation_id,
     condition: product.condition,
     product_type: product.product_type,
     quantity: product.quantity,

@@ -1,0 +1,9 @@
+import Link from "next/link";
+import { ArrowUpRight, Check, MapPin, Phone, ShieldCheck } from "lucide-react";
+import type { Branch } from "@/lib/types";
+export function HomeMotability() {
+  return <section className="container-site ms-motability-band"><div><p className="ms-eyebrow">Motability, made simple.</p><h2>Your allowance.<br />A world of possibility.</h2><p>From choosing the right equipment to the paperwork.<br />Our accredited team is here to help.</p><Link href="/motability" className="ms-button">Explore Motability<ArrowUpRight size={19} aria-hidden /></Link></div><div className="ms-scheme-panel"><ShieldCheck size={45} aria-hidden /><h3>More support.<br />Less to think about.</h3>{["Help choosing the right model", "Demonstrations and assessment", "Support from our accredited team"].map(text => <span key={text}><Check size={18} aria-hidden />{text}</span>)}</div></section>;
+}
+export function HomeBranches({ branches }: { branches: Branch[] }) {
+  return <section className="container-site ms-section"><div className="ms-section-heading"><div><p className="ms-eyebrow">Local people. Specialist know-how.</p><h2>Come in. Let’s talk.</h2></div><p>Meet the team, ask questions<br />and try things for yourself.</p></div><div className="ms-branch-grid">{branches.map(branch => <article className="ms-branch-card" key={branch.id}><span className="ms-branch-icon"><MapPin size={23} aria-hidden /></span><div><p className="ms-eyebrow">Your local Mobility Station</p><h3>{branch.name.replace(" Branch", "")}</h3><p>{branch.addressLine1}<br />{branch.addressLocality}, {branch.postalCode}</p><a className="ms-branch-phone" href={`tel:${branch.phone.replace(/\s/g, "")}`}><Phone size={16} aria-hidden />{branch.phone}</a><Link className="ms-text-link" href="/locations">Opening hours &amp; directions<ArrowUpRight size={18} aria-hidden /></Link></div></article>)}</div></section>;
+}
