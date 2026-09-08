@@ -19,7 +19,7 @@ export default async function HomePage() {
   const jsonLd = [localBusinessJsonLd({ branches, averageRating: reviews.averageRating, totalReviews: reviews.totalReviews }), websiteJsonLd()];
   return <>
     <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(jsonLd)} />
-    <HomeHero /><TrustStrip /><HomePaths />
+    <HomeHero /><TrustStrip reviews={reviews} /><HomePaths />
     <HomeFeatured mobility={mobility.map(product => <HomeProductCard key={product.id} product={product} />)} adaptations={adaptations.map(product => <HomeProductCard key={product.id} product={product} adaptation />)} />
     <HomeMotability /><HomeBranches branches={branches} /><CtaFooter />
   </>;
