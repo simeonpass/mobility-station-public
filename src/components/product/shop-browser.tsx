@@ -185,7 +185,7 @@ export function ShopBrowser({
   return (
     <div>
       <div
-        className="inline-flex rounded-full border border-border bg-white p-1 shadow-[0_1px_0_rgba(0,0,0,0.04)]"
+        className="ms-shop-types"
         role="tablist"
         aria-label="Product type"
       >
@@ -214,7 +214,9 @@ export function ShopBrowser({
         })}
       </div>
 
-      <div className="mt-5 grid gap-3 border-y border-border bg-soft/40 px-3 py-4 sm:grid-cols-2 sm:px-4 lg:grid-cols-12 lg:items-end lg:gap-3 lg:px-5 lg:py-5">
+      <details className="ms-shop-refinements" open={activeFilters.length > 0 || filters.sort !== "featured"}>
+        <summary>Search, filter &amp; sort products <span aria-hidden>＋</span></summary>
+        <div className="grid gap-3 pb-5 sm:grid-cols-2 lg:grid-cols-12 lg:items-end lg:gap-3">
         <div className="min-w-0 lg:col-span-3">
           <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted">
             Search
@@ -325,7 +327,8 @@ export function ShopBrowser({
             </label>
           </div>
         </div>
-      </div>
+        </div>
+      </details>
 
       <div
         ref={resultsRef}

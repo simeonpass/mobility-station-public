@@ -118,12 +118,12 @@ export function StickyBuyBar({
         >
           Add to cart
         </Button>
-        <a
+        <Link
           href="/contact?interest=callback#callback"
           className="shrink-0 rounded-full border border-primary/25 px-4 py-2.5 text-sm font-semibold text-primary"
         >
           Callback
-        </a>
+        </Link>
       </div>
     </div>
   );
@@ -137,7 +137,7 @@ function useStickyAfterScroll(observeRef: RefObject<HTMLElement | null>) {
     if (!target) return;
 
     const observer = new IntersectionObserver(
-      ([entry]) => setVisible(!entry.isIntersecting),
+      ([entry]) => setVisible(!entry.isIntersecting && entry.boundingClientRect.top < 0),
       { rootMargin: "-80px 0px 0px 0px", threshold: 0 },
     );
     observer.observe(target);

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { X } from "lucide-react";
 import { useCart } from "@/components/cart/cart-provider";
 import { CatalogImage } from "@/components/product/catalog-image";
-import { MotabilityLogo } from "@/components/product/motability-logo";
+import { MotabilitySummary } from "@/components/product/motability-summary";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { SwipeSheet } from "@/components/ui/swipe-sheet";
 import { cartProductFromListItem } from "@/lib/cart";
@@ -147,15 +147,7 @@ function QuickViewSheet({
             ) : (
               <p className="mt-2 text-2xl font-extrabold text-primary">POA</p>
             )}
-            {shown.motability_weekly_price != null &&
-            shown.motability_weekly_price > 0 ? (
-              <p className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted">
-                <span>
-                  or {formatGBP(shown.motability_weekly_price)}/week on
-                </span>
-                <MotabilityLogo height={20} className="shrink-0" />
-              </p>
-            ) : null}
+            <MotabilitySummary weekly={shown.motability_weekly_price} price={shown.motability_price} id={shown.adaptation_id} />
             <p className="mt-2 text-xs font-semibold text-muted">{stock.label}</p>
           </div>
         </div>
