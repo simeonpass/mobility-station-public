@@ -6,12 +6,11 @@ import { CatalogIntro } from "@/components/sections/catalog-intro";
 import { CtaFooter } from "@/components/sections/cta-footer";
 import { getPublishedProducts, type ProductListItem } from "@/lib/products";
 import { createMetadata, jsonLdScript } from "@/lib/seo";
+import { isMotabilityWheelchair, normaliseMotabilityProduct } from "@/lib/motability-catalogue";
 
 export const revalidate = 300;
 export const metadata = createMetadata({ title: "Motability Scooters & Wheelchairs", description: "Motability-accredited scooters and wheelchairs with weekly allowance prices. Free branch demos; home demos £195 (PWSS waived) from Heathrow & Ferndown.", path: "/motability" });
-const WHEELCHAIR_CATS = new Set(["Manual Wheelchairs", "Powered Wheelchairs", "Folding Powered Wheelchairs", "Wheelchairs"]);
 function isMotabilityProduct(p: ProductListItem) { return (p.motability_weekly_price != null && p.motability_weekly_price > 0) || p.motability_price != null; }
-function isWheelchair(p: ProductListItem) { return WHEELCHAIR_CATS.has(p.category || ""); }
 const WEEKLY_BENEFITS = [
   { icon: Wallet, title: "Weekly from your allowance", body: "Exchange a qualifying mobility allowance for a scooter or wheelchair package rather than paying a large retail price." },
   { icon: BadgeCheck, title: "Accredited dealer", body: "We guide you through eligibility, product choice and paperwork in plain English." },
@@ -26,8 +25,8 @@ const FAQS = [
 
 export default async function MotabilityPage() {
   let products: ProductListItem[] = [];
-  try { const all = await getPublishedProducts({ limit: 500, shopOnly: true }); products = all.filter(isMotabilityProduct).sort((a,b) => (a.motability_weekly_price ?? (a.motability_price === 0 ? 0 : 999)) - (b.motability_weekly_price ?? (b.motability_price === 0 ? 0 : 999))); } catch (error) { console.error("Motability catalogue error:", error); }
-  const scooters = products.filter((p) => !isWheelchair(p)); const wheelchairs = products.filter(isWheelchair);
+  try { const all = await getPublishedProducts({ limit: 500, shopOnly: true }); products = all.filter(isMotabilityProduct).map(normaliseMotabilityProduct).sort((a,b) => (a.motability_weekly_price ?? (a.motability_price === 0 ? 0 : 999)) - (b.motability_weekly_price ?? (b.motability_price === 0 ? 0 : 999))); } catch (error) { console.error("Motability catalogue error:", error); }
+  const scooters = products.filter((p) => !isMotabilityWheelchair(p)); const wheelchairs = products.filter(isMotabilityWheelchair);
   const jsonLd = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: FAQS.map((item) => ({ "@type": "Question", name: item.q, acceptedAnswer: { "@type": "Answer", text: item.a } })) };
   return <>
     <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(jsonLd)} />
