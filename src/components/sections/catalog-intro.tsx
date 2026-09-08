@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 type CatalogCta = { href: string; label: string };
 export function CatalogIntro({ title, subtitle, primary, secondary, primaryAction, eyebrow = "Mobility Station", visual, image, tone = "navy", breadcrumb }: {
   title: ReactNode; subtitle: string; primary?: CatalogCta; secondary?: CatalogCta; primaryAction?: ReactNode;
-  eyebrow?: string; visual?: ReactNode; image?: { src: string; alt: string }; tone?: "navy" | "blue"; breadcrumb?: string;
+  eyebrow?: string; visual?: ReactNode; image?: { src: string; alt: string }; tone?: "navy" | "soft"; breadcrumb?: string;
 }) {
   return <section className={`ms-page-intro ms-intro-${tone}`}><div className={`container-site ${image || visual ? "ms-intro-grid" : "ms-intro-simple"}`}>
     <div>
