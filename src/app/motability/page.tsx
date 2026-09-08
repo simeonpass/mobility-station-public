@@ -6,11 +6,10 @@ import { CatalogIntro } from "@/components/sections/catalog-intro";
 import { CtaFooter } from "@/components/sections/cta-footer";
 import { getPublishedProducts, type ProductListItem } from "@/lib/products";
 import { createMetadata, jsonLdScript } from "@/lib/seo";
-import { isMotabilityWheelchair, normaliseMotabilityProduct } from "@/lib/motability-catalogue";
+import { isMotabilityProduct, isMotabilityWheelchair, normaliseMotabilityProduct } from "@/lib/motability-catalogue";
 
 export const revalidate = 300;
 export const metadata = createMetadata({ title: "Motability Scooters & Wheelchairs", description: "Motability-accredited scooters and wheelchairs with weekly allowance prices. Free branch demos; home demos £195 (PWSS waived) from Heathrow & Ferndown.", path: "/motability" });
-function isMotabilityProduct(p: ProductListItem) { return (p.motability_weekly_price != null && p.motability_weekly_price > 0) || p.motability_price != null; }
 const WEEKLY_BENEFITS = [
   { icon: Wallet, title: "Weekly from your allowance", body: "Exchange a qualifying mobility allowance for a scooter or wheelchair package rather than paying a large retail price." },
   { icon: BadgeCheck, title: "Accredited dealer", body: "We guide you through eligibility, product choice and paperwork in plain English." },

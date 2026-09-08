@@ -31,3 +31,17 @@ export function normaliseMotabilityProduct(product: ProductListItem): ProductLis
 export function isMotabilityWheelchair(product: ProductListItem): boolean {
   return WHEELCHAIR_CATEGORIES.has(product.category || "");
 }
+
+export function isManualWheelchair(product: Pick<ProductListItem, "slug" | "category">): boolean {
+  const category = Object.hasOwn(MODEL_CORRECTIONS, product.slug)
+    ? MODEL_CORRECTIONS[product.slug].category
+    : product.category;
+  return category?.trim().toLowerCase() === "manual wheelchairs";
+}
+
+export function isMotabilityProduct(product: ProductListItem): boolean {
+  return !isManualWheelchair(product) && (
+    (product.motability_weekly_price != null && product.motability_weekly_price > 0) ||
+    product.motability_price != null
+  );
+}

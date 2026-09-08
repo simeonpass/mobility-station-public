@@ -37,6 +37,7 @@ import {
   takeawayCreditForPrice,
 } from "@/lib/takeaway-credit";
 import { getVatPriceDisplay, UK_VAT_PERCENT } from "@/lib/vat";
+import { isManualWheelchair } from "@/lib/motability-catalogue";
 
 export type ProductDetailViewProps = {
   reviews?: ReactNode;
@@ -343,7 +344,7 @@ export function ProductDetailView(props: ProductDetailViewProps) {
                   </div>
                 ) : null}
                 {addonTotal > 0 ? <p className="ms-tax-note">+ {formatGBP(addonTotal)} selected extras</p> : null}
-                <MotabilitySummary weekly={motabilityWeekly} price={motabilityPrice} id={adaptationId} />
+                {!isManualWheelchair(props) ? <MotabilitySummary weekly={motabilityWeekly} price={motabilityPrice} id={adaptationId} /> : null}
                 {!props.isAdaptation && props.stockLabel && (props.stockLabel !== "Order online" || optionsOutOfStock) ? <p className={`ms-stock-note ${stockAvailable ? "" : "text-error"}`}>{optionsOutOfStock ? "Selected option out of stock" : props.stockLabel}</p> : null}
               </>
             )}
