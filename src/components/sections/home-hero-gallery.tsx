@@ -5,9 +5,9 @@ import styles from "./home-hero-gallery.module.css";
 
 const scenes = [
   {
-    src: "/images/hero-options/engineer-hand-controls-inspection.webp",
+    src: "/images/hero-options/engineer-hand-controls-crouched.webp",
     label: "Adaptations, expertly fitted",
-    alt: "AI-created scene of two engineers visually inspecting fitted Jeff Gosling hand controls beside the car’s open driver door",
+    alt: "AI-created scene of an engineer crouching with his back to the camera at an open driver doorway, with fitted Jeff Gosling hand controls visible",
     href: "/vehicle-adaptations/mechanical-hand-controls",
     featured: true,
   },
