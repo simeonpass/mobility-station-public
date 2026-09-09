@@ -1,18 +1,15 @@
 .gallery {min-width:0}
-.collage {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.tile {position:relative;display:block;min-width:0;aspect-ratio:1.38;overflow:hidden;border-radius:16px;background:#dce6ee;isolation:isolate}
-.featured {grid-column:1 / -1;aspect-ratio:2.3}
-.photo {object-fit:cover}
-.tile::after {content:"";position:absolute;inset:35% 0 0;background:linear-gradient(transparent,rgba(7,25,42,.88));pointer-events:none}
-.label {position:absolute;inset:auto 16px 16px;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:8px;color:#fff;font-size:1rem;font-weight:650;line-height:1.35}
-.label svg {flex-shrink:0}
-.tile:hover .label {text-decoration:underline;text-underline-offset:4px}
-.tile:focus-visible,.note:focus-visible {outline:3px solid #246bfe;outline-offset:4px}
-.note {display:flex;align-items:center;gap:14px;margin-top:12px;padding:17px 20px;background:#d6f366;color:#102c46;border-radius:12px}
+.artwork {overflow:hidden;border-radius:22px;background:#e3eef5}
+.photo {display:block;width:100%;height:auto;aspect-ratio:3 / 2}
+.categories {display:flex;justify-content:space-between;flex-wrap:wrap;gap:0 18px;padding:6px 4px}
+.categories a {display:inline-flex;align-items:center;gap:6px;min-height:44px;font-size:.875rem;font-weight:600;color:#102c46}
+.categories svg {flex-shrink:0}
+.categories a:hover {text-decoration:underline;text-underline-offset:4px}
+.categories a:focus-visible,.note:focus-visible {outline:3px solid #246bfe;outline-offset:4px}
+.note {display:flex;align-items:center;gap:14px;padding:17px 20px;background:#d6f366;color:#102c46;border-radius:12px}
 .note strong {display:block;font-size:1rem}
 .note small {display:block;font-size:.875rem;margin-top:2px;line-height:1.4}
 .note>svg {flex-shrink:0}
 .note>svg:last-child {margin-left:auto}
 .note:hover strong {text-decoration:underline;text-underline-offset:4px}
-@media(max-width:780px) {.featured {aspect-ratio:2}.tile:not(.featured) {aspect-ratio:1.45}}
-@media(max-width:420px) {.collage {gap:8px}.label {inset:auto 10px 12px;font-size:.875rem;gap:4px}.note {padding:14px;gap:10px}.note>svg:first-child {display:none}}
+@media(max-width:420px) {.artwork {border-radius:16px}.categories {gap:0 12px;justify-content:flex-start}.note {padding:14px;gap:10px}.note>svg:first-child {display:none}}

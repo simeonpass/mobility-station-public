@@ -484,6 +484,9 @@ h3 {font-weight:650}
   .ms-compare-table th,.ms-compare-table td {padding:16px}
 }
 
-/* Keep the service-led hero headline readable alongside all three images. */
-.ms-hero h1 {font-size:clamp(2.25rem,3.7vw,3.65rem);line-height:1.12;letter-spacing:-.045em}
-@media(max-width:780px) {.ms-hero h1 {font-size:clamp(2.15rem,6.7vw,3.4rem);letter-spacing:-.04em}.ms-hero {gap:24px}}
+/* Give the product campaign room beside the concise hero headline. */
+.ms-hero {grid-template-columns:minmax(0,.85fr) minmax(0,1.25fr);gap:40px}
+.ms-hero h1 {font-size:clamp(2.8rem,4.4vw,4.4rem);line-height:1.08;letter-spacing:-.045em}
+.ms-hero-description {max-width:370px}
+@media(max-width:1000px) and (min-width:781px) {.ms-hero {gap:24px}.ms-hero h1 {font-size:clamp(2.4rem,4.4vw,3rem)}}
+@media(max-width:780px) {.ms-hero {grid-template-columns:minmax(0,1fr);gap:24px}.ms-hero h1 {font-size:clamp(2.75rem,9vw,4.2rem);letter-spacing:-.04em}.ms-hero-description {max-width:480px}}
