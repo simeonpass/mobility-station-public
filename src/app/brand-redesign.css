@@ -483,3 +483,10 @@ h3 {font-weight:650}
   .ms-compare-spacer {height:220px}
   .ms-compare-table th,.ms-compare-table td {padding:16px}
 }
+
+/* Balance the service headline with the adaptation collage. */
+.ms-hero {grid-template-columns:minmax(0,.85fr) minmax(0,1.25fr);gap:40px}
+.ms-hero h1 {font-size:clamp(2.35rem,3.65vw,3.65rem);line-height:1.12;letter-spacing:-.04em;text-wrap:balance}
+.ms-hero-description {max-width:370px}
+@media(max-width:1000px) and (min-width:781px) {.ms-hero {gap:24px}.ms-hero h1 {font-size:clamp(2.15rem,3.65vw,2.65rem)}}
+@media(max-width:780px) {.ms-hero {grid-template-columns:minmax(0,1fr);gap:24px}.ms-hero h1 {font-size:clamp(2.2rem,7.2vw,3.6rem);letter-spacing:-.04em}.ms-hero-description {max-width:480px}}
