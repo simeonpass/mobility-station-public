@@ -11,7 +11,7 @@
 ::selection {background:#d6f366;color:#102c46}
 :focus-visible {outline-color:#246bfe}
 .container-site {max-width:1416px;padding-inline:48px}
-.ms-logo {display:inline-flex;align-items:center;flex-shrink:0;width:184px;color:var(--primary)}
+.ms-logo {display:inline-flex;align-items:center;flex-shrink:0;width:150px;color:var(--primary)}
 .ms-logo img {display:block;width:100%;height:auto}
 .ms-logo .ms-logo-dark {display:none}
 .ms-footer .ms-logo-light {display:none}
@@ -71,7 +71,7 @@ input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:f
 @media(max-width:1150px) {.container-site {padding-inline:30px}.ms-hero {gap:32px}.ms-hero h1 {letter-spacing:-3px}.ms-hero-visual {height:485px}.ms-button {padding-inline:17px}.ms-hero-note {left:-14px;padding:16px}.ms-trust {flex-wrap:wrap}.ms-trust>span,.ms-trust>a,.ms-trust>.ms-trust-review-group {width:calc(50% - 10px)}}
 @media(max-width:780px) {
   .container-site {padding-inline:20px}
-  .ms-logo {width:176px}
+  .ms-logo {width:132px}
   .ms-hero {grid-template-columns:1fr;padding-top:20px;gap:30px;padding-bottom:35px}
   .ms-hero-copy {padding:15px 0 0}
   .ms-hero h1 {font-size:clamp(3.2rem,10.5vw,4.8rem);letter-spacing:-2.8px;margin:20px 0}
@@ -90,7 +90,7 @@ input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:f
   .ms-service-card>img {height:230px}
   .ms-service-card>div {padding:25px}
 }
-@media(max-width:420px) {.ms-hero-visual {height:360px}.ms-note-icon {display:none}.ms-image-kicker {font-size:.65rem}.ms-hero-actions {flex-direction:column;align-items:stretch}.ms-logo {width:166px}}
+@media(max-width:420px) {.ms-hero-visual {height:360px}.ms-note-icon {display:none}.ms-image-kicker {font-size:.65rem}.ms-hero-actions {flex-direction:column;align-items:stretch}.ms-logo {width:120px}}
 @media(prefers-reduced-motion:reduce) {.ms-button,.ms-hero-note,.ms-service-card>img {transition:none}.ms-button:hover,.ms-hero-note:hover {transform:none}}
 
 /* Restore the quiet layout and type proportions of the approved redesign. */
@@ -130,7 +130,7 @@ h3 {font-weight:650}
 .ms-footer .ms-logo {margin-bottom:24px}
 .ms-footer-grid {display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;padding-bottom:40px}
 .ms-footer p,.ms-footer a {font-size:.8125rem}
-.ms-footer .ms-logo {width:184px}
+.ms-footer .ms-logo {width:150px}
 .ms-footer h3 {color:white;font-size:.875rem;font-weight:650;margin-bottom:20px}
 .ms-footer-grid>div>a:not(.ms-logo),.ms-footer-grid>nav>a {display:block;margin-bottom:12px}
 .ms-footer p {margin-bottom:20px}
