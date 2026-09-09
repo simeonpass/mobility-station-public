@@ -5,9 +5,9 @@ import styles from "./home-hero-gallery.module.css";
 
 const scenes = [
   {
-    src: "/images/hero-options/engineer-hand-controls-crouched.webp",
-    label: "Adaptations, expertly fitted",
-    alt: "AI-created scene of an engineer crouching with his back to the camera at an open driver doorway, with fitted Jeff Gosling hand controls visible",
+    src: "/images/hero-options/customer-hand-controls.webp",
+    label: "Drive with confidence",
+    alt: "AI-created customer scene based on our Jeff Gosling push-pull controls photograph, showing a smiling driver with her fingers around the upright hand-control grip beside the steering wheel",
     href: "/vehicle-adaptations/mechanical-hand-controls",
     featured: true,
   },
@@ -18,10 +18,11 @@ const scenes = [
     href: "/vehicle-adaptations/boot-hoists",
   },
   {
-    src: "/images/hero-options/vehicle-handover.webp",
-    label: "Vehicle handovers",
-    alt: "AI-created scene of a happy customer receiving an adapted vehicle and a hand-control demonstration",
-    href: "/vehicle-adaptations",
+    src: "/images/hero-options/engineer-hand-controls-crouched.webp",
+    label: "Professional fitting",
+    alt: "AI-created scene of an engineer crouching with his back to the camera at an open driver doorway, with fitted Jeff Gosling hand controls visible",
+    href: "/vehicle-adaptations/mechanical-hand-controls",
+    uncropped: true,
   },
   {
     src: "/images/hero-options/product-campaign.webp",
@@ -53,7 +54,7 @@ export function HomeHeroGallery() {
                   : scene.href === "/shop"
                     ? "(max-width: 540px) calc(100vw - 40px), (max-width: 780px) 31vw, (max-width: 1416px) 19vw, 252px"
                     : "(max-width: 540px) calc(50vw - 26px), (max-width: 780px) 31vw, (max-width: 1416px) 19vw, 252px"}
-                className={styles.photo}
+                className={`${styles.photo} ${scene.uncropped ? styles.uncropped : ""}`}
               />
             </div>
             <span className={styles.label}>{scene.label}<ArrowUpRight size={17} aria-hidden="true" /></span>

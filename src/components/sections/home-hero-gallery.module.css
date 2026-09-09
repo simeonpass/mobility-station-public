@@ -5,6 +5,7 @@
 .frame {position:relative;aspect-ratio:3 / 2;background:#e3eef5}
 .featured .frame {aspect-ratio:1672 / 941}
 .photo {object-fit:cover;object-position:center}
+.uncropped {object-fit:contain;background:#102c46}
 .label {display:flex;align-items:center;justify-content:space-between;gap:6px;padding:11px 12px;font-size:.875rem;font-weight:600;line-height:1.35}
 .featured .label {padding:13px 16px;font-size:1rem}
 .label svg {flex-shrink:0}
