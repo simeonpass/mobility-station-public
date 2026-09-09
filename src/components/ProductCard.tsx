@@ -5,8 +5,10 @@ import { MotabilitySummary } from "@/components/product/motability-summary";
 import { quickViewPayload } from "@/lib/quick-view";
 import { conditionGradeMeta, conditionLabel, formatGBP, isUsedCondition, primaryImage, stockStatus, type ProductListItem } from "@/lib/products";
 import { getVatPriceDisplay } from "@/lib/vat";
+import { CompareButton } from "@/components/product/product-comparison";
+import { SCOOTER_CATS, WHEELCHAIR_CATS } from "@/lib/shop-catalogue";
 
-export function ProductCard({ product }: { product: ProductListItem }) {
+export function ProductCard({ product, compare = false }: { product: ProductListItem; compare?: boolean }) {
   const vat = getVatPriceDisplay(product);
   const used = isUsedCondition(product.condition);
   const grade = conditionGradeMeta(product.condition_grade);
@@ -43,6 +45,7 @@ export function ProductCard({ product }: { product: ProductListItem }) {
         {!stock.available ? <p className="ms-tax-note">{stock.label}</p> : null}
         <span className="ms-catalog-link">View product <ArrowUpRight size={16} aria-hidden /></span>
       </Link>
+      {compare && [...SCOOTER_CATS, ...WHEELCHAIR_CATS].includes(product.category || "") ? <CompareButton product={{ slug: product.slug, name: product.name }} /> : null}
     </article>
   );
 }

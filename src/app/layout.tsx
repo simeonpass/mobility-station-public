@@ -8,6 +8,7 @@ import { CookieConsentBanner } from "@/components/layout/cookie-consent-banner";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { QuickViewHost } from "@/components/product/product-quick-view";
+import { ProductComparisonProvider } from "@/components/product/product-comparison";
 import { DEFAULT_SHARE_IMAGE, SITE } from "@/lib/seo";
 import "./globals.css";
 import "./brand-redesign.css";
@@ -28,8 +29,8 @@ export const metadata: Metadata = {
   description:
     "Vehicle adaptations, mobility scooters and wheelchairs from Heathrow & Ferndown. Motability accredited. Home and branch demonstrations available.",
   icons: {
-    icon: [{ url: "/brand/refined-a/icon.svg", type: "image/svg+xml" }],
-    apple: [{ url: "/brand/refined-a/apple-touch-icon.png", sizes: "180x180" }],
+    icon: [{ url: "/brand/site-palette/icon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
   },
   openGraph: {
     type: "website",
@@ -55,6 +56,7 @@ export default function RootLayout({
     <html lang="en-GB" className={`${geist.variable} h-full`} data-scroll-behavior="smooth">
       <body className="min-h-full flex flex-col font-sans antialiased">
         <CartProvider>
+          <ProductComparisonProvider>
           <a href="#main-content" className="skip-to-content">
             Skip to main content
           </a>
@@ -66,6 +68,7 @@ export default function RootLayout({
           <CookieConsentBanner />
           <Analytics />
           <SpeedInsights />
+          </ProductComparisonProvider>
         </CartProvider>
       </body>
     </html>

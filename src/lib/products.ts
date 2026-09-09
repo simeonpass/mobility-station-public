@@ -1,5 +1,6 @@
 import { unstable_cache } from "next/cache";
 import { createClient } from "@supabase/supabase-js";
+import { cleanProductDescription } from "@/lib/product-content";
 import {
   isAdaptationProduct,
 } from "@/lib/adaptations";
@@ -44,6 +45,7 @@ export type ProductListItem = {
   condition: "new" | "ex-demo" | "refurbished" | "pre-owned" | null;
   condition_grade: "A" | "B" | "C" | null;
   pre_order_enabled: boolean;
+  weight?: number | null;
 };
 
 export type ProductVariant = {
@@ -92,7 +94,7 @@ const LIST_COLUMNS = `
   id, name, slug, category, manufacturer, unit_price, sale_price,
   motability_price, motability_weekly_price, adaptation_id, is_featured, image_url,
   product_type, quantity, track_stock,
-  condition, condition_grade, pre_order_enabled
+  condition, condition_grade, pre_order_enabled, weight
 `;
 
 export function categoryToSlug(category: string) {
@@ -443,7 +445,7 @@ export async function getProductBySlug(
       ${LIST_COLUMNS},
       seo_title, meta_description,
       description, features, specifications, suitability_info,
-      weight, dimensions, colour_options, delivery_estimate,
+      dimensions, colour_options, delivery_estimate,
       pre_order_message, video_url, sku, location,
       is_discontinued, discontinued_message,
       variant_group_id, variant_label
@@ -483,6 +485,7 @@ export async function getProductBySlug(
   return {
     ...mapped,
     ...(product as ProductDetail),
+    description: cleanProductDescription(product.description),
     track_stock: mapped.track_stock,
     pre_order_enabled: mapped.pre_order_enabled,
     is_discontinued: Boolean(

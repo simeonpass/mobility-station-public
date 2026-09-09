@@ -38,6 +38,9 @@ import {
 } from "@/lib/takeaway-credit";
 import { getVatPriceDisplay, UK_VAT_PERCENT } from "@/lib/vat";
 import { isManualWheelchair } from "@/lib/motability-catalogue";
+import { cleanProductDescription } from "@/lib/product-content";
+import { getProductFacts } from "@/lib/product-facts";
+import { resolveDeliveryTiming } from "@/lib/delivery-timing";
 
 export type ProductDetailViewProps = {
   reviews?: ReactNode;
@@ -255,13 +258,18 @@ export function ProductDetailView(props: ProductDetailViewProps) {
     isTakeawayEligibleProduct({ category: props.category, name: props.name }) && props.priceCurrent != null
       ? takeawayCreditForPrice(props.priceCurrent) : 0;
   const schemePrice = motabilityPriceLabel(motabilityWeekly, motabilityPrice);
-  const descriptionText = props.description?.replace(/,? available now at Lightweight Mobility\.?/gi, ".").replace(/\s+/g, " ").trim() ?? "";
+  const description = cleanProductDescription(props.description);
+  const descriptionText = description?.replace(/\s+/g, " ").trim() ?? "";
+  const keyFacts = getProductFacts({ ...props, description });
+  const deliveryTiming = !props.isAdaptation && stockAvailable ? resolveDeliveryTiming({
+    deliveryEstimate: props.deliveryEstimate, trackStock: props.trackStock ?? true, manufacturer: props.manufacturer,
+  }) : null;
   const firstSentence = descriptionText.match(/^.*?[.!?](?:\s|$)/)?.[0]?.trim() || descriptionText;
   const shortDescription = firstSentence.length > 220 ? firstSentence.slice(0, 217).replace(/\s+\S*$/, "") + "…" : firstSentence;
   const sections: Array<{ id: string; title: string; content: ReactNode }> = [];
   if (props.description) sections.push({
     id: "description", title: props.isAdaptation ? "About this adaptation" : "About this product",
-    content: <div className="space-y-4">{props.description.split(/\n{2,}/).map((p) => p.trim()).filter(Boolean).map((p, i) => <p key={i} className="whitespace-pre-line">{p}</p>)}</div>,
+    content: <div className="space-y-4">{description?.split(/\n{2,}/).map((p) => p.trim()).filter(Boolean).map((p, i) => <p key={i} className="whitespace-pre-line">{p}</p>)}</div>,
   });
   if (props.features.length) sections.push({
     id: "features", title: "Key features",
@@ -386,6 +394,14 @@ export function ProductDetailView(props: ProductDetailViewProps) {
               <EnquiryDialog mode="callback" title="Ask about availability" defaultTopic="Product availability" productSlug={props.slug} productLabel={props.name} triggerClassName="ms-button ms-product-primary">Ask about availability</EnquiryDialog>
             )}
           </div>
+          {!props.isAdaptation && !motabilityMode && deliveryTiming ? <div className="ms-delivery-summary">
+            <p>{deliveryTiming.prefix} <strong>{deliveryTiming.highlight}</strong>{deliveryTiming.suffix ? ` ${deliveryTiming.suffix}` : ""}.</p>
+            <Link href="/delivery">Delivery, collection &amp; setup options</Link>
+          </div> : null}
+          {!props.isAdaptation && keyFacts.length > 0 ? <section className="ms-key-facts" aria-label="Essential product information">
+            <dl>{keyFacts.map(fact => <div key={fact.id}><dt>{fact.label}</dt><dd>{fact.value}</dd></div>)}</dl>
+            <p>Range varies with use. Ask our team to confirm lifting weight, battery inclusion and fit for your car.</p>
+          </section> : null}
           <p className="ms-product-support">Heathrow &amp; Ferndown · Specialist advice &amp; ongoing support</p>
           {props.discontinuedMessage ? <p className="text-sm text-muted">{props.discontinuedMessage}</p> : null}
         </div>

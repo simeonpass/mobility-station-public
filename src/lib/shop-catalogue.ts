@@ -1,4 +1,6 @@
 import { displayPrice, type ProductListItem } from "@/lib/products";
+import { normaliseManufacturer } from "@/lib/product-content";
+import { getVatPriceDisplay } from "@/lib/vat";
 
 export const SHOP_PAGE_SIZE = 12;
 
@@ -10,6 +12,7 @@ export type ShopSortKey =
   | "motability";
 
 export type ShopSub = "" | "scooters" | "wheelchairs";
+export type PortabilityFilter = "" | "folding" | "under-20kg";
 
 export type ShopFilters = {
   query: string;
@@ -21,6 +24,8 @@ export type ShopFilters = {
   sub: ShopSub;
   /** 1-based number of result pages to render on the server. */
   page: number;
+  maxPrice: number | null;
+  portability: PortabilityFilter;
 };
 
 export const SCOOTER_CATS = [
@@ -62,10 +67,12 @@ export function parseShopFilters(
   const subRaw = one("sub");
   const sortRaw = one("sort");
   const pageRaw = Number(one("page"));
+  const maxPrice = Number(one("maxPrice"));
+  const portability = one("portability");
   return {
     query: one("q").trim(),
     category: one("category"),
-    manufacturer: one("manufacturer"),
+    manufacturer: normaliseManufacturer(one("manufacturer")),
     sort: SORT_KEYS.includes(sortRaw as ShopSortKey)
       ? (sortRaw as ShopSortKey)
       : "featured",
@@ -73,6 +80,8 @@ export function parseShopFilters(
     clearanceOnly: one("clearance") === "1",
     sub: subRaw === "scooters" || subRaw === "wheelchairs" ? subRaw : "",
     page: Number.isFinite(pageRaw) ? Math.min(20, Math.max(1, Math.floor(pageRaw))) : 1,
+    maxPrice: Number.isFinite(maxPrice) && maxPrice > 0 ? maxPrice : null,
+    portability: portability === "folding" || portability === "under-20kg" ? portability : "",
   };
 }
 
@@ -86,13 +95,16 @@ export function shopFiltersToSearchParams(filters: ShopFilters) {
   if (filters.motabilityOnly) params.set("motability", "1");
   if (filters.clearanceOnly) params.set("clearance", "1");
   if (filters.page > 1) params.set("page", String(filters.page));
+  if (filters.maxPrice != null) params.set("maxPrice", String(filters.maxPrice));
+  if (filters.portability) params.set("portability", filters.portability);
   return params;
 }
 
 export function shopManufacturers(products: ProductListItem[]) {
   const set = new Set<string>();
   for (const product of products) {
-    if (product.manufacturer) set.add(product.manufacturer);
+    const name = normaliseManufacturer(product.manufacturer);
+    if (name) set.add(name);
   }
   return [...set].sort((a, b) => a.localeCompare(b));
 }
@@ -114,7 +126,23 @@ export function filterShopProducts(
   }
 
   if (filters.manufacturer) {
-    list = list.filter((p) => p.manufacturer === filters.manufacturer);
+    list = list.filter((p) => normaliseManufacturer(p.manufacturer) === normaliseManufacturer(filters.manufacturer));
+  }
+
+  if (filters.maxPrice != null) {
+    list = list.filter((product) => {
+      const vat = getVatPriceDisplay(product);
+      const price = vat.mode === "always-inc" ? vat.gross : vat.net;
+      return price != null && price <= filters.maxPrice!;
+    });
+  }
+
+  if (filters.portability) {
+    list = list.filter((product) => {
+      if (![...SCOOTER_CATS, ...WHEELCHAIR_CATS].includes(product.category || "")) return false;
+      if (filters.portability === "folding") return /\bfold(?:ing|able)?\b/i.test(`${product.category} ${product.name}`);
+      return product.weight != null && product.weight > 0 && product.weight < 20;
+    });
   }
 
   if (filters.query) {
