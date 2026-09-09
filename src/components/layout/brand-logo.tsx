@@ -15,10 +15,16 @@ export function BrandLogo({
       <svg width="0" height="0" aria-hidden="true" focusable="false" className="ms-logo-filters">
         <defs>
           <filter id={filterId} colorInterpolationFilters="sRGB" x="0" y="0" width="100%" height="100%">
+            {/* A subpixel alpha adjustment lightens the strokes without rescaling the logo. */}
+            <feGaussianBlur in="SourceAlpha" stdDeviation="0.8" result="soft-alpha" />
+            <feComponentTransfer in="soft-alpha" result="slim-alpha">
+              <feFuncA type="linear" slope="4" intercept="-2.3" />
+            </feComponentTransfer>
+            <feComposite in="SourceGraphic" in2="slim-alpha" operator="in" result="slim-artwork" />
             {/* The clear gap at 32% separates the original icon from both words. */}
             <feFlood x="32%" y="0" width="68%" height="100%" floodColor={tone === "dark" ? "#ffffff" : "#102C46"} result="wordmark-fill" />
-            <feComposite in="wordmark-fill" in2="SourceAlpha" operator="in" result="wordmark" />
-            <feComposite in="SourceGraphic" in2="wordmark-fill" operator="out" result="original-icon" />
+            <feComposite in="wordmark-fill" in2="slim-alpha" operator="in" result="wordmark" />
+            <feComposite in="slim-artwork" in2="wordmark-fill" operator="out" result="original-icon" />
             {tone === "dark" && (
               <>
                 {/* Lift the navy person to white; retain the blue wheel and lime detail. */}
