@@ -6,12 +6,12 @@ export function BrandLogo({
   tone = "light",
 }: {
   onNavigate?: () => void;
-  tone?: "light" | "dark";
+  tone?: "light" | "dark" | "badge";
 }) {
   const filterId = `ms-2026-logo-${tone}`;
 
   return (
-    <Link href="/" className="ms-logo" aria-label="Mobility Station home" onClick={onNavigate}>
+    <Link href="/" className={tone === "badge" ? "ms-logo ms-logo-badge" : "ms-logo"} aria-label="Mobility Station home" onClick={onNavigate}>
       <svg width="0" height="0" aria-hidden="true" focusable="false" className="ms-logo-filters">
         <defs>
           <filter id={filterId} colorInterpolationFilters="sRGB" x="0" y="0" width="100%" height="100%">
@@ -39,8 +39,8 @@ export function BrandLogo({
         alt=""
         width={2048}
         height={768}
-        sizes={tone === "dark" ? "220px" : "(max-width: 420px) 166px, (max-width: 780px) 176px, 200px"}
-        loading={tone === "dark" ? "lazy" : "eager"}
+        sizes={tone === "badge" ? "244px" : tone === "dark" ? "220px" : "(max-width: 420px) 166px, (max-width: 780px) 176px, 200px"}
+        loading={tone === "light" ? "eager" : "lazy"}
         style={{ filter: `url(#${filterId})` }}
       />
     </Link>
