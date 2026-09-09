@@ -11,11 +11,9 @@
 ::selection {background:#d6f366;color:#102c46}
 :focus-visible {outline-color:#246bfe}
 .container-site {max-width:1416px;padding-inline:48px}
-.ms-logo {display:inline-flex;align-items:center;flex-shrink:0;width:184px;color:var(--primary)}
+.ms-logo {display:inline-flex;align-items:center;flex-shrink:0;width:200px;color:var(--primary)}
 .ms-logo img {display:block;width:100%;height:auto}
-.ms-logo .ms-logo-dark {display:none}
-.ms-footer .ms-logo-light {display:none}
-.ms-footer .ms-logo-dark {display:block}
+.ms-logo-filters {position:absolute;pointer-events:none}
 .ms-brand-dot {color:#246bfe}
 .ms-footer .ms-logo {color:#fff}
 .ms-footer {background:#102c46}
@@ -130,7 +128,7 @@ h3 {font-weight:650}
 .ms-footer .ms-logo {margin-bottom:24px}
 .ms-footer-grid {display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;padding-bottom:40px}
 .ms-footer p,.ms-footer a {font-size:.8125rem}
-.ms-footer .ms-logo {width:184px}
+.ms-footer .ms-logo {width:220px}
 .ms-footer h3 {color:white;font-size:.875rem;font-weight:650;margin-bottom:20px}
 .ms-footer-grid>div>a:not(.ms-logo),.ms-footer-grid>nav>a {display:block;margin-bottom:12px}
 .ms-footer p {margin-bottom:20px}
