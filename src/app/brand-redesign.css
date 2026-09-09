@@ -483,3 +483,7 @@ h3 {font-weight:650}
   .ms-compare-spacer {height:220px}
   .ms-compare-table th,.ms-compare-table td {padding:16px}
 }
+
+/* Keep the service-led hero headline readable alongside all three images. */
+.ms-hero h1 {font-size:clamp(2.25rem,3.7vw,3.65rem);line-height:1.12;letter-spacing:-.045em}
+@media(max-width:780px) {.ms-hero h1 {font-size:clamp(2.15rem,6.7vw,3.4rem);letter-spacing:-.04em}.ms-hero {gap:24px}}
