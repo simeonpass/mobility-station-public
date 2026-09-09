@@ -7,7 +7,7 @@ export function HomeHero() {
       <section className="ms-hero container-site">
         <div className="ms-hero-copy">
           <p className="ms-eyebrow"><i aria-hidden="true" />Your independence. Our expertise.</p>
-          <h1>Adaptations<br /><span>&amp; mobility.</span></h1>
+          <h1>Vehicle adaptations.<br /><span>Mobility made personal.</span></h1>
           <p className="ms-hero-description">Vehicle adaptations, expertly fitted. Scooters and wheelchairs chosen around you.</p>
           <div className="ms-hero-actions">
             <Link href="/vehicle-adaptations" className="ms-button">Explore vehicle adaptations <ArrowUpRight size={19} aria-hidden="true" /></Link>
