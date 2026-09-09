@@ -1,15 +1,26 @@
 .gallery {min-width:0}
-.artwork {overflow:hidden;border-radius:22px;background:#e3eef5}
-.photo {display:block;width:100%;height:auto;aspect-ratio:3 / 2}
-.categories {display:flex;justify-content:space-between;flex-wrap:wrap;gap:0 18px;padding:6px 4px}
-.categories a {display:inline-flex;align-items:center;gap:6px;min-height:44px;font-size:.875rem;font-weight:600;color:#102c46}
-.categories svg {flex-shrink:0}
-.categories a:hover {text-decoration:underline;text-underline-offset:4px}
-.categories a:focus-visible,.note:focus-visible {outline:3px solid #246bfe;outline-offset:4px}
-.note {display:flex;align-items:center;gap:14px;padding:17px 20px;background:#d6f366;color:#102c46;border-radius:12px}
+.collage {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:14px}
+.scene {display:block;min-width:0;background:#fff;border-radius:12px;overflow:hidden;color:#102c46}
+.featured {grid-column:1 / -1;border-radius:20px 20px 12px 12px}
+.frame {position:relative;aspect-ratio:3 / 2;background:#e3eef5}
+.featured .frame {aspect-ratio:16 / 9}
+.photo {object-fit:cover;object-position:center}
+.label {display:flex;align-items:center;justify-content:space-between;gap:6px;padding:11px 12px;font-size:.875rem;font-weight:600;line-height:1.35}
+.featured .label {padding:13px 16px;font-size:1rem}
+.label svg {flex-shrink:0}
+.scene:hover .label {text-decoration:underline;text-underline-offset:4px}
+.scene:focus-visible,.note:focus-visible {outline:3px solid #246bfe;outline-offset:4px}
+.note {display:flex;align-items:center;gap:14px;padding:16px 20px;background:#d6f366;color:#102c46;border-radius:12px}
 .note strong {display:block;font-size:1rem}
 .note small {display:block;font-size:.875rem;margin-top:2px;line-height:1.4}
 .note>svg {flex-shrink:0}
 .note>svg:last-child {margin-left:auto}
 .note:hover strong {text-decoration:underline;text-underline-offset:4px}
-@media(max-width:420px) {.artwork {border-radius:16px}.categories {gap:0 12px;justify-content:flex-start}.note {padding:14px;gap:10px}.note>svg:first-child {display:none}}
+@media(max-width:540px) {
+  .collage {grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .scene:last-child {grid-column:1 / -1}
+  .scene:last-child .frame {aspect-ratio:3 / 2}
+  .label {padding:10px;font-size:.875rem}
+  .note {padding:14px;gap:10px}
+  .note>svg:first-child {display:none}
+}
