@@ -68,7 +68,7 @@ export function ClearanceBrowser({ products }: { products: ProductListItem[] }) 
       {filtered.length ? (
         <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {filtered.map((p) => (
-            <ProductCard key={p.id} product={p} />
+            <ProductCard key={p.id} product={p} compare />
           ))}
         </div>
       ) : (

@@ -24,7 +24,7 @@ export default async function ShopPage({ searchParams }: Props) {
     <CatalogIntro tone="soft" breadcrumb="Scooters & wheelchairs" eyebrow="Your everyday, opened up." title={<>A little more<br />freedom to explore.</>} subtitle="Lightweight for your next getaway. Comfortable for the everyday. Find the scooter or wheelchair that fits your life, with a little help from our team." primary={{ href: "/book-a-demo", label: "Try it with a demonstration" }} image={{ src: "/images/redesign/scooter.webp", alt: "Mobility scooter demonstration" }} />
     <TrustStrip />
     <section id="catalogue" className="container-site ms-section scroll-under-header"><div className="ms-section-heading"><div><p className="ms-eyebrow">Let’s find your fit</p><h2>Explore our mobility range</h2></div><Link href="/clearance" className="ms-clearance-link">Shop clearance offers ↗</Link></div>
-    {errorMessage ? <p>{errorMessage}</p> : <Suspense fallback={<p>Loading products…</p>}><ShopBrowser visibleCount={page.length} totalCount={filtered.length} catalogueSize={catalogue.length} categories={categories} manufacturers={shopManufacturers(catalogue)} filters={filters}>{page.map(product => <ProductCard key={product.id} product={product} />)}</ShopBrowser></Suspense>}
+    {errorMessage ? <p>{errorMessage}</p> : <Suspense fallback={<p>Loading products…</p>}><ShopBrowser visibleCount={page.length} totalCount={filtered.length} catalogueSize={catalogue.length} categories={categories} manufacturers={shopManufacturers(catalogue)} filters={filters}>{page.map(product => <ProductCard key={product.id} product={product} compare />)}</ShopBrowser></Suspense>}
     </section><CtaFooter />
   </>;
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { startTransition, useEffect, useMemo, useState } from "react";
+import { startTransition, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FieldError, FormError, fieldValidity } from "@/components/forms/field-error";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,9 @@ import {
   createBookingRef,
   earliestPreferredDate,
   isPwssEligible,
+  isWeekday,
+  parseIsoDate,
+  formatPreferredDate,
   leadClearDaysForLocation,
   toIsoDate,
   type CustomerType,
@@ -85,8 +88,8 @@ const STEPS: { id: Step; title: string }[] = [
   { id: 1, title: "What are you demoing?" },
   { id: 2, title: "Where?" },
   { id: 3, title: "Customer type" },
-  { id: 4, title: "Your details" },
-  { id: 5, title: "Date & time" },
+  { id: 4, title: "Preferred date & time" },
+  { id: 5, title: "Your details" },
   { id: 6, title: "Payment" },
 ];
 
@@ -101,17 +104,22 @@ function optionClass(active: boolean) {
 export function DemoBookingForm({
   defaultProductName = "",
   defaultCategory,
+  defaultEquipmentKind,
 }: {
   defaultProductName?: string;
   defaultCategory?: DemoProductCategory;
+  defaultEquipmentKind?: ScooterWheelchairKind;
 }) {
   const router = useRouter();
   const { ready: dnaReady, failed: dnaFailed } = useDnaPaymentsSdk();
-  const [step, setStep] = useState<Step>(defaultCategory ? 2 : 1);
+  const [step, setStep] = useState<Step>(defaultCategory === "vehicle_adaptation" || defaultEquipmentKind ? 2 : 1);
+  const formRef = useRef<HTMLDivElement>(null);
+  const previousStep = useRef(step);
   const [form, setForm] = useState<FormState>(() => ({
     ...initialForm,
     productName: defaultProductName,
     productCategory: defaultCategory ?? "",
+    scooterWheelchairKind: defaultEquipmentKind ?? "",
   }));
   const [bookingRef, setBookingRef] = useState(() => createBookingRef());
   const [error, setError] = useState<string | null>(null);
@@ -121,6 +129,13 @@ export function DemoBookingForm({
   const [coverageLoading, setCoverageLoading] = useState(false);
   const [coveredBy, setCoveredBy] = useState<DemoBranch | "">("");
   const [showOutOfAreaForm, setShowOutOfAreaForm] = useState(false);
+
+  useEffect(() => {
+    if (previousStep.current !== step) {
+      formRef.current?.querySelector<HTMLHeadingElement>("h2")?.focus();
+      previousStep.current = step;
+    }
+  }, [step]);
 
   useEffect(() => {
     try {
@@ -272,7 +287,7 @@ export function DemoBookingForm({
     if (current === 3) {
       if (!form.customerType) return "Please choose Private or Motability.";
     }
-    if (current === 4) {
+    if (current === 5) {
       if (!form.name.trim()) return "Please enter your name.";
       if (!form.phone.trim()) return "Please enter your phone number.";
       if (!form.email.trim()) return "Please enter your email.";
@@ -291,8 +306,11 @@ export function DemoBookingForm({
         if (!form.vehicleModel.trim()) return "Please enter the vehicle model.";
       }
     }
-    if (current === 5) {
+    if (current === 4) {
       if (!form.preferredDate) return "Please choose a preferred date.";
+      const date = parseIsoDate(form.preferredDate);
+      if (!date || !isWeekday(date)) return "Please choose a weekday (Monday–Friday).";
+      if (form.preferredDate < minDate) return `Please choose ${formatPreferredDate(minDate)} or later.`;
       if (!form.preferredTime) return "Please choose a time window.";
     }
     return null;
@@ -441,6 +459,7 @@ export function DemoBookingForm({
   }
 
   async function submitBooking(withPayment: boolean) {
+    let bookingSaved = false;
     setSubmitting(true);
     setError(null);
     setFieldErrors({});
@@ -466,11 +485,15 @@ export function DemoBookingForm({
       };
 
       if (!bookRes.ok || bookData.success === false) {
-        if (bookData.errors) setFieldErrors(bookData.errors);
+        if (bookData.errors) {
+          setFieldErrors(bookData.errors);
+          setStep(bookData.errors.preferredDate || bookData.errors.preferredTime ? 4 : 5);
+        }
         throw new Error(bookData.error || "Could not submit booking");
       }
 
       const ref = bookData.bookingRef || bookingRef;
+      bookingSaved = true;
       setBookingRef(ref);
 
       if (!withPayment || !bookData.requiresPayment) {
@@ -517,14 +540,14 @@ export function DemoBookingForm({
       openDnaPaymentPage(paymentData);
       setSubmitting(false);
     } catch (err) {
-      persistRetry();
+      if (withPayment && bookingSaved) persistRetry();
       setError(err instanceof Error ? err.message : "Something went wrong");
       setSubmitting(false);
     }
   }
 
   return (
-    <div className="relative space-y-6">
+    <div ref={formRef} className="relative space-y-6 ms-demo-form">
       {/* Honeypot — backend spam filter relies on company_website */}
       <div
         className="absolute -left-[9999px] h-0 w-0 overflow-hidden opacity-0"
@@ -546,6 +569,7 @@ export function DemoBookingForm({
         {visibleSteps.map((s) => (
           <li
             key={s.id}
+            aria-current={s.id === step ? "step" : undefined}
             className={`rounded-md px-2.5 py-1 text-xs font-semibold ${
               s.id === step
                 ? "bg-primary text-primary-foreground"
@@ -559,9 +583,16 @@ export function DemoBookingForm({
         ))}
       </ol>
 
+      {fee && step >= 4 ? <aside className="ms-demo-summary" aria-label="Your demonstration summary">
+        <p><strong>{form.location === "home" ? "Home demonstration" : `${form.branch === "heathrow" ? "Heathrow" : "Ferndown"} branch demonstration`}</strong><strong>{fee.amountGbp ? formatGBP(fee.amountGbp) : "Free"}</strong></p>
+        {form.productName ? <p>{form.productName}</p> : null}
+        {form.preferredDate ? <p>Preferred: {formatPreferredDate(form.preferredDate)}{form.preferredTime ? ` · ${TIME_WINDOWS.find(window => window.id === form.preferredTime)?.label}` : ""}</p> : null}
+        <p>{fee.amountGbp ? "Non-refundable; deducted in full if you purchase." : fee.explanation} Our team will confirm your appointment.</p>
+      </aside> : null}
+
       {step === 1 ? (
         <div className="space-y-3">
-          <h2 className="text-xl font-extrabold text-primary">
+          <h2 tabIndex={-1} className="text-xl font-extrabold text-primary">
             What are you demoing?
           </h2>
           <button
@@ -603,7 +634,7 @@ export function DemoBookingForm({
 
       {step === 2 ? (
         <div className="space-y-3">
-          <h2 className="text-xl font-extrabold text-primary">Where?</h2>
+          <h2 tabIndex={-1} className="text-xl font-extrabold text-primary">Where?</h2>
           <button
             type="button"
             className={optionClass(form.location === "branch")}
@@ -888,7 +919,7 @@ export function DemoBookingForm({
 
       {step === 3 ? (
         <div className="space-y-3">
-          <h2 className="text-xl font-extrabold text-primary">Customer type</h2>
+          <h2 tabIndex={-1} className="text-xl font-extrabold text-primary">Customer type</h2>
           <button
             type="button"
             className={optionClass(form.customerType === "private")}
@@ -927,9 +958,9 @@ export function DemoBookingForm({
         </div>
       ) : null}
 
-      {step === 4 ? (
+      {step === 5 ? (
         <div className="space-y-4">
-          <h2 className="text-xl font-extrabold text-primary">Your details</h2>
+          <h2 tabIndex={-1} className="text-xl font-extrabold text-primary">Your details</h2>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <Label htmlFor="name">Full name</Label>
@@ -1054,11 +1085,12 @@ export function DemoBookingForm({
         </div>
       ) : null}
 
-      {step === 5 ? (
+      {step === 4 ? (
         <div className="space-y-4">
-          <h2 className="text-xl font-extrabold text-primary">
+          <h2 tabIndex={-1} className="text-xl font-extrabold text-primary">
             Requested date &amp; time
           </h2>
+          <p className="text-sm text-primary">Choose your preferred day and time before entering your contact details. Our team will contact you to confirm availability.</p>
           {form.location === "home" ? (
             <p className="text-sm leading-relaxed text-muted">
               {HOME_DEMO_LEAD_COPY}
@@ -1076,6 +1108,7 @@ export function DemoBookingForm({
               type="date"
               min={minDate}
               value={form.preferredDate}
+              {...fieldValidity("preferredDate-error", fieldErrors.preferredDate?.[0])}
               onChange={(e) => {
                 const value = e.target.value;
                 if (!value) {
@@ -1090,12 +1123,14 @@ export function DemoBookingForm({
                 update("preferredDate", value);
               }}
             />
+            <FieldError id="preferredDate-error" message={fieldErrors.preferredDate?.[0]} />
           </div>
           <div>
             <Label htmlFor="preferredTime">Time window</Label>
             <Select
               id="preferredTime"
               value={form.preferredTime}
+              {...fieldValidity("preferredTime-error", fieldErrors.preferredTime?.[0])}
               onChange={(e) =>
                 update("preferredTime", e.target.value as TimeWindowId | "")
               }
@@ -1107,13 +1142,14 @@ export function DemoBookingForm({
                 </option>
               ))}
             </Select>
+            <FieldError id="preferredTime-error" message={fieldErrors.preferredTime?.[0]} />
           </div>
         </div>
       ) : null}
 
       {step === 6 ? (
         <div className="space-y-4">
-          <h2 className="text-xl font-extrabold text-primary">Payment</h2>
+          <h2 tabIndex={-1} className="text-xl font-extrabold text-primary">Payment</h2>
           <p className="text-sm leading-relaxed text-foreground/85">
             Pay the{" "}
             <strong className="text-foreground">
@@ -1166,7 +1202,7 @@ export function DemoBookingForm({
             {submitting
               ? "Sending…"
               : step === 5 && !requiresPayment
-                ? "Confirm booking"
+                ? "Request demonstration"
                 : "Continue"}
           </Button>
         ) : null}

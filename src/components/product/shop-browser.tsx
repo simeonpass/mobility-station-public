@@ -14,6 +14,7 @@ import {
   type ShopFilters,
   type ShopSortKey,
   type ShopSub,
+  type PortabilityFilter,
 } from "@/lib/shop-catalogue";
 import { cn } from "@/lib/utils";
 
@@ -35,14 +36,16 @@ export function ShopBrowser({
   filters: ShopFilters;
 }) {
   const router = useRouter();
-  const [, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
   const [queryInput, setQueryInput] = useState(filters.query);
+  const [committedQuery, setCommittedQuery] = useState(filters.query);
   const resultsRef = useRef<HTMLDivElement>(null);
   const shouldScrollToResults = useRef(false);
 
-  useEffect(() => {
+  if (committedQuery !== filters.query) {
+    setCommittedQuery(filters.query);
     setQueryInput(filters.query);
-  }, [filters.query]);
+  }
 
   useEffect(() => {
     if (queryInput === filters.query) return;
@@ -60,7 +63,7 @@ export function ShopBrowser({
     requestAnimationFrame(() => {
       resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
-  }, [filters.category, filters.manufacturer, filters.sub, filters.motabilityOnly, filters.clearanceOnly, filters.sort, filters.page]);
+  }, [filters.category, filters.manufacturer, filters.sub, filters.motabilityOnly, filters.clearanceOnly, filters.sort, filters.page, filters.maxPrice, filters.portability]);
 
   function replaceFilters(next: Partial<ShopFilters>) {
     const resetPage = next.page == null;
@@ -163,6 +166,14 @@ export function ShopBrowser({
       },
     });
   }
+  if (filters.maxPrice != null) activeFilters.push({
+    key: "maxPrice", label: `Up to £${filters.maxPrice.toLocaleString("en-GB")}`,
+    clear: () => replaceFilters({ maxPrice: null }),
+  });
+  if (filters.portability) activeFilters.push({
+    key: "portability", label: filters.portability === "folding" ? "Folding models" : "Listed weight under 20 kg",
+    clear: () => replaceFilters({ portability: "" }),
+  });
 
   function clearAll() {
     setQueryInput("");
@@ -175,6 +186,8 @@ export function ShopBrowser({
       clearanceOnly: false,
       sub: "",
       sort: "featured",
+      maxPrice: null,
+      portability: "",
     });
   }
 
@@ -214,15 +227,16 @@ export function ShopBrowser({
         })}
       </div>
 
-      <details className="ms-shop-refinements" open={activeFilters.length > 0 || filters.sort !== "featured"}>
+      <details className="ms-shop-refinements" open>
         <summary>Search, filter &amp; sort products <span aria-hidden>＋</span></summary>
         <div className="grid gap-3 pb-5 sm:grid-cols-2 lg:grid-cols-12 lg:items-end lg:gap-3">
         <div className="min-w-0 lg:col-span-3">
-          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted">
+          <label htmlFor="shop-search" className="mb-1.5 block text-sm font-semibold text-muted">
             Search
           </label>
           <div className="relative">
             <Input
+              id="shop-search"
               value={queryInput}
               onChange={(e) => setQueryInput(e.target.value)}
               placeholder="Name or brand…"
@@ -238,10 +252,11 @@ export function ShopBrowser({
           </div>
         </div>
         <div className="min-w-0 lg:col-span-2">
-          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted">
+          <label htmlFor="shop-type" className="mb-1.5 block text-sm font-semibold text-muted">
             Type
           </label>
           <Select
+            id="shop-type"
             value={filters.category}
             onChange={(e) => {
               markScrollToResults();
@@ -258,10 +273,11 @@ export function ShopBrowser({
           </Select>
         </div>
         <div className="min-w-0 lg:col-span-2">
-          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted">
+          <label htmlFor="shop-brand" className="mb-1.5 block text-sm font-semibold text-muted">
             Brand
           </label>
           <Select
+            id="shop-brand"
             value={filters.manufacturer}
             onChange={(e) => {
               markScrollToResults();
@@ -278,10 +294,11 @@ export function ShopBrowser({
           </Select>
         </div>
         <div className="min-w-0 lg:col-span-2">
-          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted">
+          <label htmlFor="shop-sort" className="mb-1.5 block text-sm font-semibold text-muted">
             Sort
           </label>
           <Select
+            id="shop-sort"
             value={filters.sort}
             onChange={(e) => {
               markScrollToResults();
@@ -327,6 +344,32 @@ export function ShopBrowser({
             </label>
           </div>
         </div>
+        <div className="min-w-0 lg:col-span-3">
+          <label htmlFor="shop-budget" className="mb-1.5 block text-sm font-semibold text-muted">Maximum price</label>
+          <Select id="shop-budget" value={filters.maxPrice ?? ""} onChange={(event) => {
+            markScrollToResults();
+            replaceFilters({ maxPrice: event.target.value ? Number(event.target.value) : null });
+          }} aria-describedby="shop-budget-note">
+            <option value="">Any budget</option>
+            {[500, 1000, 1500, 2500, 5000].map((amount) => <option key={amount} value={amount}>Up to £{amount.toLocaleString("en-GB")}</option>)}
+            {filters.maxPrice != null && ![500, 1000, 1500, 2500, 5000].includes(filters.maxPrice) ? <option value={filters.maxPrice}>Up to £{filters.maxPrice.toLocaleString("en-GB")}</option> : null}
+          </Select>
+        </div>
+        <div className="min-w-0 lg:col-span-4">
+          <label htmlFor="shop-portability" className="mb-1.5 block text-sm font-semibold text-muted">Portability</label>
+          <Select id="shop-portability" value={filters.portability} onChange={(event) => {
+            markScrollToResults();
+            replaceFilters({ portability: event.target.value as PortabilityFilter });
+          }} aria-describedby="shop-portability-note">
+            <option value="">All models</option>
+            <option value="folding">Folding models</option>
+            <option value="under-20kg">Listed weight under 20 kg</option>
+          </Select>
+        </div>
+        <div className="space-y-1 text-sm text-muted lg:col-span-5">
+          <p id="shop-budget-note">Budget uses the price shown. VAT relief applies where eligible.</p>
+          <p id="shop-portability-note">Listed weight can differ from lifting weight. Compare models or ask our team.</p>
+        </div>
         </div>
       </details>
 
@@ -334,9 +377,11 @@ export function ShopBrowser({
         ref={resultsRef}
         id="catalogue-results"
         className="scroll-under-header"
+        aria-busy={isPending}
       >
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-          <p className="text-sm text-muted">
+          <p className="text-sm text-muted" role="status" aria-live="polite">
+            {isPending ? "Updating… " : ""}
             <span className="font-semibold text-primary">{totalCount}</span>{" "}
             product{totalCount === 1 ? "" : "s"}
             {totalCount !== catalogueSize ? (

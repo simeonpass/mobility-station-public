@@ -30,6 +30,7 @@ function HeaderNavigation({ pathname }: { pathname: string }) {
   return <>
     <div className="ms-utility"><div className="container-site">
       <span><MapPin size={14} aria-hidden />Your local experts in Heathrow &amp; Ferndown</span>
+      <a className="ms-utility-phone" href={SITE.phoneHref}><Phone size={14} aria-hidden />{SITE.phone}</a>
       <Link href="/contact#locations">Visit our branches <ArrowUpRight size={14} aria-hidden /></Link>
     </div></div>
     <header className="ms-header">
@@ -39,6 +40,7 @@ function HeaderNavigation({ pathname }: { pathname: string }) {
           {navigation.map(([label, href]) => <Link key={href} href={href} className={href === "/clearance" ? "ms-clearance-nav" : undefined} aria-current={pathname === href ? "page" : undefined}>{label}</Link>)}
         </nav>
         <a className="ms-header-phone" href={SITE.phoneHref}><Phone size={18} aria-hidden /><span>Let’s talk<strong>{SITE.phone}</strong></span></a>
+        <Link href="/book-a-demo" className="ms-button ms-header-demo">Book a demo</Link>
         <div className="ms-header-tools">
           <button className="ms-icon-button" type="button" aria-label={searchOpen ? "Close search" : "Open search"} aria-expanded={searchOpen} aria-controls="site-search" onClick={() => setSearchOpen(!searchOpen)}>{searchOpen ? <X size={20} /> : <Search size={20} />}</button>
           <CartButton />
