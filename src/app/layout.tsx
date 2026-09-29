@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
 import { CartProvider } from "@/components/cart/cart-provider";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { Analytics } from "@/components/layout/analytics";
@@ -68,6 +69,7 @@ export default function RootLayout({
           <CookieConsentBanner />
           <Analytics />
           <SpeedInsights />
+          <VercelAnalytics />
           </ProductComparisonProvider>
         </CartProvider>
       </body>
