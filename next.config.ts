@@ -8,6 +8,191 @@ import type { NextConfig } from "next";
  * live canonicals. Root `/:slug` already 301s to `/products/:slug` when
  * the product exists (see `src/app/[slug]/page.tsx`).
  */
+
+/**
+ * Current vehicle adaptation category slugs (categoryToSlug() of the
+ * categories in src/lib/adaptations.ts — keep in sync if one is added or
+ * renamed). Old WordPress, Shopify and Lovable adaptation links are matched
+ * against these so each lands on its own adaptation page, never the
+ * scooter & wheelchair shop.
+ */
+const ADAPTATION_CATEGORY_SLUGS = [
+  "mechanical-hand-controls",
+  "electronic-accelerators",
+  "hinged-accelerator",
+  "parking-sensors",
+  "left-foot-accelerators",
+  "pedal-extensions",
+  "pedal-guards",
+  "steering-aids",
+  "electric-handbrakes",
+  "secondary-controls",
+  "easy-release",
+  "boot-hoists",
+  "pre-owned-boot-hoists",
+  "person-hoists",
+  "wheelchair-docking-systems",
+  "wheelchair-stowage-rooftop",
+  "wheelchair-winches",
+  "boot-straps",
+  "automatic-boot-openers",
+  "swivel-seats",
+  "transfer-plates",
+  "side-steps",
+  "grab-handles",
+  "seating-modifications",
+  "protective-screens",
+];
+const ADAPTATION_SLUG_PATTERN = ADAPTATION_CATEGORY_SLUGS.join("|");
+
+/** Old adaptation groups (WordPress and Lovable sites) → today's sections. */
+const OLD_ADAPTATION_GROUPS: Record<string, string> = {
+  "driving-controls": "/vehicle-adaptations/driving-controls",
+  "wheelchair-scooter-loading": "/vehicle-adaptations/hoists-stowage",
+  "swivel-seats-vehicle-access": "/vehicle-adaptations/vehicle-access",
+  "general-adaptations": "/vehicle-adaptations",
+};
+
+/** Current scooter & wheelchair shop category slugs. */
+const SHOP_CATEGORY_PATTERN = [
+  "large-mobility-scooters",
+  "mid-size-scooters",
+  "small-scooters",
+  "folding-mobility-scooters",
+  "powered-wheelchairs",
+  "folding-powered-wheelchairs",
+  "manual-wheelchairs",
+].join("|");
+
+/**
+ * Old vehicle adaptation addresses still listed in search results.
+ * These must come BEFORE the /product-category and /collections
+ * catch-alls, which send everything else to /shop.
+ */
+const legacyAdaptationRedirects = [
+  // WordPress: /product-category/vehicle-adaptations/<group>/<category>/
+  {
+    source: `/product-category/vehicle-adaptations/:group/:category(${ADAPTATION_SLUG_PATTERN})/:rest*`,
+    destination: "/vehicle-adaptations/:category",
+    permanent: true,
+  },
+  {
+    source: `/product-category/vehicle-adaptations/:category(${ADAPTATION_SLUG_PATTERN})/:rest*`,
+    destination: "/vehicle-adaptations/:category",
+    permanent: true,
+  },
+  ...Object.entries(OLD_ADAPTATION_GROUPS).map(([group, destination]) => ({
+    source: `/product-category/vehicle-adaptations/${group}/:rest*`,
+    destination,
+    permanent: true,
+  })),
+  {
+    source: "/product-category/vehicle-adaptations/:rest*",
+    destination: "/vehicle-adaptations",
+    permanent: true,
+  },
+
+  // Shopify: /collections/<category>
+  {
+    source: `/collections/:category(${ADAPTATION_SLUG_PATTERN}|driving-controls|hoists-stowage|vehicle-access)`,
+    destination: "/vehicle-adaptations/:category",
+    permanent: true,
+  },
+  {
+    source: "/collections/vehicle-adaptations",
+    destination: "/vehicle-adaptations",
+    permanent: true,
+  },
+
+  // Lovable: /vehicle-adaptations/category/<group>-<category>
+  ...Object.keys(OLD_ADAPTATION_GROUPS).flatMap((group) =>
+    ADAPTATION_CATEGORY_SLUGS.map((category) => ({
+      source: `/vehicle-adaptations/category/${group}-${category}`,
+      destination: `/vehicle-adaptations/${category}`,
+      permanent: true,
+    })),
+  ),
+  {
+    source: `/vehicle-adaptations/category/:category(${ADAPTATION_SLUG_PATTERN})`,
+    destination: "/vehicle-adaptations/:category",
+    permanent: true,
+  },
+  ...Object.entries(OLD_ADAPTATION_GROUPS).map(([group, destination]) => ({
+    source: `/vehicle-adaptations/category/${group}`,
+    destination,
+    permanent: true,
+  })),
+  {
+    source: "/vehicle-adaptations/category/:rest*",
+    destination: "/vehicle-adaptations",
+    permanent: true,
+  },
+
+  // Old WordPress pages
+  {
+    source: "/home/vehicle-adaptations-2",
+    destination: "/vehicle-adaptations",
+    permanent: true,
+  },
+  { source: "/home/:path*", destination: "/", permanent: true },
+];
+
+/** Old scooter & wheelchair addresses → the matching shop category. */
+const legacyShopRedirects = [
+  // WordPress: /product-category/mobility-shop/…
+  {
+    source: `/product-category/mobility-shop/:group/:category(${SHOP_CATEGORY_PATTERN})/:rest*`,
+    destination: "/shop/:category",
+    permanent: true,
+  },
+  {
+    source: `/product-category/mobility-shop/:category(${SHOP_CATEGORY_PATTERN})/:rest*`,
+    destination: "/shop/:category",
+    permanent: true,
+  },
+  {
+    source:
+      "/product-category/mobility-shop/:group(clearance-ex-display-items|used-secondhand-items)/:rest*",
+    destination: "/clearance",
+    permanent: true,
+  },
+  {
+    source: "/product-category/mobility-shop/mobility-scooters/:rest*",
+    destination: "/shop?sub=scooters",
+    permanent: true,
+  },
+  {
+    source: "/product-category/mobility-scooters/:rest*",
+    destination: "/shop?sub=scooters",
+    permanent: true,
+  },
+
+  // Shopify: /collections/<category> and /collections/<any>/products/<slug>
+  {
+    source: `/collections/:category(${SHOP_CATEGORY_PATTERN})`,
+    destination: "/shop/:category",
+    permanent: true,
+  },
+  {
+    source: "/collections/:collection/products/:slug",
+    destination: "/products/:slug",
+    permanent: true,
+  },
+
+  // Lovable: /mobility-shop/category/<category>
+  {
+    source: "/mobility-shop/category/manual-wheelchairs-assistant-propelled",
+    destination: "/shop/manual-wheelchairs",
+    permanent: true,
+  },
+  {
+    source: `/mobility-shop/category/:category(${SHOP_CATEGORY_PATTERN})`,
+    destination: "/shop/:category",
+    permanent: true,
+  },
+  { source: "/mobility-shop/:rest*", destination: "/shop", permanent: true },
+];
+
 const nextConfig: NextConfig = {
   images: {
     // Serve remote images via Cloudflare/R2 — not Vercel Image Optimization.
@@ -110,6 +295,10 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       // /servicing is a live App Router page (Care Plans + service booking)
+
+      // Old adaptation and shop addresses — before the catch-alls below
+      ...legacyAdaptationRedirects,
+      ...legacyShopRedirects,
 
       // Shopify / WordPress-style catalogue paths
       { source: "/product/:slug", destination: "/products/:slug", permanent: true },
