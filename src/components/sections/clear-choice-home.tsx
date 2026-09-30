@@ -18,8 +18,8 @@ const categories = [
   { title: "Driving controls", copy: "Confidence behind the wheel", href: adaptationHref("Mechanical Hand Controls"), image: "/images/redesign/controls.webp", alt: "Hand controls inside a vehicle", side: "adapt" },
   { title: "Vehicle access", copy: "Getting in and out, made easier", href: adaptationHref("Swivel Seats"), image: "/images/redesign/seat.webp", alt: "A swivel seat at a vehicle doorway", side: "adapt" },
   { title: "Boot hoists", copy: "Take your mobility equipment with you", href: adaptationHref("Boot Hoists"), image: "/images/hero-options/hoist-demonstration.webp", alt: "A boot hoist demonstration", side: "adapt" },
-  { title: "Mobility scooters", copy: "For everyday and further afield", href: "/shop?sub=scooters", image: "/images/redesign/scooter.webp", alt: "A mobility scooter demonstration", side: "shop" },
-  { title: "Powerchairs", copy: "Comfort and control, your way", href: "/shop?sub=wheelchairs", image: "/images/hero-options/02-wav-powerchair.webp", alt: "A powered wheelchair", side: "shop" },
+  { title: "Mobility scooters", copy: "For everyday and further afield", href: "/shop?sub=scooters", image: "/images/redesign/mobility-scooter-lifestyle.webp", alt: "An older adult riding a four-wheel mobility scooter in a leafy park", side: "shop" },
+  { title: "Powerchairs", copy: "Comfort and control, your way", href: "/shop?sub=wheelchairs", image: "/images/redesign/powerchair-lifestyle.webp", alt: "An older adult using a joystick-controlled powerchair on a park path", side: "shop" },
   { title: "Wheelchairs", copy: "Explore our wheelchair range", href: "/shop?sub=wheelchairs", image: "/images/redesign/manual-wheelchair-lifestyle.webp", alt: "An older adult using a manual wheelchair on a leafy park path", side: "shop" },
 ];
 
