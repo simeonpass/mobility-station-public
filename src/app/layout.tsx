@@ -14,72 +14,34 @@ import { DEFAULT_SHARE_IMAGE, SITE } from "@/lib/seo";
 import "./globals.css";
 import "./brand-redesign.css";
 import "./split-theme.css";
+import "./clear-choice.css";
+import "./clear-choice-refinements.css";
+import "./clear-choice-site.css";
 
-const figtree = Figtree({
-  subsets: ["latin"],
-  variable: "--font-figtree",
-  display: "swap",
-});
-
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  variable: "--font-fraunces",
-  display: "swap",
-});
+const figtree = Figtree({ subsets: ["latin"], variable: "--font-figtree", display: "swap" });
+const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-fraunces", display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
-  title: {
-    default: "Mobility Station | Adaptations, Scooters & Wheelchairs",
-    template: "%s | Mobility Station",
-  },
-  description:
-    "Vehicle adaptations, mobility scooters and wheelchairs from Heathrow & Ferndown. Motability accredited. Home and branch demonstrations available.",
-  icons: {
-    icon: [{ url: "/brand/site-palette/icon.svg", type: "image/svg+xml" }],
-    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
-  },
-  openGraph: {
-    type: "website",
-    locale: "en_GB",
-    siteName: "Mobility Station",
-    title: "Mobility Station | Adaptations, Scooters & Wheelchairs",
-    description:
-      "Vehicle adaptations, scooters and wheelchairs from Heathrow & Ferndown. Motability accredited dealer.",
-    images: [{ url: DEFAULT_SHARE_IMAGE, width: 1200, height: 630 }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    images: [DEFAULT_SHARE_IMAGE],
-  },
+  title: { default: "Mobility Station | Adaptations, Scooters & Wheelchairs", template: "%s | Mobility Station" },
+  description: "Vehicle adaptations, mobility scooters and wheelchairs from Heathrow & Ferndown. Motability accredited. Home and branch demonstrations available.",
+  icons: { icon: [{ url: "/brand/site-palette/icon.svg", type: "image/svg+xml" }], apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }] },
+  openGraph: { type: "website", locale: "en_GB", siteName: "Mobility Station", title: "Mobility Station | Adaptations, Scooters & Wheelchairs", description: "Vehicle adaptations, scooters and wheelchairs from Heathrow & Ferndown. Motability accredited dealer.", images: [{ url: DEFAULT_SHARE_IMAGE, width: 1200, height: 630 }] },
+  twitter: { card: "summary_large_image", images: [DEFAULT_SHARE_IMAGE] },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="en-GB" className={`${figtree.variable} ${fraunces.variable} h-full`} data-scroll-behavior="smooth">
-      <body className="min-h-full flex flex-col font-sans antialiased">
-        <CartProvider>
-          <ProductComparisonProvider>
-          <a href="#main-content" className="skip-to-content">
-            Skip to main content
-          </a>
-          <DivisionScope>
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  return <html lang="en-GB" className={`${figtree.variable} ${fraunces.variable} h-full`} data-scroll-behavior="smooth">
+    <body className="min-h-full flex flex-col font-sans antialiased" data-design="clear-choice">
+      <CartProvider><ProductComparisonProvider>
+        <a href="#main-content" className="skip-to-content">Skip to main content</a>
+        <DivisionScope>
           <SiteHeader />
           <main id="main-content" tabIndex={-1} className="relative z-0 flex-1 overflow-x-clip outline-none">{children}</main>
           <SiteFooter />
-          </DivisionScope>
-          <QuickViewHost />
-          <CartDrawer />
-          <CookieConsentBanner />
-          <Analytics />
-          <SpeedInsights />
-          </ProductComparisonProvider>
-        </CartProvider>
-      </body>
-    </html>
-  );
+        </DivisionScope>
+        <QuickViewHost /><CartDrawer /><CookieConsentBanner /><Analytics /><SpeedInsights />
+      </ProductComparisonProvider></CartProvider>
+    </body>
+  </html>;
 }

@@ -1,0 +1,297 @@
+/* The approved Clear Choice identity, extended across the existing application.
+   Loaded last. Functional colours, pricing, form state and payment logic are unchanged. */
+:root {
+  --ink:#092849; --paper:#fcfbf8; --stone:#eff3f4;
+  --line:#dce3e8; --line-strong:#b9c8d2; --ink-muted:#39536a;
+  --adapt:#0862a9; --adapt-deep:#064982; --adapt-tint:#e7f2fa;
+  --shop:#087c75; --shop-deep:#06625c; --shop-tint:#e0f2ec;
+  --division:var(--adapt); --division-deep:var(--adapt-deep); --division-tint:var(--adapt-tint);
+  --primary:#092849; --primary-dark:#061d36; --primary-soft:#e7f2fa;
+  --accent:#0862a9; --accent-hover:#064982; --accent-foreground:#fff;
+  --buy:#087c75; --buy-hover:#06625c; --buy-foreground:#fff;
+  --tertiary:#0862a9; --foreground:#092849; --muted:#526879;
+  --background:#fcfbf8; --soft:#eff3f4; --border:#dce3e8;
+  --footer:#fcfbf8; --footer-foreground:#092849;
+  --cta-bg:#0862a9; --cta-fg:#fff;
+  --font-manrope:var(--font-figtree); --font-geist-sans:var(--font-figtree);
+  --msx-ink:#092849; --msx-muted:#39536a; --msx-blue:#0862a9;
+  --msx-blue-deep:#064982; --msx-teal:#087c75; --msx-teal-deep:#06625c;
+  --msx-paper:#fcfbf8; --msx-line:#dce3e8;
+}
+[data-division="adapt"] {
+  --division:#0862a9; --division-deep:#064982; --division-tint:#e7f2fa;
+  --accent:#0862a9; --accent-hover:#064982; --buy:#0862a9; --buy-hover:#064982;
+  --tertiary:#0862a9; --cta-bg:#0862a9; --cta-fg:#fff;
+}
+[data-division="shop"] {
+  --division:#087c75; --division-deep:#06625c; --division-tint:#e0f2ec;
+  --accent:#087c75; --accent-hover:#06625c; --buy:#087c75; --buy-hover:#06625c;
+  --tertiary:#087c75; --cta-bg:#087c75; --cta-fg:#fff;
+}
+body[data-design="clear-choice"] {
+  background:var(--paper); color:var(--ink);
+  font-family:var(--font-figtree),Arial,sans-serif; line-height:1.6;
+}
+body[data-design="clear-choice"] :is(h1,h2,h3,h4,h5,h6) {
+  font-family:var(--font-figtree),Arial,sans-serif; letter-spacing:-.025em;
+}
+body[data-design="clear-choice"] #main-content h1 { font-weight:800; line-height:1.12; letter-spacing:-.035em; }
+body[data-design="clear-choice"] #main-content h2 { font-weight:750; }
+body[data-design="clear-choice"] #main-content h3 { font-weight:700; }
+body[data-design="clear-choice"] :is(a,button,input,select,textarea,summary):focus-visible {
+  outline:3px solid var(--division,#0862a9); outline-offset:4px;
+}
+body[data-design="clear-choice"] ::selection { background:#cfe4ed; color:#092849; }
+.msx-site .container-site { width:100%; max-width:1384px; padding-inline:32px; margin-inline:auto; }
+.msx-site .ms-section { padding-block:54px; }
+.msx-site .ms-section-heading { margin-bottom:28px; }
+.msx-site .ms-section-heading h2 { font-size:clamp(1.65rem,2.6vw,2.2rem); line-height:1.2; letter-spacing:-.025em; }
+.msx-site .ms-eyebrow { color:#526879; font-size:.72rem; letter-spacing:.11em; font-weight:750; }
+.msx-site .ms-text-link { min-height:44px; gap:9px; font-weight:700; }
+.msx-site .ms-button { min-height:50px; padding:12px 21px; border-radius:11px; font-weight:700; background:var(--division); border-color:var(--division); color:#fff; gap:12px; }
+.msx-site .ms-button:hover { background:var(--division-deep); border-color:var(--division-deep); transform:none; }
+.msx-site .ms-button-secondary,.msx-site .ms-button-outline { color:var(--ink); background:#fff; border:1px solid var(--line-strong); }
+.msx-site .ms-button-secondary:hover,.msx-site .ms-button-outline:hover { background:var(--stone); color:var(--ink); border-color:var(--line-strong); }
+.msx-site .ms-icon-button { border-radius:10px; }
+.msx-site .ms-breadcrumb { display:flex; flex-wrap:wrap; align-items:center; gap:9px; color:#526879; font-size:.8125rem; margin:0 0 20px; }
+.msx-site .ms-breadcrumb a { text-decoration:underline; text-underline-offset:3px; }
+.msx-site .ms-breadcrumb [aria-current] { color:var(--ink); text-decoration:none; }
+.msx-site .scroll-under-header { scroll-margin-top:24px; }
+html { scroll-padding-top:24px; }
+
+/* Shared page introductions: the same soft panels and photography as the homepage. */
+.msx-site .ms-page-intro.msx-page-intro { background:var(--paper); color:var(--ink); padding:24px 0 30px; }
+.msx-intro-panel { display:grid; grid-template-columns:minmax(0,1fr); padding:clamp(26px,3.3vw,46px); background:var(--division-tint); border:1px solid rgb(9 40 73 / .055); border-radius:20px; gap:36px; overflow:hidden; }
+.msx-intro-panel.msx-intro-with-media { grid-template-columns:minmax(0,1.1fr) minmax(0,1fr); align-items:center; }
+.msx-intro-copy { min-width:0; }
+.msx-site .msx-page-intro .ms-eyebrow { color:var(--division-deep); margin-bottom:14px; }
+.msx-site .msx-page-intro h1 { color:var(--ink); font-size:clamp(2rem,3.5vw,3.25rem); margin:0 0 19px; max-width:23ch; }
+.msx-site .msx-page-intro .ms-intro-description { color:#39536a; font-size:1.0625rem; line-height:1.65; max-width:65ch; margin:0; }
+.msx-site .msx-page-intro .ms-intro-actions { display:flex; flex-wrap:wrap; gap:12px 20px; align-items:center; margin-top:25px; }
+.msx-site .msx-page-intro .ms-intro-actions > .ms-button,
+.msx-site .msx-page-intro .ms-intro-actions > button { background:var(--division); border-color:var(--division); color:#fff; border-radius:11px; }
+.msx-site .msx-page-intro .ms-intro-actions > .ms-button:hover,
+.msx-site .msx-page-intro .ms-intro-actions > button:hover { background:var(--division-deep); border-color:var(--division-deep); }
+.msx-site .msx-page-intro .ms-intro-secondary { display:inline-flex; align-items:center; gap:9px; color:var(--division-deep); min-height:44px; font-weight:700; font-size:.9375rem; text-decoration:underline; text-underline-offset:4px; }
+.msx-site .msx-page-intro .ms-intro-image { position:relative; height:300px; min-width:0; border-radius:15px; overflow:hidden; background:#fff; }
+.msx-site .msx-page-intro .ms-intro-image img { object-fit:cover; }
+.msx-intro-visual { min-width:0; }
+
+/* Practical, plain-language routes into the two catalogues. */
+.msx-journeys { padding-block:6px 28px; }
+.msx-journeys-heading { display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:12px; margin:0 0 16px; }
+.msx-journeys-heading h2 { font-size:1.3rem; }
+.msx-journeys-heading p { color:var(--muted); font-size:.9rem; }
+.msx-journey-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+.msx-journey { display:flex; align-items:center; gap:15px; border:1px solid var(--line); background:#fff; border-radius:14px; padding:20px; min-width:0; transition:border-color .15s,box-shadow .15s; }
+.msx-journey:hover { border-color:var(--division); box-shadow:0 4px 16px rgb(9 40 73 / .055); }
+.msx-journey-icon { display:grid; place-items:center; width:46px; height:46px; flex:none; color:var(--division); background:var(--division-tint); border-radius:50%; }
+.msx-journey strong { display:block; font-size:1rem; line-height:1.3; }
+.msx-journey small { display:block; font-size:.8125rem; color:var(--muted); line-height:1.45; margin-top:5px; }
+.msx-journey > svg { margin-left:auto; flex:none; color:var(--division); }
+
+/* Catalogue cards retain all existing prices, savings, VAT notes and quick view. */
+.msx-site .ms-catalog-card { border:1px solid var(--line); border-radius:15px; background:#fff; overflow:hidden; transition:border-color .15s,box-shadow .15s; }
+.msx-site .ms-catalog-card:hover { border-color:#b2c6d4; box-shadow:0 7px 22px rgb(9 40 73 / .065); }
+.msx-site .ms-catalog-image { background:#fff; border-radius:0; border-bottom:1px solid #eef2f4; }
+.msx-site .ms-catalog-image img { mix-blend-mode:normal; }
+.msx-site .ms-catalog-copy { padding:18px; }
+.msx-site .ms-catalog-copy h3 { font-size:1.0625rem; line-height:1.4; margin:7px 0 13px; }
+.msx-site .ms-catalog-copy .ms-product-category { color:var(--division-deep); letter-spacing:.065em; }
+.msx-site .ms-catalog-price { font-size:1.4rem; font-weight:800; color:var(--ink); }
+.msx-site .ms-catalog-price del { color:#526879; font-weight:400; font-size:.8rem; }
+.msx-site .ms-catalog-link { color:var(--division-deep); min-height:44px; font-weight:700; }
+.msx-site .ms-tax-note { color:#526879; line-height:1.5; }
+.msx-site .ms-quick-view { width:44px; height:44px; color:var(--division-deep); border-color:var(--line); }
+.msx-site .ms-offer-badge { border-radius:7px; background:#092849; color:#fff; font-weight:700; }
+.msx-site .ms-catalog-card .ms-compare-toggle { margin:0 18px 16px; width:calc(100% - 36px); border-radius:8px; }
+.msx-site .ms-shop-types { gap:10px; }
+.msx-site .ms-shop-types button { border-radius:10px; min-height:46px; }
+.msx-site .ms-shop-types button[aria-selected="true"],
+.msx-site .ms-product-tabs button[aria-pressed="true"] { background:var(--division); border-color:var(--division); color:#fff; }
+.msx-site .ms-product-tabs button { border-radius:10px; }
+.msx-site .ms-shop-filters { border-radius:15px; background:#fff; border:1px solid var(--line); }
+.msx-site .ms-clearance-link { color:var(--division-deep); text-decoration:underline; text-underline-offset:4px; }
+
+/* Product detail, comparison and related items. */
+.msx-site .ms-product-detail { gap:clamp(25px,4.2vw,60px); }
+.msx-site .ms-gallery-image { border:1px solid var(--line); border-radius:17px; background:#fff; }
+.msx-site .ms-gallery-image img { mix-blend-mode:normal; }
+.msx-site .ms-gallery-thumbnails button { border:1px solid var(--line); border-radius:9px; width:62px; height:62px; background:#fff; }
+.msx-site .ms-gallery-thumbnails button[aria-current="true"] { border:2px solid var(--division); }
+.msx-site .ms-gallery-enlarge { width:46px; height:46px; border:1px solid var(--line); color:var(--division-deep); }
+.msx-site .ms-product-overview { padding-top:8px; }
+.msx-site .ms-product-overview h1 { font-size:clamp(1.8rem,2.8vw,2.7rem); margin:13px 0 20px; }
+.msx-site .ms-product-pricing { background:var(--division-tint); border:1px solid rgb(9 40 73 / .04); border-radius:14px; padding:22px; margin:22px 0; }
+.msx-site .ms-detail-price { font-weight:800; font-size:2.15rem; color:var(--ink); }
+.msx-site .ms-product-actions .ms-button,
+.msx-site .ms-product-actions button:not([role]),
+.msx-site .ms-product-actions > div > div > a { border-radius:11px; min-height:50px; }
+.msx-site .ms-product-actions .ms-button-outline { background:#fff; color:var(--ink); border-color:var(--line-strong); }
+.msx-site .ms-product-actions .ms-button-outline:hover { background:var(--stone); color:var(--ink); }
+.msx-site .ms-product-information { max-width:960px; margin-top:52px; }
+.msx-site .ms-product-information h2 { font-size:clamp(1.65rem,2.6vw,2.2rem); margin-bottom:22px; }
+.msx-site .ms-product-accordions { border:1px solid var(--line); border-radius:15px; padding:0 24px; background:#fff; }
+.msx-site .ms-product-accordions > details:last-child { border-bottom:0; }
+.msx-site .ms-product-accordions summary { font-weight:700; min-height:64px; }
+.msx-site .ms-product-accordions details[open] summary { color:var(--division-deep); }
+.msx-site .ms-product-related { padding-top:46px; }
+.msx-site .ms-compare-empty { background:var(--division-tint); border:1px solid var(--line); border-radius:18px; }
+.msx-site .ms-compare-bar { background:#092849; }
+.msx-site .ms-compare-table-scroll { border-radius:14px; border:1px solid var(--line); }
+
+/* Forms and overlays: readable labels, visible focus and touch-sized controls. */
+.msx-site :is(input:not([type]),input[type="text"],input[type="email"],input[type="tel"],input[type="search"],input[type="date"],input[type="number"],select,textarea),
+body[data-design="clear-choice"] [role="dialog"] :is(input:not([type]),input[type="text"],input[type="email"],input[type="tel"],select,textarea) {
+  border-radius:10px; min-height:46px; font-family:inherit;
+}
+.msx-site input[type="checkbox"],.msx-site input[type="radio"] { accent-color:var(--division); }
+.msx-site :is(input,select,textarea)[aria-invalid="true"] { border-color:var(--error); }
+.msx-site :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea):focus,
+body[data-design="clear-choice"] [role="dialog"] :is(input,select,textarea):focus { box-shadow:0 0 0 3px rgb(8 98 169 / .12) !important; }
+body[data-design="clear-choice"] [role="dialog"] { font-family:var(--font-figtree),Arial,sans-serif; }
+.msx-form-panel { background:#fff; border:1px solid var(--line); border-radius:18px; padding:28px; }
+.msx-contact-links { display:grid; gap:14px; margin-top:24px; }
+.msx-contact-link { display:flex; align-items:center; gap:14px; padding:17px 20px; border:1px solid var(--line); border-radius:12px; background:#fff; }
+.msx-contact-link > svg { color:var(--division); flex:none; }
+.msx-contact-link strong { display:block; font-size:1.05rem; overflow-wrap:anywhere; }
+.msx-contact-link small { color:var(--muted); }
+.msx-branch-panels { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; }
+.msx-branch-panel { padding:28px; border:1px solid var(--line); border-radius:17px; background:#fff; border-top:4px solid var(--adapt); }
+.msx-branch-panel[data-branch="ferndown"] { border-top-color:var(--shop); }
+.msx-branch-panel h3 { font-size:1.4rem; }
+.msx-branch-services { display:inline-flex; gap:7px; align-items:center; border-radius:7px; background:var(--division-tint); padding:6px 10px; font-size:.8125rem; font-weight:650; margin:13px 0 0; }
+.msx-checkout-heading { display:flex; align-items:end; justify-content:space-between; flex-wrap:wrap; gap:22px; margin-bottom:28px; background:var(--shop-tint); padding:28px; border-radius:17px; }
+.msx-checkout-heading h1 { font-size:clamp(2rem,3vw,2.7rem); margin-top:10px; }
+.msx-checkout-heading p { color:#39536a; margin-top:9px; }
+.msx-checkout-heading > a { min-height:44px; display:inline-flex; align-items:center; color:var(--shop-deep); text-decoration:underline; text-underline-offset:4px; font-weight:700; }
+
+/* Support, editorial, FAQ, hire and scheme pages inherit the same identity. */
+.msx-support-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:22px; padding-top:12px; padding-bottom:54px; }
+.msx-support-card { display:flex; flex-direction:column; align-items:flex-start; min-width:0; border:1px solid var(--line); background:#fff; border-radius:16px; padding:27px; }
+.msx-support-card:hover { border-color:var(--division); }
+.msx-support-card > svg { width:30px; height:30px; color:var(--division); margin-bottom:20px; }
+.msx-support-card h2 { font-size:1.2rem; }
+.msx-support-card p { color:var(--muted); font-size:.9375rem; line-height:1.65; margin:10px 0 20px; }
+.msx-support-card > span { display:flex; align-items:center; gap:8px; font-size:.875rem; color:var(--division-deep); font-weight:700; margin-top:auto; }
+.msx-site .ms-service-card,.msx-site .ms-work-story,.msx-site .ms-home-review { border:1px solid var(--line); border-radius:16px; background:#fff; }
+.msx-site .ms-service-card > div { padding:25px; }
+.msx-site .ms-motability-band { background:#f4f0e7; color:var(--ink); border:1px solid #e5dfd1; border-radius:18px; }
+.msx-site .ms-motability-band h2,.msx-site .ms-motability-band h3 { color:var(--ink); }
+.msx-site .ms-motability-band .ms-button { background:var(--division); border-color:var(--division); color:#fff; }
+.msx-site .ms-motability-band .ms-button:hover { background:var(--division-deep); border-color:var(--division-deep); }
+.msx-site .ms-hire-selection,.msx-site .ms-delivery-summary { background:var(--division-tint); border-radius:14px; }
+.msx-site .ms-hire-steps li[aria-current] { border-color:var(--division); color:var(--division-deep); }
+.msx-site .ms-home-trust { background:var(--paper); border:0; }
+.msx-site .ms-trust { background:#eff3f3; border:0; border-radius:13px; padding:22px; gap:16px; }
+.msx-site .ms-trust svg { color:var(--division); }
+.msx-site .ms-home-trust .ms-trust { width:min(1320px,calc(100% - 64px)); }
+.msx-site .msx-adaptation-process { border-block:1px solid var(--line); background:#eff4f7; }
+.msx-site .msx-adaptation-process li { padding:23px; border:1px solid var(--line); border-radius:14px; background:#fff; }
+
+/* The closing advice panel and a compact, useful footer on every route. */
+.msx-site .ms-help-band.msx-help-band { background:var(--paper); padding:36px 0; color:var(--ink); }
+.msx-help-panel { display:flex; justify-content:space-between; align-items:center; gap:28px; padding:30px 34px; border:1px solid var(--line); border-radius:17px; background:#eef2f3; }
+.msx-site .msx-help-band .ms-eyebrow { color:#526879; }
+.msx-site .msx-help-band h2 { color:var(--ink); font-size:clamp(1.5rem,2.4vw,2rem); line-height:1.2; letter-spacing:-.025em; margin:9px 0 10px; }
+.msx-site .msx-help-band p:not(.ms-eyebrow) { color:#39536a; font-size:.9375rem; max-width:65ch; }
+.msx-site .msx-help-band .ms-help-actions { min-width:220px; }
+.msx-site .msx-help-band .ms-help-actions .ms-button { background:var(--division); color:#fff; }
+.msx-site .msx-help-band .ms-help-actions .ms-button:hover { background:var(--division-deep); }
+.msx-site .msx-help-band .ms-text-link { color:var(--ink); }
+.msx-footer { background:#f6f7f5; border-top:1px solid var(--line); color:var(--ink); padding:42px 0 0; }
+.msx-footer-top { display:flex; justify-content:space-between; align-items:center; gap:24px; padding-bottom:27px; border-bottom:1px solid var(--line); }
+.msx-footer-brand { display:flex; align-items:center; gap:28px; }
+.msx-footer-brand .ms-logo { width:175px; }
+.msx-footer-brand p { font-size:.9375rem; color:var(--muted); }
+.msx-footer-contact { display:flex; flex-direction:column; align-items:flex-end; gap:5px; }
+.msx-footer-contact a:first-child { display:inline-flex; align-items:center; gap:9px; font-size:1.25rem; font-weight:800; }
+.msx-footer-contact a:last-child { font-size:.875rem; overflow-wrap:anywhere; }
+.msx-footer-grid { display:grid; grid-template-columns:1fr 1fr 1fr 1.2fr; gap:35px; padding-block:30px; }
+.msx-footer-grid nav { display:flex; flex-direction:column; align-items:flex-start; }
+.msx-footer-grid h3 { display:flex; align-items:center; gap:8px; font-size:.9375rem; margin-bottom:14px; }
+.msx-footer-grid nav > a { font-size:.8125rem; min-height:32px; padding-block:5px; line-height:1.45; }
+.msx-footer a:hover { text-decoration:underline; text-underline-offset:4px; }
+.msx-footer-adapt h3::before,.msx-footer-shop h3::before { content:""; height:9px; width:9px; border-radius:50%; background:var(--adapt); flex:none; }
+.msx-footer-shop h3::before { background:var(--shop); }
+.msx-footer-branches > a { display:block; font-size:.8125rem; color:var(--muted); line-height:1.65; margin-bottom:14px; }
+.msx-footer-branches strong { color:var(--ink); }
+.msx-footer-branches small { display:block; color:#526879; font-size:.75rem; }
+.msx-footer-bottom { display:flex; justify-content:space-between; flex-wrap:wrap; align-items:center; gap:12px 22px; border-top:1px solid var(--line); padding-block:18px; font-size:.75rem; color:var(--muted); }
+.msx-footer-bottom nav { display:flex; flex-wrap:wrap; gap:8px 20px; }
+.msx-footer-bottom a { display:inline-flex; align-items:center; min-height:32px; }
+
+@media (min-width:1001px) and (max-width:1250px) {
+  .msx-header .msx-desktop-nav { gap:14px; }
+  .msx-header .msx-desktop-nav > a { font-size:12px; }
+  .msx-header .msx-desktop-nav > .msx-switch-link { display:none; }
+}
+@media(max-width:1000px) {
+  .msx-site .container-site { padding-inline:20px; }
+  .msx-site .ms-home-trust .ms-trust { width:calc(100% - 40px); }
+  .msx-journey { padding:16px; gap:10px; }
+  .msx-journey-icon { width:38px; height:38px; }
+  .msx-journey > svg { display:none; }
+  .msx-support-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .msx-footer-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px 32px; }
+  .msx-footer-brand p { display:none; }
+}
+@media(max-width:700px) {
+  .msx-site .container-site { padding-inline:16px; }
+  .msx-site .ms-home-trust .ms-trust { width:calc(100% - 32px); }
+  .msx-site .ms-section { padding-block:34px; }
+  .msx-site .ms-page-intro.msx-page-intro { padding-top:18px; padding-bottom:22px; }
+  .msx-site .ms-breadcrumb { margin-bottom:14px; font-size:.75rem; }
+  .msx-intro-panel,.msx-intro-panel.msx-intro-with-media { grid-template-columns:1fr; padding:24px 21px; gap:22px; border-radius:16px; }
+  .msx-site .msx-page-intro h1 { font-size:2rem; margin-bottom:15px; }
+  .msx-site .msx-page-intro .ms-intro-description { font-size:.9375rem; line-height:1.6; }
+  .msx-site .msx-page-intro .ms-intro-image { height:190px; }
+  .msx-site .msx-page-intro .ms-intro-actions { gap:10px 18px; margin-top:20px; }
+  .msx-site .msx-page-intro .ms-intro-actions > .ms-button { width:100%; }
+  .msx-site .msx-page-intro .ms-intro-actions > .ms-intro-secondary { font-size:.875rem; }
+  .msx-journey-grid { grid-template-columns:1fr; gap:10px; }
+  .msx-journey { padding:14px 16px; }
+  .msx-journey > svg { display:block; width:18px; }
+  .msx-journeys { padding-bottom:18px; }
+  .msx-journeys-heading p { font-size:.8125rem; }
+  .msx-site .ms-catalog-copy { padding:13px; }
+  .msx-site .ms-catalog-copy h3 { font-size:.9375rem; }
+  .msx-site .ms-catalog-copy .ms-product-category { font-size:.625rem; }
+  .msx-site .ms-catalog-price { font-size:1.18rem; }
+  .msx-site .ms-catalog-price del { display:block; margin:4px 0 0; font-size:.75rem; }
+  .msx-site .ms-catalog-card .ms-compare-toggle { margin:0 13px 13px; width:calc(100% - 26px); }
+  .msx-site .ms-product-pricing { padding:18px; }
+  .msx-site .ms-detail-price { font-size:1.9rem; }
+  .msx-site .ms-product-information { margin-top:32px; }
+  .msx-site .ms-product-accordions { padding:0 17px; }
+  .msx-site .ms-product-related { padding-top:30px; }
+  .msx-site :is(input:not([type]),input[type="text"],input[type="email"],input[type="tel"],input[type="search"],input[type="date"],input[type="number"],select,textarea),
+  body[data-design="clear-choice"] [role="dialog"] :is(input,select,textarea) { font-size:16px; }
+  .msx-form-panel { padding:21px 17px; border-radius:15px; }
+  .msx-contact-link { padding:15px; }
+  .msx-contact-link strong { font-size:.9375rem; }
+  .msx-branch-panels { grid-template-columns:1fr; gap:16px; }
+  .msx-branch-panel { padding:23px; }
+  .msx-checkout-heading { padding:23px; }
+  .msx-checkout-heading p { font-size:.875rem; }
+  .msx-support-grid { grid-template-columns:1fr; gap:14px; padding-bottom:28px; }
+  .msx-support-card { padding:23px; }
+  .msx-support-card > svg { margin-bottom:14px; }
+  .msx-site .ms-help-band.msx-help-band { padding-block:24px; }
+  .msx-help-panel { flex-direction:column; align-items:stretch; padding:24px 21px; gap:20px; }
+  .msx-site .msx-help-band .ms-help-actions { min-width:0; margin-top:0; }
+  .msx-help-panel .ms-button { width:100%; }
+  .msx-footer { padding-top:28px; }
+  .msx-footer-top { align-items:flex-start; flex-direction:column; gap:20px; padding-bottom:23px; }
+  .msx-footer-contact { align-items:flex-start; }
+  .msx-footer-grid { gap:24px 18px; }
+  .msx-footer-grid h3 { font-size:.875rem; }
+  .msx-footer-grid nav > a { font-size:.8125rem; min-height:38px; }
+  .msx-footer-branches { min-width:0; }
+  .msx-footer-bottom { align-items:flex-start; flex-direction:column; padding-block:16px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .msx-site *, .msx-site *::before, .msx-site *::after { scroll-behavior:auto !important; }
+  .msx-journey,.msx-site .ms-catalog-card { transition:none; }
+}
+.msx-site .ms-help-band.msx-help-band > .container-site { display:block; }
