@@ -295,3 +295,28 @@ body[data-design="clear-choice"] [role="dialog"] { font-family:var(--font-figtre
   .msx-journey,.msx-site .ms-catalog-card { transition:none; }
 }
 .msx-site .ms-help-band.msx-help-band > .container-site { display:block; }
+
+/* One shared logo shape, coloured by the current business division. */
+.msx-site { --brand-colour:var(--ink); }
+.msx-site[data-site-division="adapt"] { --brand-colour:var(--adapt); }
+.msx-site[data-site-division="shop"] { --brand-colour:var(--shop); }
+@supports (mask-image:url("/brand/site-palette/logo.svg")) {
+  .msx-site .ms-logo .ms-logo-light, .msx-site .ms-logo .ms-logo-dark { display:none; }
+  .msx-site .ms-logo::before {
+    content:""; display:block; width:100%; aspect-ratio:8 / 3;
+    background:var(--brand-colour);
+    mask:url("/brand/site-palette/logo.svg") center / contain no-repeat;
+  }
+}
+/* Keep both business sections visible above the desktop section navigation. */
+@media (min-width:1001px) {
+  .msx-header .msx-mobile-paths { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); border-top:1px solid var(--line); }
+  .msx-header .msx-mobile-paths a { display:flex; align-items:center; justify-content:center; gap:12px; min-height:52px; padding:10px 24px; font-size:15px; font-weight:750; border-bottom:3px solid; }
+  .msx-header .msx-mobile-path-adapt { background:var(--adapt-tint); color:var(--adapt-deep); border-color:var(--adapt); }
+  .msx-header .msx-mobile-path-shop { background:var(--shop-tint); color:var(--shop-deep); border-color:var(--shop); }
+  .msx-header .msx-mobile-path-adapt[aria-current] { background:var(--adapt); color:white; }
+  .msx-header .msx-mobile-path-shop[aria-current] { background:var(--shop); color:white; }
+  .msx-header .msx-mobile-paths a:hover { text-decoration:underline; text-underline-offset:5px; }
+  .msx-header .msx-mobile-paths a:focus-visible { outline-offset:-5px; outline-color:currentColor; }
+}
+.msx-header { --msx-blue:var(--division); --msx-blue-deep:var(--division-deep); }
