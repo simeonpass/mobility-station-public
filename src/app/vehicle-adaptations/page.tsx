@@ -150,7 +150,7 @@ export default async function VehicleAdaptationsPage() {
         )}
       </div>
 
-      <section className="border-y border-border bg-soft/55 py-14 md:py-20">
+      <section id="how-it-works" className="scroll-under-header border-y border-border bg-soft/55 py-14 md:py-20">
         <div className="container-site">
           <div className="max-w-2xl"><p className="text-xs font-bold uppercase tracking-[0.16em] text-muted">From enquiry to fitting</p><h2 className="mt-2 text-3xl font-extrabold tracking-tight text-primary md:text-4xl">A straightforward process.</h2><p className="mt-3 text-muted">Every adaptation is quoted against your vehicle before we fit.</p></div>
           <ol className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
