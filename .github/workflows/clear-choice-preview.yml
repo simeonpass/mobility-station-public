@@ -44,6 +44,7 @@ jobs:
       - name: Summarise checks and dependency audit
         if: always()
         run: |
+          mkdir -p artifacts
           if [ -f artifacts/report.json ]; then cat artifacts/report.json; fi
           npm audit --json > artifacts/dependency-audit.json || true
           node -e 'const a=require("./artifacts/dependency-audit.json"); console.log(JSON.stringify({audit:a.metadata?.vulnerabilities,packages:Object.values(a.vulnerabilities||{}).map(v=>({name:v.name,severity:v.severity,fixAvailable:v.fixAvailable,via:v.via.filter(x=>typeof x!=="string").map(x=>({title:x.title,url:x.url}))}))},null,2))'

@@ -21,7 +21,7 @@ function decode(value) {
   return null;
 }
 function evaluate(expression) {
-  const raw = browser('--json', 'eval', `JSON.stringify(await (${expression}))`);
+  const raw = browser('--json', 'eval', `(async () => JSON.stringify(await (${expression})))()`);
   const result = decode(raw);
   if (!result) throw new Error(`Unrecognised browser result: ${raw.slice(0, 250)}`);
   return result;
