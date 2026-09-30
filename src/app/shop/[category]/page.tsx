@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound, permanentRedirect, redirect } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard";
 import { CtaFooter } from "@/components/sections/cta-footer";
 import { buttonVariants } from "@/components/ui/button";
@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: Props) {
         `Browse ${category} from Mobility Station. Home and branch demonstrations from Heathrow and Ferndown.`,
         160,
       ),
-      path: `/shop/${categorySlug}`,
+      path: `/shop/${categoryToSlug(category)}`,
     });
   } catch {
     return createMetadata({
@@ -58,6 +58,7 @@ export default async function ShopCategoryPage({ params }: Props) {
   const { category: categorySlug } = await params;
   const category = await resolveCategoryFromSlug(categorySlug);
   if (!category) notFound();
+  if (categorySlug !== categoryToSlug(category)) permanentRedirect(`/shop/${categoryToSlug(category)}`);
 
   if (isAdaptationCategory(category)) {
     redirect(adaptationHref(category));

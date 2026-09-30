@@ -1,2 +1,2 @@
-import { redirect } from "next/navigation";
-export default function LocationsPage() { redirect("/contact#locations"); }
+import { permanentRedirect } from "next/navigation";
+export default function LocationsPage() { permanentRedirect("/contact#locations"); }

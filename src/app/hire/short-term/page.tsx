@@ -1,3 +1,3 @@
-import { redirect } from "next/navigation";
+import { permanentRedirect } from "next/navigation";
 
-export default function Page() { redirect("/hire"); }
+export default function Page() { permanentRedirect("/hire"); }

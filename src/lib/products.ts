@@ -98,7 +98,7 @@ const LIST_COLUMNS = `
 `;
 
 export function categoryToSlug(category: string) {
-  return category.toLowerCase().replace(/\s+/g, "-");
+  return category.toLowerCase().replace(/&/g, "and").replace(/\s+/g, "-");
 }
 
 export function slugToCategoryHint(slug: string) {
@@ -429,7 +429,7 @@ export async function resolveCategoryFromSlug(
 ): Promise<string | null> {
   const categories = await getCategories({ shopOnly: false });
   const match = categories.find(
-    (c) => categoryToSlug(c.category) === categorySlug,
+    (c) => categoryToSlug(c.category) === categorySlug || c.category.toLowerCase().replace(/\s+/g, "-") === categorySlug,
   );
   return match?.category ?? null;
 }

@@ -18,6 +18,11 @@ export default function r2Loader({
   width: number;
   quality?: number;
 }) {
+  const responsiveHomeImages = ["/images/redesign/seat.webp", "/images/redesign/scooter.webp", "/images/redesign/controls.webp", "/images/hero-options/hoist-demonstration.webp", "/images/redesign/mobility-scooter-lifestyle.webp", "/images/redesign/powerchair-lifestyle.webp", "/images/redesign/manual-wheelchair-lifestyle.webp"];
+  if (responsiveHomeImages.includes(src)) {
+    const size = [384, 768, 1200].find(size => size >= width) ?? 1200;
+    return src.replace(/\.webp$/, `-${size}.webp`);
+  }
   if (!src.startsWith("http")) return src;
 
   if (process.env.NEXT_PUBLIC_CF_IMAGE_RESIZING !== "1") {

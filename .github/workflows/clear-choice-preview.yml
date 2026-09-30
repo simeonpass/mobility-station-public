@@ -1,7 +1,7 @@
 name: Clear Choice preview checks
 on:
   push:
-    branches: [codex/clear-choice-site]
+    branches: [codex/clear-choice-site, main]
   workflow_dispatch:
 permissions:
   contents: read

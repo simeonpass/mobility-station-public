@@ -23,16 +23,12 @@ function withLastMod(
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${SITE.url}/`, changeFrequency: "weekly", priority: 1 },
+    { url: `${SITE.url}/support`, changeFrequency: "monthly", priority: 0.6 },
     { url: `${SITE.url}/shop`, changeFrequency: "daily", priority: 0.9 },
     {
       url: `${SITE.url}/vehicle-adaptations`,
       changeFrequency: "weekly",
       priority: 0.9,
-    },
-    {
-      url: `${SITE.url}/locations`,
-      changeFrequency: "monthly",
-      priority: 0.8,
     },
     {
       url: `${SITE.url}/book-a-demo`,
@@ -64,7 +60,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     {
       url: `${SITE.url}/vehicle-adaptations/collection-cost`,
-      lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
     },
@@ -184,7 +179,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.75,
   }));
 
-  return [
+  const entries: MetadataRoute.Sitemap = [
     ...staticRoutes,
     ...townRoutes,
     ...shopCategoryRoutes,
@@ -230,4 +225,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ),
     ),
   ];
+  // The metadata serializer inserts URLs directly into XML; escape reserved characters.
+  const unique = new Map(entries.map(entry => [entry.url, entry]));
+  return [...unique.values()].map(entry => ({ ...entry, url: entry.url.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;") }));
 }

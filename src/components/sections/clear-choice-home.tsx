@@ -32,7 +32,7 @@ export function ClearChoiceHome({ branches, reviews }: Props) {
       </div>
       <div className="msx-portals">
         <Link href="/vehicle-adaptations" className="msx-portal msx-portal-adapt">
-          <div className="msx-portal-photo"><Image src="/images/redesign/seat.webp" alt="" fill sizes="(max-width: 700px) 36vw, 28vw" priority /></div>
+          <div className="msx-portal-photo"><Image src="/images/redesign/seat.webp" alt="" fill sizes="(max-width: 700px) 36vw, 28vw" priority fetchPriority="high" /></div>
           <div className="msx-portal-content">
             <div className="msx-portal-heading"><span className="msx-portal-icon"><Car size={27} aria-hidden /></span><h2>Vehicle<br className="msx-mobile-break" /> adaptations</h2></div>
             <p className="msx-portal-title">Make your vehicle<br />work for you.</p>
@@ -43,7 +43,7 @@ export function ClearChoiceHome({ branches, reviews }: Props) {
           </div>
         </Link>
         <Link href="/shop" className="msx-portal msx-portal-shop">
-          <div className="msx-portal-photo"><Image src="/images/redesign/scooter.webp" alt="" fill sizes="(max-width: 700px) 36vw, 28vw" priority /></div>
+          <div className="msx-portal-photo"><Image src="/images/redesign/scooter.webp" alt="" fill sizes="(max-width: 700px) 36vw, 28vw" priority fetchPriority="high" /></div>
           <div className="msx-portal-content">
             <div className="msx-portal-heading"><span className="msx-portal-icon"><Accessibility size={29} aria-hidden /></span><h2>Scooters &amp;<br className="msx-mobile-break" /> wheelchairs</h2></div>
             <p className="msx-portal-title">Everyday freedom,<br />your way.</p>
