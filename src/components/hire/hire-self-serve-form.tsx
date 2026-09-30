@@ -288,7 +288,7 @@ export function HireSelfServeForm({
         </div>
         <aside className="ms-hire-selection" aria-live="polite">
           {selectedImage?.src && <CatalogImage src={selectedImage.src} alt={selectedImage.alt} className="h-36 w-full object-contain" />}
-          <p className="mt-3 text-sm text-muted">For users {selectedCategory.userWeight}. Image shows an example model.</p>
+          <p className="mt-3 text-sm text-muted">For users {selectedCategory.userWeight}. {selectedImage?.src ? "Image shows an example model." : ""}</p>
           <p className="mt-4 text-3xl font-semibold">{formatGBP(form.hireType === "flex" ? selectedCategory.flexMonthly : quote?.hireChargeExVat ?? selectedCategory.threeDay)}<span className="ml-2 text-sm font-normal text-muted">{form.hireType === "flex" ? "/ month" : quote ? "for " + quote.days + " days" : "for 3 days"}</span></p>
           <p className="mt-2 text-sm text-muted">{form.hireType === "flex" ? "+ " + formatGBP(FLEX_SETUP_FEE_GBP) + " one-off set-up" : "+ " + formatGBP(selectedCategory.deposit) + " refundable deposit"}. Prices before VAT.</p>
           <p className="mt-2 text-sm text-muted">VAT relief can be selected at review if you qualify.</p>

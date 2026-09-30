@@ -45,7 +45,7 @@ export const DIVISIONS: Record<Division, DivisionMeta> = {
       { label: "£0 on Motability", href: "/motability/vehicle-adaptations" },
       { label: "Our recent work", href: "/our-work" },
       { label: "Vehicle collection & fitting", href: "/vehicle-adaptations/collection-cost" },
-      { label: "Servicing & aftercare", href: "/servicing" },
+      { label: "Servicing & aftercare", href: "/book-a-service" },
     ],
   },
   shop: {
@@ -71,6 +71,7 @@ export const DIVISIONS: Record<Division, DivisionMeta> = {
       { label: "Motability", href: "/motability" },
       { label: "Trade in your old scooter", href: "/trade-in" },
       { label: "Free scooter & wheelchair delivery", href: "/delivery" },
+      { label: "Scooter & wheelchair servicing", href: "/servicing" },
     ],
   },
 };
@@ -87,6 +88,7 @@ export const NEUTRAL_NAV: (DivisionLink & { division?: Division })[] = [
 
 const ADAPT_PREFIXES = ["/vehicle-adaptations", "/motability/vehicle-adaptations"];
 const SHOP_PREFIXES = [
+  "/servicing",
   "/delivery",
   "/shop",
   "/clearance",
