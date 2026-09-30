@@ -140,7 +140,9 @@ export function EnquiryForm({
             <option value="either">Either / not sure</option>
             <option value="heathrow">Heathrow</option>
             <option value="ferndown">Ferndown</option>
-            <option value="mobile">Mobile demo (we come to you)</option>
+            {enquiryType !== "service" ? (
+              <option value="mobile">Mobile demo (we come to you)</option>
+            ) : null}
           </Select>
         </div>
       ) : (
