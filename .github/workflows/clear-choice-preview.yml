@@ -12,6 +12,9 @@ jobs:
   preview:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
     env:
       NEXT_TELEMETRY_DISABLED: '1'
     steps:
@@ -27,12 +30,18 @@ jobs:
         run: |
           npm install --prefix "$RUNNER_TEMP/browser-tools" --no-save agent-browser@0.38.1
           echo "$RUNNER_TEMP/browser-tools/node_modules/.bin" >> "$GITHUB_PATH"
-      - run: agent-browser install --with-deps
+      - run: agent-browser install
       - name: Run read-only browser checks
         run: |
           npm run start -- --port 3000 > artifacts/server.log 2>&1 &
           for i in $(seq 1 60); do curl --silent --fail http://localhost:3000/ > /dev/null && break; sleep 2; done
           node scripts/clear-choice-smoke.mjs
+      - name: Summarise checks and dependency audit
+        if: always()
+        run: |
+          if [ -f artifacts/report.json ]; then cat artifacts/report.json; fi
+          npm audit --json > artifacts/dependency-audit.json || true
+          node -e 'const a=require("./artifacts/dependency-audit.json"); console.log(JSON.stringify({audit:a.metadata?.vulnerabilities,packages:Object.values(a.vulnerabilities||{}).map(v=>({name:v.name,severity:v.severity,fixAvailable:v.fixAvailable,via:v.via.filter(x=>typeof x!=="string").map(x=>({title:x.title,url:x.url}))}))},null,2))'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
