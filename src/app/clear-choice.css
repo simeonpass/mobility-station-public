@@ -108,7 +108,7 @@
 .msx-evidence .ms-work-story { background:#fff; border-color:var(--msx-line); border-radius:16px; }
 .msx-home .msx-evidence .ms-work-story h3 { font-size:20px; font-weight:800; letter-spacing:-.02em; }
 .msx-evidence .ms-home-review { background:#fff; border:1px solid var(--msx-line); border-radius:16px; }
-.msx-evidence .ms-home-review blockquote { font-size:16px; line-height:1.6; }
+.msx-evidence .ms-home-review blockquote { font-family:var(--font-figtree),Arial,sans-serif; font-size:16px; line-height:1.6; font-weight:500; }
 .msx-evidence .ms-review-stars { color:#0862a9; }
 .msx-section-heading { display:flex; justify-content:space-between; align-items:flex-end; gap:20px; margin-bottom:22px; }
 .msx-section-heading .msx-eyebrow { margin-bottom:8px; }
