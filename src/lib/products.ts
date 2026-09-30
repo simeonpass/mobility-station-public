@@ -1,3 +1,4 @@
+import { repairLegacyImageUrl } from "@/lib/legacy-images";
 import { unstable_cache } from "next/cache";
 import { createClient } from "@supabase/supabase-js";
 import { cleanProductDescription } from "@/lib/product-content";
@@ -427,6 +428,7 @@ export async function getCategories(
 export async function resolveCategoryFromSlug(
   categorySlug: string,
 ): Promise<string | null> {
+  try { categorySlug = decodeURIComponent(categorySlug); } catch { return null; }
   const categories = await getCategories({ shopOnly: false });
   const match = categories.find(
     (c) => categoryToSlug(c.category) === categorySlug || c.category.toLowerCase().replace(/\s+/g, "-") === categorySlug,
@@ -485,13 +487,14 @@ export async function getProductBySlug(
   return {
     ...mapped,
     ...(product as ProductDetail),
+    image_url: product.image_url ? repairLegacyImageUrl(product.image_url) : null,
     description: cleanProductDescription(product.description),
     track_stock: mapped.track_stock,
     pre_order_enabled: mapped.pre_order_enabled,
     is_discontinued: Boolean(
       (product as { is_discontinued?: boolean }).is_discontinued,
     ),
-    images: (imagesRes.data ?? []) as ProductImage[],
+    images: ((imagesRes.data ?? []) as ProductImage[]).map(image => ({ ...image, image_url: repairLegacyImageUrl(image.image_url) })),
     variants: ((variantsRes.data ?? []) as ProductVariant[]).map((v) => ({
       ...v,
       track_stock: v.track_stock !== false,
