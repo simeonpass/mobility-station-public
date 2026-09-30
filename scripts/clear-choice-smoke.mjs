@@ -3,12 +3,14 @@ import { execFileSync } from 'node:child_process';
 import { mkdirSync, writeFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 
-const base = 'http://localhost:3000';
-const out = path.resolve('artifacts');
+const base = process.env.PREVIEW_BASE_URL || 'http://localhost:3000';
+const remote = new URL(base).hostname !== 'localhost';
+if (remote && !new URL(base).hostname.endsWith('.vercel.app')) throw new Error('Remote checks require a Vercel preview URL');
+const out = path.resolve(process.env.REPORT_DIR || 'artifacts');
 mkdirSync(out, { recursive: true });
-const report = { mode: 'Local production build with curated fallback data; no business submissions', pages: [], routes: [], interactions: [], failures: [] };
+const report = { mode: remote ? 'Authenticated Vercel preview with live catalogue; no business submissions' : 'Local production build with curated fallback data; no business submissions', pages: [], routes: [], interactions: [], failures: [] };
 function browser(...args) {
-  return execFileSync('agent-browser', args, { encoding: 'utf8', timeout: 65000, maxBuffer: 4 * 1024 * 1024 });
+  return execFileSync('agent-browser', ['--session', process.env.BROWSER_SESSION || 'mobility-smoke', ...args], { encoding: 'utf8', timeout: 65000, maxBuffer: 4 * 1024 * 1024 });
 }
 function decode(value) {
   if (typeof value === 'string') { try { return decode(JSON.parse(value)); } catch { return null; } }
@@ -19,7 +21,7 @@ function decode(value) {
   return null;
 }
 function evaluate(expression) {
-  const raw = browser('--json', 'eval', `JSON.stringify(${expression})`);
+  const raw = browser('--json', 'eval', `JSON.stringify(await (${expression}))`);
   const result = decode(raw);
   if (!result) throw new Error(`Unrecognised browser result: ${raw.slice(0, 250)}`);
   return result;
@@ -46,6 +48,7 @@ function capture(route, width) {
   report.pages.push({ route, ...value });
   if (value.scrollWidth > width + 1) report.failures.push(`Horizontal overflow: ${route} at ${width}px (${value.scrollWidth})`);
   if (value.h1.length !== 1) report.failures.push(`Expected one H1: ${route} at ${width}px; found ${value.h1.length}`);
+  if (value.missingImages.length) report.failures.push(`Broken images: ${route}: ${value.missingImages.join(', ')}`);
   if (value.pageError) report.failures.push(`Application error: ${route}`);
   browser('screenshot', path.join(out, `${key(route)}-${width}.png`), '--full');
   return value;
@@ -60,7 +63,7 @@ function staticRoutes(dir = 'src/app', prefix = '') {
   return routes;
 }
 try {
-  const core = ['/', '/vehicle-adaptations', '/shop', '/motability', '/motability/vehicle-adaptations', '/hire', '/support', '/contact', '/checkout', '/servicing', '/book-a-demo', '/search?q=scooter&type=shop'];
+  const core = ['/', '/vehicle-adaptations', '/shop', '/motability', '/motability/vehicle-adaptations', '/hire', '/support', '/contact', '/checkout', '/servicing', '/book-a-demo', '/book-a-service', '/search?q=scooter&type=shop'];
   const products = new Set();
   for (const width of [1440, 390]) for (const route of core) {
     try { const page = capture(route, width); for (const link of page.productLinks) products.add(link); }
@@ -73,6 +76,7 @@ try {
     try { const page = capture(route, 390); if (!page.division) report.failures.push(`Product lost its section: ${route}`); }
     catch (error) { report.failures.push(`Product ${route}: ${error.message}`); }
   }
+  if (remote && products.size === 0) report.failures.push('Live catalogue supplied no product links');
   if (products.size === 0) report.interactions.push('Product detail checks skipped: curated fallback catalogue supplied no product links.');
   browser('set', 'viewport', '390', '844'); browser('open', base + '/');
   let snapshot = browser('snapshot', '-i');
@@ -83,7 +87,13 @@ try {
   ref=snapshot.split('\n').find(l=>/button "Request a callback/.test(l))?.match(/ref=(e\d+)/)?.[1];
   if(ref) {browser('click','@'+ref); writeFileSync(path.join(out,'callback-dialog.txt'),browser('snapshot','-i')); browser('screenshot',path.join(out,'callback-dialog.png')); report.interactions.push('Opened callback dialog; did not submit');}
   for (const route of staticRoutes()) {
-    try { const r=await fetch(base+route,{signal:AbortSignal.timeout(20000)}); report.routes.push({route,status:r.status,finalUrl:r.url}); }
+    try {
+      const r = remote
+        ? evaluate(`(async()=>{const r=await fetch(${JSON.stringify(route)});return {_msx:true,status:r.status,url:r.url}})()`)
+        : await fetch(base+route,{signal:AbortSignal.timeout(20000)});
+      report.routes.push({route,status:r.status,finalUrl:r.url});
+      if (r.status !== 200) report.failures.push(`Route ${route} returned ${r.status}`);
+    }
     catch(error){report.routes.push({route,error:error.message});}
   }
 } catch(error) { report.failures.push(error.stack || error.message); }

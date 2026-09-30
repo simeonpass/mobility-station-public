@@ -24,6 +24,10 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci
+      - name: Dependency security gate
+        run: npm audit --audit-level=low
+      - name: Pricing, form and payment contract regressions (mock backend)
+        run: npm test
       - name: Build without production credentials
         run: mkdir -p artifacts && npm run build 2>&1 | tee artifacts/build.log
       - name: Install browser tools outside the application
@@ -36,6 +40,7 @@ jobs:
           npm run start -- --port 3000 > artifacts/server.log 2>&1 &
           for i in $(seq 1 60); do curl --silent --fail http://localhost:3000/ > /dev/null && break; sleep 2; done
           node scripts/clear-choice-smoke.mjs
+          node scripts/payment-return-smoke.mjs
       - name: Summarise checks and dependency audit
         if: always()
         run: |
