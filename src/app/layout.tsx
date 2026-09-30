@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Figtree, Fraunces } from "next/font/google";
+import { Figtree } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { CartProvider } from "@/components/cart/cart-provider";
 import { CartDrawer } from "@/components/cart/cart-drawer";
@@ -18,12 +18,6 @@ import "./split-theme.css";
 const figtree = Figtree({
   subsets: ["latin"],
   variable: "--font-figtree",
-  display: "swap",
-});
-
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  variable: "--font-fraunces",
   display: "swap",
 });
 
@@ -60,7 +54,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en-GB" className={`${figtree.variable} ${fraunces.variable} h-full`} data-scroll-behavior="smooth">
+    <html lang="en-GB" className={`${figtree.variable} h-full`} data-scroll-behavior="smooth">
       <body className="min-h-full flex flex-col font-sans antialiased">
         <CartProvider>
           <ProductComparisonProvider>
