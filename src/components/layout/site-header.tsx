@@ -36,7 +36,7 @@ function HeaderNavigation({ pathname }: { pathname: string }) {
       <span className="mss-utility-accredited"><ShieldCheck size={14} aria-hidden />Motability accredited</span>
       <span className="mss-utility-spacer" />
       {meta && other
-        ? <Link className="mss-utility-switch" href={other.home}>{meta.switchPrompt} <strong>Switch</strong><ArrowRight size={14} aria-hidden /></Link>
+        ? <Link className="mss-utility-switch" href={other.home}><span className="mss-switch-long">{meta.switchPrompt} <strong>Switch</strong></span><span className="mss-switch-short">{meta.switchShort}</span><ArrowRight size={14} aria-hidden /></Link>
         : <Link className="mss-utility-switch" href="/contact#locations">Visit our branches<ArrowUpRight size={14} aria-hidden /></Link>}
       <span className="mss-utility-divider" aria-hidden />
       <a className="mss-utility-phone" href={SITE.phoneHref}><Phone size={14} aria-hidden />{SITE.phone}</a>

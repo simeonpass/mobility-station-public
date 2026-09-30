@@ -157,6 +157,7 @@ input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:f
 .mss-utility-switch { opacity: .9; }
 .mss-utility-switch:hover { opacity: 1; text-decoration: underline; text-underline-offset: 3px; }
 .mss-utility-phone { font-weight: 700; }
+.mss-switch-short { display: none; }
 
 /* ---------- Header ---------- */
 .mss-header { background: #fff; border-bottom: 1px solid var(--line); }
@@ -210,8 +211,11 @@ input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:f
   .mss-division-badge { padding: 6px 10px; font-size: .75rem; }
   .mss-division-badge svg { display: none; }
 }
+@media (max-width: 480px) {
+  .mss-switch-long { display: none; }
+  .mss-switch-short { display: inline; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+}
 @media (max-width: 420px) {
-  .mss-utility-switch { font-size: .6875rem; }
   .mss-division-badge { display: none; }
 }
 

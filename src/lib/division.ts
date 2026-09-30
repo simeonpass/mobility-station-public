@@ -15,6 +15,8 @@ export type DivisionMeta = {
   home: string;
   /** Shown in the utility bar, linking to the other division. */
   switchPrompt: string;
+  /** Shorter version of the switch link for small phones. */
+  switchShort: string;
   cta: DivisionLink;
   nav: DivisionLink[];
   footer: DivisionLink[];
@@ -26,6 +28,7 @@ export const DIVISIONS: Record<Division, DivisionMeta> = {
     label: "Vehicle Adaptations",
     home: "/vehicle-adaptations",
     switchPrompt: "Looking for scooters & wheelchairs?",
+    switchShort: "Switch to scooters",
     cta: { label: "Request a free quote", href: "/contact?interest=adaptation" },
     nav: [
       { label: "Driving controls", href: sectionHref("driving-controls") },
@@ -49,6 +52,7 @@ export const DIVISIONS: Record<Division, DivisionMeta> = {
     label: "Scooters & Wheelchairs",
     home: "/shop",
     switchPrompt: "Need vehicle adaptations?",
+    switchShort: "Switch to adaptations",
     cta: { label: "Book a free demo", href: "/book-a-demo" },
     nav: [
       { label: "Scooters", href: "/shop?sub=scooters" },
