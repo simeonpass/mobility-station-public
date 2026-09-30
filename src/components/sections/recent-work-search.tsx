@@ -22,10 +22,11 @@ export function RecentWorkSearch({
             id="our-work-q"
             name="q"
             type="search"
+            enterKeyHint="search"
             defaultValue={query}
             placeholder="Search by job, scooter, hoist, town…"
             autoComplete="off"
-            className="h-11 w-full rounded-md border border-border bg-white pl-10 pr-3 text-sm text-foreground outline-none ring-accent focus:ring-2"
+            className="h-11 w-full rounded-md border border-border bg-white pl-10 pr-3 text-base text-foreground outline-none ring-accent focus:ring-2"
           />
         </div>
         <button

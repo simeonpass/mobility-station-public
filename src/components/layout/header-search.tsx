@@ -36,8 +36,9 @@ export function HeaderSearch({
     <form
       onSubmit={submit}
       role="search"
-      className={`relative min-w-0 ${className}`}
+      className={`flex min-w-0 gap-2 ${className}`}
     >
+      <div className="relative min-w-0 flex-1">
       <Search
         className={`pointer-events-none absolute top-1/2 -translate-y-1/2 text-primary/45 ${
           compact ? "left-3 h-3.5 w-3.5" : "left-3.5 h-4 w-4"
@@ -47,16 +48,24 @@ export function HeaderSearch({
       <input
         ref={inputRef}
         type="search"
+        enterKeyHint="search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search products & adaptations"
         aria-label="Search products and vehicle adaptations"
         className={`w-full rounded-full border border-border/80 bg-soft/70 text-foreground placeholder:text-muted transition-[box-shadow,border-color,background-color] focus-visible:border-primary/25 focus-visible:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 ${
           compact
-            ? "h-10 py-2 pl-9 pr-3 text-sm"
-            : "h-11 py-2 pl-10 pr-4 text-sm shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)]"
+            ? "h-11 py-2 pl-9 pr-3 text-base"
+            : "h-11 py-2 pl-10 pr-4 text-base shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)]"
         }`}
       />
+      </div>
+      <button
+        type="submit"
+        className="h-11 shrink-0 rounded-full bg-primary px-4 text-base font-semibold text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+      >
+        Search
+      </button>
     </form>
   );
 }
