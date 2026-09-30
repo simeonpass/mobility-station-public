@@ -109,6 +109,7 @@ h1, h2 {
 .ms-contact-intro h1,
 .ms-product-overview h1,
 .ms-compare-page h1 {
+  font-weight: 600;
   letter-spacing: -0.02em;
 }
 .ms-page-intro h1 { font-weight: 600; }
@@ -195,10 +196,10 @@ input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:f
   .mss-header-cta { margin-left: auto; }
 }
 @media (max-width: 900px) {
-  .mss-utility-accredited, .mss-utility-divider { display: none; }
+  .mss-utility-inner > .mss-utility-accredited, .mss-utility-inner > .mss-utility-divider { display: none; }
 }
 @media (max-width: 640px) {
-  .mss-utility-local, .mss-utility-divider, .mss-utility-spacer { display: none !important; }
+  .mss-utility-inner > .mss-utility-local, .mss-utility-inner > .mss-utility-divider, .mss-utility-inner > .mss-utility-spacer { display: none; }
   .mss-utility-inner { justify-content: space-between; gap: 10px; font-size: .75rem; }
   .mss-utility-switch strong { text-decoration: underline; text-underline-offset: 3px; }
   .mss-header-inner { min-height: 72px; gap: 10px; }
@@ -387,6 +388,7 @@ a.mss-route:hover { border-color: var(--line-strong); }
 .ms-branch-card { background: #fff; border-color: var(--line); border-radius: 20px; }
 .ms-branch-icon { background: var(--stone); color: var(--ink); }
 .ms-work-story { background: #fff; border-color: var(--line); }
+.ms-home-evidence { padding-bottom: 24px; }
 .ms-home-review { background: #fff; border: 1px solid var(--line); }
 .ms-home-review blockquote { font-family: var(--font-fraunces), Georgia, serif; font-size: 1.25rem; line-height: 1.45; color: var(--ink); }
 .ms-review-stars { color: #b76e00; }
