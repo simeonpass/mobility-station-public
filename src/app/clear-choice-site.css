@@ -296,22 +296,15 @@ body[data-design="clear-choice"] [role="dialog"] { font-family:var(--font-figtre
 }
 .msx-site .ms-help-band.msx-help-band > .container-site { display:block; }
 
-/* One shared logo shape, coloured by the current business division. */
-.msx-site { --brand-colour:var(--ink); }
-.msx-site[data-site-division="adapt"] { --brand-colour:var(--adapt); }
-.msx-site[data-site-division="shop"] { --brand-colour:var(--shop); }
-@supports (mask-image:url("/brand/site-palette/logo.svg")) {
-  .msx-site .ms-logo .ms-logo-light, .msx-site .ms-logo .ms-logo-dark { display:none; }
-  .msx-site .ms-logo::before {
-    content:""; display:block; width:100%; aspect-ratio:8 / 3;
-    background:var(--brand-colour);
-    mask:url("/brand/site-palette/logo.svg") center / contain no-repeat;
-  }
-}
+/* The logo wordmark stays as it is; only the figure's colour follows the current side. */
+.msx-site .ms-logo .ms-logo-adapt, .msx-site .ms-logo .ms-logo-shop { display:none; }
+.msx-site[data-site-division="adapt"] .ms-logo .ms-logo-main, .msx-site[data-site-division="shop"] .ms-logo .ms-logo-main { display:none; }
+.msx-site[data-site-division="adapt"] .ms-logo .ms-logo-adapt { display:block; }
+.msx-site[data-site-division="shop"] .ms-logo .ms-logo-shop { display:block; }
 /* Keep both business sections visible above the desktop section navigation. */
 @media (min-width:1001px) {
   .msx-header .msx-mobile-paths { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); border-top:1px solid var(--line); }
-  .msx-header .msx-mobile-paths a { display:flex; align-items:center; justify-content:center; gap:12px; min-height:52px; padding:10px 24px; font-size:15px; font-weight:750; border-bottom:3px solid; }
+  .msx-header .msx-mobile-paths a { display:flex; align-items:center; justify-content:center; gap:12px; min-height:42px; padding:6px 24px; font-size:14px; font-weight:750; border-bottom:3px solid; }
   .msx-header .msx-mobile-path-adapt { background:var(--adapt-tint); color:var(--adapt-deep); border-color:var(--adapt); }
   .msx-header .msx-mobile-path-shop { background:var(--shop-tint); color:var(--shop-deep); border-color:var(--shop); }
   .msx-header .msx-mobile-path-adapt[aria-current] { background:var(--adapt); color:white; }
