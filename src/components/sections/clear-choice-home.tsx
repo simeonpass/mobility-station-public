@@ -20,7 +20,7 @@ const categories = [
   { title: "Boot hoists", copy: "Take your mobility equipment with you", href: adaptationHref("Boot Hoists"), image: "/images/hero-options/hoist-demonstration.webp", alt: "A boot hoist demonstration", side: "adapt" },
   { title: "Mobility scooters", copy: "For everyday and further afield", href: "/shop?sub=scooters", image: "/images/redesign/scooter.webp", alt: "A mobility scooter demonstration", side: "shop" },
   { title: "Powerchairs", copy: "Comfort and control, your way", href: "/shop?sub=wheelchairs", image: "/images/hero-options/02-wav-powerchair.webp", alt: "A powered wheelchair", side: "shop" },
-  { title: "Wheelchairs", copy: "Explore our wheelchair range", href: "/shop?sub=wheelchairs", image: null, alt: "", side: "shop" },
+  { title: "Wheelchairs", copy: "Explore our wheelchair range", href: "/shop?sub=wheelchairs", image: "/images/redesign/manual-wheelchair-lifestyle.webp", alt: "An older adult using a manual wheelchair on a leafy park path", side: "shop" },
 ];
 
 export function ClearChoiceHome({ branches, reviews }: Props) {
@@ -56,7 +56,7 @@ export function ClearChoiceHome({ branches, reviews }: Props) {
       </div>
       <div className="msx-trust" aria-label="Why choose Mobility Station">
         <span><ShieldCheck aria-hidden /><span><strong>Specialist advice</strong>Fitting &amp; aftercare</span></span>
-        {reviews.totalReviews > 0 && Number.isFinite(reviews.averageRating) ? <Link href="/about-us"><span className="msx-trust-stars" aria-hidden><Star /><Star /><Star /></span><span><strong>{reviews.averageRating.toFixed(1)} / 5 on Google</strong>{reviews.totalReviews} customer reviews</span></Link> : <span><Users aria-hidden /><span><strong>Real people</strong>Personal support</span></span>}
+        {reviews.totalReviews > 0 && Number.isFinite(reviews.averageRating) ? <Link href="/about-us" className="msx-trust-reviews"><span className="msx-trust-stars" aria-hidden><Star /><Star /><Star /><Star /><Star /></span><span><strong>{reviews.averageRating.toFixed(1)} / 5 on Google</strong>{reviews.totalReviews} customer reviews</span></Link> : <span><Users aria-hidden /><span><strong>Real people</strong>Personal support</span></span>}
         <span><Handshake aria-hidden /><span><strong>Motability accredited</strong>Help at every step</span></span>
         <a href="#branches"><MapPin aria-hidden /><span><strong>Two local teams</strong>Heathrow &amp; Ferndown</span></a>
       </div>

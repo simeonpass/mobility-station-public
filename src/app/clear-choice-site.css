@@ -320,3 +320,11 @@ body[data-design="clear-choice"] [role="dialog"] { font-family:var(--font-figtre
   .msx-header .msx-mobile-paths a:focus-visible { outline-offset:-5px; outline-color:currentColor; }
 }
 .msx-header { --msx-blue:var(--division); --msx-blue-deep:var(--division-deep); }
+
+/* Keep the complete five-star motif visible, including compact screens. */
+.msx-trust-stars { width:auto; flex:none; flex-wrap:nowrap; }
+.msx-trust-stars svg { flex:none; }
+.msx-trust-stars svg:last-child { display:block; }
+@media (max-width:700px) {
+  .msx-trust > .msx-trust-reviews { flex-direction:column; align-items:flex-start; gap:4px; }
+}
