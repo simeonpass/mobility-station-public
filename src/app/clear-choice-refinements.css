@@ -2,3 +2,7 @@
 .msx-mobile-tools .ms-icon-button { width:44px; min-width:44px; height:44px; }
 @media(max-width:700px) { .msx-header .msx-header-phone { display:none; } }
 @media(min-width:1001px) and (max-width:1150px) { .msx-desktop-nav { gap:16px; } .msx-desktop-nav > .msx-switch-link { display:none; } }
+/* Cancel legacy white breadcrumb links on the new pale division headers. */
+.msx-site .msx-page-intro .ms-breadcrumb a,
+.msx-site .msx-page-intro .ms-breadcrumb > span { color:var(--ink-muted); opacity:1; }
+.msx-site .msx-page-intro .ms-breadcrumb [aria-current="page"] { color:var(--ink); }
