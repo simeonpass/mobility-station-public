@@ -69,10 +69,10 @@ export function AdaptationFittingGuide() {
             </p>
             <p className="mt-3">
               <Link
-                href="/service-area"
+                href="/vehicle-adaptations/collection-cost"
                 className="text-sm font-semibold text-primary underline-offset-2 hover:underline"
               >
-                Check your postcode and call-out bands →
+                Check vehicle collection costs and fitting options →
               </Link>
             </p>
           </div>

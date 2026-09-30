@@ -36,7 +36,7 @@ export const DIVISIONS: Record<Division, DivisionMeta> = {
       { label: "Vehicle access", href: sectionHref("vehicle-access") },
       { label: "Motability", href: "/motability/vehicle-adaptations" },
       { label: "Our work", href: "/our-work" },
-      { label: "How it works", href: "/vehicle-adaptations#how-it-works" },
+      { label: "Collection & fitting", href: "/vehicle-adaptations/collection-cost" },
     ],
     footer: [
       { label: "Driving controls", href: sectionHref("driving-controls") },
@@ -44,6 +44,7 @@ export const DIVISIONS: Record<Division, DivisionMeta> = {
       { label: "Vehicle access", href: sectionHref("vehicle-access") },
       { label: "£0 on Motability", href: "/motability/vehicle-adaptations" },
       { label: "Our recent work", href: "/our-work" },
+      { label: "Vehicle collection & fitting", href: "/vehicle-adaptations/collection-cost" },
       { label: "Servicing & aftercare", href: "/servicing" },
     ],
   },
@@ -69,6 +70,7 @@ export const DIVISIONS: Record<Division, DivisionMeta> = {
       { label: "Clearance", href: "/clearance" },
       { label: "Motability", href: "/motability" },
       { label: "Trade in your old scooter", href: "/trade-in" },
+      { label: "Free scooter & wheelchair delivery", href: "/delivery" },
     ],
   },
 };
@@ -85,6 +87,7 @@ export const NEUTRAL_NAV: (DivisionLink & { division?: Division })[] = [
 
 const ADAPT_PREFIXES = ["/vehicle-adaptations", "/motability/vehicle-adaptations"];
 const SHOP_PREFIXES = [
+  "/delivery",
   "/shop",
   "/clearance",
   "/hire",
