@@ -95,7 +95,6 @@ export const SITE = {
   smsHref: "sms:+441895520361",
   email: "hello@mobilitystation.co.uk",
   url: "https://mobilitystation.co.uk",
-  lightweightUrl: "https://lightweightmobility.co.uk",
 } as const;
 
 export function websiteJsonLd() {

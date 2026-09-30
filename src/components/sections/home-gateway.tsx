@@ -52,7 +52,7 @@ export function HomeRoutes() {
       <Link href="/shop" className="mss-route mss-route-shop">
         <span className="mss-tag mss-tag-shop">Scooters &amp; wheelchairs</span>
         <strong>“I need help getting around day to day.”</strong>
-        <p>Lightweight folders for trips away, road scooters for longer journeys, powerchairs and manual wheelchairs — plus short-term hire.</p>
+        <p>Folding scooters for trips away, road scooters for longer journeys, powerchairs and manual wheelchairs — plus short-term hire.</p>
         <span className="mss-route-link">Explore the range<ArrowRight size={18} aria-hidden /></span>
       </Link>
       <div className="mss-route">

@@ -57,18 +57,18 @@ export const DIVISIONS: Record<Division, DivisionMeta> = {
     nav: [
       { label: "Scooters", href: "/shop?sub=scooters" },
       { label: "Wheelchairs", href: "/shop?sub=wheelchairs" },
-      { label: "Lightweight & folding", href: "/lightweight-folding-mobility" },
       { label: "Hire", href: "/hire" },
       { label: "Clearance", href: "/clearance" },
       { label: "Motability", href: "/motability" },
+      { label: "Trade-in", href: "/trade-in" },
     ],
     footer: [
       { label: "Mobility scooters", href: "/shop?sub=scooters" },
       { label: "Wheelchairs & powerchairs", href: "/shop?sub=wheelchairs" },
-      { label: "Lightweight & folding", href: "/lightweight-folding-mobility" },
       { label: "Hire", href: "/hire" },
       { label: "Clearance", href: "/clearance" },
       { label: "Motability", href: "/motability" },
+      { label: "Trade in your old scooter", href: "/trade-in" },
     ],
   },
 };
@@ -89,7 +89,6 @@ const SHOP_PREFIXES = [
   "/clearance",
   "/hire",
   "/compare",
-  "/lightweight-folding-mobility",
   "/mobility-scooter-hire",
   "/trade-in",
 ];
