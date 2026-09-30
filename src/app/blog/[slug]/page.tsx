@@ -167,20 +167,6 @@ export default async function BlogPostPage({ params }: Props) {
               className="blog-article max-w-3xl"
               dangerouslySetInnerHTML={{ __html: html }}
             />
-            {post.slug.includes("lightweight") ? (
-              <p className="mt-8 text-sm text-muted">
-                Looking for ultra-lightweight folding products?{" "}
-                <a
-                  href={SITE.lightweightUrl}
-                  className="font-semibold text-primary hover:text-primary-dark"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Visit lightweightmobility.co.uk
-                </a>
-                .
-              </p>
-            ) : null}
           </div>
 
           <aside className="space-y-8 lg:pt-2">

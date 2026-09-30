@@ -1,19 +1,22 @@
 import Link from "next/link";
+import { ArrowRight, HelpCircle, MapPin, Receipt, Truck, Wrench, CalendarDays } from "lucide-react";
+import { CatalogIntro } from "@/components/sections/catalog-intro";
+import { CtaFooter } from "@/components/sections/cta-footer";
 import { createMetadata } from "@/lib/seo";
-export const metadata = createMetadata({ title: "Help & Support", description: "Find answers, contact our team or arrange servicing for your mobility equipment.", path: "/support" });
+
+export const metadata = createMetadata({ title: "Advice & Support", description: "Find answers, contact our team or arrange servicing for your mobility equipment.", path: "/support" });
 const links = [
-  { title: "Contact & locations", text: "Message us, ask for a callback or find your nearest branch.", href: "/contact" },
-  { title: "Servicing & repairs", text: "Book workshop support or explore our Care Plans.", href: "/servicing" },
-  { title: "Frequently asked questions", text: "Straightforward answers about equipment, fitting and buying.", href: "/faq" },
-  { title: "Delivery & collection", text: "Delivery options, home visits and the areas we cover.", href: "/delivery" },
+  { title: "Contact & locations", text: "Send us a message, request a callback or plan a visit to the right branch.", href: "/contact", action: "Talk to our team", Icon: MapPin },
+  { title: "Servicing & repairs", text: "Find workshop support, one-off service prices and repairs.", href: "/servicing", action: "Explore aftercare", Icon: Wrench },
+  { title: "Your questions, answered", text: "Straightforward answers about equipment, vehicle adaptations and buying.", href: "/faq", action: "Read our FAQs", Icon: HelpCircle },
+  { title: "Delivery & collection", text: "Check delivery options, collection information and the areas we cover.", href: "/delivery", action: "Delivery information", Icon: Truck },
+  { title: "VAT relief", text: "Read about eligibility and the declaration required when claiming VAT relief.", href: "/vat-relief", action: "Understand VAT relief", Icon: Receipt },
+  { title: "Arrange a demonstration", text: "Tell us what you are interested in and find out about demonstration options.", href: "/book-a-demo", action: "Plan a demonstration", Icon: CalendarDays },
 ];
 export default function SupportPage() {
-  return <div className="container-site py-12 md:py-16">
-    <p className="ms-eyebrow">Here to help</p>
-    <h1 className="mt-4 text-4xl tracking-tight md:text-6xl">A little support.</h1>
-    <p className="mt-4 max-w-xl text-lg text-muted">Find an answer or the right person to help.</p>
-    <div className="mt-10 max-w-3xl">{links.map(item => <Link key={item.href} href={item.href} className="group flex items-center justify-between gap-6 border-t border-border py-7">
-      <div><h2 className="text-xl font-semibold group-hover:underline">{item.title}</h2><p className="mt-2 text-muted">{item.text}</p></div><span aria-hidden>↗</span>
-    </Link>)}</div>
-  </div>;
+  return <>
+    <CatalogIntro eyebrow="Here to help" breadcrumb="Advice & support" title="Advice, support and aftercare." subtitle="Find an answer or the right person to help, whether you need a vehicle adaptation or a mobility product." primary={{ href: "/contact", label: "Talk to our team" }} />
+    <section className="container-site msx-support-grid" aria-label="Choose the support you need">{links.map(({ title, text, href, action, Icon }) => <Link key={href} href={href} className="msx-support-card"><Icon aria-hidden="true" /><h2>{title}</h2><p>{text}</p><span>{action}<ArrowRight size={17} aria-hidden="true" /></span></Link>)}</section>
+    <CtaFooter title="Not sure who to ask?" subtitle="Tell us what you need. We will help you find the right next step." />
+  </>;
 }

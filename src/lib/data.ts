@@ -1,3 +1,4 @@
+import { repairLegacyImageUrl, repairLegacyImageHtml } from "@/lib/legacy-images";
 import {
   ADAPTATION_SERVICES,
   BLOG_POSTS,
@@ -243,8 +244,8 @@ function mapBlogRow(row: Record<string, unknown>): BlogPost {
     title: String(row.title),
     excerpt: String(row.excerpt ?? ""),
     content: String(row.excerpt ?? ""),
-    contentHtml: String(row.content_html ?? ""),
-    image: String(row.image_url ?? "/images/blog/placeholder-demo.svg"),
+    contentHtml: repairLegacyImageHtml(String(row.content_html ?? "")),
+    image: repairLegacyImageUrl(String(row.image_url ?? "/images/blog/placeholder-demo.svg")),
     imageAlt: row.image_alt ? String(row.image_alt) : undefined,
     publishedAt: String(row.published_at),
     updatedAt: row.updated_at ? String(row.updated_at) : undefined,

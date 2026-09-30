@@ -54,7 +54,6 @@ export const SITE_NAV: NavItem[] = [
       { href: "/shop", label: "Shop all" },
       { href: "/shop?sub=scooters", label: "Mobility scooters" },
       { href: "/shop?sub=wheelchairs", label: "Wheelchairs & powerchairs" },
-      { href: "/lightweight-folding-mobility", label: "Lightweight & folding" },
       { href: "/book-a-demo", label: "Book a demo" },
       { href: "/vat-relief", label: "VAT relief" },
     ],

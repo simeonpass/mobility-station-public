@@ -45,12 +45,12 @@ export const BRANCHES: Branch[] = [
 
 export const PRODUCT_CATEGORIES = [
   {
-    slug: "lightweight-folding-wheelchairs",
-    name: "Lightweight Folding Wheelchairs",
+    slug: "folding-wheelchairs",
+    name: "Folding Wheelchairs",
   },
   {
-    slug: "lightweight-folding-scooters",
-    name: "Lightweight Folding Scooters",
+    slug: "folding-mobility-scooters",
+    name: "Folding Mobility Scooters",
   },
   { slug: "powerchairs", name: "Powerchairs" },
   { slug: "electric-wheelchairs", name: "Electric Wheelchairs" },
@@ -111,10 +111,10 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: "2",
-    slug: "lightweight-travel-chair",
+    slug: "featherweight-travel-chair",
     name: "Featherweight Travel Chair",
-    categorySlug: "lightweight-folding-wheelchairs",
-    categoryName: "Lightweight Folding Wheelchairs",
+    categorySlug: "folding-wheelchairs",
+    categoryName: "Folding Wheelchairs",
     brand: "Mobility Station",
     price: 599,
     excerpt:
@@ -150,8 +150,8 @@ export const PRODUCTS: Product[] = [
     id: "3",
     slug: "compact-folding-scooter",
     name: "Compact Folding Scooter",
-    categorySlug: "lightweight-folding-scooters",
-    categoryName: "Lightweight Folding Scooters",
+    categorySlug: "folding-mobility-scooters",
+    categoryName: "Folding Mobility Scooters",
     brand: "Mobility Station",
     price: 1495,
     excerpt:
@@ -274,11 +274,11 @@ export const BLOG_POSTS: BlogPost[] = [
   {
     id: "3",
     slug: "choosing-lightweight-folding-mobility",
-    title: "Choosing lightweight folding mobility",
+    title: "Choosing a folding scooter or wheelchair",
     excerpt:
-      "Folding scooters and wheelchairs for travel, car boots and days out — plus when to visit our dedicated lightweight store.",
+      "Folding scooters and wheelchairs for travel, car boots and days out.",
     content:
-      "Lightweight folding scooters and wheelchairs are ideal when portability matters as much as comfort. Think holidays, visiting family, or storing equipment in a smaller vehicle.\n\nFor a deeper range of ultra-lightweight products, visit our dedicated store at lightweightmobility.co.uk.",
+      "Folding scooters and wheelchairs are ideal when portability matters as much as comfort. Think holidays, visiting family, or storing equipment in a smaller vehicle.\n\nCome and try folding models at our Heathrow or Ferndown branches, or book a home demonstration.",
     image: "/images/blog/placeholder-lightweight.svg",
     publishedAt: "2026-01-18",
     author: "Mobility Station",

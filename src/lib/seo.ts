@@ -46,7 +46,7 @@ export function createMetadata({
   modifiedTime,
   tags,
 }: PageSeo): Metadata {
-  const safeTitle = title.length > 60 ? `${title.slice(0, 57)}…` : title;
+  const safeTitle = title.trim();
   const safeDescription =
     description.length > 160 ? `${description.slice(0, 157)}…` : description;
   const url = absoluteUrl(path);
@@ -95,7 +95,6 @@ export const SITE = {
   smsHref: "sms:+441895520361",
   email: "hello@mobilitystation.co.uk",
   url: "https://mobilitystation.co.uk",
-  lightweightUrl: "https://lightweightmobility.co.uk",
 } as const;
 
 export function websiteJsonLd() {

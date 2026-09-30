@@ -1,3 +1,4 @@
+import { repairLegacyImageUrl } from "@/lib/legacy-images";
 /** Public Recent Work case-study feed (Lovable edge — no auth). */
 
 export const RECENT_WORK_CATEGORIES = [
@@ -32,6 +33,10 @@ export type RecentWorkProject = {
   seo_description?: string | null;
   updated_at?: string | null;
 };
+
+function repairProjectImages(project: RecentWorkProject): RecentWorkProject {
+  return { ...project, hero_image: project.hero_image ? repairLegacyImageUrl(project.hero_image) : null, images: (project.images ?? []).map(image => ({ ...image, url: repairLegacyImageUrl(image.url) })) };
+}
 
 type ListResponse = {
   total: number;
@@ -100,7 +105,7 @@ export async function listRecentWork(opts: {
     const data = (await res.json()) as ListResponse;
     return {
       total: Number(data.total) || 0,
-      projects: Array.isArray(data.projects) ? data.projects : [],
+      projects: Array.isArray(data.projects) ? data.projects.map(repairProjectImages) : [],
     };
   } catch (error) {
     console.error("Recent work feed error:", error);
@@ -124,7 +129,7 @@ export async function getRecentWorkProject(
       return null;
     }
     const data = (await res.json()) as SingleResponse;
-    return data.project ?? null;
+    return data.project ? repairProjectImages(data.project) : null;
   } catch (error) {
     console.error("Recent work project error:", error);
     return null;

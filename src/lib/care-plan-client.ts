@@ -1,16 +1,5 @@
 /** Browser-side helpers for Care Plan Stripe checkout / verify. */
 
-function supabasePublicConfig() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/, "");
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key) {
-    throw new Error(
-      "Care Plans need NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY",
-    );
-  }
-  return { url, key };
-}
-
 export type CarePlanCheckoutPayload = {
   planKey: string;
   name: string;
@@ -29,13 +18,10 @@ export async function startCarePlanCheckout(payload: CarePlanCheckoutPayload) {
     return { url: `${window.location.origin}/care-plan/success?bot=1` };
   }
 
-  const { url, key } = supabasePublicConfig();
-  const res = await fetch(`${url}/functions/v1/care-plan-checkout`, {
+  const res = await fetch("/api/care-plan/checkout", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      apikey: key,
-      Authorization: `Bearer ${key}`,
     },
     body: JSON.stringify({
       planKey: payload.planKey,
@@ -82,16 +68,13 @@ export async function pollCarePlanVerify(
   attempts = 8,
   delayMs = 1500,
 ): Promise<CarePlanVerifyResult> {
-  const { url, key } = supabasePublicConfig();
   let last: CarePlanVerifyResult = { status: "pending" };
 
   for (let i = 0; i < attempts; i++) {
-    const res = await fetch(`${url}/functions/v1/care-plan-verify`, {
+    const res = await fetch("/api/care-plan/verify", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        apikey: key,
-        Authorization: `Bearer ${key}`,
       },
       body: JSON.stringify({ sessionId }),
     });

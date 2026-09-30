@@ -221,6 +221,11 @@ const nextConfig: NextConfig = {
     return [
       // —— Specific legacy paths (before catch-alls) ——
       { source: "/shop/all", destination: "/shop", permanent: true },
+      {
+        source: "/lightweight-folding-mobility",
+        destination: "/shop?sub=scooters",
+        permanent: true,
+      },
       { source: "/products", destination: "/shop", permanent: true },
       { source: "/home", destination: "/", permanent: true },
       { source: "/cart", destination: "/checkout", permanent: true },

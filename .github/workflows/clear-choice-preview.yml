@@ -1,0 +1,56 @@
+name: Clear Choice preview checks
+on:
+  push:
+    branches: [codex/clear-choice-site, main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: clear-choice-preview-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Dependency security gate
+        run: npm audit --audit-level=low
+      - name: Pricing, form and payment contract regressions (mock backend)
+        run: npm test
+      - name: Build without production credentials
+        run: mkdir -p artifacts && npm run build 2>&1 | tee artifacts/build.log
+      - name: Install browser tools outside the application
+        run: |
+          npm install --prefix "$RUNNER_TEMP/browser-tools" --no-save agent-browser@0.38.1
+          echo "$RUNNER_TEMP/browser-tools/node_modules/.bin" >> "$GITHUB_PATH"
+      - run: agent-browser install
+      - name: Run read-only browser checks
+        run: |
+          npm run start -- --port 3000 > artifacts/server.log 2>&1 &
+          for i in $(seq 1 60); do curl --silent --fail http://localhost:3000/ > /dev/null && break; sleep 2; done
+          node scripts/clear-choice-smoke.mjs
+          node scripts/payment-return-smoke.mjs
+      - name: Summarise checks and dependency audit
+        if: always()
+        run: |
+          mkdir -p artifacts
+          if [ -f artifacts/report.json ]; then cat artifacts/report.json; fi
+          npm audit --json > artifacts/dependency-audit.json || true
+          node -e 'const a=require("./artifacts/dependency-audit.json"); console.log(JSON.stringify({audit:a.metadata?.vulnerabilities,packages:Object.values(a.vulnerabilities||{}).map(v=>({name:v.name,severity:v.severity,fixAvailable:v.fixAvailable,via:v.via.filter(x=>typeof x!=="string").map(x=>({title:x.title,url:x.url}))}))},null,2))'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: clear-choice-browser-report
+          path: artifacts/
+          retention-days: 7

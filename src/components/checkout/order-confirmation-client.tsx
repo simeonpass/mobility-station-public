@@ -18,8 +18,8 @@ export function OrderConfirmationClient() {
   const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    if (status === "success") clearCart();
-  }, [status, clearCart]);
+    if (status === "success" && order && provider !== "paypal") clearCart();
+  }, [status, order, provider, clearCart]);
 
   useEffect(() => {
     if (status !== "success" || provider !== "paypal" || !order) return;
@@ -39,12 +39,13 @@ export function OrderConfirmationClient() {
           error?: string;
         };
         if (cancelled) return;
-        if (!res.ok || data.success === false) {
+        if (!res.ok || data.success !== true || !["paid", "already_paid"].includes(data.status || "")) {
           setCaptureState("failed");
           setMessage(data.error || "PayPal capture did not complete");
           return;
         }
         setCaptureState("paid");
+        clearCart();
       } catch (err) {
         if (cancelled) return;
         setCaptureState("failed");
@@ -55,9 +56,10 @@ export function OrderConfirmationClient() {
     return () => {
       cancelled = true;
     };
-  }, [status, provider, order]);
+  }, [status, provider, order, clearCart]);
 
-  const success = status === "success";
+  const success = status === "success" && Boolean(order) && (provider !== "paypal" || captureState === "paid");
+  const paypalPending = status === "success" && provider === "paypal" && Boolean(order) && captureState !== "paid";
   const failed = status === "failed" || status === "cancel";
 
   return (
@@ -76,27 +78,30 @@ export function OrderConfirmationClient() {
                 Order number: <strong className="text-foreground">{order}</strong>
               </p>
             ) : null}
-            {provider === "paypal" && captureState === "capturing" ? (
-              <p className="mt-4 text-sm text-muted">
-                Confirming PayPal payment…
-              </p>
-            ) : null}
-            {provider === "paypal" && captureState === "failed" ? (
-              <p className="mt-4 text-sm text-error">
-                {message ||
-                  "Payment may still be processing. Contact us with your order number if needed."}
-              </p>
-            ) : null}
             <p className="mt-4 text-sm text-muted">
               We’ll email you a confirmation shortly. If you need anything,{" "}
-              <a
+              <Link
                 href="/contact?interest=callback#callback"
                 className="font-semibold text-primary underline"
               >
                 request a callback
-              </a>
+              </Link>
               .
             </p>
+          </>
+        ) : paypalPending ? (
+          <>
+            <h1 className="text-3xl font-extrabold text-primary">
+              {captureState === "failed" ? "Payment needs checking" : "Confirming PayPal payment"}
+            </h1>
+            <p className="mt-3 text-muted">Order number: <strong>{order}</strong></p>
+            <p className="mt-4 text-sm text-muted" role="status">
+              {captureState === "failed"
+                ? "We could not confirm your payment. Your basket has been kept. Please contact us with your order number before trying another payment."
+                : "Please wait while we confirm your payment. Your basket will be kept until payment is confirmed."}
+            </p>
+            {message ? <p className="mt-3 text-sm text-error">{message}</p> : null}
+            <Link href="/contact" className="mt-4 inline-block font-semibold underline">Contact our team</Link>
           </>
         ) : failed ? (
           <>
@@ -112,7 +117,7 @@ export function OrderConfirmationClient() {
               </p>
             ) : null}
             <p className="mt-4 text-sm text-muted">
-              No payment was taken. You can return to checkout and try again.
+              Payment was not confirmed. If your account shows a charge, contact us with your reference before trying again.
             </p>
           </>
         ) : (

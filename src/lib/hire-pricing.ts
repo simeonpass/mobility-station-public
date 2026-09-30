@@ -196,7 +196,7 @@ export const HIRE_SHARED_FAQS: HireFaqItem[] = [
 export const SHORT_TERM_FAQS: HireFaqItem[] = [
   {
     q: "How long can I hire for?",
-    a: "From 3 days up to 28 days. If you need it longer than that, please use Flex hire instead — it is usually cheaper per week and includes servicing.",
+    a: "From 3 days up to 28 days. For longer bookings, contact our team for a quote. Two- and four-week bookings have discounted package prices.",
   },
   {
     q: "What is the deposit?",

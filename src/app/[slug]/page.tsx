@@ -46,7 +46,6 @@ export default async function LegacyProductSlugPage({ params }: Props) {
     "order-confirmation",
     "trade-in",
     "mobility-scooter-hire",
-    "lightweight-folding-mobility",
     "hire",
     "delivery",
     "service-area",
