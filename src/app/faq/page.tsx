@@ -13,7 +13,7 @@ const operationalFaqs: { q:string; a:string; href?:string; hrefLabel?:string }[]
   { q: "Do you supply Motability scooters and wheelchairs?", a: "Yes. We are a Motability Scheme accredited dealer, with weekly figures on our Motability catalogue and demonstrations from Heathrow and Ferndown.", href: "/motability", hrefLabel: "See Motability options" },
   { q: "Can I claim VAT relief?", a: "Many customers with a long-term illness or disability can buy eligible products without VAT. You declare eligibility at checkout.", href: "/vat-relief", hrefLabel: "How VAT relief works" },
 ];
-export const metadata = createMetadata({ title: "FAQ | Mobility Station", description: "Answers to real customer questions about boot hoists, Motability, demos, VAT relief and vehicle adaptations — written for search and AI assistants, without personal details.", path: "/faq" });
+export const metadata = createMetadata({ title: "Frequently Asked Questions", description: "Answers to real customer questions about boot hoists, Motability, demos, VAT relief and vehicle adaptations — written for search and AI assistants, without personal details.", path: "/faq" });
 export const revalidate = 300;
 
 export default async function FaqPage() {
