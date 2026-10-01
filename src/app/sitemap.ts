@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { ADVICE_GUIDES } from "@/data/advice-guides";
 import { LOCATION_PAGES } from "@/data/location-pages";
 import {
   ADAPTATION_SECTIONS,
@@ -181,6 +182,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const entries: MetadataRoute.Sitemap = [
     ...staticRoutes,
+    { url: `${SITE.url}/guides`, changeFrequency: "monthly", priority: 0.7 },
+    ...ADVICE_GUIDES.map(guide => ({url: `${SITE.url}/guides/${guide.slug}`, changeFrequency: "monthly" as const, priority: 0.65})),
     ...townRoutes,
     ...shopCategoryRoutes,
     ...adaptationRoutes,
