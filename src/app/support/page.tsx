@@ -6,6 +6,7 @@ import { createMetadata } from "@/lib/seo";
 
 export const metadata = createMetadata({ title: "Advice & Support", description: "Find answers, contact our team or arrange servicing for your mobility equipment.", path: "/support" });
 const links = [
+  { title: "Vehicle adaptation guides", text: "Prepare for choosing hand controls, boot hoists and swivel seats with practical compatibility checklists.", href: "/guides", action: "Explore the guides", Icon: HelpCircle },
   { title: "Contact & locations", text: "Send us a message, request a callback or plan a visit to the right branch.", href: "/contact", action: "Talk to our team", Icon: MapPin },
   { title: "Servicing & repairs", text: "Find workshop support, one-off service prices and repairs.", href: "/servicing", action: "Explore aftercare", Icon: Wrench },
   { title: "Your questions, answered", text: "Straightforward answers about equipment, vehicle adaptations and buying.", href: "/faq", action: "Read our FAQs", Icon: HelpCircle },
