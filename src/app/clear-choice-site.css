@@ -135,6 +135,39 @@ html { scroll-padding-top:24px; }
 .msx-site .ms-product-accordions > details:last-child { border-bottom:0; }
 .msx-site .ms-product-accordions summary { font-weight:700; min-height:64px; }
 .msx-site .ms-product-accordions details[open] summary { color:var(--division-deep); }
+.msx-site .ms-product-video-link { display:inline-flex; align-items:center; gap:7px; min-height:40px; margin:-14px 0 10px; color:var(--division-deep); font-size:.875rem; font-weight:750; text-decoration:underline; text-underline-offset:4px; }
+.msx-site .ms-product-information { max-width:none; margin-top:72px; border-top:1px solid var(--line); padding-top:48px; }
+.msx-site .ms-product-information-heading { max-width:680px; margin-bottom:29px; }
+.msx-site .ms-product-information-heading .ms-eyebrow { color:var(--division-deep); margin-bottom:9px; }
+.msx-site .ms-product-information-heading h2 { margin:0 0 12px; max-width:20ch; }
+.msx-site .ms-product-information-heading > p:last-child { color:var(--ink-muted); line-height:1.7; }
+.msx-site .ms-product-featured-video { display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr); gap:clamp(25px,5vw,72px); align-items:center; padding:clamp(23px,4vw,46px); margin-bottom:30px; border:1px solid var(--line); border-radius:20px; background:var(--division-tint); }
+.msx-site .ms-product-featured-video h3 { font-size:clamp(1.5rem,2.2vw,2.1rem); line-height:1.2; margin:10px 0 14px; }
+.msx-site .ms-product-featured-video p:last-child { max-width:40ch; color:var(--ink-muted); line-height:1.7; }
+.msx-site .ms-product-featured-video-frame { min-width:0; overflow:hidden; border-radius:13px; box-shadow:0 12px 32px rgb(9 40 73 / .12); }
+.msx-site .ms-product-featured-video-frame > div { border-radius:0; }
+.msx-site .ms-product-video-player { background:#fff; }
+.msx-site .ms-product-video-poster { position:relative; display:grid; place-items:center; width:100%; aspect-ratio:16/9; overflow:hidden; cursor:pointer; color:#fff; background:#092849; }
+.msx-site .ms-product-video-poster img { opacity:.76; transition:transform .25s,opacity .25s; }
+.msx-site .ms-product-video-poster:hover img { transform:scale(1.035); opacity:.62; }
+.msx-site .ms-product-video-play { position:relative; display:grid; place-items:center; width:76px; height:76px; border-radius:50%; background:var(--division); box-shadow:0 7px 25px rgb(0 0 0 / .25); }
+.msx-site .ms-product-video-caption { position:absolute; bottom:20px; left:22px; z-index:1; font-size:.9rem; font-weight:750; text-shadow:0 1px 8px rgb(0 0 0 / .75); }
+.msx-site .ms-product-video-external { display:inline-flex; align-items:center; gap:5px; padding:12px 18px; color:var(--division-deep); font-size:.8rem; font-weight:750; text-decoration:underline; text-underline-offset:3px; }
+.msx-site .ms-product-information-nav { display:flex; align-items:center; flex-wrap:wrap; gap:8px 18px; padding:17px 0; margin-bottom:16px; border-block:1px solid var(--line); font-size:.82rem; }
+.msx-site .ms-product-information-nav span { margin-right:8px; color:var(--ink-muted); font-weight:750; }
+.msx-site .ms-product-information-nav a { color:var(--division-deep); font-weight:700; text-decoration:underline; text-underline-offset:4px; }
+.msx-site .ms-product-information-grid { display:grid; grid-template-columns:minmax(0,1fr); gap:18px; }
+.msx-site .ms-product-information-card { min-width:0; padding:clamp(22px,3vw,35px); border:1px solid var(--line); border-radius:16px; background:#fff; scroll-margin-top:100px; }
+.msx-site .ms-product-information-card h3 { margin:0 0 17px; font-size:1.2rem; line-height:1.3; }
+.msx-site .ms-product-information-card .ms-product-information-content { padding:0; color:var(--ink-muted); }
+.msx-site .ms-product-information-card-features ul { columns:2; column-gap:65px; }
+.msx-site .ms-product-information-card-features li { break-inside:avoid; margin-bottom:9px; }
+.msx-site .ms-product-information-card-specs .ms-specifications { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:48px; }
+.msx-site .ms-product-information-card-description,
+.msx-site .ms-product-information-card-fitting,
+.msx-site .ms-product-information-card-buying,
+.msx-site .ms-product-information-card-reviews { grid-column:1 / -1; }
+.msx-site .ms-product-information-card .ms-specifications > div { grid-template-columns:minmax(0,.75fr) minmax(0,1.25fr); }
 .msx-site .ms-product-related { padding-top:46px; }
 .msx-site .ms-compare-empty { background:var(--division-tint); border:1px solid var(--line); border-radius:18px; }
 .msx-site .ms-compare-bar { background:#092849; }
@@ -263,6 +296,14 @@ body[data-design="clear-choice"] [role="dialog"] { font-family:var(--font-figtre
   .msx-site .ms-product-pricing { padding:18px; }
   .msx-site .ms-detail-price { font-size:1.9rem; }
   .msx-site .ms-product-information { margin-top:32px; }
+  .msx-site .ms-product-information { padding-top:30px; }
+  .msx-site .ms-product-featured-video { grid-template-columns:1fr; gap:20px; padding:20px; }
+  .msx-site .ms-product-information-nav { gap:8px 14px; }
+  .msx-site .ms-product-information-nav span { flex-basis:100%; }
+  .msx-site .ms-product-information-grid { grid-template-columns:1fr; gap:12px; }
+  .msx-site .ms-product-information-card { grid-column:auto; padding:21px; scroll-margin-top:72px; }
+  .msx-site .ms-product-information-card-features ul { columns:1; }
+  .msx-site .ms-product-information-card-specs .ms-specifications { grid-template-columns:1fr; }
   .msx-site .ms-product-accordions { padding:0 17px; }
   .msx-site .ms-product-related { padding-top:30px; }
   .msx-site :is(input:not([type]),input[type="text"],input[type="email"],input[type="tel"],input[type="search"],input[type="date"],input[type="number"],select,textarea),

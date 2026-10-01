@@ -54,7 +54,7 @@ export const DIVISIONS: Record<Division, DivisionMeta> = {
     home: "/shop",
     switchPrompt: "Need vehicle adaptations?",
     switchShort: "Switch to adaptations",
-    cta: { label: "Book a free demo", href: "/book-a-demo" },
+    cta: { label: "Book a demo", href: "/book-a-demo" },
     nav: [
       { label: "Scooters", href: "/shop?sub=scooters" },
       { label: "Wheelchairs", href: "/shop?sub=wheelchairs" },

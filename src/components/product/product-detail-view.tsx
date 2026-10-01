@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { MotabilitySummary, motabilityPriceLabel } from "@/components/product/motability-summary";
 import { useMemo, useRef, useState, type ReactNode } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Play } from "lucide-react";
 import {
   AddToCartButton,
   StickyBuyBar,
@@ -11,6 +11,7 @@ import {
 } from "@/components/product/add-to-cart-button";
 import { ProductTabs } from "@/components/product/product-tabs";
 import { ProductGallery } from "@/components/product/product-gallery";
+import { CatalogImage } from "@/components/product/catalog-image";
 import { ProductOptionsSelector } from "@/components/product/product-options-selector";
 import { ProductPurchaseReassurance } from "@/components/product/product-purchase-reassurance";
 import { TakeawayCallout } from "@/components/product/takeaway-callout";
@@ -90,6 +91,7 @@ export function ProductDetailView(props: ProductDetailViewProps) {
   const [cartMessage, setCartMessage] = useState<string | null>(null);
   /** The displayed VAT basis can be changed without altering cart prices. */
   const [showIncVat, setShowIncVat] = useState(false);
+  const [videoPlaying, setVideoPlaying] = useState(false);
 
   const selectedOptions = useMemo(
     () => Object.values(selectedByGroup),
@@ -266,6 +268,7 @@ export function ProductDetailView(props: ProductDetailViewProps) {
   }) : null;
   const firstSentence = descriptionText.match(/^.*?[.!?](?:\s|$)/)?.[0]?.trim() || descriptionText;
   const shortDescription = firstSentence.length > 220 ? firstSentence.slice(0, 217).replace(/\s+\S*$/, "") + "…" : firstSentence;
+  const videoId = props.videoEmbed?.match(/\/embed\/([a-zA-Z0-9_-]{11})/)?.[1];
   const sections: Array<{ id: string; title: string; content: ReactNode }> = [];
   if (props.description) sections.push({
     id: "description", title: props.isAdaptation ? "About this adaptation" : "About this product",
@@ -277,7 +280,10 @@ export function ProductDetailView(props: ProductDetailViewProps) {
   });
   if (props.suitabilityInfo) sections.push({
     id: "suitability", title: "Who is it suitable for?",
-    content: <div className="space-y-3">{props.suitabilityInfo.split("\n").filter(Boolean).map((line, i) => <p key={i}>{line}</p>)}</div>,
+    content: <div className="space-y-3">{props.suitabilityInfo.split("\n").filter(Boolean).map((line, i) => {
+      const labelled = line.match(/^\*\*(.+?)\*\*:\s*(.*)$/);
+      return <p key={i}>{labelled ? <><strong>{labelled[1]}:</strong> {labelled[2]}</> : line}</p>;
+    })}</div>,
   });
   if (props.specs.length) sections.push({
     id: "specs", title: "Specifications",
@@ -294,7 +300,18 @@ export function ProductDetailView(props: ProductDetailViewProps) {
   });
   if (props.videoEmbed) sections.push({
     id: "video", title: "Watch the video",
-    content: <div className="aspect-video overflow-hidden rounded-lg bg-soft"><iframe src={props.videoEmbed} title={`${props.name} video`} className="h-full w-full" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen loading="lazy" /></div>,
+    content: <div className="ms-product-video-player">
+      {videoPlaying ? (
+        <div className="aspect-video overflow-hidden bg-soft"><iframe src={`${props.videoEmbed}${props.videoEmbed.includes("?") ? "&" : "?"}autoplay=1`} title={`${props.name} video`} className="h-full w-full" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen /></div>
+      ) : (
+        <button type="button" className="ms-product-video-poster" onClick={() => setVideoPlaying(true)} aria-label={`Play video of ${props.name}`}>
+          <CatalogImage src={props.gallery[0] || "/placeholder-product.svg"} alt="" fill className="object-cover" sizes="(max-width: 780px) 100vw, 60vw" />
+          <span className="ms-product-video-play"><Play size={28} fill="currentColor" aria-hidden /></span>
+          <span className="ms-product-video-caption">Play product video</span>
+        </button>
+      )}
+      {videoId ? <a className="ms-product-video-external" href={`https://www.youtube.com/watch?v=${videoId}`} target="_blank" rel="noopener noreferrer">Watch on YouTube <ArrowUpRight size={15} aria-hidden /></a> : null}
+    </div>,
   });
   if (props.reviews) sections.push({ id: "reviews", title: "Customer reviews", content: props.reviews });
 
@@ -312,6 +329,7 @@ export function ProductDetailView(props: ProductDetailViewProps) {
               ? "Specialist advice, a compatibility check and professional fitting for your vehicle. Talk to our team about the right setup for you."
               : shortDescription || "Find the right fit for your everyday journeys, with advice and demonstrations from our team."}
           </p>
+          {props.videoEmbed ? <a className="ms-product-video-link" href="#product-info-video">Watch the product video <ArrowUpRight size={17} aria-hidden /></a> : null}
           {props.used && !motabilityMode ? <p className="ms-product-condition">{[props.conditionLabel, props.conditionGrade].filter(Boolean).join(" · ")}</p> : null}
 
           {hasConfigurableOptions && !props.isAdaptation ? (
@@ -406,7 +424,7 @@ export function ProductDetailView(props: ProductDetailViewProps) {
           {props.discontinuedMessage ? <p className="text-sm text-muted">{props.discontinuedMessage}</p> : null}
         </div>
       </div>
-      <ProductTabs sections={sections} />
+      <ProductTabs sections={sections} isAdaptation={props.isAdaptation} />
 
       {canBuy && configuredCartProduct ? <StickyBuyBar product={configuredCartProduct} priceLabel={priceLabel} observeRef={buyRef} onAdd={hasConfigurableOptions ? handleAddConfigured : undefined} />
         : props.isAdaptation ? <StickyEnquiryBar productName={props.name} priceLabel={priceLabel} observeRef={buyRef}
