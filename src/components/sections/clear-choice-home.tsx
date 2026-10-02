@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Accessibility, ArrowRight, CalendarDays, Car, Check, CircleGauge, Handshake, Mail, MapPin, Phone, ShieldCheck, Star, Users } from "lucide-react";
+import { Accessibility, ArrowRight, CalendarDays, Car, Check, Handshake, Mail, MapPin, Phone, ShieldCheck, Star, Users } from "lucide-react";
 import { EnquiryDialog } from "@/components/forms/enquiry-dialog";
 import { adaptationHref } from "@/lib/adaptations";
 import { SITE } from "@/lib/seo";
@@ -37,7 +37,7 @@ export function ClearChoiceHome({ branches, reviews }: Props) {
             <div className="msx-portal-heading"><span className="msx-portal-icon"><Car size={27} aria-hidden /></span><h2>Vehicle<br className="msx-mobile-break" /> adaptations</h2></div>
             <p className="msx-portal-title">Make your vehicle<br />work for you.</p>
             <p className="msx-portal-description">Help with driving, getting in and out, and lifting your scooter or wheelchair into your vehicle.</p>
-            <div className="msx-portal-features" aria-hidden="true"><span><CircleGauge /><span>Hand<br />controls</span></span><span><MobilityIcon kind="seat" /><span>Swivel<br />seats</span></span><span><MobilityIcon kind="hoist" /><span>Boot<br />hoists</span></span></div>
+            <div className="msx-portal-features" aria-hidden="true"><span><Image src="/icons/categories/hand-controls.svg" alt="" width={35} height={35} /><span>Hand<br />controls</span></span><span><Image src="/icons/categories/swivel-seats.svg" alt="" width={35} height={35} /><span>Swivel<br />seats</span></span><span><Image src="/icons/categories/boot-hoists.svg" alt="" width={35} height={35} /><span>Boot<br />hoists</span></span></div>
             <span className="msx-mobile-summary">Hand controls, boot hoists &amp; swivel seats</span>
             <span className="msx-button msx-portal-button"><span>Explore vehicle adaptations</span><ArrowRight size={20} aria-hidden /></span>
           </div>
@@ -48,7 +48,7 @@ export function ClearChoiceHome({ branches, reviews }: Props) {
             <div className="msx-portal-heading"><span className="msx-portal-icon"><Accessibility size={29} aria-hidden /></span><h2>Scooters &amp;<br className="msx-mobile-break" /> wheelchairs</h2></div>
             <p className="msx-portal-title">Everyday freedom,<br />your way.</p>
             <p className="msx-portal-description">Find the right scooter or wheelchair for your life, with friendly advice and a chance to try before you buy.</p>
-            <div className="msx-portal-features" aria-hidden="true"><span><MobilityIcon kind="scooter" /><span>Mobility<br />scooters</span></span><span><MobilityIcon kind="seat" /><span>Powered<br />wheelchairs</span></span><span><MobilityIcon kind="chair" /><span>Manual<br />wheelchairs</span></span></div>
+            <div className="msx-portal-features" aria-hidden="true"><span><Image src="/icons/categories/mobility-scooters.svg" alt="" width={35} height={35} /><span>Mobility<br />scooters</span></span><span><Image src="/icons/categories/powered-wheelchairs.svg" alt="" width={35} height={35} /><span>Powered<br />wheelchairs</span></span><span><Image src="/icons/categories/manual-wheelchairs.svg" alt="" width={35} height={35} /><span>Manual<br />wheelchairs</span></span></div>
             <span className="msx-mobile-summary">Mobility scooters, powerchairs &amp; wheelchairs</span>
             <span className="msx-button msx-portal-button"><span>Shop scooters &amp; wheelchairs</span><ArrowRight size={20} aria-hidden /></span>
           </div>

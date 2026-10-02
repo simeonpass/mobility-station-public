@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="#173F5B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+  <title>Hand controls</title>
+  <circle cx="27" cy="31" r="20"/>
+  <circle cx="27" cy="31" r="5"/>
+  <path d="M8 25h10l5 4m8 3 7-7h8M25 36l-3 14"/>
+  <path d="m32 35 13 12m0 0 5-5m-5 5 5 5"/>
+  <circle cx="52" cy="40" r="3" fill="#173F5B" stroke="none"/>
+</svg>
