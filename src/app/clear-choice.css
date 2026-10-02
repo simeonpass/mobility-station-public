@@ -86,7 +86,7 @@
 .msx-portal-description { max-width:310px; font-size:15px; line-height:1.55; color:#254762; }
 .msx-portal-features { display:flex; gap:26px; align-items:flex-start; margin:24px 0 21px; }
 .msx-portal-features > span { display:flex; flex-direction:column; align-items:center; gap:6px; min-width:57px; text-align:center; font-size:12px; line-height:1.25; color:#163651; }
-.msx-portal-features svg { width:35px; height:35px; }
+.msx-portal-features svg, .msx-portal-features img { width:35px; height:35px; }
 .msx-portal-button { background:var(--portal-color); justify-content:space-between; margin-top:auto; min-height:50px; min-width:306px; max-width:100%; font-size:14px; }
 .msx-portal-shop:hover .msx-portal-button { background:var(--msx-teal-deep); }
 .msx-portal-adapt:hover .msx-portal-button { background:var(--msx-blue-deep); }
