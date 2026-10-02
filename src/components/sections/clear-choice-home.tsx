@@ -2,11 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { Accessibility, ArrowRight, CalendarDays, Car, Check, Handshake, Mail, MapPin, Phone, ShieldCheck, Star, Users } from "lucide-react";
 import { EnquiryDialog } from "@/components/forms/enquiry-dialog";
+import { HomeEvidence } from "@/components/sections/home-evidence";
+import type { RecentWorkProject } from "@/lib/recent-work";
 import { adaptationHref } from "@/lib/adaptations";
 import { SITE } from "@/lib/seo";
-import type { Branch } from "@/lib/types";
+import type { Branch, ReviewsSummary } from "@/lib/types";
 
-type Props = { branches: Branch[]; reviews: { averageRating: number; totalReviews: number } };
+type Props = { branches: Branch[]; reviews: { averageRating: number; totalReviews: number }; evidence: { reviews: ReviewsSummary; project?: RecentWorkProject } };
 
 function MobilityIcon({ kind }: { kind: "scooter" | "chair" | "hoist" | "seat" }) {
   return <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -23,19 +25,18 @@ const categories = [
   { title: "Wheelchairs", copy: "Explore our wheelchair range", href: "/shop?sub=wheelchairs", image: "/images/redesign/manual-wheelchair-lifestyle.webp", alt: "An older adult using a manual wheelchair on a leafy park path", side: "shop" },
 ];
 
-export function ClearChoiceHome({ branches, reviews }: Props) {
+export function ClearChoiceHome({ branches, reviews, evidence }: Props) {
   return <div className="msx-home">
     <section className="msx-container msx-hero" aria-labelledby="home-title">
       <div className="msx-hero-heading">
         <div><p className="msx-eyebrow">Vehicle adaptations. Everyday mobility.</p><h1 id="home-title">Keeping you moving<span>.</span></h1><p className="msx-intro">Expert vehicle adaptations, mobility scooters and wheelchairs.<br className="msx-desktop-break" /> What can we help you with?</p></div>
-        <span className="msx-hero-note" aria-hidden="true">More independence.<br /><strong>Every day.</strong><svg viewBox="0 0 160 15" fill="none"><path d="M3 11C43 2 105 2 157 6" stroke="currentColor" strokeWidth="3" strokeLinecap="round" /></svg></span>
       </div>
       <div className="msx-portals">
         <Link href="/vehicle-adaptations" className="msx-portal msx-portal-adapt">
           <div className="msx-portal-photo"><Image src="/images/redesign/seat.webp" alt="" fill sizes="(max-width: 700px) 36vw, 28vw" priority fetchPriority="high" /></div>
           <div className="msx-portal-content">
             <div className="msx-portal-heading"><span className="msx-portal-icon"><Car size={27} aria-hidden /></span><h2>Vehicle<br className="msx-mobile-break" /> adaptations</h2></div>
-            <p className="msx-portal-title">Make your vehicle<br />work for you.</p>
+            <p className="msx-portal-title">Make your vehicle <br />work for you.</p>
             <p className="msx-portal-description">Help with driving, getting in and out, and lifting your scooter or wheelchair into your vehicle.</p>
             <div className="msx-portal-features" aria-hidden="true"><span><Image src="/icons/categories/hand-controls.svg" alt="" width={35} height={35} unoptimized /><span>Hand<br />controls</span></span><span><Image src="/icons/categories/swivel-seats.svg" alt="" width={35} height={35} unoptimized /><span>Swivel<br />seats</span></span><span><Image src="/icons/categories/boot-hoists.svg" alt="" width={35} height={35} unoptimized /><span>Boot<br />hoists</span></span></div>
             <span className="msx-mobile-summary">Hand controls, boot hoists &amp; swivel seats</span>
@@ -46,7 +47,7 @@ export function ClearChoiceHome({ branches, reviews }: Props) {
           <div className="msx-portal-photo"><Image src="/images/redesign/scooter.webp" alt="" fill sizes="(max-width: 700px) 36vw, 28vw" priority fetchPriority="high" /></div>
           <div className="msx-portal-content">
             <div className="msx-portal-heading"><span className="msx-portal-icon"><Accessibility size={29} aria-hidden /></span><h2>Scooters &amp;<br className="msx-mobile-break" /> wheelchairs</h2></div>
-            <p className="msx-portal-title">Everyday freedom,<br />your way.</p>
+            <p className="msx-portal-title">Everyday freedom, <br />your way.</p>
             <p className="msx-portal-description">Find the right scooter or wheelchair for your life, with friendly advice and a chance to try before you buy.</p>
             <div className="msx-portal-features" aria-hidden="true"><span><Image src="/icons/categories/mobility-scooters.svg" alt="" width={35} height={35} unoptimized /><span>Mobility<br />scooters</span></span><span><Image src="/icons/categories/powered-wheelchairs.svg" alt="" width={35} height={35} unoptimized /><span>Powered<br />wheelchairs</span></span><span><Image src="/icons/categories/manual-wheelchairs.svg" alt="" width={35} height={35} unoptimized /><span>Manual<br />wheelchairs</span></span></div>
             <span className="msx-mobile-summary">Mobility scooters, powerchairs &amp; wheelchairs</span>
@@ -61,12 +62,13 @@ export function ClearChoiceHome({ branches, reviews }: Props) {
         <a href="#branches"><MapPin aria-hidden /><span><strong>Two local teams</strong>Heathrow &amp; Ferndown</span></a>
       </div>
     </section>
+    <div className="msx-evidence"><HomeEvidence project={evidence.project} reviews={evidence.reviews} /></div>
     <section id="branches" className="msx-container msx-section" aria-labelledby="branches-title">
       <div className="msx-section-heading"><div><p className="msx-eyebrow">Local people. Specialist know-how.</p><h2 id="branches-title">Visit one of our branches</h2></div><Link href="/locations" className="msx-text-link">Opening times &amp; directions<ArrowRight size={18} aria-hidden /></Link></div>
       <div className="msx-branches">{branches.map(branch => {
         const isDorset = /ferndown|dorset|wimborne/i.test(`${branch.name} ${branch.addressLocality}`);
         return <article key={branch.id} className={`msx-branch ${isDorset ? "msx-branch-dorset" : ""}`}>
-          <div className="msx-branch-art" aria-hidden="true"><div className="msx-map-lines" /><MapPin /><span>{isDorset ? "DORSET" : "WEST LONDON"}</span></div>
+          <div className="msx-branch-art"><Image src={isDorset ? "/images/hero-options/03-scooter-handover.webp" : "/images/hero-options/engineer-hand-controls.webp"} alt={isDorset ? "Our Ferndown team handing over a mobility scooter" : "Our Heathrow engineer fitting hand controls"} fill sizes="(max-width: 700px) 100vw, 220px" /><span>{isDorset ? "Dorset" : "West London"}</span></div>
           <div className="msx-branch-body"><h3>{isDorset ? "Ferndown / Dorset" : "Heathrow / West Drayton"}</h3><p className="msx-branch-address">{branch.addressLine1}<br />{branch.addressLocality}, {branch.postalCode}</p><ul><li><Check size={16} aria-hidden />Vehicle adaptation advice &amp; fitting</li>{isDorset ? <li><Check size={16} aria-hidden />Scooters &amp; wheelchairs to view and try</li> : <li><Check size={16} aria-hidden />Specialist workshop team</li>}</ul><div className="msx-branch-links"><a href={`tel:${branch.phone.replace(/\s/g, "")}`}><Phone size={15} aria-hidden />{branch.phone}</a><Link href="/locations" aria-label={`View ${branch.name} branch details`}>Branch details<ArrowRight size={17} aria-hidden /></Link></div></div>
         </article>;
       })}</div>
