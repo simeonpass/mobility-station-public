@@ -1,7 +1,7 @@
 export const CHECKOUT_BRANDS = {
   mobilitystation: { name: "Mobility Station", home: "https://mobilitystation.co.uk/shop", colour: "#003f43" },
   lightweight: { name: "Lightweight Mobility", home: "https://lightweightmobility.co.uk", colour: "#123f54" },
-  ergofold: { name: "ErgoFold", home: "https://ergofold.co.uk", colour: "#172d31" },
+  ergofold: { name: "ErgoFold", home: "https://ergofold.co.uk", colour: "#c9231e" },
 } as const;
 export type CheckoutBrand = keyof typeof CHECKOUT_BRANDS;
 export function checkoutBrand(value: unknown): CheckoutBrand {
