@@ -35,7 +35,7 @@ export function ClearChoiceHome({ branches, reviews }: Props) {
           <div className="msx-portal-photo"><Image src="/images/redesign/seat.webp" alt="" fill sizes="(max-width: 700px) 36vw, 28vw" priority fetchPriority="high" /></div>
           <div className="msx-portal-content">
             <div className="msx-portal-heading"><span className="msx-portal-icon"><Car size={27} aria-hidden /></span><h2>Vehicle<br className="msx-mobile-break" /> adaptations</h2></div>
-            <p className="msx-portal-title">Make your vehicle<br />work for you.</p>
+            <p className="msx-portal-title">Make your vehicle work for you.</p>
             <p className="msx-portal-description">Help with driving, getting in and out, and lifting your scooter or wheelchair into your vehicle.</p>
             <div className="msx-portal-features" aria-hidden="true"><span><Image src="/icons/categories/hand-controls.svg" alt="" width={35} height={35} unoptimized /><span>Hand<br />controls</span></span><span><Image src="/icons/categories/swivel-seats.svg" alt="" width={35} height={35} unoptimized /><span>Swivel<br />seats</span></span><span><Image src="/icons/categories/boot-hoists.svg" alt="" width={35} height={35} unoptimized /><span>Boot<br />hoists</span></span></div>
             <span className="msx-mobile-summary">Hand controls, boot hoists &amp; swivel seats</span>
@@ -46,7 +46,7 @@ export function ClearChoiceHome({ branches, reviews }: Props) {
           <div className="msx-portal-photo"><Image src="/images/redesign/scooter.webp" alt="" fill sizes="(max-width: 700px) 36vw, 28vw" priority fetchPriority="high" /></div>
           <div className="msx-portal-content">
             <div className="msx-portal-heading"><span className="msx-portal-icon"><Accessibility size={29} aria-hidden /></span><h2>Scooters &amp;<br className="msx-mobile-break" /> wheelchairs</h2></div>
-            <p className="msx-portal-title">Everyday freedom,<br />your way.</p>
+            <p className="msx-portal-title">Everyday freedom, your way.</p>
             <p className="msx-portal-description">Find the right scooter or wheelchair for your life, with friendly advice and a chance to try before you buy.</p>
             <div className="msx-portal-features" aria-hidden="true"><span><Image src="/icons/categories/mobility-scooters.svg" alt="" width={35} height={35} unoptimized /><span>Mobility<br />scooters</span></span><span><Image src="/icons/categories/powered-wheelchairs.svg" alt="" width={35} height={35} unoptimized /><span>Powered<br />wheelchairs</span></span><span><Image src="/icons/categories/manual-wheelchairs.svg" alt="" width={35} height={35} unoptimized /><span>Manual<br />wheelchairs</span></span></div>
             <span className="msx-mobile-summary">Mobility scooters, powerchairs &amp; wheelchairs</span>
@@ -66,7 +66,7 @@ export function ClearChoiceHome({ branches, reviews }: Props) {
       <div className="msx-branches">{branches.map(branch => {
         const isDorset = /ferndown|dorset|wimborne/i.test(`${branch.name} ${branch.addressLocality}`);
         return <article key={branch.id} className={`msx-branch ${isDorset ? "msx-branch-dorset" : ""}`}>
-          <div className="msx-branch-art" aria-hidden="true"><div className="msx-map-lines" /><MapPin /><span>{isDorset ? "DORSET" : "WEST LONDON"}</span></div>
+          <div className="msx-branch-art"><MapPin aria-hidden /><span aria-hidden="true">{isDorset ? "DORSET" : "WEST LONDON"}</span><a className="msx-map-credit" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">&copy; OpenStreetMap</a></div>
           <div className="msx-branch-body"><h3>{isDorset ? "Ferndown / Dorset" : "Heathrow / West Drayton"}</h3><p className="msx-branch-address">{branch.addressLine1}<br />{branch.addressLocality}, {branch.postalCode}</p><ul><li><Check size={16} aria-hidden />Vehicle adaptation advice &amp; fitting</li>{isDorset ? <li><Check size={16} aria-hidden />Scooters &amp; wheelchairs to view and try</li> : <li><Check size={16} aria-hidden />Specialist workshop team</li>}</ul><div className="msx-branch-links"><a href={`tel:${branch.phone.replace(/\s/g, "")}`}><Phone size={15} aria-hidden />{branch.phone}</a><Link href="/locations" aria-label={`View ${branch.name} branch details`}>Branch details<ArrowRight size={17} aria-hidden /></Link></div></div>
         </article>;
       })}</div>

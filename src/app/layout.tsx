@@ -17,6 +17,7 @@ import "./split-theme.css";
 import "./clear-choice.css";
 import "./clear-choice-refinements.css";
 import "./clear-choice-site.css";
+import "./premium-finish.css";
 
 const figtree = Figtree({ subsets: ["latin"], variable: "--font-figtree", display: "swap" });
 const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-fraunces", display: "swap" });

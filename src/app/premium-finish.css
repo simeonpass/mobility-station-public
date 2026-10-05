@@ -1,0 +1,191 @@
+/* Premium finish, layered over the approved Clear Choice layout. Loaded last.
+   Adds depth, clearer photography, a readable floor for small print and one
+   confident closing panel per page. Layout, colour roles, pricing and content
+   are unchanged: blue still means vehicle adaptations, teal still means
+   scooters & wheelchairs. Remove the import in layout.tsx to revert. */
+:root {
+  --lift-1:0 1px 2px rgb(9 40 73 / .04), 0 8px 20px -12px rgb(9 40 73 / .16);
+  --lift-2:0 2px 6px rgb(9 40 73 / .05), 0 26px 48px -24px rgb(9 40 73 / .30);
+  --hairline:rgb(9 40 73 / .10);
+}
+
+/* ---------- Type ---------- */
+body[data-design="clear-choice"] :is(h1,h2,h3) { text-wrap:balance; }
+body[data-design="clear-choice"] main p { text-wrap:pretty; }
+.msx-eyebrow { font-size:12px; letter-spacing:.13em; }
+.msx-site .ms-catalog-price, .msx-site .ms-detail-price { font-variant-numeric:tabular-nums; letter-spacing:-.02em; }
+
+/* ---------- Buttons: a little depth, and an arrow that leans forward ---------- */
+.msx-button { --btn-glow:rgb(8 98 169 / .65); box-shadow:inset 0 1px 0 rgb(255 255 255 / .18), 0 1px 2px rgb(9 40 73 / .20), 0 10px 18px -10px var(--btn-glow); transition:background .16s, box-shadow .2s, transform .16s; }
+.msx-button:hover { box-shadow:inset 0 1px 0 rgb(255 255 255 / .18), 0 1px 2px rgb(9 40 73 / .22), 0 14px 22px -10px var(--btn-glow); }
+.msx-header .msx-button { --btn-glow:color-mix(in srgb,var(--division) 65%,transparent); }
+.msx-portal-shop .msx-button, .msx-button-teal { --btn-glow:rgb(8 124 117 / .65); }
+.msx-site .ms-button { box-shadow:inset 0 1px 0 rgb(255 255 255 / .18), 0 1px 2px rgb(9 40 73 / .20), 0 10px 18px -10px rgb(9 40 73 / .50); transition:background .16s, border-color .16s, box-shadow .2s, transform .16s; }
+.msx-site .ms-button:hover { box-shadow:inset 0 1px 0 rgb(255 255 255 / .18), 0 1px 2px rgb(9 40 73 / .22), 0 14px 22px -10px rgb(9 40 73 / .55); }
+.msx-site .ms-button-secondary, .msx-site .ms-button-outline { box-shadow:0 1px 2px rgb(9 40 73 / .06); }
+.msx-site .ms-button-secondary:hover, .msx-site .ms-button-outline:hover { box-shadow:0 1px 2px rgb(9 40 73 / .06), 0 8px 16px -10px rgb(9 40 73 / .25); }
+.msx-button:active, .msx-site .ms-button:active { transform:translateY(1px); }
+.msx-site .ms-product-actions button.bg-buy { box-shadow:inset 0 1px 0 rgb(255 255 255 / .18), 0 1px 2px rgb(9 40 73 / .20), 0 12px 20px -12px color-mix(in srgb,var(--division) 70%,transparent); }
+:is(.msx-button,.ms-button,.msx-text-link,.msx-category-link,.msx-branch-links a,.msx-motability-links a,.msx-mobile-paths a,.msx-journey) > svg:last-child,
+.msx-help-options strong > svg { transition:transform .2s ease; }
+:is(.msx-button,.ms-button,.msx-text-link,.msx-motability-links a,.msx-mobile-paths a,.msx-journey):hover > svg:last-child,
+.msx-portal:hover .msx-portal-button > svg,
+.msx-category:hover .msx-category-link > svg,
+.msx-branch-links a:last-child:hover > svg,
+.msx-help-options > :hover strong > svg { transform:translateX(3px); }
+
+/* ---------- Homepage ---------- */
+.msx-intro { color:#2b4a63; }
+.msx-hero-note { font-family:var(--font-fraunces),Georgia,serif; font-size:25px; font-weight:400; line-height:1.25; letter-spacing:-.01em; transform:rotate(-5deg); color:var(--msx-blue-deep); }
+.msx-hero-note strong { font-weight:600; }
+.msx-hero-note::before { display:none; }
+.msx-hero-note svg { color:var(--msx-teal); width:150px; margin-top:9px; }
+
+/* The two doors. --copy is the width of the text column; the photograph starts
+   just inside it and the tint clears quickly, so the picture reads as a
+   photograph rather than a haze. */
+.msx-portal { --copy:364px; border-radius:24px; border-color:color-mix(in srgb,var(--portal-color) 16%,transparent); box-shadow:var(--lift-1); transition:box-shadow .25s, transform .25s; }
+.msx-portal:hover { box-shadow:var(--lift-2); transform:translateY(-3px); }
+.msx-portal-photo { width:auto; left:calc(var(--copy) - 70px); }
+.msx-portal::after { background:linear-gradient(90deg,var(--portal-bg) 0,var(--portal-bg) calc(var(--copy) - 56px),color-mix(in srgb,var(--portal-bg) 86%,transparent) calc(var(--copy) - 8px),color-mix(in srgb,var(--portal-bg) 34%,transparent) calc(var(--copy) + 62px),transparent calc(var(--copy) + 132px)); }
+.msx-home .msx-portal-title { text-wrap:balance; max-width:calc(var(--copy) - 56px); }
+.msx-portal-description { font-size:16px; max-width:calc(var(--copy) - 50px); }
+.msx-portal-features > span { font-size:13px; }
+@media(max-width:1250px) { .msx-portal { --copy:318px; } }
+@media(max-width:1100px) and (min-width:701px) {
+  .msx-portal { --copy:280px; }
+  .msx-portal::after { background:linear-gradient(90deg,var(--portal-bg) 0,var(--portal-bg) calc(var(--copy) - 56px),color-mix(in srgb,var(--portal-bg) 86%,transparent) calc(var(--copy) - 8px),color-mix(in srgb,var(--portal-bg) 34%,transparent) calc(var(--copy) + 62px),transparent calc(var(--copy) + 132px)); }
+  .msx-portal-description { font-size:15px; }
+}
+@media(max-width:700px) {
+  /* Single column: the text column grows with the card so wide phones keep the copy clear of the picture. */
+  .msx-portal { --copy:max(240px,56%); border-radius:18px; }
+  .msx-home .msx-portal-title { max-width:250px; }
+  .msx-portal-photo { width:auto; left:calc(var(--copy) - 56px); }
+  .msx-portal::after { background:linear-gradient(90deg,var(--portal-bg) 0,var(--portal-bg) calc(var(--copy) - 44px),color-mix(in srgb,var(--portal-bg) 84%,transparent) calc(var(--copy) - 6px),color-mix(in srgb,var(--portal-bg) 30%,transparent) calc(var(--copy) + 44px),transparent calc(var(--copy) + 96px)); }
+  .msx-mobile-summary { font-size:13px; }
+}
+
+/* Reassurance strip: a white card rather than a grey slab. */
+.msx-trust { background:#fff; border:1px solid var(--hairline); border-radius:18px; box-shadow:var(--lift-1); padding:26px 10px; margin-top:24px; }
+.msx-trust > span, .msx-trust > a { font-size:13.5px; }
+.msx-trust strong { font-size:15px; }
+.msx-trust > * + * { border-left-color:var(--hairline); }
+
+/* Rhythm: more air between sections, slightly larger section titles. */
+.msx-section { padding-top:80px; }
+.msx-section-heading { margin-bottom:28px; }
+.msx-home .msx-section-heading h2 { font-size:34px; letter-spacing:-.03em; }
+.msx-text-link { font-size:14.5px; }
+.msx-home { padding-bottom:80px; }
+
+.msx-branch { border-color:var(--hairline); border-radius:20px; box-shadow:var(--lift-1); padding:18px; }
+/* Branch tiles: a real street map of each branch (static, from OpenStreetMap,
+   toned to the branch colour) with a marker on the unit itself. */
+.msx-branch-art { width:36%; min-width:150px; border-radius:13px; background:#dfeaf3 url("/images/branches/heathrow-map.webp") center / cover no-repeat; box-shadow:inset 0 0 0 1px rgb(9 40 73 / .08); }
+.msx-branch-dorset .msx-branch-art { background:#dcebe6 url("/images/branches/ferndown-map.webp") center / cover no-repeat; }
+.msx-branch-art > svg { position:absolute; left:50%; top:50%; width:46px; height:46px; transform:translate(-50%,-92%); fill:currentColor; stroke:#fff; stroke-width:1.4; filter:drop-shadow(0 5px 6px rgb(9 40 73 / .35)); }
+.msx-branch-art > svg circle { fill:#fff; stroke:none; }
+.msx-branch-art > span { position:absolute; left:10px; top:10px; padding:6px 10px 5px; border-radius:999px; background:#fff; font-size:10px; line-height:1; letter-spacing:.14em; box-shadow:0 1px 2px rgb(9 40 73 / .12), 0 4px 10px -4px rgb(9 40 73 / .25); }
+.msx-home .msx-branch-art .msx-map-credit { position:absolute; right:0; bottom:0; padding:3px 7px; border-top-left-radius:8px; background:rgb(255 255 255 / .86); color:#39536a; font-size:10px; line-height:1.3; }
+.msx-home .msx-branch-art .msx-map-credit:hover { text-decoration:underline; }
+@media(max-width:1250px) { .msx-branch-art { min-width:132px; } }
+.msx-home .msx-branch h3 { font-size:22px; }
+.msx-branch-address { font-size:14.5px; }
+.msx-branch li { font-size:14px; }
+.msx-branch-links a { font-size:14px; min-height:32px; }
+
+/* One confident dark moment: the "not sure" band speaks for both divisions,
+   so it takes the brand navy rather than either division colour. */
+.msx-help { margin-top:36px; padding:36px 40px; border-radius:22px; background:radial-gradient(120% 160% at 100% 0,#123a63 0,transparent 55%),var(--msx-ink); color:#fff; box-shadow:var(--lift-2); }
+.msx-home .msx-help h2 { color:#fff; font-size:30px; }
+.msx-help-copy p { color:rgb(255 255 255 / .80); font-size:15.5px; margin-top:9px; }
+.msx-help-options > a, .msx-help-option { font-size:13px; color:rgb(255 255 255 / .78); gap:13px; }
+.msx-help-options strong { font-size:15.5px; color:#fff; }
+.msx-help-icon { width:50px; height:50px; background:rgb(255 255 255 / .10); color:#fff; box-shadow:inset 0 0 0 1px rgb(255 255 255 / .14); transition:background .2s; }
+.msx-help-options > :hover .msx-help-icon { background:rgb(255 255 255 / .18); }
+.msx-home .msx-help a:focus-visible, .msx-home .msx-help button:focus-visible { outline-color:#fff; }
+
+.msx-categories { gap:18px; }
+.msx-category { border-color:var(--hairline); border-radius:16px; box-shadow:var(--lift-1); }
+.msx-category:hover { box-shadow:var(--lift-2); }
+.msx-category-copy { padding:16px 15px 15px; }
+.msx-category-label { font-size:11px; letter-spacing:.03em; }
+.msx-home .msx-category h3 { font-size:17px; }
+.msx-category-copy p { font-size:13.5px; line-height:1.45; }
+.msx-category-link { font-size:13px; }
+
+.msx-motability { margin-top:64px; padding:32px 36px; border-radius:20px; }
+.msx-home .msx-motability h2 { font-size:25px; }
+.msx-motability p:not(.msx-eyebrow) { font-size:15px; }
+.msx-motability-links { min-width:280px; }
+.msx-motability-links a { min-height:48px; font-size:14px; padding:10px 16px; border-radius:11px; transition:border-color .16s, box-shadow .2s; }
+.msx-motability-links a:hover { box-shadow:0 8px 16px -10px rgb(9 40 73 / .28); }
+
+@media(max-width:700px) {
+  .msx-eyebrow { font-size:10.5px; }
+  .msx-section { padding-top:48px; }
+  .msx-home .msx-section-heading h2 { font-size:27px; }
+  .msx-home { padding-bottom:48px; }
+  .msx-trust { padding:20px 8px; margin-top:16px; border-radius:16px; }
+  .msx-trust > span, .msx-trust > a { font-size:12px; }
+  .msx-trust strong { font-size:13px; }
+  .msx-help { padding:28px 22px; border-radius:18px; margin-top:26px; }
+  .msx-home .msx-help h2 { font-size:25px; }
+  .msx-help-copy p { font-size:14.5px; }
+  .msx-help-options > a, .msx-help-option { font-size:13px; }
+  .msx-help-options strong { font-size:16px; }
+  .msx-category-label { font-size:10.5px; }
+  .msx-category-copy p { font-size:12.5px; }
+  .msx-category-link { font-size:12.5px; }
+  .msx-motability { margin-top:44px; padding:26px 22px; }
+  .msx-motability-links { min-width:0; }
+}
+
+/* ---------- Division pages: the same finish on intros, routes and catalogue ---------- */
+.msx-intro-panel { border-radius:24px; border-color:color-mix(in srgb,var(--division) 14%,transparent); background:linear-gradient(120deg,var(--division-tint) 35%,color-mix(in srgb,var(--division-tint) 50%,#fff)); box-shadow:var(--lift-1); }
+.msx-site .msx-page-intro .ms-intro-image { border-radius:18px; box-shadow:var(--lift-2); }
+.msx-journey { border-color:var(--hairline); border-radius:16px; box-shadow:var(--lift-1); transition:border-color .2s, box-shadow .25s, transform .25s; }
+.msx-journey:hover { border-color:color-mix(in srgb,var(--division) 45%,transparent); box-shadow:var(--lift-2); transform:translateY(-2px); }
+.msx-site .ms-catalog-card { border-color:var(--hairline); border-radius:18px; box-shadow:var(--lift-1); transition:border-color .2s, box-shadow .25s, transform .25s; }
+.msx-site .ms-catalog-card:hover { border-color:color-mix(in srgb,var(--division) 32%,transparent); box-shadow:var(--lift-2); transform:translateY(-3px); }
+.msx-site .ms-catalog-image { overflow:hidden; }
+.msx-site .ms-catalog-image img { transition:transform .45s ease; }
+.msx-site .ms-catalog-card:hover .ms-catalog-image img { transform:scale(1.035); }
+.msx-site .ms-trust { background:#fff; border:1px solid var(--hairline); border-radius:16px; box-shadow:var(--lift-1); }
+.msx-site .msx-adaptation-process li { border-color:var(--hairline); border-radius:16px; box-shadow:var(--lift-1); }
+.msx-site .ms-gallery-image { border-color:var(--hairline); border-radius:22px; box-shadow:var(--lift-1); }
+.msx-site .ms-product-pricing { border-radius:18px; border-color:color-mix(in srgb,var(--division) 14%,transparent); }
+.msx-site .ms-product-information-card { border-color:var(--hairline); border-radius:20px; box-shadow:var(--lift-1); }
+.msx-support-card, .msx-form-panel, .msx-contact-link, .msx-branch-panel { box-shadow:var(--lift-1); }
+/* Remaining grey information slabs become white cards like everything else. */
+.msx-site main .rounded-2xl.border.bg-soft { background:#fff; border-color:var(--hairline); box-shadow:var(--lift-1); }
+
+/* Closing advice panel: one confident block in the colour of the division you are in. */
+.msx-help-panel { padding:38px 42px; border:0; border-radius:22px; color:#fff; background:radial-gradient(120% 170% at 100% 0,color-mix(in srgb,var(--division) 90%,#fff) 0,transparent 58%),var(--division-deep); box-shadow:var(--lift-2); }
+.msx-site .msx-help-band .ms-eyebrow { color:rgb(255 255 255 / .78); }
+.msx-site .msx-help-band h2 { color:#fff; }
+.msx-site .msx-help-band p:not(.ms-eyebrow) { color:rgb(255 255 255 / .86); font-size:1rem; }
+.msx-site .msx-help-band .ms-help-actions .ms-button { background:#fff; border-color:#fff; color:var(--division-deep); }
+.msx-site .msx-help-band .ms-help-actions .ms-button:hover { background:color-mix(in srgb,var(--division-tint) 70%,#fff); border-color:transparent; color:var(--division-deep); }
+.msx-site .msx-help-band .ms-text-link, .msx-site .msx-help-band .ms-help-actions a:not(.ms-button) { color:#fff; }
+.msx-site .msx-help-band :is(a,button):focus-visible { outline-color:#fff; }
+
+/* ---------- Footer: small print that is still comfortable to read ---------- */
+.msx-footer-grid nav > a, .msx-footer-branches > a { font-size:.875rem; }
+.msx-footer-branches small, .msx-footer-bottom { font-size:.8125rem; }
+
+@media(max-width:700px) {
+  .msx-intro-panel, .msx-intro-panel.msx-intro-with-media { border-radius:18px; }
+  .msx-help-panel { padding:28px 22px; border-radius:18px; }
+  .msx-site .ms-catalog-card { border-radius:15px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .msx-button, .msx-site .ms-button, .msx-portal, .msx-journey, .msx-help-icon, .msx-motability-links a,
+  .msx-site .ms-catalog-card, .msx-site .ms-catalog-image img,
+  :is(.msx-button,.ms-button,.msx-text-link,.msx-category-link,.msx-branch-links a,.msx-motability-links a,.msx-mobile-paths a,.msx-journey,.msx-help-options strong) > svg { transition:none !important; }
+  .msx-portal:hover, .msx-journey:hover, .msx-site .ms-catalog-card:hover, .msx-site .ms-catalog-card:hover .ms-catalog-image img,
+  .msx-button:active, .msx-site .ms-button:active,
+  :is(.msx-button,.ms-button,.msx-text-link,.msx-category-link,.msx-branch-links a,.msx-motability-links a,.msx-mobile-paths a,.msx-journey,.msx-help-options strong) > svg,
+  .msx-portal:hover .msx-portal-button > svg, .msx-category:hover .msx-category-link > svg { transform:none !important; }
+}

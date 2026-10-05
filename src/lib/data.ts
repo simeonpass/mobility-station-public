@@ -1,3 +1,4 @@
+import { correctArticleTitle } from "@/lib/public-copy";
 import { repairLegacyImageUrl, repairLegacyImageHtml } from "@/lib/legacy-images";
 import {
   ADAPTATION_SERVICES,
@@ -241,7 +242,7 @@ function mapBlogRow(row: Record<string, unknown>): BlogPost {
   return {
     id: String(row.id),
     slug: String(row.slug),
-    title: String(row.title),
+    title: correctArticleTitle(String(row.title)),
     excerpt: String(row.excerpt ?? ""),
     content: String(row.excerpt ?? ""),
     contentHtml: repairLegacyImageHtml(String(row.content_html ?? "")),
