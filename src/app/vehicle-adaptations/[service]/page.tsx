@@ -90,7 +90,7 @@ export default async function AdaptationCategoryPage({ params }: Props) {
         </header>
 
         <div className="flex flex-wrap items-center justify-between gap-4 py-6">
-          <p className="text-sm text-muted"><strong className="text-primary">{products.length}</strong> compatible products listed · vehicle check before fitting</p>
+          <p className="text-sm text-muted"><strong className="text-primary">{products.length}</strong> compatible {products.length === 1 ? "product" : "products"} listed · vehicle check before fitting</p>
           {section ? <nav className="flex flex-wrap gap-2" aria-label={`${section.title} categories`}>{section.categories.map((cat) => { const count = byCategory.get(cat)?.length ?? 0; if (!count) return null; return <Link key={cat} href={adaptationHref(cat)} className="rounded-full border border-border bg-white px-3.5 py-2 text-xs font-semibold text-primary hover:border-primary">{cat} ({count})</Link>; })}</nav> : null}
         </div>
 

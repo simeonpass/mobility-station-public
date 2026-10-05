@@ -1,3 +1,4 @@
+import { correctPublicCopy } from "@/lib/public-copy";
 import { repairLegacyImageUrl } from "@/lib/legacy-images";
 import { unstable_cache } from "next/cache";
 import { createClient } from "@supabase/supabase-js";
@@ -109,6 +110,7 @@ export function slugToCategoryHint(slug: string) {
 function mapListItem(row: Record<string, unknown>): ProductListItem {
   return {
     ...(row as unknown as ProductListItem),
+    name: correctPublicCopy(String(row.name ?? "")),
     track_stock: row.track_stock !== false,
     pre_order_enabled: Boolean(row.pre_order_enabled),
   };
@@ -487,6 +489,8 @@ export async function getProductBySlug(
   return {
     ...mapped,
     ...(product as ProductDetail),
+    name: mapped.name,
+    seo_title: product.seo_title ? correctPublicCopy(product.seo_title) : null,
     image_url: product.image_url ? repairLegacyImageUrl(product.image_url) : null,
     description: cleanProductDescription(product.description),
     track_stock: mapped.track_stock,
@@ -497,6 +501,7 @@ export async function getProductBySlug(
     images: ((imagesRes.data ?? []) as ProductImage[]).map(image => ({ ...image, image_url: repairLegacyImageUrl(image.image_url) })),
     variants: ((variantsRes.data ?? []) as ProductVariant[]).map((v) => ({
       ...v,
+      label: v.label ? correctPublicCopy(v.label) : null,
       track_stock: v.track_stock !== false,
       is_addon: Boolean(v.is_addon),
       is_default: Boolean(v.is_default),
