@@ -1,12 +1,13 @@
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import { LockKeyhole } from "lucide-react";
 import { CHECKOUT_BRANDS, type CheckoutBrand } from "@/lib/checkout-brands";
 export function CheckoutShell({ brand = "mobilitystation", children }: { brand?: CheckoutBrand; children: React.ReactNode }) {
   const shop = CHECKOUT_BRANDS[brand];
-  return <div className="min-h-screen bg-slate-50">
+  return <div className="min-h-screen bg-slate-50" style={brand === "ergofold" ? {"--primary":"#171717","--accent":"#c9231e","--accent-hover":"#a51d19","--buy":"#c9231e","--buy-hover":"#a51d19","--tertiary":"#c9231e","--soft":"#fff3f2"} as CSSProperties : undefined}>
     <header className="border-b border-slate-200 bg-white"><div className="container-site flex flex-wrap items-center justify-between gap-4 py-6">
-      <a href={shop.home} className="text-2xl font-extrabold tracking-tight" style={{ color: shop.colour }}>{brand === "ergofold" ? <Image src="/ergofold/logo.png" alt="ErgoFold — Life without limits" width={300} height={90} className="h-auto w-[220px] sm:w-[240px]" unoptimized /> : shop.name}</a>
-      <span className="flex items-center gap-2 text-sm text-muted"><LockKeyhole size={17} />Secure checkout by Mobility Station</span>
+      <a href={brand === "ergofold" ? "/ergofold" : shop.home} className="text-2xl font-extrabold tracking-tight" style={{ color: shop.colour }}>{brand === "ergofold" ? <Image src="/ergofold/logo.png" alt="ErgoFold — Life without limits" width={300} height={90} className="h-auto w-[220px] sm:w-[240px]" unoptimized /> : shop.name}</a>
+      <span className="flex items-center gap-2 text-sm text-muted"><LockKeyhole size={17} />{brand === "ergofold" ? "Secure ErgoFold checkout" : "Secure checkout by Mobility Station"}</span>
     </div></header>
     <div className="container-site py-8 md:py-12">{children}</div>
     <footer className="container-site border-t border-slate-200 py-8 text-sm text-muted">

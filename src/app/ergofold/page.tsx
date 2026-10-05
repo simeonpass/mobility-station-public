@@ -22,5 +22,5 @@ export default async function ErgoFoldPage() {
     const variant = product.variants.find(v=>v.id===o.variantId);
     return variant && priceWithVariants(product,[variant]).current === o.price;
   });
-  return <ErgoFoldStore productId={product?.id || "bcabc0e5-eba0-4c7f-9b75-19d78010be9b"} packages={offers} available={available} checkoutOrigin={process.env.VERCEL_ENV === "preview" ? "" : undefined}/>;
+  return <ErgoFoldStore productId={product?.id || "bcabc0e5-eba0-4c7f-9b75-19d78010be9b"} packages={offers} available={available}/>;
 }

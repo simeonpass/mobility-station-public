@@ -98,7 +98,8 @@ function isPublicOrigin(origin: string) {
  */
 export function resolveReturnOrigin(request: Request) {
   // Payment returns use a configured, trusted origin, never an arbitrary Origin header.
-  void request;
+  const origin = new URL(request.url).origin;
+  if (origin === "https://ergofold.co.uk" || origin === "https://www.ergofold.co.uk") return origin;
 
   const site = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
   if (site && isPublicOrigin(site)) return site;

@@ -36,6 +36,7 @@ export function CheckoutForm({ initialItems, brand = "mobilitystation" }: { init
   const [loading, setLoading] = useState<"dna" | "paypal" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [declarationConfirmed, setDeclarationConfirmed] = useState(false);
+  const showTakeaway = brand === "mobilitystation";
   const [takeawayRequested, setTakeawayRequested] = useState(false);
   const [deliveryZone, setDeliveryZone] = useState<DeliveryCheckResult | null>(
     null,
@@ -142,7 +143,7 @@ export function CheckoutForm({ initialItems, brand = "mobilitystation" }: { init
     (form.fulfillment === "delivery" && deliveryZone?.status === "local");
 
   const takeawayAvailable =
-    takeawayEligible && availableTakeawayCredit > 0 && takeawayLocationOk;
+    showTakeaway && takeawayEligible && availableTakeawayCredit > 0 && takeawayLocationOk;
 
   useEffect(() => {
     if (takeawayRequested && !takeawayAvailable) {
@@ -392,8 +393,7 @@ export function CheckoutForm({ initialItems, brand = "mobilitystation" }: { init
               </div>
               <p className="text-sm text-muted">
                 Delivery is currently free across the UK for eligible orders.
-                Old scooter takeaway credit applies only when we deliver in our
-                local service area (or you collect from a branch).
+                {showTakeaway ? " Old scooter takeaway credit applies only when we deliver in our local service area (or you collect from a branch)." : null}
               </p>
             </div>
           ) : (
@@ -476,7 +476,7 @@ export function CheckoutForm({ initialItems, brand = "mobilitystation" }: { init
           )}
         </section>
 
-        <section className="rounded-2xl border border-border bg-white p-6">
+        {showTakeaway ? <section className="rounded-2xl border border-border bg-white p-6">
           <h2 className="text-lg font-bold text-primary">4. Old scooter takeaway</h2>
           {takeawayEligible && availableTakeawayCredit > 0 ? (
             <>
@@ -578,10 +578,10 @@ export function CheckoutForm({ initialItems, brand = "mobilitystation" }: { init
               </Link>
             </p>
           )}
-        </section>
+        </section> : null}
 
         <section className="rounded-2xl border border-border bg-white p-6">
-          <h2 className="text-lg font-bold text-primary">5. Notes</h2>
+          <h2 className="text-lg font-bold text-primary">{showTakeaway ? "5" : "4"}. Notes</h2>
           <div className="mt-4">
             <Label htmlFor="notes">Order notes (optional)</Label>
             <Textarea
