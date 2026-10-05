@@ -151,6 +151,7 @@ export function parseAddonCartId(id: string): {
 }
 
 export type CheckoutPayload = {
+  sourceBrand?: "mobilitystation" | "lightweight" | "ergofold";
   customer: {
     email: string;
     firstName: string;

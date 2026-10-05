@@ -1,5 +1,6 @@
 import type { CheckoutPayload } from "@/lib/cart";
 import { checkDeliveryZone } from "@/lib/delivery-zone";
+import { CHECKOUT_BRANDS, checkoutBrand } from "@/lib/checkout-brands";
 
 function getSupabaseConfig() {
   const url = process.env.SUPABASE_URL;
@@ -43,6 +44,10 @@ export async function invokeCheckoutFunction(
   const { url, key } = getSupabaseConfig();
   const payload =
     "items" in body ? await withTakeawayEligibility(body) : body;
+  if ("items" in payload) {
+    const brand = CHECKOUT_BRANDS[checkoutBrand(payload.sourceBrand)];
+    payload.notes = [`Website: ${brand.name} (${new URL(brand.home).hostname})`, payload.notes?.slice(0, 4000)].filter(Boolean).join("\n");
+  }
 
   const res = await fetch(`${url}/functions/v1/${functionName}`, {
     method: "POST",
@@ -92,8 +97,9 @@ function isPublicOrigin(origin: string) {
  * public site URL.
  */
 export function resolveReturnOrigin(request: Request) {
-  const fromHeader = request.headers.get("origin");
-  if (fromHeader && isPublicOrigin(fromHeader)) return fromHeader;
+  // Payment returns use a configured, trusted origin, never an arbitrary Origin header.
+  const origin = new URL(request.url).origin;
+  if (origin === "https://ergofold.co.uk" || origin === "https://www.ergofold.co.uk") return origin;
 
   const site = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
   if (site && isPublicOrigin(site)) return site;

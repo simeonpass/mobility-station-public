@@ -194,6 +194,12 @@ const legacyShopRedirects = [
 ];
 
 const nextConfig: NextConfig = {
+  async rewrites() {
+    return { beforeFiles: [
+      { source: "/", has: [{ type: "host", value: "ergofold.co.uk" }], destination: "/ergofold" },
+      { source: "/", has: [{ type: "host", value: "www.ergofold.co.uk" }], destination: "/ergofold" },
+    ], afterFiles: [], fallback: [] };
+  },
   images: {
     // Serve remote images via Cloudflare/R2 — not Vercel Image Optimization.
     // Without this, every width variant on next/image burns Hobby quota.

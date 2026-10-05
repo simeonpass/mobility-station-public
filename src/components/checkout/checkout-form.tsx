@@ -13,7 +13,10 @@ import {
   isUsedCartProduct,
   linePrice,
   type CheckoutPayload,
+  type CartItem,
+  cartSubtotal,
 } from "@/lib/cart";
+import { CHECKOUT_BRANDS, type CheckoutBrand } from "@/lib/checkout-brands";
 import {
   checkDeliveryZone,
   type DeliveryCheckResult,
@@ -25,12 +28,15 @@ import {
   takeawayCreditForCart,
 } from "@/lib/takeaway-credit";
 
-export function CheckoutForm() {
-  const { items, subtotal } = useCart();
+export function CheckoutForm({ initialItems, brand = "mobilitystation" }: { initialItems?: CartItem[]; brand?: CheckoutBrand }) {
+  const cart = useCart();
+  const items = initialItems ?? cart.items;
+  const subtotal = cartSubtotal(items);
   const { ready: dnaReady, failed: dnaFailed } = useDnaPaymentsSdk();
   const [loading, setLoading] = useState<"dna" | "paypal" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [declarationConfirmed, setDeclarationConfirmed] = useState(false);
+  const showTakeaway = brand === "mobilitystation";
   const [takeawayRequested, setTakeawayRequested] = useState(false);
   const [deliveryZone, setDeliveryZone] = useState<DeliveryCheckResult | null>(
     null,
@@ -137,7 +143,7 @@ export function CheckoutForm() {
     (form.fulfillment === "delivery" && deliveryZone?.status === "local");
 
   const takeawayAvailable =
-    takeawayEligible && availableTakeawayCredit > 0 && takeawayLocationOk;
+    showTakeaway && takeawayEligible && availableTakeawayCredit > 0 && takeawayLocationOk;
 
   useEffect(() => {
     if (takeawayRequested && !takeawayAvailable) {
@@ -198,6 +204,7 @@ export function CheckoutForm() {
       vatExemptionDeclaration:
         form.isVatExempt && !batteryVatBlocked ? VAT_DECLARATION : undefined,
       notes: form.notes.trim() || undefined,
+      sourceBrand: brand,
       takeawayRequested: takeawayRequested && takeawayCredit > 0,
     };
   }
@@ -206,6 +213,7 @@ export function CheckoutForm() {
     if (!form.email || !form.firstName || !form.lastName || !form.phone) {
       return "Please fill in all contact details";
     }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) return "Please enter a valid email address";
     if (form.fulfillment === "delivery" && (!form.address || !form.postcode)) {
       return "Please enter your delivery address and postcode";
     }
@@ -253,6 +261,8 @@ export function CheckoutForm() {
       if (!res.ok) {
         throw new Error(data.error || "Checkout failed");
       }
+      // Retain branding and a retry URL on this checkout domain; no card details are stored.
+      try { sessionStorage.setItem("ms-checkout-context", JSON.stringify({ brand, retry: window.location.pathname + window.location.search, imported: Boolean(initialItems) })); } catch {}
 
       // Keep the cart until order confirmation clears it after a successful return.
       if (provider === "paypal") {
@@ -383,8 +393,7 @@ export function CheckoutForm() {
               </div>
               <p className="text-sm text-muted">
                 Delivery is currently free across the UK for eligible orders.
-                Old scooter takeaway credit applies only when we deliver in our
-                local service area (or you collect from a branch).
+                {showTakeaway ? " Old scooter takeaway credit applies only when we deliver in our local service area (or you collect from a branch)." : null}
               </p>
             </div>
           ) : (
@@ -467,7 +476,7 @@ export function CheckoutForm() {
           )}
         </section>
 
-        <section className="rounded-2xl border border-border bg-white p-6">
+        {showTakeaway ? <section className="rounded-2xl border border-border bg-white p-6">
           <h2 className="text-lg font-bold text-primary">4. Old scooter takeaway</h2>
           {takeawayEligible && availableTakeawayCredit > 0 ? (
             <>
@@ -569,10 +578,10 @@ export function CheckoutForm() {
               </Link>
             </p>
           )}
-        </section>
+        </section> : null}
 
         <section className="rounded-2xl border border-border bg-white p-6">
-          <h2 className="text-lg font-bold text-primary">5. Notes</h2>
+          <h2 className="text-lg font-bold text-primary">{showTakeaway ? "5" : "4"}. Notes</h2>
           <div className="mt-4">
             <Label htmlFor="notes">Order notes (optional)</Label>
             <Textarea
@@ -591,6 +600,7 @@ export function CheckoutForm() {
 
       <aside className="h-fit rounded-2xl border border-border bg-white p-6 lg:sticky lg:top-28">
         <h2 className="text-lg font-bold text-primary">Order summary</h2>
+        <p className="mt-1 text-sm text-muted">{CHECKOUT_BRANDS[brand].name}</p>
         <ul className="mt-4 space-y-3">
           {items.map((item) => (
             <li key={item.product.id} className="flex gap-3">

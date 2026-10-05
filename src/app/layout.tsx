@@ -7,6 +7,7 @@ import { Analytics } from "@/components/layout/analytics";
 import { CookieConsentBanner } from "@/components/layout/cookie-consent-banner";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { StorefrontFrame } from "@/components/layout/storefront-frame";
 import { DivisionScope } from "@/components/layout/division-scope";
 import { QuickViewHost } from "@/components/product/product-quick-view";
 import { ProductComparisonProvider } from "@/components/product/product-comparison";
@@ -37,9 +38,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <CartProvider><ProductComparisonProvider>
         <a href="#main-content" className="skip-to-content">Skip to main content</a>
         <DivisionScope>
-          <SiteHeader />
-          <main id="main-content" tabIndex={-1} className="relative z-0 flex-1 overflow-x-clip outline-none">{children}</main>
-          <SiteFooter />
+          <StorefrontFrame header={<SiteHeader />} footer={<SiteFooter />}>{children}</StorefrontFrame>
         </DivisionScope>
         <QuickViewHost /><CartDrawer /><CookieConsentBanner /><Analytics /><SpeedInsights />
       </ProductComparisonProvider></CartProvider>
