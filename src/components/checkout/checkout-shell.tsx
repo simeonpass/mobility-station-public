@@ -1,10 +1,11 @@
+import Image from "next/image";
 import { LockKeyhole } from "lucide-react";
 import { CHECKOUT_BRANDS, type CheckoutBrand } from "@/lib/checkout-brands";
 export function CheckoutShell({ brand = "mobilitystation", children }: { brand?: CheckoutBrand; children: React.ReactNode }) {
   const shop = CHECKOUT_BRANDS[brand];
   return <div className="min-h-screen bg-slate-50">
     <header className="border-b border-slate-200 bg-white"><div className="container-site flex flex-wrap items-center justify-between gap-4 py-6">
-      <a href={shop.home} className="text-2xl font-extrabold tracking-tight" style={{ color: shop.colour }}>{shop.name}</a>
+      <a href={shop.home} className="text-2xl font-extrabold tracking-tight" style={{ color: shop.colour }}>{brand === "ergofold" ? <Image src="/ergofold/logo.png" alt="ErgoFold — Life without limits" width={300} height={90} className="h-auto w-[220px] sm:w-[240px]" unoptimized /> : shop.name}</a>
       <span className="flex items-center gap-2 text-sm text-muted"><LockKeyhole size={17} />Secure checkout by Mobility Station</span>
     </div></header>
     <div className="container-site py-8 md:py-12">{children}</div>
