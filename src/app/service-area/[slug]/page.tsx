@@ -153,7 +153,7 @@ export default async function ServiceAreaTownPage({ params }: Props) {
           </div>
         </div>
       </section>
-      <CtaFooter title={`Book a free demonstration in ${loc.town}`} />
+      <CtaFooter title={`Book a demonstration in ${loc.town}`} subtitle="Branch demonstrations are free at Heathrow and Ferndown. Home demonstrations are £195, deducted in full if you buy and waived for the Motability Powered Wheelchair & Scooter Scheme." primary={{ href: "/book-a-demo", label: "Book a demonstration" }} />
     </>
   );
 }

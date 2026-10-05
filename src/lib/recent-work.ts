@@ -1,3 +1,4 @@
+import { correctPublicCopy } from "@/lib/public-copy";
 import { repairLegacyImageUrl } from "@/lib/legacy-images";
 /** Public Recent Work case-study feed (Lovable edge — no auth). */
 
@@ -35,7 +36,7 @@ export type RecentWorkProject = {
 };
 
 function repairProjectImages(project: RecentWorkProject): RecentWorkProject {
-  return { ...project, hero_image: project.hero_image ? repairLegacyImageUrl(project.hero_image) : null, images: (project.images ?? []).map(image => ({ ...image, url: repairLegacyImageUrl(image.url) })) };
+  return { ...project, town: project.town ? correctPublicCopy(project.town) : null, hero_image: project.hero_image ? repairLegacyImageUrl(project.hero_image) : null, images: (project.images ?? []).map(image => ({ ...image, url: repairLegacyImageUrl(image.url) })) };
 }
 
 type ListResponse = {

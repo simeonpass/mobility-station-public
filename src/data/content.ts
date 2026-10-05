@@ -70,7 +70,7 @@ export const PRODUCTS: Product[] = [
     excerpt:
       "A reliable mid-size mobility scooter with comfort seating and stable outdoor performance.",
     description:
-      "The Shoprider Cordoba is a dependable mid-size mobility scooter designed for everyday independence. With a comfortable captain’s seat, smooth tiller controls and solid outdoor capability, it is a popular choice for customers who want confidence on pavements and longer local trips. We bring the Cordoba to your home for a free demonstration so you can try it in the places you actually use every day.",
+      "The Shoprider Cordoba is a dependable mid-size mobility scooter designed for everyday independence. With a comfortable captain’s seat, smooth tiller controls and solid outdoor capability, it is a popular choice for customers who want confidence on pavements and longer local trips. We can arrange a home demonstration so you can try the Cordoba where you use it every day. Branch demonstrations are free; home demonstrations are £195, deducted in full if you buy and waived for the Motability Powered Wheelchair & Scooter Scheme.",
     seoCopy:
       "Buy the Shoprider Cordoba mobility scooter with home or branch demonstration from Mobility Station. Motability options available. Heathrow & Ferndown branches.",
     image: "/images/products/placeholder-scooter.svg",
@@ -554,5 +554,5 @@ export const TRUST_ITEMS = [
   "Vehicle Adaptations",
   "Scooters & Wheelchairs",
   "Motability Accredited",
-  "Free Home Demonstrations",
+  "Free Branch Demonstrations",
 ] as const;
