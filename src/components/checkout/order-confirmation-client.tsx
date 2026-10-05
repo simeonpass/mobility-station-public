@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useCart } from "@/components/cart/cart-provider";
 import { Button } from "@/components/ui/button";
+import { CheckoutShell } from "@/components/checkout/checkout-shell";
+import { checkoutBrand, CHECKOUT_BRANDS, type CheckoutBrand } from "@/lib/checkout-brands";
 
 export function OrderConfirmationClient() {
   const params = useSearchParams();
@@ -16,10 +18,13 @@ export function OrderConfirmationClient() {
     "idle" | "capturing" | "paid" | "failed"
   >("idle");
   const [message, setMessage] = useState<string | null>(null);
-
+  const [context, setContext] = useState<{ brand: CheckoutBrand; retry: string; imported: boolean }>({ brand: "mobilitystation", retry: "/checkout", imported: false });
   useEffect(() => {
-    if (status === "success" && order && provider !== "paypal") clearCart();
-  }, [status, order, provider, clearCart]);
+    try {
+      const value = JSON.parse(sessionStorage.getItem("ms-checkout-context") || "{}");
+      setContext({ brand: checkoutBrand(value.brand), retry: typeof value.retry === "string" && /^\/checkout(?:\/start)?(?:\?|$)/.test(value.retry) ? value.retry : "/checkout", imported: value.imported === true });
+    } catch {}
+  }, []);
 
   useEffect(() => {
     if (status !== "success" || provider !== "paypal" || !order) return;
@@ -45,7 +50,9 @@ export function OrderConfirmationClient() {
           return;
         }
         setCaptureState("paid");
-        clearCart();
+        try {
+          if (JSON.parse(sessionStorage.getItem("ms-checkout-context") || "{}").imported !== true) clearCart();
+        } catch { /* Preserve the basket if checkout context cannot be read. */ }
       } catch (err) {
         if (cancelled) return;
         setCaptureState("failed");
@@ -63,12 +70,12 @@ export function OrderConfirmationClient() {
   const failed = status === "failed" || status === "cancel";
 
   return (
-    <div className="container-site py-16 md:py-24">
+    <CheckoutShell brand={context.brand}><div className="py-8 md:py-12">
       <div className="mx-auto max-w-xl rounded-2xl border border-border bg-white p-8 text-center">
         {success ? (
           <>
             <p className="text-sm font-semibold uppercase tracking-wide text-success">
-              Payment received
+              {provider === "paypal" ? "Payment received" : "Payment submitted"}
             </p>
             <h1 className="mt-2 text-3xl font-extrabold text-primary">
               Thank you for your order
@@ -79,7 +86,7 @@ export function OrderConfirmationClient() {
               </p>
             ) : null}
             <p className="mt-4 text-sm text-muted">
-              We’ll email you a confirmation shortly. If you need anything,{" "}
+              We’ll email your confirmation once payment is verified. If you need anything,{" "}
               <Link
                 href="/contact?interest=callback#callback"
                 className="font-semibold text-primary underline"
@@ -133,13 +140,13 @@ export function OrderConfirmationClient() {
         )}
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-          <Link href="/shop">
+          <Link href={CHECKOUT_BRANDS[context.brand].home}>
             <Button type="button" className="w-full sm:w-auto">
               Continue shopping
             </Button>
           </Link>
           {!success ? (
-            <Link href="/checkout">
+            <Link href={context.retry}>
               <Button type="button" variant="outline" className="w-full sm:w-auto">
                 Back to checkout
               </Button>
@@ -147,6 +154,6 @@ export function OrderConfirmationClient() {
           ) : null}
         </div>
       </div>
-    </div>
+    </div></CheckoutShell>
   );
 }

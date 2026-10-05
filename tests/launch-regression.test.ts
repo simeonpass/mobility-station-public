@@ -60,14 +60,14 @@ for (const [name, handler, response, functionName] of [
   ['DNA', dna, { paymentData: { test: true }, orderNumber: 'TEST' }, 'website-checkout'],
   ['PayPal', paypal, { url: 'https://payment.example.test', orderNumber: 'TEST' }, 'website-paypal-checkout'],
   ['Stripe', stripe, { url: 'https://payment.example.test', orderNumber: 'TEST' }, 'website-stripe-checkout'],
-] as const) test(`${name} checkout preserves items, VAT, options, collection and preview return origin`, async () => {
+] as const) test(`${name} checkout preserves items, VAT and options, tags the shop and uses the configured return origin`, async () => {
   const calls = mockBackend(response);
   const result = await handler(req('/api/checkout/test', payload));
   assert.equal(result.status, 200);
   assert.deepEqual(await result.json(), response);
-  assert.deepEqual(calls[0].body, payload);
+  assert.deepEqual(calls[0].body, { ...payload, notes: 'Website: Mobility Station (mobilitystation.co.uk)' });
   assert.ok(calls[0].url.endsWith(functionName));
-  assert.equal(calls[0].headers.get('Origin'), 'https://preview.example.test');
+  assert.equal(calls[0].headers.get('Origin'), process.env.NEXT_PUBLIC_SITE_URL || 'https://mobilitystation.co.uk');
 });
 test('checkout propagates provider failure without inventing payment success', async () => {
   mockBackend({ error: 'Provider unavailable' }, 503);
