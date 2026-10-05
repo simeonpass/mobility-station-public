@@ -58,7 +58,8 @@ body[data-design="clear-choice"] main p { text-wrap:pretty; }
   .msx-portal-description { font-size:15px; }
 }
 @media(max-width:700px) {
-  .msx-portal { --copy:240px; border-radius:18px; }
+  /* Single column: the text column grows with the card so wide phones keep the copy clear of the picture. */
+  .msx-portal { --copy:max(240px,56%); border-radius:18px; }
   .msx-home .msx-portal-title { max-width:250px; }
   .msx-portal-photo { width:auto; left:calc(var(--copy) - 56px); }
   .msx-portal::after { background:linear-gradient(90deg,var(--portal-bg) 0,var(--portal-bg) calc(var(--copy) - 44px),color-mix(in srgb,var(--portal-bg) 84%,transparent) calc(var(--copy) - 6px),color-mix(in srgb,var(--portal-bg) 30%,transparent) calc(var(--copy) + 44px),transparent calc(var(--copy) + 96px)); }
