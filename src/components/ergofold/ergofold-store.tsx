@@ -6,13 +6,13 @@ import { sharedCheckoutPath, CHECKOUT_ORIGIN } from "@/lib/checkout-brands";
 
 export type ErgoPackage = { batteries: number; price: number; was: number; variantId: string };
 const money = (value: number) => new Intl.NumberFormat("en-GB", {style:"currency",currency:"GBP",maximumFractionDigits:0}).format(value);
-export function ErgoFoldStore({ packages, productId, available }: { packages: ErgoPackage[]; productId: string; available: boolean }) {
+export function ErgoFoldStore({ packages, productId, available, checkoutOrigin = CHECKOUT_ORIGIN }: { packages: ErgoPackage[]; productId: string; available: boolean; checkoutOrigin?: string }) {
   const [selected, setSelected] = useState(0);
   const [vat, setVat] = useState(false);
   const [photo, setPhoto] = useState(0);
   const pack = packages[selected];
   const photos = [{src:"https://pub-d0fa88fa71f044d9a9fc37a3c9d5fe47.r2.dev/stock-images/fc36591e-fab0-4345-8ae5-767610a7e45d.webp",alt:"ErgoFold Elite silver folding electric wheelchair, front three-quarter view", label:"Ready to go"},{src:"https://pub-d0fa88fa71f044d9a9fc37a3c9d5fe47.r2.dev/stock-images/0ff881c2-c21c-456e-a6f3-89a87972a644.webp",alt:"ErgoFold Elite folded down for transport",label:"Folded"},{src:"https://pub-d0fa88fa71f044d9a9fc37a3c9d5fe47.r2.dev/stock-images/fe77b1bc-cc38-41f3-84e3-c8237e732bfb.webp",alt:"ErgoFold Elite joystick and control display",label:"The controls"}];
-  const checkout = CHECKOUT_ORIGIN + sharedCheckoutPath("ergofold", [{id:productId,slug:"ergofold-folding-power-chair",quantity:1,variantIds:[pack.variantId]}]);
+  const checkout = checkoutOrigin + sharedCheckoutPath("ergofold", [{id:productId,slug:"ergofold-folding-power-chair",quantity:1,variantIds:[pack.variantId]}]);
   const factor = vat ? 1.2 : 1;
   return <div className="ergo-site">
     <div className="ergo-offer">A little more freedom. A lot less to pay. <strong>Save £1,000 ex VAT on every package.</strong></div>
