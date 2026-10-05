@@ -80,7 +80,16 @@ body[data-design="clear-choice"] main p { text-wrap:pretty; }
 .msx-home { padding-bottom:80px; }
 
 .msx-branch { border-color:var(--hairline); border-radius:20px; box-shadow:var(--lift-1); padding:18px; }
-.msx-branch-art { border-radius:13px; }
+/* Branch tiles: a real street map of each branch (static, from OpenStreetMap,
+   toned to the branch colour) with a marker on the unit itself. */
+.msx-branch-art { width:36%; min-width:150px; border-radius:13px; background:#dfeaf3 url("/images/branches/heathrow-map.webp") center / cover no-repeat; box-shadow:inset 0 0 0 1px rgb(9 40 73 / .08); }
+.msx-branch-dorset .msx-branch-art { background:#dcebe6 url("/images/branches/ferndown-map.webp") center / cover no-repeat; }
+.msx-branch-art > svg { position:absolute; left:50%; top:50%; width:46px; height:46px; transform:translate(-50%,-92%); fill:currentColor; stroke:#fff; stroke-width:1.4; filter:drop-shadow(0 5px 6px rgb(9 40 73 / .35)); }
+.msx-branch-art > svg circle { fill:#fff; stroke:none; }
+.msx-branch-art > span { position:absolute; left:10px; top:10px; padding:6px 10px 5px; border-radius:999px; background:#fff; font-size:10px; line-height:1; letter-spacing:.14em; box-shadow:0 1px 2px rgb(9 40 73 / .12), 0 4px 10px -4px rgb(9 40 73 / .25); }
+.msx-home .msx-branch-art .msx-map-credit { position:absolute; right:0; bottom:0; padding:3px 7px; border-top-left-radius:8px; background:rgb(255 255 255 / .86); color:#39536a; font-size:10px; line-height:1.3; }
+.msx-home .msx-branch-art .msx-map-credit:hover { text-decoration:underline; }
+@media(max-width:1250px) { .msx-branch-art { min-width:132px; } }
 .msx-home .msx-branch h3 { font-size:22px; }
 .msx-branch-address { font-size:14.5px; }
 .msx-branch li { font-size:14px; }

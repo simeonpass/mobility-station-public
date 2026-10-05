@@ -66,7 +66,7 @@ export function ClearChoiceHome({ branches, reviews }: Props) {
       <div className="msx-branches">{branches.map(branch => {
         const isDorset = /ferndown|dorset|wimborne/i.test(`${branch.name} ${branch.addressLocality}`);
         return <article key={branch.id} className={`msx-branch ${isDorset ? "msx-branch-dorset" : ""}`}>
-          <div className="msx-branch-art" aria-hidden="true"><div className="msx-map-lines" /><MapPin /><span>{isDorset ? "DORSET" : "WEST LONDON"}</span></div>
+          <div className="msx-branch-art"><MapPin aria-hidden /><span aria-hidden="true">{isDorset ? "DORSET" : "WEST LONDON"}</span><a className="msx-map-credit" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">&copy; OpenStreetMap</a></div>
           <div className="msx-branch-body"><h3>{isDorset ? "Ferndown / Dorset" : "Heathrow / West Drayton"}</h3><p className="msx-branch-address">{branch.addressLine1}<br />{branch.addressLocality}, {branch.postalCode}</p><ul><li><Check size={16} aria-hidden />Vehicle adaptation advice &amp; fitting</li>{isDorset ? <li><Check size={16} aria-hidden />Scooters &amp; wheelchairs to view and try</li> : <li><Check size={16} aria-hidden />Specialist workshop team</li>}</ul><div className="msx-branch-links"><a href={`tel:${branch.phone.replace(/\s/g, "")}`}><Phone size={15} aria-hidden />{branch.phone}</a><Link href="/locations" aria-label={`View ${branch.name} branch details`}>Branch details<ArrowRight size={17} aria-hidden /></Link></div></div>
         </article>;
       })}</div>
