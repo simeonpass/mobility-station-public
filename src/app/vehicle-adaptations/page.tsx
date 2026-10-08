@@ -294,6 +294,16 @@ export default async function VehicleAdaptationsPage() {
         </div>
       </section>
 
+      <section className="border-t border-border bg-soft/40 py-10 md:py-14">
+        <div className="container-site flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+          <div className="max-w-2xl">
+            <h2 className="text-2xl font-bold tracking-tight text-primary">Helpful information for your next step.</h2>
+            <p className="mt-3 leading-relaxed text-muted">Driving guidance, disability charities and useful contacts for assessments, the Motability Scheme and adaptation grants.</p>
+          </div>
+          <Link href="/vehicle-adaptations/useful-links" className="ms-button shrink-0">Useful links &amp; support</Link>
+        </div>
+      </section>
+
       <CtaFooter title="Get a free adaptation quotation" subtitle="Tell us your vehicle and what you need — we’ll confirm compatibility, Motability options and a firm fitted price." />
     </>
   );

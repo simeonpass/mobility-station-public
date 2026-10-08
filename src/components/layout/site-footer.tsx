@@ -5,7 +5,7 @@ import { SITE } from "@/lib/seo";
 import { BRANCHES } from "@/data/content";
 
 const columns = [
-  { title: "Adaptations", links: [{ href: "/vehicle-adaptations", label: "Vehicle adaptations" }, { href: "/vehicle-adaptations/collection-cost", label: "Vehicle collection cost" }, { href: "/vehicle-adaptations/multimac-fitting", label: "Multimac fitting" }, { href: "/book-a-demo", label: "Book a demonstration" }] },
+  { title: "Adaptations", links: [{ href: "/vehicle-adaptations", label: "Vehicle adaptations" }, { href: "/vehicle-adaptations/collection-cost", label: "Vehicle collection cost" }, { href: "/vehicle-adaptations/multimac-fitting", label: "Multimac fitting" }, { href: "/vehicle-adaptations/useful-links", label: "Useful links & support" }, { href: "/book-a-demo", label: "Book a demonstration" }] },
   { title: "Mobility", links: [{ href: "/shop", label: "Scooters & wheelchairs" }, { href: "/shop?sub=scooters", label: "Mobility scooters" }, { href: "/shop?sub=wheelchairs", label: "Wheelchairs & powerchairs" }, { href: "/hire", label: "Scooter & wheelchair hire" }, { href: "/motability", label: "Motability" }, { href: "/clearance", label: "Clearance" }, { href: "/trade-in", label: "Old scooter takeaway" }] },
   { title: "Support", links: [{ href: "/locations", label: "Locations" }, { href: "/delivery", label: "Delivery" }, { href: "/vat-relief", label: "VAT relief" }, { href: "/servicing", label: "Servicing & repairs" }, { href: "/book-a-service", label: "Book a service" }, { href: "/faq", label: "FAQ" }] },
   { title: "Company", links: [{ href: "/about-us", label: "About us" }, { href: "/our-work", label: "Recent work" }, { href: "/blog", label: "Stories & advice" }, { href: "/contact", label: "Contact" }] },

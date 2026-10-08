@@ -51,6 +51,7 @@ export const SITE_NAV: NavItem[] = [
       },
       { href: adaptationHref("Boot Hoists"), label: "Boot hoists" },
       { href: adaptationHref("Swivel Seats"), label: "Swivel seats" },
+      { href: "/vehicle-adaptations/useful-links", label: "Useful links & support" },
       { href: "/book-a-demo", label: "Book a demo" },
     ],
   },
