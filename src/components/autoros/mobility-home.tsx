@@ -60,7 +60,7 @@ export function MobilityHome({ branches }: { branches: Branch[] }) {
             <p className="ms-hero-assurance"><span><Check size={15} aria-hidden /></span>Advice, fitting and aftercare. With you at every step.</p>
           </div>
           <div className="ms-hero-visual">
-            <Image src="/images/autoros/ms-hoist.webp" alt="A demonstration of lifting a mobility scooter into a vehicle with a boot hoist" width={1200} height={800} loading="eager" fetchPriority="high" unoptimized />
+            <Image src="/images/autoros/ms-hoist-hero-approved.webp" alt="A demonstration of lifting a mobility scooter into a vehicle with a boot hoist" width={1536} height={1024} loading="eager" fetchPriority="high" unoptimized />
             <p>The right adaptation.<br /><strong>More possibilities.</strong></p>
           </div>
         </div>
