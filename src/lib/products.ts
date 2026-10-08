@@ -1,3 +1,4 @@
+import type { MotabilityReference } from "@/lib/motability-references";
 import { unstable_cache } from "next/cache";
 import { createClient } from "@supabase/supabase-js";
 import {
@@ -66,6 +67,7 @@ export type ProductVariant = {
 };
 
 export type ProductDetail = ProductListItem & {
+  motability_references: MotabilityReference[];
   description: string | null;
   features: string[] | null;
   specifications: Record<string, unknown> | null;
@@ -459,7 +461,7 @@ export async function getProductBySlug(
 
   const productId = (product as { id: string }).id;
 
-  const [imagesRes, variantsRes] = await Promise.all([
+  const [imagesRes, variantsRes, motabilityRes] = await Promise.all([
     supabase
       .from("stock_item_images")
       .select("id, image_url, alt_text, sort_order, is_primary")
@@ -475,7 +477,11 @@ export async function getProductBySlug(
       )
       .eq("stock_item_id", productId)
       .order("sort_order", { ascending: true }),
+    isAdaptationProduct(product as ProductListItem)
+      ? supabase.rpc("get_public_motability_references", { p_stock_item_id: productId })
+      : Promise.resolve({ data: [], error: null }),
   ]);
+  if (motabilityRes.error) console.error("Motability reference lookup failed", motabilityRes.error.message);
 
   const mapped = mapListItem(product as Record<string, unknown>);
 
@@ -488,6 +494,7 @@ export async function getProductBySlug(
       (product as { is_discontinued?: boolean }).is_discontinued,
     ),
     images: (imagesRes.data ?? []) as ProductImage[],
+    motability_references: (motabilityRes.error ? [] : motabilityRes.data ?? []) as MotabilityReference[],
     variants: ((variantsRes.data ?? []) as ProductVariant[]).map((v) => ({
       ...v,
       track_stock: v.track_stock !== false,

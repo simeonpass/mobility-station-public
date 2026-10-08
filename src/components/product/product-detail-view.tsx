@@ -12,6 +12,8 @@ import { BrandLogo } from "@/components/product/brand-logo";
 import { ProductTabs } from "@/components/product/product-tabs";
 import { ProductGallery } from "@/components/product/product-gallery";
 import { FittedBadge } from "@/components/product/fitted-badge";
+import { MotabilityOrderReferences } from "@/components/product/motability-order-references";
+import type { MotabilityReference } from "@/lib/motability-references";
 import { MotabilityLogo } from "@/components/product/motability-logo";
 import { ProductOptionsSelector } from "@/components/product/product-options-selector";
 import { ProductPurchaseReassurance } from "@/components/product/product-purchase-reassurance";
@@ -60,6 +62,7 @@ export type ProductDetailViewProps = {
   saleSaveLabel: string | null;
   motabilityWeekly: number | null;
   motabilityPrice: number | null;
+  motabilityReferences?: MotabilityReference[];
   adaptationId: string | null;
   isAdaptation: boolean;
   deliveryEstimate: string | null;
@@ -375,7 +378,7 @@ export function ProductDetailView(props: ProductDetailViewProps) {
   }>;
 
   const hasConfigurableOptions = props.variants.length > 0;
-  const motabilityMode = Boolean(props.motabilityMode);
+  const motabilityMode = Boolean(props.motabilityMode) && !props.isAdaptation;
   const canBuy =
     !motabilityMode &&
     !props.isAdaptation &&
@@ -594,32 +597,12 @@ export function ProductDetailView(props: ProductDetailViewProps) {
                   ) : null}
                 </div>
 
-                {hasMotabilityFigure ? (
-                  <div className="flex flex-wrap items-center gap-3 border-t border-border/60 pt-4">
-                    <MotabilityLogo height={24} />
-                    <p className="min-w-0 flex-1 text-lg font-bold tabular-nums text-primary">
-                      {motabilityWeekly != null && motabilityWeekly > 0
-                        ? `${formatGBP(motabilityWeekly)} / week`
-                        : motabilityWeekly === 0 || motabilityPrice === 0
-                          ? "£0"
-                          : motabilityPrice != null
-                            ? formatGBP(motabilityPrice)
-                            : null}
-                    </p>
-                    {adaptationId ? (
-                      <span className="rounded-md border border-border bg-soft/70 px-2 py-1 font-mono text-xs text-muted">
-                        {adaptationId}
-                      </span>
-                    ) : (
-                      <Link
-                        href="/motability/vehicle-adaptations"
-                        className="shrink-0 text-xs font-semibold text-primary underline-offset-2 hover:underline"
-                      >
-                        Learn more
-                      </Link>
-                    )}
-                  </div>
-                ) : null}
+                <MotabilityOrderReferences
+                  references={props.motabilityReferences ?? []}
+                  hasUnverifiedOptions={props.variants.some((variant) =>
+                    !variant.is_addon && !(props.motabilityReferences ?? []).some((r) => r.variant_id === variant.id)
+                  )}
+                />
               </div>
 
               <div ref={buyRef} className="space-y-2.5 bg-soft/40 px-5 py-5 sm:px-6">
