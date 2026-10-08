@@ -11,7 +11,7 @@ type Category = { title: string; description: string; image: string; alt: string
 const adaptations: Category[] = [
   { title: "Driving controls", description: "Make driving work for you, with controls fitted to suit your needs.", image: "ms-controls.webp", alt: "Hand controls inside a vehicle", href: "/vehicle-adaptations/driving-controls", cta: "Explore driving controls" },
   { title: "Getting in & out", description: "Explore swivel seats and other ways to make vehicle access easier.", image: "ms-seat.webp", alt: "A wheelchair user approaching a vehicle with an accessible seat", href: "/vehicle-adaptations/vehicle-access", cta: "Explore vehicle access" },
-  { title: "Boot hoists & stowage", description: "Take your scooter or wheelchair with you, with less lifting.", image: "ms-hoist.webp", alt: "A demonstration of a boot hoist", href: "/vehicle-adaptations/hoists-stowage", cta: "Explore hoists & stowage" },
+  { title: "Boot hoists & stowage", description: "Take your scooter or wheelchair with you, with less lifting.", image: "ms-hoist-category-autochair.webp", alt: "A woman using an Autochair boot hoist to lift a red mobility scooter", href: "/vehicle-adaptations/hoists-stowage", cta: "Explore hoists & stowage" },
 ];
 const mobility: Category[] = [
   { title: "Mobility scooters", description: "Find a scooter for your routine, your journeys and your space.", image: "ms-mobility.webp", alt: "An older adult using a mobility scooter in a park", href: "/shop?sub=scooters", cta: "Explore mobility scooters" },
@@ -60,7 +60,7 @@ export function MobilityHome({ branches }: { branches: Branch[] }) {
             <p className="ms-hero-assurance"><span><Check size={15} aria-hidden /></span>Advice, fitting and aftercare. With you at every step.</p>
           </div>
           <div className="ms-hero-visual">
-            <Image src="/images/autoros/ms-hoist-hero-approved.webp" alt="A demonstration of lifting a mobility scooter into a vehicle with a boot hoist" width={1536} height={1024} loading="eager" fetchPriority="high" unoptimized />
+            <Image src="/images/autoros/ms-hoist-hero-seat.webp" alt="A demonstration of lifting a mobility scooter into a vehicle with a boot hoist" width={1536} height={1024} loading="eager" fetchPriority="high" unoptimized />
             <p>The right adaptation.<br /><strong>More possibilities.</strong></p>
           </div>
         </div>
