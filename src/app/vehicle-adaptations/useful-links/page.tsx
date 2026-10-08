@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { ArrowDown, ArrowUpRight, BookOpen, HeartHandshake, Phone } from "lucide-react";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { CatalogIntro } from "@/components/sections/catalog-intro";
@@ -10,36 +11,36 @@ export const metadata = createMetadata({
   path: "/vehicle-adaptations/useful-links",
 });
 
-type Resource = { name: string; topic: string; description: string; href: string; action: string };
+type Resource = { logo: string; darkLogo?: boolean; name: string; topic: string; description: string; href: string; action: string };
 
 const GUIDANCE: Resource[] = [
   {
-    name: "Stroke Association", topic: "Driving after a stroke",
+    logo: "stroke-association.png", name: "Stroke Association", topic: "Driving after a stroke",
     description: "Information about returning to driving after a stroke or TIA, with a guide available to download from the Stroke Association.",
     href: "https://shop.stroke.org.uk/product/driving-after-stroke/", action: "Driving after stroke guide",
   },
   {
-    name: "MND Association", topic: "Getting around",
+    logo: "mnd-association.png", name: "MND Association", topic: "Getting around",
     description: "A practical guide to driving, transport and mobility for people living with motor neurone disease or Kennedy’s disease.",
     href: "https://www.mndassociation.org/media/136", action: "Getting around guide (PDF)",
   },
   {
-    name: "British Heart Foundation", topic: "Heart conditions & driving",
+    logo: "british-heart-foundation.png", name: "British Heart Foundation", topic: "Heart conditions & driving",
     description: "Guidance on driving with a heart or circulatory condition, including where to find information about licences and insurance.",
     href: "https://www.bhf.org.uk/informationsupport/support/practical-support/driving", action: "Heart conditions and driving",
   },
   {
-    name: "Arthritis UK", topic: "Formerly Versus Arthritis",
+    logo: "arthritis-uk.svg", darkLogo: true, name: "Arthritis UK", topic: "Formerly Versus Arthritis",
     description: "Advice about driving with arthritis, including adaptations, managing discomfort and finding support to stay mobile.",
     href: "https://www.arthritis-uk.org/information-and-support/living-with-arthritis/work-benefits-and-finances/driving/", action: "Driving with arthritis",
   },
   {
-    name: "Spinal Injuries Association", topic: "Accessible travel",
+    logo: "spinal-injuries-association.png", name: "Spinal Injuries Association", topic: "Accessible travel",
     description: "The Travel Hub brings together advice on accessible journeys, including driving and getting around after a spinal cord injury.",
     href: "https://www.spinal.co.uk/travel-hub/", action: "Explore the Travel Hub",
   },
   {
-    name: "Fish Insurance", topic: "Specialist insurance",
+    logo: "fish-insurance.png", name: "Fish Insurance", topic: "Specialist insurance",
     description: "Information on specialist cover for adapted cars, mobility scooters, powered wheelchairs and manual wheelchairs.",
     href: "https://www.fishinsurance.co.uk/", action: "Explore Fish Insurance",
   },
@@ -47,32 +48,32 @@ const GUIDANCE: Resource[] = [
 
 const CHARITIES: Resource[] = [
   {
-    name: "Speed of Sight", topic: "Inclusive driving experiences",
+    logo: "speed-of-sight.png", name: "Speed of Sight", topic: "Inclusive driving experiences",
     description: "Supported driving experiences in specially adapted, dual-controlled cars for people with disabilities, including sight loss.",
     href: "https://speedofsight.org/", action: "Visit Speed of Sight",
   },
   {
-    name: "Spinal Track", topic: "Track & car control experiences",
+    logo: "spinal-track.png", name: "Spinal Track", topic: "Track & car control experiences",
     description: "A charity offering disabled drivers the opportunity to try track days and car control experiences in adapted cars.",
     href: "https://spinaltrack.org/", action: "Visit Spinal Track",
   },
   {
-    name: "Little People UK", topic: "Support & community",
+    logo: "little-people-uk.png", name: "Little People UK", topic: "Support & community",
     description: "Friendship, information and support for people with dwarfism, their families and the people around them.",
     href: "https://littlepeopleuk.org/", action: "Visit Little People UK",
   },
   {
-    name: "Euan’s Guide", topic: "Disabled access reviews",
+    logo: "euans-guide.png", name: "Euan’s Guide", topic: "Disabled access reviews",
     description: "Find accessibility information and reviews of places to visit, shared by disabled people, families and friends.",
     href: "https://www.euansguide.com/", action: "Explore Euan’s Guide",
   },
   {
-    name: "British Wheelchair Archery Association", topic: "Para-archery",
+    logo: "bwaa.png", name: "British Wheelchair Archery Association", topic: "Para-archery",
     description: "Support for disabled archers, from getting started in the sport to developing skills through coaching and training.",
     href: "https://british-wheelchair-archery.org.uk/", action: "Visit the BWAA",
   },
   {
-    name: "Mission Motorsport", topic: "The Armed Forces community",
+    logo: "mission-motorsport.png", name: "Mission Motorsport", topic: "The Armed Forces community",
     description: "Recovery, rehabilitation and opportunities through motorsport and the automotive industry for people affected by military service.",
     href: "https://www.missionmotorsport.org/", action: "Visit Mission Motorsport",
   },
@@ -80,17 +81,17 @@ const CHARITIES: Resource[] = [
 
 const CONTACTS = [
   {
-    name: "Motability Scheme", topic: "Scheme enquiries",
+    logo: "motability-scheme.jpg", name: "Motability Scheme", topic: "Scheme enquiries",
     description: "Help with joining the Scheme, an existing lease and general customer enquiries.",
     phone: "0300 456 4566", href: "https://www.motability.co.uk/get-support/contact", action: "Motability Scheme support",
   },
   {
-    name: "Motability Foundation", topic: "Grants & financial support",
+    logo: "motability-foundation.jpg", name: "Motability Foundation", topic: "Grants & financial support",
     description: "Information about individual grants, including help with eligible vehicle and adaptation costs.",
     phone: "0800 500 3186", href: "https://www.motabilityfoundation.org.uk/individual-grants/cars-and-vehicle-adaptations", action: "Explore adaptation grants",
   },
   {
-    name: "Driving Mobility", topic: "Driving & mobility assessments",
+    logo: "driving-mobility.jpg", name: "Driving Mobility", topic: "Driving & mobility assessments",
     description: "Find an assessment centre for advice about driving, vehicle adaptations and your mobility needs.",
     phone: "0800 559 3636", href: "https://www.drivingmobility.org.uk/find-a-centre/", action: "Find an assessment centre",
   },
@@ -102,11 +103,20 @@ const SECTIONS = [
   { id: "useful-contacts", label: "Useful contacts", icon: Phone },
 ];
 
+function OrganisationLogo({ src, dark = false }: { src: string; dark?: boolean }) {
+  return (
+    <div className={`mb-6 flex h-28 items-center justify-center rounded-md px-5 ${dark ? "bg-primary" : "bg-white"}`}>
+      <Image src={`/images/support-organisations/${src}`} alt="" width={280} height={140} className="max-h-24 w-full max-w-[280px] object-contain" />
+    </div>
+  );
+}
+
 function ResourceCards({ resources }: { resources: Resource[] }) {
   return (
     <ul className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {resources.map((resource) => (
         <li key={resource.name} className="flex flex-col rounded-lg border border-border bg-white p-6 sm:p-7">
+          <OrganisationLogo src={resource.logo} dark={resource.darkLogo} />
           <p className="text-xs font-bold uppercase tracking-[0.12em] text-muted">{resource.topic}</p>
           <h3 className="mt-3 text-xl font-bold leading-snug text-primary">{resource.name}</h3>
           <p className="mt-3 flex-1 text-base leading-relaxed text-muted">{resource.description}</p>
@@ -168,6 +178,7 @@ export default function UsefulLinksPage() {
           <ul className="mt-8 grid gap-4 lg:grid-cols-3">
             {CONTACTS.map((contact) => (
               <li key={contact.name} className="flex flex-col rounded-lg border border-border bg-white p-6 sm:p-7">
+                <OrganisationLogo src={contact.logo} />
                 <p className="text-xs font-bold uppercase tracking-[0.12em] text-muted">{contact.topic}</p>
                 <h3 className="mt-3 text-xl font-bold text-primary">{contact.name}</h3>
                 <p className="mt-3 flex-1 leading-relaxed text-muted">{contact.description}</p>
