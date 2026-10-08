@@ -1,0 +1,244 @@
+"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { useDialogFocus } from "@/hooks/use-dialog-focus";
+import { ChevronLeft, ChevronRight, Expand, X } from "lucide-react";
+import { CatalogImage } from "@/components/product/catalog-image";
+import { FittingPartnerCorner } from "@/components/product/fitted-badge";
+import { GallerySwipe } from "@/components/product/gallery-swipe";
+import { LightboxZoom } from "@/components/product/lightbox-zoom";
+import { cn } from "@/lib/utils";
+
+export function ProductGallery({
+  images,
+  name,
+  showFittingPartner = false,
+}: {
+  images: string[];
+  name: string;
+  showFittingPartner?: boolean;
+}) {
+  const [active, setActive] = useState(0);
+  const [lightbox, setLightbox] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const thumbsRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useDialogFocus(lightbox && mounted, dialogRef);
+
+  useEffect(() => setMounted(true), []);
+
+  const count = images.length;
+  const current = images[active] ?? images[0];
+
+  const goTo = useCallback(
+    (index: number) => {
+      if (!count) return;
+      const next = ((index % count) + count) % count;
+      setActive(next);
+      const thumb = thumbsRef.current?.children[next] as HTMLElement | undefined;
+      thumb?.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest",
+      });
+    },
+    [count],
+  );
+
+  useEffect(() => {
+    if (!lightbox) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setLightbox(false);
+      if (e.key === "ArrowRight") goTo(active + 1);
+      if (e.key === "ArrowLeft") goTo(active - 1);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [lightbox, active, goTo]);
+
+  if (!current) {
+    return (
+      <div
+        className="aspect-square w-full rounded-lg border border-border bg-soft/30"
+        aria-hidden
+      />
+    );
+  }
+
+  return (
+    <div className="min-w-0">
+      <div className="relative w-full overflow-hidden rounded-lg border border-border bg-soft/30">
+        <GallerySwipe
+          count={count}
+          active={active}
+          onChange={goTo}
+          onTap={() => setLightbox(true)}
+        >
+          {images.map((src, index) => (
+            <div
+              key={src + index}
+              className="relative h-full w-[var(--slide-width)] shrink-0"
+            >
+              <CatalogImage
+                src={src}
+                alt={`${name} — image ${index + 1}`}
+                fill
+                priority={index === 0}
+                className="object-contain p-4 sm:p-6"
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
+            </div>
+          ))}
+        </GallerySwipe>
+        {showFittingPartner ? <FittingPartnerCorner size="gallery" /> : null}
+        <button
+          type="button"
+          className="absolute left-4 top-4 z-10 inline-flex min-h-11 min-w-11 justify-center items-center gap-1.5 rounded-full border border-border bg-white/95 px-3 py-2 text-xs font-semibold text-primary shadow-sm"
+          onClick={() => setLightbox(true)}
+          aria-label="Enlarge image"
+        >
+          <Expand className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">Enlarge</span>
+        </button>
+        {count > 1 ? (
+          <>
+            <button
+              type="button"
+              className="absolute left-3 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-primary shadow-sm sm:flex"
+              aria-label="Previous image"
+              onClick={() => goTo(active - 1)}
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <button
+              type="button"
+              className="absolute right-3 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-primary shadow-sm sm:flex"
+              aria-label="Next image"
+              onClick={() => goTo(active + 1)}
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+            <div className="pointer-events-none absolute bottom-4 left-4 right-16 flex gap-1.5">
+              {images.map((_, index) => (
+                <span
+                  key={index}
+                  className={cn(
+                    "h-1.5 rounded-full transition-[width,background-color] duration-300",
+                    index === active ? "w-5 bg-primary" : "w-1.5 bg-primary/30",
+                  )}
+                />
+              ))}
+            </div>
+          </>
+        ) : null}
+        {count > 1 ? (
+          <p className="absolute right-4 top-4 rounded-full border border-border bg-white/95 px-2.5 py-1.5 text-xs font-semibold text-primary shadow-sm">
+            {active + 1} / {count}
+          </p>
+        ) : null}
+      </div>
+      {count > 1 ? (
+        <div
+          ref={thumbsRef}
+          className="mt-3 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {images.map((src, index) => (
+            <button
+              key={src + index}
+              type="button"
+              className={cn(
+                "relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border bg-white",
+                index === active
+                  ? "border-primary ring-1 ring-primary"
+                  : "border-border",
+              )}
+              onClick={() => goTo(index)}
+              aria-label={`Show image ${index + 1}`}
+              aria-current={index === active}
+            >
+              <CatalogImage
+                src={src}
+                alt={`${name} — thumbnail ${index + 1}`}
+                fill
+                className="object-contain p-1"
+                sizes="64px"
+              />
+            </button>
+          ))}
+        </div>
+      ) : null}
+      {mounted && lightbox
+        ? createPortal(
+            <div
+              className="fixed inset-0 z-[300] flex flex-col bg-black/96"
+              ref={dialogRef}
+              tabIndex={-1}
+              role="dialog"
+              aria-modal="true"
+              aria-label={`${name} image lightbox`}
+            >
+              <div className="relative z-20 flex shrink-0 items-center justify-between gap-3 px-3 pb-2 pt-[max(.75rem,env(safe-area-inset-top))]">
+                <p className="min-w-0 truncate px-1 text-sm font-semibold text-white/80">
+                  {count > 1 ? `${active + 1} / ${count}` : "Enlarged image"}
+                </p>
+                <button
+                  type="button"
+                  className="inline-flex h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-full bg-white px-3.5 text-sm font-semibold text-primary"
+                  onClick={() => setLightbox(false)}
+                >
+                  <X className="h-5 w-5" />
+                  <span>Close</span>
+                </button>
+              </div>
+              <div
+                className="relative z-10 flex min-h-0 flex-1 items-center justify-center px-3 pb-[max(1rem,env(safe-area-inset-bottom))]"
+                onClick={() => setLightbox(false)}
+              >
+                {count > 1 ? (
+                  <>
+                    <button
+                      type="button"
+                      className="absolute left-2 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-primary"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        goTo(active - 1);
+                      }}
+                      aria-label="Previous enlarged image"
+                    >
+                      <ChevronLeft className="h-5 w-5" />
+                    </button>
+                    <button
+                      type="button"
+                      className="absolute right-2 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-primary"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        goTo(active + 1);
+                      }}
+                      aria-label="Next enlarged image"
+                    >
+                      <ChevronRight className="h-5 w-5" />
+                    </button>
+                  </>
+                ) : null}
+                <div className="relative h-full w-full max-w-4xl">
+                  <LightboxZoom
+                    src={current}
+                    alt={`${name} enlarged view`}
+                    onSwipe={
+                      count > 1
+                        ? (direction) => goTo(active + direction)
+                        : undefined
+                    }
+                  />
+                </div>
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
+    </div>
+  );
+}

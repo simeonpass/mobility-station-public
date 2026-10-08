@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="#173F5B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+  <title>Manual wheelchairs</title>
+  <path d="M18 13h-5m5 0 6 24h22l5 11H38"/>
+  <path d="M19 17h16c3 0 5 2 5 5v11H24m15 1h9"/>
+  <circle cx="27" cy="46" r="12"/>
+  <circle cx="27" cy="46" r="8"/>
+  <circle cx="53" cy="51" r="3"/>
+</svg>

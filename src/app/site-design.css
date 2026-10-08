@@ -1,0 +1,192 @@
+/* Shared Mobility Station design, extending the approved Autoros-inspired homepage. */
+:root {
+  --buy: #192d47;
+  --buy-hover: #285e97;
+  --buy-foreground: #fff;
+  --font-manrope: var(--font-barlow);
+}
+.ms-site { font-family: var(--font-barlow), Arial, sans-serif; font-size: 17px; }
+.ms-site :is(h1, h2, h3, h4) { font-weight: 600; letter-spacing: -.03em; }
+.ms-site .container-site:not([class*="max-w-"]) { max-width: 1320px; padding-inline: 40px; }
+.ms-site :is(a, button, summary, input, select, textarea):focus-visible { outline: 3px solid #e8ac35; outline-offset: 4px; }
+.ms-site .ms-control { min-height: 48px; height: auto; border-radius: 5px; padding-block: 12px; font-size: 16px; line-height: 1.35; }
+.ms-site .ms-control-small { min-height: 40px; padding-block: 9px; font-size: 14px; }
+.ms-site .ms-control-large { min-height: 52px; }
+.ms-site .ms-control-icon { min-width: 44px; width: 44px; min-height: 44px; padding: 10px; }
+.ms-site .ms-field { min-height: 48px; height: auto; padding: 12px 14px; border-radius: 5px; font-size: 16px; line-height: 1.5; }
+.ms-site textarea.ms-field { min-height: 130px; }
+.ms-eyebrow { margin: 0 0 20px; color: var(--ms-teal); font-size: 13px; font-weight: 700; line-height: 1.5; letter-spacing: .16em; text-transform: uppercase; }
+.ms-button-outline { background: transparent; color: var(--ms-navy); border-color: #91a2b1; }
+.ms-button-outline:hover { color: var(--ms-navy); background: #e7eceb; border-color: var(--ms-navy); }
+
+/* Service and information pages use a quiet, spacious introduction. */
+.ms-page-intro { background: var(--ms-cream); background-image: none; border-bottom: 1px solid var(--ms-line); }
+.ms-page-intro > .container-site { padding-block: 66px; }
+.ms-page-intro h1, .ms-category-heading h1, .ms-document-page > h1 { max-width: 980px; color: var(--ms-navy); font-size: clamp(38px, 4.4vw, 60px); font-weight: 600; letter-spacing: -.035em; line-height: 1.08; }
+.ms-page-intro h1 + p, .ms-page-description { max-width: 740px; margin-top: 22px; color: var(--ms-muted); font-size: 19px; line-height: 1.65; }
+.ms-page-intro p[class*="uppercase"], .ms-category-heading p[class*="uppercase"] { color: var(--ms-teal); font-size: 13px; letter-spacing: .16em; }
+.ms-page-intro-compact > .container-site { padding-block: 48px; }
+.ms-page-intro :is(a, button)[class*="rounded-full"] { border-radius: 5px; }
+.ms-category-heading { padding-block: 34px 44px; }
+.ms-category-heading h1 { font-size: clamp(36px, 4vw, 54px); }
+.ms-category-heading p { max-width: 780px; }
+
+/* Photographic introductions echo the homepage's angled navy banner. */
+.ms-catalog-intro { overflow: hidden; color: #fff; background: var(--ms-navy); border: 0; }
+.ms-catalog-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; padding-block: 0; }
+.ms-catalog-intro-visual .ms-catalog-grid { grid-template-columns: 1.05fr 1fr; align-items: stretch; }
+.ms-catalog-copy { min-width: 0; padding-block: 62px; padding-right: 46px; align-self: center; }
+.ms-catalog-copy h1 { max-width: 700px; color: #fff; margin-top: 0; font-size: clamp(42px, 4.3vw, 62px); font-weight: 600; letter-spacing: -.04em; line-height: 1.08; }
+.ms-catalog-copy .ms-eyebrow, .ms-catalog-copy > p:first-child { color: #bdcec9; font-size: 13px; font-weight: 600; letter-spacing: .16em; line-height: 1.5; margin: 0 0 24px; text-transform: uppercase; }
+.ms-catalog-description, .ms-catalog-copy h1 + p { max-width: 580px; color: #e0e6eb; margin-top: 24px; font-size: 19px; line-height: 1.65; }
+.ms-catalog-copy > p:last-child:not(:first-child) { color: #e0e6eb; }
+.ms-catalog-copy > p:last-child a { color: #fff; }
+.ms-catalog-actions { margin-top: 30px; }
+.ms-catalog-actions :is(a, button), .ms-catalog-copy .ms-control { border-radius: 5px; }
+.ms-catalog-actions > button, .ms-catalog-copy .ms-control:first-child { color: var(--ms-navy); background: #fff; border-color: #fff; }
+.ms-catalog-actions > button:hover, .ms-catalog-copy .ms-control:first-child:hover { background: #e9efe6; }
+.ms-catalog-copy .ms-control + .ms-control { color: #fff; background: transparent; border-color: #8a9aaf; }
+.ms-catalog-copy .ms-control + .ms-control:hover { background: #ffffff15; }
+.ms-editorial-image { position: relative; min-height: 480px; margin-left: -10px; margin-right: calc(-1 * max(40px, (100vw - 1240px) / 2)); clip-path: polygon(7% 0, 100% 0, 100% 100%, 0 100%); }
+.ms-editorial-image > img { display: block; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.ms-editorial-image::after { content: ""; position: absolute; inset: 45% 0 0; background: linear-gradient(transparent, #101f35b3); pointer-events: none; }
+.ms-editorial-image > p { position: absolute; z-index: 1; left: 12%; right: 30px; bottom: 30px; color: #fff; font-size: 19px; line-height: 1.45; }
+
+.ms-site main :is(a, button)[class*="px-7"], .ms-site .ms-product-detail :is(a, button)[class*="rounded-xl"] { border-radius: 5px; }
+
+/* The same restrained edges and type across products, work and stories. */
+.ms-site .ms-catalog-card { border-radius: 8px; box-shadow: none; border-color: var(--ms-line); }
+.ms-site .ms-catalog-card:hover { transform: none; border-color: var(--ms-teal); box-shadow: 0 10px 28px #132c4910; }
+.ms-site .ms-catalog-card :is(h2, h3) { font-size: 20px; font-weight: 600; letter-spacing: -.015em; line-height: 1.25; }
+.ms-site .ms-catalog-card p[class*="uppercase"] { color: var(--ms-teal); }
+.ms-site .ms-catalog-card :is(a, button)[class*="rounded-full"] { border-radius: 5px; }
+.ms-site .ms-product-detail h1 { font-size: clamp(30px, 3.2vw, 44px); line-height: 1.1; letter-spacing: -.03em; }
+.ms-site .ms-purchase-panel { border-radius: 8px; box-shadow: none; background: var(--ms-cream); }
+.ms-story-card { overflow: hidden; border: 1px solid var(--ms-line); border-radius: 8px; background: #fff; }
+.ms-story-card > a { border-radius: 0; }
+.ms-story-copy { padding: 25px; margin-top: 0; }
+.ms-story-card :is(h2, h3) { font-size: 25px; line-height: 1.2; }
+.ms-article-heading h1 { font-size: clamp(36px, 4vw, 56px); line-height: 1.1; }
+.ms-site .legal-prose { font-size: 17px; }
+.ms-site .legal-prose p, .ms-site .legal-prose li { font-size: 17px; line-height: 1.75; }
+.ms-site .legal-prose h2 { margin-top: 2em; font-size: 26px; font-weight: 600; }
+.ms-site .legal-prose h3 { font-size: 21px; font-weight: 600; }
+.ms-document-page { padding-block: 62px; }
+
+.ms-help-footer { padding-block: 70px; border-top: 1px solid var(--ms-line); background: var(--ms-cream); }
+.ms-help-footer > .container-site { display: flex; justify-content: space-between; align-items: center; gap: 50px; }
+.ms-help-footer h2 { max-width: 780px; font-size: clamp(32px, 3.3vw, 44px); line-height: 1.12; }
+.ms-help-description { max-width: 640px; margin-top: 18px; color: var(--ms-muted); font-size: 18px; line-height: 1.65; }
+.ms-help-actions { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 13px; }
+.ms-site-footer { font-size: 17px; }
+.ms-site-footer > .container-site { padding-block: 64px; }
+.ms-site-footer ul a, .ms-site-footer ul button { font-size: 16px; line-height: 1.55; }
+.ms-site-footer p[class*="text-white/45"] { color: #b7c4d2; }
+.ms-site-footer p[class*="uppercase"] { font-size: 12px; letter-spacing: .16em; }
+.ms-site-footer .ms-footer-brand { height: auto; width: 200px; max-width: 100%; }
+
+@media (max-width: 1023px) {
+  .ms-catalog-intro-visual .ms-catalog-grid { grid-template-columns: 1fr 1fr; }
+  .ms-catalog-copy { padding-block: 48px; padding-right: 30px; }
+  .ms-catalog-copy h1 { font-size: 45px; }
+  .ms-catalog-actions { flex-direction: column; align-items: flex-start; }
+  .ms-editorial-image { min-height: 430px; }
+  .ms-help-footer > .container-site { align-items: flex-start; flex-direction: column; gap: 26px; }
+  .ms-help-actions { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 24px; }
+}
+@media (max-width: 767px) {
+  .ms-site .container-site:not([class*="max-w-"]) { padding-inline: 22px; }
+  .ms-page-intro > .container-site { padding-block: 42px; }
+  .ms-page-intro h1, .ms-document-page > h1 { font-size: 38px; }
+  .ms-page-intro h1 + p, .ms-page-description { font-size: 18px; margin-top: 18px; }
+  .ms-catalog-intro-visual .ms-catalog-grid { grid-template-columns: minmax(0, 1fr); }
+  .ms-catalog-copy { padding: 40px 0 38px; }
+  .ms-catalog-copy h1 { font-size: 41px; }
+  .ms-catalog-description, .ms-catalog-copy h1 + p { font-size: 18px; margin-top: 20px; }
+  .ms-catalog-actions { flex-direction: row; align-items: stretch; }
+  .ms-catalog-actions .ms-button { flex-grow: 1; gap: 16px; }
+  .ms-editorial-image { min-height: 300px; margin-inline: -22px; clip-path: none; }
+  .ms-editorial-image > p { left: 22px; right: 22px; bottom: 22px; font-size: 17px; }
+  .ms-site .ms-catalog-card :is(h2, h3) { font-size: 18px; }
+  .ms-story-copy { padding: 22px; }
+  .ms-help-footer { padding-block: 48px; }
+  .ms-help-actions { align-items: stretch; gap: 14px; }
+  .ms-document-page { padding-block: 40px; }
+  .ms-site-footer > .container-site { padding-block: 46px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ms-catalog-card, .ms-story-card, .ms-control { transition: none; }
+}
+
+.ms-story-image-fallback { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 15px; padding: 8%; background: var(--ms-navy); color: #fff; }
+.ms-story-image-fallback > span:first-child { font-size: 12px; letter-spacing: .15em; text-transform: uppercase; color: #bdcec9; }
+.ms-story-image-fallback > strong { font-size: clamp(24px, 3vw, 40px); line-height: 1.05; font-weight: 500; letter-spacing: -.03em; }
+.ms-story-image-rule { height: 3px; width: 44px; background: #bdcec9; margin-top: 5px; }
+
+/* Simple servicing and hire journeys: a single decision, then the task. */
+.ms-simple-intro { max-width: 1100px; }
+.ms-simple-section { padding-block: 64px; scroll-margin-top: 24px; }
+.ms-simple-booking-grid { display: grid; grid-template-columns: minmax(0,.85fr) minmax(0,1.15fr); gap: 70px; align-items: start; }
+.ms-simple-explainer > h2, .ms-simple-section-title { font-size: 36px; line-height: 1.15; }
+.ms-simple-title { margin-top: 24px; font-size: clamp(36px,4vw,54px); line-height: 1.08; }
+.ms-simple-explainer > p:not(.ms-eyebrow) { margin-top: 20px; color: var(--ms-muted); font-size: 19px; line-height: 1.65; }
+.ms-simple-checks { display: grid; gap: 14px; margin-block: 28px; }
+.ms-simple-checks li { display: flex; align-items: flex-start; gap: 12px; font-size: 17px; line-height: 1.5; }
+.ms-simple-checks svg { flex-shrink: 0; margin-top: 4px; color: var(--ms-teal); }
+.ms-simple-note { margin-top: 32px; padding-top: 26px; border-top: 1px solid var(--ms-line); }
+.ms-simple-note :is(h2,h3) { font-size: 23px; }
+.ms-simple-note p { margin-top: 12px; color: var(--ms-muted); line-height: 1.65; }
+.ms-simple-form-panel { padding: 32px; border: 1px solid var(--ms-line); background: var(--ms-cream); border-radius: 8px; min-width: 0; }
+.ms-simple-form-panel > h2 { font-size: 28px; line-height: 1.2; }
+.ms-simple-form-lead { margin: 12px 0 26px; color: var(--ms-muted); line-height: 1.6; }
+.ms-hire-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 30px; }
+.ms-hire-choices article { display: flex; flex-direction: column; align-items: flex-start; padding: 34px; border: 1px solid var(--ms-line); border-radius: 8px; background: var(--ms-cream); }
+.ms-hire-choices h3 { font-size: 42px; line-height: 1.1; }
+.ms-hire-choices h3 + p { margin-top: 18px; color: var(--ms-muted); font-size: 19px; line-height: 1.6; }
+.ms-hire-choices .ms-button { margin-top: auto; }
+.ms-simple-help { display: flex; gap: 28px; justify-content: space-between; align-items: center; margin-top: 38px; padding-top: 32px; border-top: 1px solid var(--ms-line); }
+.ms-simple-help h2 { font-size: 26px; }
+.ms-simple-help p { margin-top: 8px; color: var(--ms-muted); line-height: 1.6; }
+.ms-simple-secondary { padding-top: 0; }
+.ms-simple-details { border-block-end: 1px solid var(--ms-line); scroll-margin-top: 24px; }
+.ms-simple-details summary { display: flex; justify-content: space-between; align-items: center; gap: 20px; cursor: pointer; padding: 22px 0; font-size: 22px; font-weight: 600; list-style: none; }
+.ms-simple-details summary::-webkit-details-marker { display: none; }
+.ms-simple-details[open] summary svg { transform: rotate(180deg); }
+.ms-simple-details-body { padding: 0 0 26px; max-width: 1050px; }
+.ms-simple-details-body p { color: var(--ms-muted); line-height: 1.65; margin-bottom: 16px; }
+.ms-hire-price-list { width: 100%; border-collapse: collapse; margin-block: 12px 22px; font-size: 16px; text-align: left; }
+.ms-hire-price-list :is(th,td) { padding: 14px; border-bottom: 1px solid var(--ms-line); }
+.ms-hire-price-list thead { background: var(--ms-cream); }
+.ms-hire-price-list td { white-space: nowrap; }
+.ms-hire-steps { display: flex; gap: 20px; padding-bottom: 20px; margin-bottom: 22px; border-bottom: 1px solid var(--ms-line); font-size: 15px; }
+.ms-hire-steps li { color: var(--ms-muted); }
+.ms-hire-steps li[aria-current="step"] { color: var(--ms-navy); font-weight: 600; }
+.ms-hire-step-title { font-size: 28px; margin-bottom: 10px; line-height: 1.2; }
+.ms-hire-fieldset { min-width: 0; border: 0; padding: 0; }
+.ms-hire-fieldset[hidden] { display: none; }
+.ms-hire-fieldset .ms-field { min-width: 0; }
+.ms-hire-quote { padding: 20px; background: #fff; border: 1px solid var(--ms-line); border-radius: 5px; }
+@media (max-width: 900px) {
+  .ms-simple-booking-grid { grid-template-columns: 1fr; gap: 32px; }
+  .ms-simple-explainer > p { max-width: 650px; }
+}
+@media (max-width: 767px) {
+  .ms-simple-section { padding-block: 38px; }
+  .ms-simple-title { font-size: 38px; }
+  .ms-simple-section-title, .ms-simple-explainer > h2 { font-size: 30px; }
+  .ms-simple-form-panel { padding: 22px; }
+  .ms-hire-choices { grid-template-columns: 1fr; gap: 20px; }
+  .ms-hire-choices article { padding: 25px; }
+  .ms-hire-choices h3 { font-size: 35px; }
+  .ms-hire-choices .ms-button { width: 100%; gap: 16px; }
+  .ms-simple-help { align-items: flex-start; flex-direction: column; gap: 14px; }
+  .ms-simple-secondary { padding-top: 0; }
+  .ms-hire-price-list :is(th,td) { padding: 12px 8px; }
+}
+
+@media (max-width: 767px) {
+  .ms-hire-booking-page .ms-simple-explainer .ms-simple-checks,
+  .ms-hire-booking-page .ms-simple-explainer .ms-simple-note { display: none; }
+  .ms-hire-booking-page .ms-simple-explainer > p:not(.ms-eyebrow) { font-size: 17px; margin-top: 14px; }
+  .ms-hire-booking-page .ms-simple-explainer > .ms-link:last-of-type { margin-top: 10px; }
+}

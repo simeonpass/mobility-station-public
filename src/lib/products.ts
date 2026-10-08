@@ -1,0 +1,957 @@
+import type { MotabilityReference } from "@/lib/motability-references";
+import { cleanSearchQuery, rankProductSearch, type SearchableProduct } from "@/lib/product-search";
+import { correctPublicCopy } from "@/lib/public-copy";
+import { unstable_cache } from "next/cache";
+import { createClient } from "@supabase/supabase-js";
+import {
+  isAdaptationProduct,
+} from "@/lib/adaptations";
+
+function getClient() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_PUBLIC_SITE_KEY;
+  if (!url || !key) {
+    throw new Error(
+      "Missing SUPABASE_URL or SUPABASE_PUBLIC_SITE_KEY in environment",
+    );
+  }
+  return createClient(url, key, { auth: { persistSession: false } });
+}
+
+export type ProductImage = {
+  id: string;
+  image_url: string;
+  alt_text: string | null;
+  sort_order: number;
+  is_primary: boolean;
+};
+
+export type ProductListItem = {
+  id: string;
+  name: string;
+  slug: string;
+  category: string | null;
+  manufacturer: string | null;
+  unit_price: number | null;
+  sale_price: number | null;
+  motability_price: number | null;
+  motability_weekly_price: number | null;
+  is_featured: boolean;
+  image_url: string | null;
+  sku?: string | null;
+  seo_title?: string | null;
+  meta_description?: string | null;
+  product_type: string | null;
+  quantity: number | null;
+  track_stock: boolean;
+  condition: "new" | "ex-demo" | "refurbished" | "pre-owned" | null;
+  condition_grade: "A" | "B" | "C" | null;
+  pre_order_enabled: boolean;
+};
+
+export type ProductVariant = {
+  id: string;
+  label: string | null;
+  unit_price: number | null;
+  sale_price: number | null;
+  image_url: string | null;
+  colour: string | null;
+  quantity: number;
+  track_stock: boolean;
+  is_addon: boolean;
+  is_default: boolean;
+  variant_group: string | null;
+  price_adjustment: number;
+  description: string | null;
+  motability_price: number | null;
+  motability_weekly_price: number | null;
+  adaptation_id: string | null;
+  motability_crn: string | null;
+};
+
+export type ProductDetail = ProductListItem & {
+  motability_references: MotabilityReference[];
+  description: string | null;
+  features: string[] | null;
+  specifications: Record<string, unknown> | null;
+  suitability_info: string | null;
+  weight: number | null;
+  dimensions: string | null;
+  colour_options: string[] | null;
+  delivery_estimate: string | null;
+  pre_order_message: string | null;
+  video_url: string | null;
+  sku: string | null;
+  location: string | null;
+  is_discontinued: boolean;
+  discontinued_message: string | null;
+  adaptation_id: string | null;
+  variant_group_id: string | null;
+  variant_label: string | null;
+  images: ProductImage[];
+  variants: ProductVariant[];
+};
+
+const LIST_COLUMNS = `
+  id, name, slug, category, manufacturer, sku, unit_price, sale_price,
+  motability_price, motability_weekly_price, is_featured, image_url,
+  product_type, quantity, track_stock,
+  condition, condition_grade, pre_order_enabled
+`;
+
+export function categoryToSlug(category: string) {
+  return category
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+export function categorySlugCandidates(category: string) {
+  const canonical = categoryToSlug(category);
+  const legacy = category.toLowerCase().replace(/\s+/g, "-");
+  return canonical === legacy ? [canonical] : [canonical, legacy];
+}
+
+export function slugToCategoryHint(slug: string) {
+  return slug.replace(/-/g, " ");
+}
+
+function isAccessoryCategory(category: string | null | undefined) {
+  return /accessor|batter|charger|canop|walking aid/i.test(category || "");
+}
+
+function mapListItem(row: Record<string, unknown>): ProductListItem {
+  return {
+    ...(row as unknown as ProductListItem),
+    name: correctPublicCopy(String(row.name ?? "")),
+    track_stock: row.track_stock !== false,
+    pre_order_enabled: Boolean(row.pre_order_enabled),
+  };
+}
+
+function excludeAdaptations(items: ProductListItem[]) {
+  return items.filter((p) => !isAdaptationProduct(p));
+}
+
+function onlyAdaptations(items: ProductListItem[]) {
+  return items.filter((p) => isAdaptationProduct(p));
+}
+
+async function fetchPublishedProducts(
+  opts: {
+    category?: string;
+    limit?: number;
+    offset?: number;
+    shopOnly?: boolean;
+  } = {},
+): Promise<ProductListItem[]> {
+  const shopOnly = opts.shopOnly !== false;
+  const supabase = getClient();
+  let q = supabase
+    .from("stock_items")
+    .select(LIST_COLUMNS)
+    .eq("published_to_website", true)
+    .eq("website_visible", true)
+    .neq("product_type", "archived")
+    .not("slug", "is", null)
+    .order("is_featured", { ascending: false })
+    .order("name", { ascending: true });
+
+  if (shopOnly) {
+    q = q.neq("product_type", "vehicle_adaptation");
+  }
+  if (opts.category) q = q.eq("category", opts.category);
+
+  // Fetch a wider window when filtering adaptations client-side by category list
+  const fetchLimit = opts.limit
+    ? shopOnly
+      ? opts.limit + 40
+      : opts.limit
+    : undefined;
+  if (fetchLimit) {
+    q = q.range(opts.offset ?? 0, (opts.offset ?? 0) + fetchLimit - 1);
+  }
+
+  const { data, error } = await q;
+  if (error) throw error;
+  let items = (data ?? []).map((row) =>
+    mapListItem(row as Record<string, unknown>),
+  );
+  if (shopOnly) {
+    items = excludeAdaptations(items);
+  }
+  if (opts.limit) items = items.slice(0, opts.limit);
+  return items;
+}
+
+export function getPublishedProducts(
+  opts: {
+    category?: string;
+    limit?: number;
+    offset?: number;
+    /** When true (default), vehicle adaptations are excluded from the shop catalogue. */
+    shopOnly?: boolean;
+  } = {},
+): Promise<ProductListItem[]> {
+  const shopOnly = opts.shopOnly !== false;
+  return unstable_cache(
+    () => fetchPublishedProducts(opts),
+    [
+      "published-products",
+      shopOnly ? "shop" : "all",
+      opts.category ?? "",
+      String(opts.limit ?? ""),
+      String(opts.offset ?? ""),
+    ],
+    { revalidate: 300 },
+  )();
+}
+
+export async function getProductsBySlugs(
+  slugs: string[],
+): Promise<ProductListItem[]> {
+  const unique = [...new Set(slugs.filter(Boolean))];
+  if (!unique.length) return [];
+
+  const supabase = getClient();
+  const { data, error } = await supabase
+    .from("stock_items")
+    .select(LIST_COLUMNS)
+    .in("slug", unique)
+    .eq("published_to_website", true)
+    .eq("website_visible", true)
+    .neq("product_type", "archived");
+
+  if (error) throw error;
+  return (data ?? []).map((row) => mapListItem(row as Record<string, unknown>));
+}
+
+export async function getAdaptationProducts(
+  opts: {
+    category?: string;
+    categories?: string[];
+    limit?: number;
+  } = {},
+): Promise<ProductListItem[]> {
+  const supabase = getClient();
+  let q = supabase
+    .from("stock_items")
+    .select(LIST_COLUMNS)
+    .eq("published_to_website", true)
+    .eq("website_visible", true)
+    .neq("product_type", "archived")
+    .not("slug", "is", null)
+    .order("is_featured", { ascending: false })
+    .order("name", { ascending: true });
+
+  if (opts.category) {
+    q = q.eq("category", opts.category);
+  } else if (opts.categories?.length) {
+    q = q.in("category", opts.categories);
+  } else {
+    q = q.eq("product_type", "vehicle_adaptation");
+  }
+
+  if (opts.limit) q = q.limit(opts.limit);
+
+  const { data, error } = await q;
+  if (error) throw error;
+  return onlyAdaptations(
+    (data ?? []).map((row) => mapListItem(row as Record<string, unknown>)),
+  );
+}
+
+export async function getRelatedProducts(
+  product: {
+    id: string;
+    category: string | null;
+    manufacturer: string | null;
+    product_type: string | null;
+  },
+  limit = 4,
+): Promise<ProductListItem[]> {
+  const adaptation = isAdaptationProduct(product);
+  const seen = new Set<string>([product.id]);
+  const results: ProductListItem[] = [];
+
+  const take = (items: ProductListItem[]) => {
+    for (const item of items) {
+      if (seen.has(item.id)) continue;
+      seen.add(item.id);
+      results.push(item);
+      if (results.length >= limit) break;
+    }
+  };
+
+  try {
+    if (product.category) {
+      if (adaptation) {
+        take(
+          await getAdaptationProducts({
+            category: product.category,
+            limit: limit + 4,
+          }),
+        );
+      } else {
+        take(
+          await getPublishedProducts({
+            category: product.category,
+            limit: limit + 4,
+            shopOnly: true,
+          }),
+        );
+      }
+    }
+
+    if (results.length < limit && product.manufacturer) {
+      const supabase = getClient();
+      let q = supabase
+        .from("stock_items")
+        .select(LIST_COLUMNS)
+        .eq("published_to_website", true)
+        .eq("website_visible", true)
+        .eq("manufacturer", product.manufacturer)
+        .neq("product_type", "archived")
+        .not("slug", "is", null)
+        .order("is_featured", { ascending: false })
+        .limit(limit + 6);
+
+      if (adaptation) {
+        q = q.eq("product_type", "vehicle_adaptation");
+      } else {
+        q = q.neq("product_type", "vehicle_adaptation");
+      }
+
+      const { data, error } = await q;
+      if (!error) {
+        take((data ?? []).map((row) => mapListItem(row as Record<string, unknown>)));
+      }
+    }
+
+    if (results.length < limit) {
+      if (adaptation) {
+        take(await getAdaptationProducts({ limit: limit + 6 }));
+      } else {
+        take(await getFeaturedProducts(limit + 6));
+      }
+    }
+  } catch {
+    return results.slice(0, limit);
+  }
+
+  return results.slice(0, limit);
+}
+
+export async function getFeaturedProducts(limit = 8): Promise<ProductListItem[]> {
+  const supabase = getClient();
+  const { data, error } = await supabase
+    .from("stock_items")
+    .select(LIST_COLUMNS)
+    .eq("published_to_website", true)
+    .eq("website_visible", true)
+    .eq("is_featured", true)
+    .neq("product_type", "archived")
+    .neq("product_type", "vehicle_adaptation")
+    .not("slug", "is", null)
+    .order("name", { ascending: true })
+    .limit(limit + 10);
+
+  if (error) throw error;
+  const featured = excludeAdaptations(
+    (data ?? []).map((row) => mapListItem(row as Record<string, unknown>)),
+  ).filter((p) => !isAccessoryCategory(p.category));
+
+  const fill = await getPublishedProducts({ limit: 200, shopOnly: true });
+  const seen = new Set(featured.map((p) => p.id));
+  const extras = fill.filter(
+    (p) => !seen.has(p.id) && !isAccessoryCategory(p.category),
+  );
+  return pickBalancedShopSpotlight([...featured, ...extras], limit);
+}
+
+function pickBalancedShopSpotlight(
+  items: ProductListItem[],
+  limit: number,
+): ProductListItem[] {
+  const priority = [
+    /pride/i,
+    /tga/i,
+    /kymco/i,
+    /drive/i,
+    /freerider|luggie/i,
+    /karma/i,
+    /sunrise|sterling/i,
+    /motion/i,
+  ];
+  const rank = (key: string) => {
+    const index = priority.findIndex((re) => re.test(key));
+    return index === -1 ? priority.length : index;
+  };
+
+  const queues = new Map<string, ProductListItem[]>();
+  for (const item of items) {
+    const key = (item.manufacturer || item.category || "other").toLowerCase();
+    const list = queues.get(key) ?? [];
+    list.push(item);
+    queues.set(key, list);
+  }
+  const result: ProductListItem[] = [];
+  const seen = new Set<string>();
+  const brandQueues = [...queues.entries()]
+    .sort((a, b) => rank(a[0]) - rank(b[0]))
+    .map(([, list]) => list);
+  let cursor = 0;
+  while (result.length < limit && brandQueues.some((queue) => queue.length)) {
+    const queue = brandQueues[cursor % brandQueues.length];
+    cursor += 1;
+    const next = queue.shift();
+    if (!next || seen.has(next.id)) continue;
+    seen.add(next.id);
+    result.push(next);
+  }
+  return result;
+}
+
+/** Shop spotlight: sale items first, then featured to fill. */
+export async function getShopSpecialOffers(
+  limit = 8,
+): Promise<ProductListItem[]> {
+  const all = await getPublishedProducts({ limit: 500, shopOnly: true });
+  const onSale = all.filter((p) => {
+    const { current, was } = displayPrice(p);
+    return current != null && was != null && current < was;
+  });
+  const seen = new Set(onSale.map((p) => p.id));
+  const featured = all.filter((p) => p.is_featured && !seen.has(p.id));
+  const combined = [...onSale, ...featured];
+  if (combined.length >= Math.min(4, limit)) {
+    return combined.slice(0, limit);
+  }
+  for (const p of all) {
+    if (combined.length >= limit) break;
+    if (seen.has(p.id) || combined.some((x) => x.id === p.id)) continue;
+    combined.push(p);
+  }
+  return combined.slice(0, limit);
+}
+
+/** Adaptations spotlight: featured first, then fill from catalogue. */
+export async function getPopularAdaptations(
+  limit = 8,
+): Promise<ProductListItem[]> {
+  const all = await getAdaptationProducts({ limit: 200 });
+  const featured = all.filter((p) => p.is_featured);
+  const seen = new Set(featured.map((p) => p.id));
+  const fill = all.filter((p) => !seen.has(p.id));
+  return [...featured, ...fill].slice(0, limit);
+}
+
+export async function getCategories(
+  opts: { shopOnly?: boolean } = {},
+): Promise<{ category: string; count: number }[]> {
+  const shopOnly = opts.shopOnly !== false;
+  const supabase = getClient();
+  let q = supabase
+    .from("stock_items")
+    .select("category, product_type")
+    .eq("published_to_website", true)
+    .eq("website_visible", true)
+    .neq("product_type", "archived")
+    .not("category", "is", null);
+
+  if (shopOnly) q = q.neq("product_type", "vehicle_adaptation");
+
+  const { data, error } = await q;
+  if (error) throw error;
+
+  const counts = new Map<string, number>();
+  for (const row of data ?? []) {
+    const r = row as { category: string; product_type: string | null };
+    if (shopOnly && isAdaptationProduct(r)) continue;
+    counts.set(r.category, (counts.get(r.category) ?? 0) + 1);
+  }
+
+  return [...counts.entries()]
+    .map(([category, count]) => ({ category, count }))
+    .sort((a, b) => b.count - a.count);
+}
+
+export async function resolveCategoryFromSlug(
+  categorySlug: string,
+): Promise<string | null> {
+  const categories = await getCategories({ shopOnly: false });
+  const match = categories.find((c) =>
+    categorySlugCandidates(c.category).includes(categorySlug),
+  );
+  return match?.category ?? null;
+}
+
+export async function getProductBySlug(
+  slug: string,
+): Promise<ProductDetail | null> {
+  const supabase = getClient();
+  const { data: product, error } = await supabase
+    .from("stock_items")
+    .select(
+      `
+      ${LIST_COLUMNS},
+      seo_title, meta_description,
+      description, features, specifications, suitability_info,
+      weight, dimensions, colour_options, delivery_estimate,
+      pre_order_message, video_url, sku, location,
+      is_discontinued, discontinued_message, adaptation_id,
+      variant_group_id, variant_label
+    `,
+    )
+    .eq("slug", slug)
+    .eq("published_to_website", true)
+    .eq("website_visible", true)
+    .neq("product_type", "archived")
+    .maybeSingle();
+
+  if (error) throw error;
+  if (!product) return null;
+
+  const productId = (product as { id: string }).id;
+
+  const [imagesRes, variantsRes, motabilityRes] = await Promise.all([
+    supabase
+      .from("stock_item_images")
+      .select("id, image_url, alt_text, sort_order, is_primary")
+      .eq("stock_item_id", productId)
+      .order("sort_order", { ascending: true }),
+    supabase
+      .from("product_variants")
+      .select(
+        `id, label, unit_price, sale_price, image_url, colour, quantity,
+         track_stock, is_addon, is_default, variant_group, price_adjustment,
+         description, motability_price, motability_weekly_price,
+         adaptation_id, motability_crn`,
+      )
+      .eq("stock_item_id", productId)
+      .order("sort_order", { ascending: true }),
+    isAdaptationProduct(product as ProductListItem)
+      ? supabase.rpc("get_public_motability_references", { p_stock_item_id: productId })
+      : Promise.resolve({ data: [], error: null }),
+  ]);
+  if (motabilityRes.error) console.error("Motability reference lookup failed", motabilityRes.error.message);
+
+  const mapped = mapListItem(product as Record<string, unknown>);
+
+  return {
+    ...mapped,
+    ...(product as ProductDetail),
+    name: mapped.name,
+    seo_title: product.seo_title ? correctPublicCopy(product.seo_title) : null,
+    track_stock: mapped.track_stock,
+    pre_order_enabled: mapped.pre_order_enabled,
+    is_discontinued: Boolean(
+      (product as { is_discontinued?: boolean }).is_discontinued,
+    ),
+    images: (imagesRes.data ?? []) as ProductImage[],
+    motability_references: (motabilityRes.error ? [] : motabilityRes.data ?? []) as MotabilityReference[],
+    variants: ((variantsRes.data ?? []) as ProductVariant[]).map((v) => ({
+      ...v,
+      label: v.label ? correctPublicCopy(v.label) : null,
+      track_stock: v.track_stock !== false,
+      is_addon: Boolean(v.is_addon),
+      is_default: Boolean(v.is_default),
+      quantity: v.quantity ?? 0,
+      price_adjustment: Number(v.price_adjustment) || 0,
+      variant_group: v.variant_group ?? null,
+      description: v.description ?? null,
+      motability_price: v.motability_price ?? null,
+      motability_weekly_price: v.motability_weekly_price ?? null,
+      adaptation_id: v.adaptation_id ?? null,
+      motability_crn: v.motability_crn ?? null,
+    })),
+  };
+}
+
+/** Match live site: absolute variant price wins, otherwise base + adjustments. */
+export function priceWithVariants(
+  base: Pick<ProductListItem, "unit_price" | "sale_price">,
+  selected: Pick<
+    ProductVariant,
+    "unit_price" | "sale_price" | "price_adjustment"
+  >[],
+) {
+  const adjustment = selected.reduce(
+    (sum, v) => sum + (Number(v.price_adjustment) || 0),
+    0,
+  );
+  const absolute = selected.find(
+    (v) => v.unit_price != null && Number(v.unit_price) > 0,
+  );
+  if (absolute) {
+    return displayPrice({
+      unit_price: absolute.unit_price,
+      sale_price: absolute.sale_price,
+    });
+  }
+  const unit =
+    base.unit_price != null && Number(base.unit_price) > 0
+      ? Number(base.unit_price) + adjustment
+      : null;
+  const sale =
+    base.sale_price != null && Number(base.sale_price) > 0
+      ? Number(base.sale_price) + adjustment
+      : null;
+  return displayPrice({ unit_price: unit, sale_price: sale });
+}
+
+export function addonLinePrice(
+  addon: Pick<
+    ProductVariant,
+    "unit_price" | "sale_price" | "price_adjustment"
+  >,
+) {
+  if (addon.sale_price != null && Number(addon.sale_price) > 0) {
+    return Number(addon.sale_price);
+  }
+  if (addon.unit_price != null && Number(addon.unit_price) > 0) {
+    return Number(addon.unit_price);
+  }
+  return Number(addon.price_adjustment) || 0;
+}
+
+export type SearchResults = {
+  query: string;
+  items: ProductListItem[];
+  shop: ProductListItem[];
+  adaptations: ProductListItem[];
+  total: number;
+  approximate: boolean;
+};
+
+const SEARCH_BATCH_SIZE = 200;
+
+// Cache bounded pages, rather than one catalogue-sized entry. Paging also avoids
+// the database API's default row limit silently dropping searchable products.
+const getSearchCataloguePage = unstable_cache(async (offset: number) => {
+  const { data, error } = await getClient()
+    .from("stock_items")
+    .select(`${LIST_COLUMNS}, description, features, seo_title, meta_description`)
+    .eq("published_to_website", true)
+    .eq("website_visible", true)
+    .or("product_type.is.null,product_type.neq.archived")
+    .not("slug", "is", null)
+    .order("id", { ascending: true })
+    .range(offset, offset + SEARCH_BATCH_SIZE - 1);
+  if (error) throw error;
+  return (data ?? []).map(row => mapListItem(row as Record<string, unknown>)) as (ProductListItem & SearchableProduct)[];
+}, ["search-catalogue-v2"], { revalidate: 300 });
+
+/** Search every published product, then rank before limiting the results. */
+export async function searchProducts(rawQuery: string, opts: { limit?: number } = {}): Promise<SearchResults> {
+  const query = cleanSearchQuery(rawQuery);
+  if (!query) return { query, items: [], shop: [], adaptations: [], total: 0, approximate: false };
+  const catalogue: (ProductListItem & SearchableProduct)[] = [];
+  for (let offset = 0; ; offset += SEARCH_BATCH_SIZE) {
+    const batch = await getSearchCataloguePage(offset);
+    catalogue.push(...batch);
+    if (batch.length < SEARCH_BATCH_SIZE) break;
+  }
+  const unique = [...new Map(catalogue.map(product => [product.id, product])).values()];
+  const ranked = rankProductSearch(unique, query);
+  const items = typeof opts.limit === "number" ? ranked.items.slice(0, Math.max(0, opts.limit)) : ranked.items;
+  return {
+    query, items,
+    shop: items.filter(product => !isAdaptationProduct(product)),
+    adaptations: items.filter(product => isAdaptationProduct(product)),
+    total: items.length,
+    approximate: ranked.approximate,
+  };
+}
+
+export async function getAllPublishedSlugs(): Promise<
+  { slug: string; updated_at: string }[]
+> {
+  const supabase = getClient();
+  const { data, error } = await supabase
+    .from("stock_items")
+    .select("slug, updated_at")
+    .eq("published_to_website", true)
+    .eq("website_visible", true)
+    .neq("product_type", "archived")
+    .not("slug", "is", null);
+
+  if (error) throw error;
+  return ((data ?? []) as { slug: string; updated_at: string }[]).filter(
+    (row) => typeof row.slug === "string" && row.slug.trim().length > 0,
+  );
+}
+
+export function primaryImage(p: {
+  images?: ProductImage[];
+  image_url: string | null;
+}): string {
+  const primary = p.images?.find((i) => i.is_primary) ?? p.images?.[0];
+  return primary?.image_url ?? p.image_url ?? "/placeholder-product.svg";
+}
+
+/** Match Lovable: sale price when discounted, otherwise unit_price. */
+export function displayPrice(
+  p: Pick<ProductListItem, "unit_price" | "sale_price">,
+) {
+  const unit =
+    p.unit_price != null && Number(p.unit_price) > 0
+      ? Number(p.unit_price)
+      : null;
+  const sale =
+    p.sale_price != null && Number(p.sale_price) > 0
+      ? Number(p.sale_price)
+      : null;
+
+  if (sale != null && unit != null && sale < unit) {
+    return { current: sale, was: unit };
+  }
+  if (sale != null && unit == null) {
+    return { current: sale, was: null };
+  }
+  return { current: unit, was: null };
+}
+
+export function formatGBP(n: number | null | undefined) {
+  if (n == null) return "POA";
+  return new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "GBP",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(n);
+}
+
+export function formatWeeklyGBP(n: number | null | undefined) {
+  if (n == null) return null;
+  return formatGBP(n);
+}
+
+export function isUsedCondition(
+  condition: ProductListItem["condition"] | null | undefined,
+) {
+  return (
+    condition === "ex-demo" ||
+    condition === "refurbished" ||
+    condition === "pre-owned"
+  );
+}
+
+export function conditionLabel(
+  condition: ProductListItem["condition"] | null | undefined,
+) {
+  if (condition === "ex-demo") return "Ex-Demo";
+  if (condition === "refurbished") return "Refurbished";
+  if (condition === "pre-owned") return "Pre-Owned";
+  return "New";
+}
+
+export type ConditionGrade = NonNullable<ProductListItem["condition_grade"]>;
+
+/** Clearance cosmetic / readiness grades used on stock_items.condition_grade */
+export const CONDITION_GRADES: ReadonlyArray<{
+  id: ConditionGrade;
+  title: string;
+  short: string;
+  body: string;
+}> = [
+  {
+    id: "A",
+    title: "Grade A — Excellent",
+    short: "Excellent",
+    body: "Light use or ex-demo. Looks near-new, fully checked by our engineers, and ready to go.",
+  },
+  {
+    id: "B",
+    title: "Grade B — Good",
+    short: "Good",
+    body: "Honest cosmetic wear that doesn’t affect how it rides. Serviced, safe, and priced accordingly.",
+  },
+  {
+    id: "C",
+    title: "Grade C — Fair value",
+    short: "Fair value",
+    body: "More wear or an older machine — still safety-checked and working. Best price if you want function over looks.",
+  },
+];
+
+export function conditionGradeMeta(
+  grade: ProductListItem["condition_grade"] | null | undefined,
+) {
+  if (!grade) return null;
+  return CONDITION_GRADES.find((g) => g.id === grade) ?? null;
+}
+
+export function conditionGradeLabel(
+  grade: ProductListItem["condition_grade"] | null | undefined,
+) {
+  const meta = conditionGradeMeta(grade);
+  if (!meta) return null;
+  return `Grade ${meta.id} · ${meta.short}`;
+}
+
+export function stockStatus(p: {
+  track_stock: boolean;
+  quantity: number | null;
+  pre_order_enabled: boolean;
+  is_discontinued?: boolean;
+}) {
+  if (p.is_discontinued) {
+    return { label: "Discontinued", available: false } as const;
+  }
+  if (!p.track_stock) {
+    return { label: "Order online", available: true } as const;
+  }
+  const qty = p.quantity ?? 0;
+  if (qty > 0) {
+    return {
+      label: qty <= 5 ? `Only ${qty} left` : "In stock",
+      available: true,
+    } as const;
+  }
+  if (p.pre_order_enabled) {
+    return { label: "Pre-order", available: true } as const;
+  }
+  return { label: "Out of stock", available: false } as const;
+}
+
+export type HireProduct = {
+  id: string;
+  name: string;
+  slug: string;
+  image_url: string | null;
+  category: string | null;
+  hire_daily_rate: number | null;
+  hire_weekly_rate: number | null;
+  hire_monthly_rate: number | null;
+  hire_deposit: number | null;
+  hire_nationwide: boolean;
+  hire_courier_fee: number | null;
+  hire_min_days: number | null;
+};
+
+/** Layout-preview fleet when live hire stock isn't listed yet. */
+export const DUMMY_HIRE_PRODUCTS: HireProduct[] = [
+  {
+    id: "dummy-travel-scooter",
+    name: "Compact travel scooter",
+    slug: "dummy-travel-scooter",
+    image_url: "/images/products/placeholder-folding-scooter.svg",
+    category: "Folding Mobility Scooters",
+    hire_daily_rate: null,
+    hire_weekly_rate: null,
+    hire_monthly_rate: null,
+    hire_deposit: null,
+    hire_nationwide: false,
+    hire_courier_fee: null,
+    hire_min_days: null,
+  },
+  {
+    id: "dummy-mid-scooter",
+    name: "Mid-size mobility scooter",
+    slug: "dummy-mid-scooter",
+    image_url: "/images/products/placeholder-scooter.svg",
+    category: "Mid Size Scooters",
+    hire_daily_rate: null,
+    hire_weekly_rate: null,
+    hire_monthly_rate: null,
+    hire_deposit: null,
+    hire_nationwide: false,
+    hire_courier_fee: null,
+    hire_min_days: null,
+  },
+  {
+    id: "dummy-large-scooter",
+    name: "Large road scooter",
+    slug: "dummy-large-scooter",
+    image_url: "/images/products/placeholder-scooter.svg",
+    category: "Large Mobility Scooters",
+    hire_daily_rate: null,
+    hire_weekly_rate: null,
+    hire_monthly_rate: null,
+    hire_deposit: null,
+    hire_nationwide: false,
+    hire_courier_fee: null,
+    hire_min_days: null,
+  },
+  {
+    id: "dummy-manual-wheelchair",
+    name: "Manual wheelchair",
+    slug: "dummy-manual-wheelchair",
+    image_url: "/images/products/placeholder-wheelchair.svg",
+    category: "Manual Wheelchairs",
+    hire_daily_rate: null,
+    hire_weekly_rate: null,
+    hire_monthly_rate: null,
+    hire_deposit: null,
+    hire_nationwide: false,
+    hire_courier_fee: null,
+    hire_min_days: null,
+  },
+  {
+    id: "dummy-powered-wheelchair",
+    name: "Powered wheelchair",
+    slug: "dummy-powered-wheelchair",
+    image_url: "/images/products/placeholder-powerchair.svg",
+    category: "Powered Wheelchairs",
+    hire_daily_rate: null,
+    hire_weekly_rate: null,
+    hire_monthly_rate: null,
+    hire_deposit: null,
+    hire_nationwide: false,
+    hire_courier_fee: null,
+    hire_min_days: null,
+  },
+];
+
+export function isDummyHireProduct(product: Pick<HireProduct, "id">) {
+  return product.id.startsWith("dummy-");
+}
+
+export async function getHireProducts(): Promise<HireProduct[]> {
+  const supabase = getClient();
+  const { data, error } = await supabase
+    .from("stock_items")
+    .select(
+      `id, name, slug, image_url, category, hire_daily_rate, hire_weekly_rate,
+       hire_monthly_rate, hire_deposit, hire_nationwide, hire_courier_fee,
+       hire_min_days`,
+    )
+    .eq("hire_enabled", true)
+    .eq("website_visible", true)
+    .neq("product_type", "archived")
+    .order("name", { ascending: true });
+
+  // Hire columns were removed from live stock until the Flex relaunch lands —
+  // treat missing schema / empty fleet as "use layout dummies".
+  if (error) {
+    console.error("Hire fleet query:", error.message);
+    return [];
+  }
+  return (data ?? []).map((row) => ({
+    ...(row as unknown as HireProduct),
+    category: row.category ? String(row.category) : null,
+    hire_nationwide: false, // Coverage-area hire only for this relaunch
+  }));
+}
+
+export function calcHirePrice(
+  days: number,
+  daily: number,
+  weekly: number,
+  monthly: number,
+): number {
+  const d = Math.max(1, Math.floor(days));
+  const dailyOnly = daily * d;
+  if (!weekly && !monthly) return Number(dailyOnly.toFixed(2));
+  const months = monthly > 0 ? Math.floor(d / 30) : 0;
+  const remaining = d - months * 30;
+  const weeks = weekly > 0 ? Math.floor(remaining / 7) : 0;
+  const remDays = remaining - weeks * 7;
+  const tieredCost =
+    months * (monthly || 0) + weeks * (weekly || 0) + remDays * (daily || 0);
+  const altWeekly = weekly > 0 && d <= 7 ? weekly : Infinity;
+  const altMonthly = monthly > 0 && d <= 30 ? monthly : Infinity;
+  return Number(Math.min(dailyOnly, tieredCost, altWeekly, altMonthly).toFixed(2));
+}

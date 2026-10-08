@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" fill="none">
+  <rect width="800" height="600" fill="#F7FAF9"/>
+  <circle cx="250" cy="420" r="70" stroke="#003F43" stroke-width="16"/>
+  <circle cx="560" cy="420" r="90" stroke="#003F43" stroke-width="16"/>
+  <path d="M250 420 L420 250 H560 L560 420" stroke="#003F43" stroke-width="16" stroke-linejoin="round"/>
+  <rect x="400" y="180" width="120" height="70" rx="12" fill="#8CD63F"/>
+  <text x="400" y="100" text-anchor="middle" font-family="Manrope,Arial" font-size="28" fill="#003F43" font-weight="700">Mobility Scooter</text>
+</svg>

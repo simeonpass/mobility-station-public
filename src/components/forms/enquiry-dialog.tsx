@@ -1,0 +1,165 @@
+"use client";
+
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+import { createPortal } from "react-dom";
+import { useDialogFocus } from "@/hooks/use-dialog-focus";
+import dynamic from "next/dynamic";
+import Link from "next/link";
+import { X } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+const CallbackForm = dynamic(
+  () => import("@/components/forms/callback-form").then((m) => m.CallbackForm),
+);
+const EnquiryForm = dynamic(
+  () => import("@/components/forms/enquiry-form").then((m) => m.EnquiryForm),
+);
+
+type EnquiryDialogProps = {
+  /** Visual style of the trigger control. */
+  triggerClassName?: string;
+  children: ReactNode;
+  mode?: "callback" | "enquiry";
+  enquiryType?: "demo" | "service" | "contact" | "hire" | "trade-in";
+  title?: string;
+  defaultInterest?: string;
+  defaultTopic?: string;
+  productSlug?: string;
+  productLabel?: string;
+  showDate?: boolean;
+};
+
+export function EnquiryDialog({
+  triggerClassName,
+  children,
+  mode = "enquiry",
+  enquiryType = "contact",
+  title,
+  defaultInterest,
+  defaultTopic,
+  productSlug,
+  productLabel,
+  showDate = false,
+}: EnquiryDialogProps) {
+  const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const titleId = useId();
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useDialogFocus(open && mounted, dialogRef);
+
+  const dialogTitle =
+    title ??
+    (mode === "callback" ? "Request a callback" : "Send a message");
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  const overlay =
+    open && mounted
+      ? createPortal(
+          <div
+            className="fixed inset-0 z-[200] overflow-y-auto overscroll-contain bg-black/50"
+            role="presentation"
+            onClick={() => setOpen(false)}
+          >
+            <div className="flex min-h-full items-end justify-center p-4 sm:items-center sm:p-6">
+              <div
+                ref={dialogRef}
+                tabIndex={-1}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby={titleId}
+                className="my-auto flex max-h-[min(92vh,calc(100dvh-2rem))] w-full max-w-lg flex-col overflow-hidden rounded-lg border border-border bg-white shadow-2xl"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex shrink-0 items-start justify-between gap-3 border-b border-border/70 px-5 py-4 sm:px-6">
+                  <h2
+                    id={titleId}
+                    className="text-xl font-extrabold tracking-tight text-primary"
+                  >
+                    {dialogTitle}
+                  </h2>
+                  <button
+                    ref={closeRef}
+                    type="button"
+                    onClick={() => setOpen(false)}
+                    className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full p-2 text-muted hover:bg-soft hover:text-primary"
+                    aria-label="Close"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+
+                <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-4 sm:px-6 sm:py-5">
+                  {mode === "callback" ? (
+                    <CallbackForm
+                      title=""
+                      inline
+                      compact
+                      defaultTopic={defaultTopic || defaultInterest}
+                      productSlug={productSlug}
+                      productLabel={productLabel}
+                    />
+                  ) : (
+                    <EnquiryForm
+                      title=""
+                      enquiryType={enquiryType}
+                      defaultInterest={defaultInterest}
+                      productSlug={productSlug}
+                      showDate={showDate}
+                      inline
+                      compact
+                    />
+                  )}
+
+                  <p className="mt-4 text-center text-xs text-muted">
+                    Prefer the full form?{" "}
+                    <Link
+                      onClick={() => setOpen(false)}
+                      href="/contact"
+                      className="font-semibold text-primary underline underline-offset-2"
+                    >
+                      Open contact page
+                    </Link>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )
+      : null;
+
+  return (
+    <>
+      <button
+        type="button"
+        className={cn(triggerClassName)}
+        aria-haspopup="dialog"
+        onClick={() => setOpen(true)}
+      >
+        {children}
+      </button>
+      {overlay}
+    </>
+  );
+}

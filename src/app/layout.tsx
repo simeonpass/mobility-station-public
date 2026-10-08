@@ -1,0 +1,82 @@
+import type { Metadata } from "next";
+import { Barlow } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { CartProvider } from "@/components/cart/cart-provider";
+import { CartDrawer } from "@/components/cart/cart-drawer";
+import { Analytics } from "@/components/layout/analytics";
+import { CookieConsentBanner } from "@/components/layout/cookie-consent-banner";
+import { MobileUtilityBar } from "@/components/layout/mobile-utility-bar";
+import { SiteFooter } from "@/components/layout/site-footer";
+import { MobilityHeader } from "@/components/autoros/mobility-header";
+import { QuickViewHost } from "@/components/product/product-quick-view";
+import { DEFAULT_SHARE_IMAGE, SITE } from "@/lib/seo";
+import "./globals.css";
+import "./autoros.css";
+import "./site-design.css";
+import "./mobile.css";
+
+const barlow = Barlow({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-barlow",
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE.url),
+  title: {
+    default: "Mobility Station | Adaptations, Scooters & Wheelchairs",
+    template: "%s | Mobility Station",
+  },
+  description:
+    "Vehicle adaptations, mobility scooters and wheelchairs from Heathrow & Ferndown. Motability accredited. Home and branch demonstrations available.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico?v=20260830e", sizes: "any" },
+      { url: "/favicon-32x32.png?v=20260830e", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-48x48.png?v=20260830e", sizes: "48x48", type: "image/png" },
+      { url: "/favicon-96x96.png?v=20260830e", sizes: "96x96", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png?v=20260830e", sizes: "180x180", type: "image/png" }],
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_GB",
+    siteName: "Mobility Station",
+    title: "Mobility Station | Adaptations, Scooters & Wheelchairs",
+    description:
+      "Vehicle adaptations, scooters and wheelchairs from Heathrow & Ferndown. Motability accredited dealer.",
+    images: [{ url: DEFAULT_SHARE_IMAGE, width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: [DEFAULT_SHARE_IMAGE],
+  },
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en-GB" className={`${barlow.variable} h-full`} data-scroll-behavior="smooth">
+      <body className="ms-site min-h-full flex flex-col font-sans antialiased">
+        <CartProvider>
+          <a href="#main-content" className="skip-to-content">
+            Skip to main content
+          </a>
+          <MobilityHeader />
+          <main id="main-content" tabIndex={-1} className="relative z-0 flex-1 overflow-x-clip outline-none">{children}</main>
+          <SiteFooter />
+          <MobileUtilityBar />
+          <QuickViewHost />
+          <CartDrawer />
+          <CookieConsentBanner />
+          <Analytics />
+          <SpeedInsights />
+        </CartProvider>
+      </body>
+    </html>
+  );
+}

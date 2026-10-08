@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" fill="none">
+  <rect width="800" height="600" fill="#F7FAF9"/>
+  <rect x="280" y="220" width="240" height="160" rx="24" stroke="#003F43" stroke-width="14"/>
+  <circle cx="320" cy="430" r="50" stroke="#003F43" stroke-width="14"/>
+  <circle cx="480" cy="430" r="50" stroke="#003F43" stroke-width="14"/>
+  <circle cx="540" cy="280" r="18" fill="#8CD63F"/>
+  <text x="400" y="100" text-anchor="middle" font-family="Manrope,Arial" font-size="28" fill="#003F43" font-weight="700">Powerchair</text>
+</svg>

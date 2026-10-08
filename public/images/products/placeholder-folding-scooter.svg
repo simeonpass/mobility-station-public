@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" fill="none">
+  <rect width="800" height="600" fill="#F7FAF9"/>
+  <circle cx="280" cy="430" r="55" stroke="#003F43" stroke-width="14"/>
+  <circle cx="520" cy="430" r="55" stroke="#003F43" stroke-width="14"/>
+  <path d="M280 430 L400 260 L520 430" stroke="#003F43" stroke-width="14" stroke-linejoin="round"/>
+  <rect x="360" y="200" width="80" height="50" rx="10" fill="#8CD63F"/>
+  <text x="400" y="100" text-anchor="middle" font-family="Manrope,Arial" font-size="28" fill="#003F43" font-weight="700">Folding Scooter</text>
+</svg>
