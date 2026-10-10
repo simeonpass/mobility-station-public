@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useRef, useState, type ReactNode } from "react";
-import { Check, Phone, Shield, Truck } from "lucide-react";
+import { Check, Phone, Play, Shield, Truck } from "lucide-react";
 import {
   AddToCartButton,
   StickyBuyBar,
@@ -12,6 +12,8 @@ import { BrandLogo } from "@/components/product/brand-logo";
 import { ProductTabs } from "@/components/product/product-tabs";
 import { ProductGallery } from "@/components/product/product-gallery";
 import { FittedBadge } from "@/components/product/fitted-badge";
+import { MotabilityOrderReferences } from "@/components/product/motability-order-references";
+import type { MotabilityReference } from "@/lib/motability-references";
 import { MotabilityLogo } from "@/components/product/motability-logo";
 import { ProductOptionsSelector } from "@/components/product/product-options-selector";
 import { ProductPurchaseReassurance } from "@/components/product/product-purchase-reassurance";
@@ -60,6 +62,7 @@ export type ProductDetailViewProps = {
   saleSaveLabel: string | null;
   motabilityWeekly: number | null;
   motabilityPrice: number | null;
+  motabilityReferences?: MotabilityReference[];
   adaptationId: string | null;
   isAdaptation: boolean;
   deliveryEstimate: string | null;
@@ -90,6 +93,9 @@ export function ProductDetailView(props: ProductDetailViewProps) {
   const [cartMessage, setCartMessage] = useState<string | null>(null);
   /** Lovable-style: default shows VAT relief; toggle reveals inc. VAT. */
   const [showIncVat, setShowIncVat] = useState(false);
+  const displayFeatures = props.features.filter(
+    (feature) => !/:\s*\d+(?:\.\d+)?\s*$/.test(feature),
+  );
 
   const selectedOptions = useMemo(
     () => Object.values(selectedByGroup),
@@ -239,9 +245,12 @@ export function ProductDetailView(props: ProductDetailViewProps) {
         unit_price: amount,
         sale_price: null,
         image_url: addon.image_url || parent.image_url,
+        condition: "new",
         variantIds: undefined,
         addonVariantId: addon.id,
         optionSummary: undefined,
+        fittingBooking: undefined,
+        priceIncludesVat: false,
       };
       addItem(addonProduct, 1);
     }
@@ -249,15 +258,19 @@ export function ProductDetailView(props: ProductDetailViewProps) {
     setCartMessage("Added to cart");
   }
 
+  const basCompatibilityMarker = "VEHICLE COMPATIBILITY — BAS ELECTRIC BOOT OPENER";
+  const compatibilityStart = props.description?.indexOf(basCompatibilityMarker) ?? -1;
+  const compatibility = compatibilityStart >= 0 ? props.description!.slice(compatibilityStart) : null;
+  const productDescription = compatibilityStart >= 0 ? props.description!.slice(0, compatibilityStart).trim() : props.description;
+
   const sections = [
-    props.description
+    productDescription
       ? {
           id: "description",
           title: "Description",
-          defaultOpen: true,
           content: (
             <div className="space-y-4 text-[15px] leading-7 text-foreground/90 sm:text-base sm:leading-8">
-              {props.description
+              {productDescription
                 .split(/\n{2,}/)
                 .map((para) => para.trim())
                 .filter(Boolean)
@@ -270,16 +283,16 @@ export function ProductDetailView(props: ProductDetailViewProps) {
           ),
         }
       : null,
-    props.features.length
+    displayFeatures.length
       ? {
           id: "features",
           title: "Key features",
           content: (
-            <ul className="grid gap-3 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-3">
-              {props.features.map((feature) => (
+            <ul className="grid gap-x-9 gap-y-0 sm:grid-cols-2">
+              {displayFeatures.map((feature) => (
                 <li
                   key={feature}
-                  className="flex gap-3 rounded-xl bg-soft/70 px-3.5 py-3 text-[15px] leading-snug text-foreground/90"
+                  className="flex gap-3 border-b border-border/70 py-4 text-[15px] leading-snug text-foreground/90"
                 >
                   <span
                     className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent/25 text-xs font-bold text-primary"
@@ -299,12 +312,12 @@ export function ProductDetailView(props: ProductDetailViewProps) {
           id: "suitability",
           title: "Who is it suitable for?",
           content: (
-            <div className="space-y-3 rounded-xl border border-border/80 bg-soft/50 px-4 py-4 text-[15px] leading-7 text-foreground/90 sm:px-5 sm:py-5 sm:text-base sm:leading-8">
+            <div className="space-y-3 border-l-2 border-accent bg-soft/40 px-5 py-5 text-[15px] leading-7 text-foreground/90 sm:px-7 sm:py-6 sm:text-base sm:leading-8">
               {props.suitabilityInfo
                 .split("\n")
                 .filter(Boolean)
                 .map((line) => (
-                  <p key={line}>{line}</p>
+                  <p key={line}>{line.replace(/\*\*/g, "")}</p>
                 ))}
             </div>
           ),
@@ -315,13 +328,13 @@ export function ProductDetailView(props: ProductDetailViewProps) {
           id: "specs",
           title: "Specifications",
           content: (
-            <dl className="overflow-hidden rounded-xl border border-border">
+            <dl className="overflow-hidden border-y border-border">
               {props.specs.map(([key, value], index) => (
                 <div
                   key={key}
                   className={cn(
                     "grid grid-cols-1 gap-1 px-4 py-3.5 sm:grid-cols-[minmax(0,11rem)_1fr] sm:items-baseline sm:gap-6 sm:px-5",
-                    index % 2 === 0 ? "bg-soft/60" : "bg-white",
+                    index % 2 === 0 ? "bg-soft/40" : "bg-white",
                     index > 0 ? "border-t border-border/70" : null,
                   )}
                 >
@@ -360,6 +373,8 @@ export function ProductDetailView(props: ProductDetailViewProps) {
                 src={props.videoEmbed}
                 title={`${props.name} video`}
                 className="h-full w-full"
+                loading="lazy"
+                referrerPolicy="strict-origin-when-cross-origin"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
@@ -371,11 +386,10 @@ export function ProductDetailView(props: ProductDetailViewProps) {
     id: string;
     title: string;
     content: ReactNode;
-    defaultOpen?: boolean;
   }>;
 
   const hasConfigurableOptions = props.variants.length > 0;
-  const motabilityMode = Boolean(props.motabilityMode);
+  const motabilityMode = Boolean(props.motabilityMode) && !props.isAdaptation;
   const canBuy =
     !motabilityMode &&
     !props.isAdaptation &&
@@ -394,12 +408,10 @@ export function ProductDetailView(props: ProductDetailViewProps) {
       ? takeawayCreditForPrice(props.priceCurrent)
       : 0;
 
-  const previewFeatures = !props.isAdaptation
-    ? props.features.slice(0, 4)
-    : [];
+  const previewFeatures = displayFeatures.slice(0, props.isAdaptation ? 3 : 4);
 
   const panelClass =
-    "overflow-hidden rounded-2xl border border-border/70 bg-white shadow-[0_8px_32px_-12px_rgba(0,0,0,0.14)]";
+    "ms-purchase-panel overflow-hidden rounded-lg border border-border/70 bg-white shadow-[0_8px_32px_-12px_rgba(0,0,0,0.14)]";
 
   const hasMotabilityFigure =
     (motabilityWeekly != null && motabilityWeekly >= 0) ||
@@ -407,7 +419,7 @@ export function ProductDetailView(props: ProductDetailViewProps) {
 
   return (
     <>
-      <div className="grid items-start gap-8 md:grid-cols-2 md:gap-10 lg:gap-14">
+      <div className="ms-product-detail grid items-start gap-8 md:grid-cols-2 md:gap-10 lg:gap-14">
         <div className="min-w-0 lg:sticky lg:top-24 lg:self-start">
           <ProductGallery
             images={gallery}
@@ -456,6 +468,12 @@ export function ProductDetailView(props: ProductDetailViewProps) {
               {props.name}
             </h1>
 
+            {props.isAdaptation ? (
+              <p className="mt-3 max-w-xl text-sm leading-6 text-muted">
+                Specialist advice, vehicle compatibility check and a fitting plan tailored to you.
+              </p>
+            ) : null}
+
             {getBrandLogo(props.manufacturer) ? (
               <div className="mt-3">
                 <BrandLogo
@@ -482,6 +500,15 @@ export function ProductDetailView(props: ProductDetailViewProps) {
                   </li>
                 ))}
               </ul>
+            ) : null}
+            {props.videoEmbed ? (
+              <a
+                href="#product-video"
+                className="mt-5 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-white"
+              >
+                <Play className="h-4 w-4" aria-hidden />
+                Watch product video
+              </a>
             ) : null}
           </div>
 
@@ -594,32 +621,12 @@ export function ProductDetailView(props: ProductDetailViewProps) {
                   ) : null}
                 </div>
 
-                {hasMotabilityFigure ? (
-                  <div className="flex flex-wrap items-center gap-3 border-t border-border/60 pt-4">
-                    <MotabilityLogo height={24} />
-                    <p className="min-w-0 flex-1 text-lg font-bold tabular-nums text-primary">
-                      {motabilityWeekly != null && motabilityWeekly > 0
-                        ? `${formatGBP(motabilityWeekly)} / week`
-                        : motabilityWeekly === 0 || motabilityPrice === 0
-                          ? "£0"
-                          : motabilityPrice != null
-                            ? formatGBP(motabilityPrice)
-                            : null}
-                    </p>
-                    {adaptationId ? (
-                      <span className="rounded-md border border-border bg-soft/70 px-2 py-1 font-mono text-xs text-muted">
-                        {adaptationId}
-                      </span>
-                    ) : (
-                      <Link
-                        href="/motability/vehicle-adaptations"
-                        className="shrink-0 text-xs font-semibold text-primary underline-offset-2 hover:underline"
-                      >
-                        Learn more
-                      </Link>
-                    )}
-                  </div>
-                ) : null}
+                <MotabilityOrderReferences
+                  references={props.motabilityReferences ?? []}
+                  hasUnverifiedOptions={props.variants.some((variant) =>
+                    !variant.is_addon && !(props.motabilityReferences ?? []).some((r) => r.variant_id === variant.id)
+                  )}
+                />
               </div>
 
               <div ref={buyRef} className="space-y-2.5 bg-soft/40 px-5 py-5 sm:px-6">
@@ -912,9 +919,30 @@ export function ProductDetailView(props: ProductDetailViewProps) {
         </div>
       </div>
 
+      {compatibility ? (
+        <details className="my-8 rounded-2xl border border-border bg-white p-5 sm:p-6">
+          <summary className="cursor-pointer text-lg font-semibold text-primary focus-visible:outline-2 focus-visible:outline-offset-4">
+            Does this fit my vehicle?
+            <span className="ml-2 text-sm font-normal">View vehicle compatibility</span>
+          </summary>
+          <div className="mt-5 space-y-4 text-base leading-relaxed">
+            {compatibility.split(/\n{2,}/).slice(1).map((block, index) => {
+              const lines = block.split("\n");
+              const vehicles = lines.slice(1);
+              return vehicles.length > 0 && vehicles.every((line) => line.startsWith("• ")) ? (
+                <details key={index} className="rounded-xl border border-border px-4 py-3">
+                  <summary className="cursor-pointer font-semibold text-primary">{lines[0]} <span className="font-normal text-muted">({vehicles.length})</span></summary>
+                  <ul className="mt-3 list-disc space-y-2 pl-5">{vehicles.map((vehicle, vehicleIndex) => <li key={vehicleIndex}>{vehicle.slice(2)}</li>)}</ul>
+                </details>
+              ) : <p key={index} className="whitespace-pre-line">{block}</p>;
+            })}
+          </div>
+        </details>
+      ) : null}
+
       {sections.length > 0 ? (
         <div className="mt-12 md:mt-16">
-          <ProductTabs sections={sections} />
+          <ProductTabs sections={sections} isAdaptation={props.isAdaptation} />
         </div>
       ) : null}
 
