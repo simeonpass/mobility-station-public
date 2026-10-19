@@ -36,8 +36,9 @@ export async function invokeCheckoutFunction(
     | "website-checkout"
     | "website-stripe-checkout"
     | "website-paypal-checkout"
-    | "website-paypal-capture",
-  body: CheckoutPayload | { orderNumber: string },
+    | "website-paypal-capture"
+    | "website-stripe-verify",
+  body: CheckoutPayload | { orderNumber: string; sessionId?: string },
   returnOrigin: string,
 ) {
   const { url, key } = getSupabaseConfig();
@@ -63,6 +64,7 @@ export async function invokeCheckoutFunction(
     orderNumber?: string;
     error?: string;
     status?: string;
+    paid?: boolean;
   };
 
   if (!res.ok) {
@@ -87,8 +89,8 @@ function isPublicOrigin(origin: string) {
 }
 
 /**
- * Origin passed to Supabase checkout functions for DNA/PayPal return URLs.
- * DNA hosted checkout rejects localhost hosts, so local/dev falls back to the
+ * Origin passed to Supabase checkout functions for Stripe/PayPal return URLs.
+ * Hosted payment pages reject localhost hosts, so local/dev falls back to the
  * public site URL.
  */
 export function resolveReturnOrigin(request: Request) {

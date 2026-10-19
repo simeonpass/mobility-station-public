@@ -8,6 +8,15 @@ import {
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as CheckoutPayload;
+    if (body.fittingBooking) {
+      return NextResponse.json(
+        {
+          error:
+            "Multimac fitting bookings are requested without payment. Use the fitting request at checkout.",
+        },
+        { status: 400 },
+      );
+    }
     const data = await invokeCheckoutFunction(
       "website-paypal-checkout",
       body,

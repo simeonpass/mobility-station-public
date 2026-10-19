@@ -6,7 +6,6 @@ import { useCart } from "@/components/cart/cart-provider";
 import { CatalogImage } from "@/components/product/catalog-image";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Textarea, Select } from "@/components/ui/input";
-import { useDnaPaymentsSdk } from "@/hooks/use-dna-payments-sdk";
 import {
   VAT_CONDITIONS,
   VAT_DECLARATION,
@@ -31,7 +30,6 @@ import {
   checkDeliveryZone,
   type DeliveryCheckResult,
 } from "@/lib/delivery-zone";
-import { openDnaPaymentPage } from "@/lib/dna-payments";
 import { formatGBP } from "@/lib/products";
 import { isBatteryOrChargerProduct } from "@/lib/vat";
 import {
@@ -41,8 +39,9 @@ import {
 
 export function CheckoutForm() {
   const { items, subtotal } = useCart();
-  const { ready: dnaReady, failed: dnaFailed } = useDnaPaymentsSdk();
-  const [loading, setLoading] = useState<"dna" | "paypal" | null>(null);
+  const [loading, setLoading] = useState<"stripe" | "paypal" | "fitting" | null>(
+    null,
+  );
   const [error, setError] = useState<string | null>(null);
   const [declarationConfirmed, setDeclarationConfirmed] = useState(false);
   const [takeawayRequested, setTakeawayRequested] = useState(false);
@@ -52,7 +51,7 @@ export function CheckoutForm() {
   const [zoneChecking, setZoneChecking] = useState(false);
   /** True once the saved draft (if any) has been read into state. */
   const [draftReady, setDraftReady] = useState(false);
-  /** Customer came back here after DNA or PayPal without paying. */
+  /** Customer came back here after Stripe or PayPal without paying. */
   const [returnedFromPayment, setReturnedFromPayment] = useState(false);
   const [form, setForm] = useState<Omit<
     CheckoutDraft,
@@ -71,7 +70,7 @@ export function CheckoutForm() {
     notes: "",
   });
 
-  // DNA and PayPal take the whole tab away. Bring back what the customer
+  // Stripe and PayPal take the whole tab away. Bring back what the customer
   // typed if they close the payment page or press back, and say so calmly.
   useEffect(() => {
     const draft = readCheckoutDraft();
@@ -347,26 +346,16 @@ export function CheckoutForm() {
     return null;
   }
 
-  async function pay(provider: "dna" | "paypal") {
+  /** Card payments go to Stripe's hosted page; PayPal to PayPal. */
+  async function pay(provider: "stripe" | "paypal") {
     const validationError = validate();
     if (validationError) {
       setError(validationError);
       return;
     }
 
-    if (provider === "paypal" && hasFittingService) {
-      setError("Please pay by card for Multimac fitting bookings.");
-      return;
-    }
-
-    if (provider === "dna" && !dnaReady) {
-      setError(
-        dnaFailed
-          ? hasFittingService
-            ? "Card payments could not load. Refresh the page, or call us on 0800 772 3870."
-            : "Card payments could not load. Please try PayPal, or refresh the page."
-          : "Card payments are still loading — try again in a moment.",
-      );
+    if (hasFittingService) {
+      setError("Fitting bookings are requested without payment. Use the request button below.");
       return;
     }
 
@@ -379,30 +368,47 @@ export function CheckoutForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(buildPayload()),
       });
-      const data = (await res.json()) as {
-        url?: string;
-        paymentData?: Record<string, unknown>;
-        error?: string;
-      };
+      const data = (await res.json()) as { url?: string; error?: string };
       if (!res.ok) {
         throw new Error(data.error || "Checkout failed");
       }
+      if (!data.url) {
+        throw new Error(data.error || "No payment page was returned");
+      }
 
-      // Keep the cart until this browser's confirmation page accepts the payment.
+      // Keep the cart and the typed details until the confirmation page
+      // accepts the payment; cancelling brings the customer back here.
       markCheckoutStarted();
-      if (provider === "paypal") {
-        if (!data.url) throw new Error(data.error || "No PayPal checkout URL");
-        window.location.href = data.url;
-        return;
-      }
-
-      if (!data.paymentData) {
-        throw new Error(data.error || "No DNA payment data returned");
-      }
-      openDnaPaymentPage(data.paymentData);
-      setLoading(null);
+      window.location.href = data.url;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Checkout failed");
+      setLoading(null);
+    }
+  }
+
+  /** Multimac fitting: book the slot now, payment is taken by phone. */
+  async function requestFitting() {
+    const validationError = validate();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+    setError(null);
+    setLoading("fitting");
+    try {
+      const res = await fetch("/api/checkout/fitting", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(buildPayload()),
+      });
+      const data = (await res.json()) as { orderNumber?: string; error?: string };
+      if (!res.ok || !data.orderNumber) {
+        throw new Error(data.error || "Could not send the booking request");
+      }
+      markCheckoutStarted();
+      window.location.href = `/order-confirmation?payment=requested&service=multimac&order=${encodeURIComponent(data.orderNumber)}`;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not send the booking request");
       setLoading(null);
     }
   }
@@ -880,50 +886,49 @@ export function CheckoutForm() {
         {error ? <p className="mt-4 text-sm text-error">{error}</p> : null}
 
         <div className="mt-6 space-y-3">
-          <Button
-            type="button"
-            variant="buy"
-            className="w-full rounded-xl"
-            disabled={loading !== null || (!dnaReady && !dnaFailed)}
-            onClick={() => pay("dna")}
-          >
-            {loading === "dna"
-              ? "Opening DNA Payments…"
-              : !dnaReady && !dnaFailed
-                ? "Loading card payments…"
-                : "Pay by card (DNA Payments)"}
-          </Button>
-          {dnaFailed && !hasFittingService ? (
-            <p className="text-xs text-error">
-              Card checkout could not load. You can still pay with PayPal below.
-            </p>
-          ) : null}
-          {dnaFailed && hasFittingService ? (
-            <p className="text-xs text-error">
-              Card payments could not load. Refresh the page or call us —
-              fitting bookings are paid by card.
-            </p>
-          ) : null}
           {hasFittingService ? (
-            <p className="text-xs text-muted">
-              Fitting bookings are paid by card. The date you requested is
-              confirmed by our team after payment.
-            </p>
+            <>
+              <Button
+                type="button"
+                variant="buy"
+                className="w-full rounded-xl"
+                disabled={loading !== null}
+                onClick={() => requestFitting()}
+              >
+                {loading === "fitting" ? "Sending your request…" : "Request fitting booking"}
+              </Button>
+              <p className="text-xs text-muted">
+                No payment is taken online for fitting bookings. Our team confirms
+                the date and takes the {formatGBP(includedVatSubtotal)} fee by
+                phone.
+              </p>
+            </>
           ) : (
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full rounded-xl"
-              disabled={loading !== null}
-              onClick={() => pay("paypal")}
-            >
-              {loading === "paypal" ? "Redirecting to PayPal…" : "Pay with PayPal"}
-            </Button>
+            <>
+              <Button
+                type="button"
+                variant="buy"
+                className="w-full rounded-xl"
+                disabled={loading !== null}
+                onClick={() => pay("stripe")}
+              >
+                {loading === "stripe" ? "Opening secure card payment…" : "Pay by card"}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full rounded-xl"
+                disabled={loading !== null}
+                onClick={() => pay("paypal")}
+              >
+                {loading === "paypal" ? "Redirecting to PayPal…" : "Pay with PayPal"}
+              </Button>
+            </>
           )}
         </div>
         <p className="mt-4 text-center text-xs text-muted">
-          Secure DNA Payments checkout. Prices are re-validated on the server
-          before payment.
+          Card payments are taken securely by Stripe; we never see your card
+          details. Prices are re-validated on the server before payment.
         </p>
       </aside>
     </div>
