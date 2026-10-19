@@ -1,5 +1,6 @@
 import type { MultimacFittingBookingPayload } from "@/lib/multimac-fitting";
 import { isFittingServiceProduct } from "@/lib/multimac-fitting";
+import { clearCheckoutDraft } from "@/lib/checkout-draft";
 
 export type CartProduct = {
   /** Unique cart line key (may include option/add-on config). */
@@ -71,6 +72,8 @@ export function rememberCheckoutConfirmed(order: string) {
   } catch {
     /* private mode */
   }
+  // The customer's typed details are no longer needed once they have paid.
+  clearCheckoutDraft();
 }
 
 export function linePrice(product: CartProduct) {
