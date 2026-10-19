@@ -12,14 +12,22 @@ import {
   VAT_DECLARATION,
   isUsedCartProduct,
   linePrice,
+  markCheckoutStarted,
   type CheckoutPayload,
 } from "@/lib/cart";
+import {
+  fittingBranchCheckoutValue,
+  fittingOptionSummary,
+  isFittingServiceProduct,
+  seatSourceLabel,
+} from "@/lib/multimac-fitting";
 import {
   checkDeliveryZone,
   type DeliveryCheckResult,
 } from "@/lib/delivery-zone";
 import { openDnaPaymentPage } from "@/lib/dna-payments";
 import { formatGBP } from "@/lib/products";
+import { isBatteryOrChargerProduct } from "@/lib/vat";
 import {
   isTakeawayEligibleProduct,
   takeawayCreditForCart,
@@ -50,35 +58,49 @@ export function CheckoutForm() {
     notes: "",
   });
 
-  const hasBatteryOrCharger = useMemo(
+  const hasFittingService = useMemo(
+    () => items.some((item) => isFittingServiceProduct(item.product)),
+    [items],
+  );
+  const fittingBooking = useMemo(
     () =>
-      items.some((item) => {
-        const cat = item.product.category?.toLowerCase() || "";
-        const name = item.product.name.toLowerCase();
-        return (
-          cat.includes("batter") ||
-          cat.includes("charger") ||
-          name.includes("battery") ||
-          name.includes("charger")
-        );
-      }),
+      items.find((item) => isFittingServiceProduct(item.product))?.product
+        .fittingBooking,
     [items],
   );
 
-  const batteryVatBlocked =
-    hasBatteryOrCharger && form.fulfillment === "delivery";
+  const hasBatteryOrCharger = useMemo(
+    () => items.some((item) => isBatteryOrChargerProduct(item.product)),
+    [items],
+  );
 
-  const vatableSubtotal = useMemo(
+  const reliefClaimed = !hasFittingService && form.isVatExempt;
+
+  /** Add-ons are new parts even when the parent scooter is pre-owned. */
+  function lineIsUsed(product: (typeof items)[number]["product"]) {
+    if (product.addonVariantId) return false;
+    return isUsedCartProduct(product);
+  }
+
+  const includedVatSubtotal = useMemo(
     () =>
       items.reduce((sum, item) => {
-        if (isUsedCartProduct(item.product)) return sum;
+        if (!item.product.priceIncludesVat) return sum;
         return sum + linePrice(item.product) * item.quantity;
       }, 0),
     [items],
   );
 
-  const vatRate = form.isVatExempt && !batteryVatBlocked ? 0 : 20;
-  const vatAmount = vatableSubtotal * (vatRate / 100);
+  const vatAmount = useMemo(() => {
+    const raw = items.reduce((sum, item) => {
+      if (item.product.priceIncludesVat || lineIsUsed(item.product)) return sum;
+      const net = linePrice(item.product) * item.quantity;
+      const battery = isBatteryOrChargerProduct(item.product);
+      if (reliefClaimed && !battery) return sum;
+      return sum + net * 0.2;
+    }, 0);
+    return Number(raw.toFixed(2));
+  }, [items, reliefClaimed]);
   const deliveryFee = 0;
   const takeawayEligible = useMemo(
     () =>
@@ -119,6 +141,7 @@ export function CheckoutForm() {
     }
     let cancelled = false;
     setZoneChecking(true);
+    setDeliveryZone(null);
     const timer = window.setTimeout(() => {
       void checkDeliveryZone(pc).then((result) => {
         if (cancelled) return;
@@ -140,28 +163,55 @@ export function CheckoutForm() {
     takeawayEligible && availableTakeawayCredit > 0 && takeawayLocationOk;
 
   useEffect(() => {
+    if (zoneChecking) return;
     if (takeawayRequested && !takeawayAvailable) {
       setTakeawayRequested(false);
     }
-  }, [takeawayRequested, takeawayAvailable]);
+  }, [takeawayRequested, takeawayAvailable, zoneChecking]);
 
   const takeawayCredit =
     takeawayRequested && takeawayAvailable ? availableTakeawayCredit : 0;
-  const total = Math.max(0, subtotal + vatAmount + deliveryFee - takeawayCredit);
+  const shopSubtotal = subtotal - includedVatSubtotal;
+  const total = Math.max(
+    0,
+    shopSubtotal + vatAmount + includedVatSubtotal + deliveryFee - takeawayCredit,
+  );
+
+  useEffect(() => {
+    if (!hasFittingService || !fittingBooking) return;
+    setForm((prev) => ({
+      ...prev,
+      fulfillment: "collection",
+      collectionBranch: fittingBranchCheckoutValue(fittingBooking.branch),
+      isVatExempt: false,
+      vatConditionId: "",
+    }));
+    setDeclarationConfirmed(false);
+    setTakeawayRequested(false);
+  }, [hasFittingService, fittingBooking]);
 
   const update = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
-    setForm((prev) => {
-      const next = { ...prev, [key]: value };
-      if (key === "fulfillment" && value === "delivery" && hasBatteryOrCharger) {
-        next.isVatExempt = false;
-        next.vatConditionId = "";
-        setDeclarationConfirmed(false);
-      }
-      return next;
-    });
+    setForm((prev) => ({ ...prev, [key]: value }));
   };
 
   function buildPayload(): CheckoutPayload {
+    const fittingNote = fittingBooking
+      ? [
+          "Multimac fitting booking",
+          fittingOptionSummary(fittingBooking),
+          seatSourceLabel(fittingBooking.seatSource),
+          `Vehicle: ${fittingBooking.vehicleMake} ${fittingBooking.vehicleModel} (${fittingBooking.vehicleYear})`,
+          fittingBooking.vehicleReg
+            ? `Reg: ${fittingBooking.vehicleReg}`
+            : null,
+          fittingBooking.notes?.trim() || null,
+        ]
+          .filter(Boolean)
+          .join("\n")
+      : "";
+    const userNotes = form.notes.trim();
+    const notes = [fittingNote, userNotes].filter(Boolean).join("\n\n") || undefined;
+
     return {
       customer: {
         email: form.email.trim(),
@@ -175,30 +225,40 @@ export function CheckoutForm() {
         productImageUrl: i.product.image_url || undefined,
         quantity: i.quantity,
         unitPrice: linePrice(i.product),
-        isUsed: isUsedCartProduct(i.product),
+        isUsed: lineIsUsed(i.product),
         variantIds: i.product.variantIds,
         addonVariantId: i.product.addonVariantId,
       })),
-      fulfillmentMethod: form.fulfillment,
-      collectionBranch:
-        form.fulfillment === "collection" ? form.collectionBranch : undefined,
-      deliveryType: form.fulfillment === "delivery" ? "courier" : undefined,
+      fulfillmentMethod: hasFittingService ? "collection" : form.fulfillment,
+      collectionBranch: hasFittingService
+        ? fittingBooking
+          ? fittingBranchCheckoutValue(fittingBooking.branch)
+          : form.collectionBranch
+        : form.fulfillment === "collection"
+          ? form.collectionBranch
+          : undefined,
+      deliveryType:
+        hasFittingService || form.fulfillment !== "delivery"
+          ? undefined
+          : "courier",
       deliveryAddress:
-        form.fulfillment === "delivery" ? form.address.trim() : undefined,
+        !hasFittingService && form.fulfillment === "delivery"
+          ? form.address.trim()
+          : undefined,
       deliveryPostcode:
-        form.fulfillment === "delivery"
+        !hasFittingService && form.fulfillment === "delivery"
           ? form.postcode.trim().toUpperCase()
           : undefined,
       deliveryFee,
-      isVatExempt: form.isVatExempt && !batteryVatBlocked,
-      vatExemptionReason:
-        form.isVatExempt && !batteryVatBlocked
-          ? VAT_CONDITIONS.find((c) => c.id === form.vatConditionId)?.label
-          : undefined,
-      vatExemptionDeclaration:
-        form.isVatExempt && !batteryVatBlocked ? VAT_DECLARATION : undefined,
-      notes: form.notes.trim() || undefined,
-      takeawayRequested: takeawayRequested && takeawayCredit > 0,
+      isVatExempt: reliefClaimed,
+      vatExemptionReason: reliefClaimed
+        ? VAT_CONDITIONS.find((c) => c.id === form.vatConditionId)?.label
+        : undefined,
+      vatExemptionDeclaration: reliefClaimed ? VAT_DECLARATION : undefined,
+      notes,
+      takeawayRequested:
+        !hasFittingService && takeawayRequested && takeawayCredit > 0,
+      fittingBooking: fittingBooking,
     };
   }
 
@@ -206,16 +266,28 @@ export function CheckoutForm() {
     if (!form.email || !form.firstName || !form.lastName || !form.phone) {
       return "Please fill in all contact details";
     }
-    if (form.fulfillment === "delivery" && (!form.address || !form.postcode)) {
+    if (hasFittingService && !fittingBooking) {
+      return "Fitting booking details are missing. Please start again from the Multimac fitting page.";
+    }
+    if (!hasFittingService && form.fulfillment === "delivery" && (!form.address || !form.postcode)) {
       return "Please enter your delivery address and postcode";
     }
-    if (form.fulfillment === "collection" && !form.collectionBranch) {
+    if (
+      (hasFittingService || form.fulfillment === "collection") &&
+      !form.collectionBranch
+    ) {
       return "Please select a collection branch";
     }
-    if (form.isVatExempt && !batteryVatBlocked && !form.vatConditionId) {
+    if (
+      reliefClaimed &&
+      !form.vatConditionId
+    ) {
       return "Please select your qualifying condition for VAT relief";
     }
-    if (form.isVatExempt && !batteryVatBlocked && !declarationConfirmed) {
+    if (
+      reliefClaimed &&
+      !declarationConfirmed
+    ) {
       return "Please confirm the VAT exemption declaration";
     }
     return null;
@@ -228,10 +300,17 @@ export function CheckoutForm() {
       return;
     }
 
+    if (provider === "paypal" && hasFittingService) {
+      setError("Please pay by card for Multimac fitting bookings.");
+      return;
+    }
+
     if (provider === "dna" && !dnaReady) {
       setError(
         dnaFailed
-          ? "Card payments could not load. Please try PayPal, or refresh the page."
+          ? hasFittingService
+            ? "Card payments could not load. Refresh the page, or call us on 0800 772 3870."
+            : "Card payments could not load. Please try PayPal, or refresh the page."
           : "Card payments are still loading — try again in a moment.",
       );
       return;
@@ -254,7 +333,8 @@ export function CheckoutForm() {
         throw new Error(data.error || "Checkout failed");
       }
 
-      // Keep the cart until order confirmation clears it after a successful return.
+      // Keep the cart until this browser's confirmation page accepts the payment.
+      markCheckoutStarted();
       if (provider === "paypal") {
         if (!data.url) throw new Error(data.error || "No PayPal checkout URL");
         window.location.href = data.url;
@@ -274,7 +354,7 @@ export function CheckoutForm() {
 
   if (items.length === 0) {
     return (
-      <div className="rounded-2xl border border-border bg-white p-10 text-center">
+      <div className="rounded-lg border border-border bg-white p-10 text-center">
         <h1 className="text-2xl font-extrabold text-primary">Your cart is empty</h1>
         <p className="mt-2 text-muted">Add some products before checking out.</p>
         <Link
@@ -290,13 +370,13 @@ export function CheckoutForm() {
   return (
     <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr]">
       <div className="space-y-6">
-        <section className="rounded-2xl border border-border bg-white p-6">
+        <section className="rounded-lg border border-border bg-white p-6">
           <h2 className="text-lg font-bold text-primary">1. Contact</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <div>
               <Label htmlFor="firstName">First name *</Label>
               <Input
-                id="firstName"
+                id="firstName" autoComplete="given-name"
                 value={form.firstName}
                 onChange={(e) => update("firstName", e.target.value)}
                 required
@@ -305,7 +385,7 @@ export function CheckoutForm() {
             <div>
               <Label htmlFor="lastName">Last name *</Label>
               <Input
-                id="lastName"
+                id="lastName" autoComplete="family-name"
                 value={form.lastName}
                 onChange={(e) => update("lastName", e.target.value)}
                 required
@@ -314,7 +394,7 @@ export function CheckoutForm() {
             <div>
               <Label htmlFor="email">Email *</Label>
               <Input
-                id="email"
+                id="email" autoComplete="email"
                 type="email"
                 value={form.email}
                 onChange={(e) => update("email", e.target.value)}
@@ -324,7 +404,7 @@ export function CheckoutForm() {
             <div>
               <Label htmlFor="phone">Phone *</Label>
               <Input
-                id="phone"
+                id="phone" autoComplete="tel"
                 type="tel"
                 value={form.phone}
                 onChange={(e) => update("phone", e.target.value)}
@@ -334,12 +414,59 @@ export function CheckoutForm() {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-border bg-white p-6">
+        {hasFittingService && fittingBooking ? (
+          <section className="rounded-lg border border-border bg-white p-6">
+            <h2 className="text-lg font-bold text-primary">
+              2. Fitting appointment
+            </h2>
+            <p className="mt-2 text-sm text-muted">
+              Workshop fitting — bring the car to the branch you requested.
+              We’ll confirm the date after payment.
+            </p>
+            <dl className="mt-4 space-y-2 text-sm">
+              <div className="flex justify-between gap-4">
+                <dt className="text-muted">Branch</dt>
+                <dd className="font-semibold text-primary">
+                  {form.collectionBranch ||
+                    fittingBranchCheckoutValue(fittingBooking.branch)}
+                </dd>
+              </div>
+              <div className="flex justify-between gap-4">
+                <dt className="text-muted">Requested slot</dt>
+                <dd className="text-right font-semibold text-primary">
+                  {fittingOptionSummary(fittingBooking)}
+                </dd>
+              </div>
+              <div className="flex justify-between gap-4">
+                <dt className="text-muted">Seat</dt>
+                <dd className="text-right text-primary">
+                  {seatSourceLabel(fittingBooking.seatSource)}
+                </dd>
+              </div>
+              <div className="flex justify-between gap-4">
+                <dt className="text-muted">Vehicle</dt>
+                <dd className="text-right text-primary">
+                  {fittingBooking.vehicleMake} {fittingBooking.vehicleModel}{" "}
+                  ({fittingBooking.vehicleYear})
+                </dd>
+              </div>
+            </dl>
+            <p className="mt-4 text-sm">
+              <Link
+                href="/vehicle-adaptations/multimac-fitting#book"
+                className="font-semibold text-primary underline"
+              >
+                Change date or details
+              </Link>
+            </p>
+          </section>
+        ) : (
+          <section className="rounded-lg border border-border bg-white p-6">
           <h2 className="text-lg font-bold text-primary">2. Delivery or collection</h2>
           <div className="mt-4 flex flex-wrap gap-3">
             <button
               type="button"
-              className={`rounded-full px-4 py-2 text-sm font-semibold ${
+              className={`min-h-11 rounded-full px-4 py-2 text-sm font-semibold ${
                 form.fulfillment === "delivery"
                   ? "bg-primary text-primary-foreground"
                   : "border border-border text-primary"
@@ -350,7 +477,7 @@ export function CheckoutForm() {
             </button>
             <button
               type="button"
-              className={`rounded-full px-4 py-2 text-sm font-semibold ${
+              className={`min-h-11 rounded-full px-4 py-2 text-sm font-semibold ${
                 form.fulfillment === "collection"
                   ? "bg-primary text-primary-foreground"
                   : "border border-border text-primary"
@@ -375,7 +502,7 @@ export function CheckoutForm() {
               <div>
                 <Label htmlFor="postcode">Postcode *</Label>
                 <Input
-                  id="postcode"
+                  id="postcode" autoComplete="postal-code"
                   value={form.postcode}
                   onChange={(e) => update("postcode", e.target.value)}
                   required
@@ -403,8 +530,18 @@ export function CheckoutForm() {
             </div>
           )}
         </section>
+        )}
 
-        <section className="rounded-2xl border border-border bg-white p-6">
+        {hasFittingService ? (
+          <section className="rounded-lg border border-border bg-white p-6">
+            <h2 className="text-lg font-bold text-primary">3. VAT</h2>
+            <p className="mt-2 text-sm text-muted">
+              The Multimac fitting fee is {formatGBP(includedVatSubtotal)}{" "}
+              including VAT. VAT relief does not apply to this installation.
+            </p>
+          </section>
+        ) : (
+          <section className="rounded-lg border border-border bg-white p-6">
           <h2 className="text-lg font-bold text-primary">3. VAT relief</h2>
           <p className="mt-2 text-sm text-muted">
             Catalogue line prices are ex VAT (VAT relief price). Standard
@@ -417,13 +554,12 @@ export function CheckoutForm() {
             </Link>
             .
           </p>
-          {batteryVatBlocked ? (
+          {hasBatteryOrCharger ? (
             <p className="mt-3 text-sm text-muted">
-              Batteries and chargers are only eligible for VAT relief when
-              collected and fitted at our workshop.
+              Batteries and chargers always include VAT. Relief still applies
+              to eligible mobility goods in the same order.
             </p>
-          ) : (
-            <>
+          ) : null}
               <label className="mt-4 flex items-start gap-3 text-sm">
                 <input
                   type="checkbox"
@@ -463,11 +599,11 @@ export function CheckoutForm() {
                   </label>
                 </div>
               ) : null}
-            </>
-          )}
         </section>
+        )}
 
-        <section className="rounded-2xl border border-border bg-white p-6">
+        {hasFittingService ? null : (
+        <section className="rounded-lg border border-border bg-white p-6">
           <h2 className="text-lg font-bold text-primary">4. Old scooter takeaway</h2>
           {takeawayEligible && availableTakeawayCredit > 0 ? (
             <>
@@ -570,9 +706,12 @@ export function CheckoutForm() {
             </p>
           )}
         </section>
+        )}
 
-        <section className="rounded-2xl border border-border bg-white p-6">
-          <h2 className="text-lg font-bold text-primary">5. Notes</h2>
+        <section className="rounded-lg border border-border bg-white p-6">
+          <h2 className="text-lg font-bold text-primary">
+            {hasFittingService ? "4. Notes" : "5. Notes"}
+          </h2>
           <div className="mt-4">
             <Label htmlFor="notes">Order notes (optional)</Label>
             <Textarea
@@ -589,7 +728,7 @@ export function CheckoutForm() {
         </section>
       </div>
 
-      <aside className="h-fit rounded-2xl border border-border bg-white p-6 lg:sticky lg:top-28">
+      <aside className="h-fit rounded-lg border border-border bg-white p-6 lg:sticky lg:top-28">
         <h2 className="text-lg font-bold text-primary">Order summary</h2>
         <ul className="mt-4 space-y-3">
           {items.map((item) => (
@@ -615,7 +754,7 @@ export function CheckoutForm() {
               <p className="text-sm font-semibold">
                 {formatGBP(linePrice(item.product) * item.quantity)}
                 <span className="block text-[10px] font-normal text-muted">
-                  ex VAT
+                  {item.product.priceIncludesVat ? "inc VAT" : "ex VAT"}
                 </span>
               </p>
             </li>
@@ -623,22 +762,33 @@ export function CheckoutForm() {
         </ul>
 
         <dl className="mt-6 space-y-2 border-t border-border pt-4 text-sm">
-          <div className="flex justify-between">
-            <dt className="text-muted">Subtotal (ex VAT)</dt>
-            <dd className="font-medium">{formatGBP(subtotal)}</dd>
-          </div>
-          <div className="flex justify-between">
-            <dt className="text-muted">
-              {form.isVatExempt && !batteryVatBlocked
-                ? "VAT (relief claimed)"
-                : `VAT (${vatRate}%)`}
-            </dt>
-            <dd className="font-medium">{formatGBP(vatAmount)}</dd>
-          </div>
-          <div className="flex justify-between">
-            <dt className="text-muted">Delivery</dt>
-            <dd className="font-medium">Free</dd>
-          </div>
+          {hasFittingService ? (
+            <div className="flex justify-between">
+              <dt className="text-muted">Fitting fee (inc VAT)</dt>
+              <dd className="font-medium">{formatGBP(includedVatSubtotal)}</dd>
+            </div>
+          ) : (
+            <>
+              <div className="flex justify-between">
+                <dt className="text-muted">Subtotal (ex VAT)</dt>
+                <dd className="font-medium">{formatGBP(subtotal)}</dd>
+              </div>
+              <div className="flex justify-between">
+                <dt className="text-muted">
+                  {reliefClaimed && vatAmount === 0
+                    ? "VAT (relief claimed)"
+                    : reliefClaimed
+                      ? "VAT (batteries and chargers)"
+                      : "VAT (20%)"}
+                </dt>
+                <dd className="font-medium">{formatGBP(vatAmount)}</dd>
+              </div>
+              <div className="flex justify-between">
+                <dt className="text-muted">Delivery</dt>
+                <dd className="font-medium">Free</dd>
+              </div>
+            </>
+          )}
           {takeawayCredit > 0 ? (
             <div className="flex justify-between text-accent-foreground">
               <dt>Old scooter takeaway</dt>
@@ -647,7 +797,7 @@ export function CheckoutForm() {
           ) : null}
           <div className="flex justify-between border-t border-border pt-2 text-base">
             <dt className="font-bold text-primary">
-              Total {form.isVatExempt && !batteryVatBlocked ? "(ex VAT)" : "(inc VAT)"}
+              Total {reliefClaimed && vatAmount === 0 ? "(ex VAT)" : "(inc VAT)"}
             </dt>
             <dd className="font-extrabold text-primary">{formatGBP(total)}</dd>
           </div>
@@ -669,20 +819,33 @@ export function CheckoutForm() {
                 ? "Loading card payments…"
                 : "Pay by card (DNA Payments)"}
           </Button>
-          {dnaFailed ? (
+          {dnaFailed && !hasFittingService ? (
             <p className="text-xs text-error">
               Card checkout could not load. You can still pay with PayPal below.
             </p>
           ) : null}
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full rounded-xl"
-            disabled={loading !== null}
-            onClick={() => pay("paypal")}
-          >
-            {loading === "paypal" ? "Redirecting to PayPal…" : "Pay with PayPal"}
-          </Button>
+          {dnaFailed && hasFittingService ? (
+            <p className="text-xs text-error">
+              Card payments could not load. Refresh the page or call us —
+              fitting bookings are paid by card.
+            </p>
+          ) : null}
+          {hasFittingService ? (
+            <p className="text-xs text-muted">
+              Fitting bookings are paid by card. The date you requested is
+              confirmed by our team after payment.
+            </p>
+          ) : (
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full rounded-xl"
+              disabled={loading !== null}
+              onClick={() => pay("paypal")}
+            >
+              {loading === "paypal" ? "Redirecting to PayPal…" : "Pay with PayPal"}
+            </Button>
+          )}
         </div>
         <p className="mt-4 text-center text-xs text-muted">
           Secure DNA Payments checkout. Prices are re-validated on the server
