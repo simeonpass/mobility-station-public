@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { startTransition, useEffect, useMemo, useState } from "react";
 import { useCart } from "@/components/cart/cart-provider";
 import { CatalogImage } from "@/components/product/catalog-image";
 import { Button } from "@/components/ui/button";
@@ -13,8 +13,14 @@ import {
   isUsedCartProduct,
   linePrice,
   markCheckoutStarted,
+  readCheckoutHandoff,
   type CheckoutPayload,
 } from "@/lib/cart";
+import {
+  readCheckoutDraft,
+  saveCheckoutDraft,
+  type CheckoutDraft,
+} from "@/lib/checkout-draft";
 import {
   fittingBranchCheckoutValue,
   fittingOptionSummary,
@@ -44,7 +50,14 @@ export function CheckoutForm() {
     null,
   );
   const [zoneChecking, setZoneChecking] = useState(false);
-  const [form, setForm] = useState({
+  /** True once the saved draft (if any) has been read into state. */
+  const [draftReady, setDraftReady] = useState(false);
+  /** Customer came back here after DNA or PayPal without paying. */
+  const [returnedFromPayment, setReturnedFromPayment] = useState(false);
+  const [form, setForm] = useState<Omit<
+    CheckoutDraft,
+    "declarationConfirmed" | "takeawayRequested"
+  >>({
     email: "",
     firstName: "",
     lastName: "",
@@ -57,6 +70,40 @@ export function CheckoutForm() {
     vatConditionId: "",
     notes: "",
   });
+
+  // DNA and PayPal take the whole tab away. Bring back what the customer
+  // typed if they close the payment page or press back, and say so calmly.
+  useEffect(() => {
+    const draft = readCheckoutDraft();
+    const checkReturn = () =>
+      setReturnedFromPayment(readCheckoutHandoff(null).started);
+    startTransition(() => {
+      if (draft) {
+        const {
+          declarationConfirmed: declared,
+          takeawayRequested: takeaway,
+          ...fields
+        } = draft;
+        setForm(fields);
+        setDeclarationConfirmed(declared);
+        setTakeawayRequested(takeaway);
+      }
+      checkReturn();
+      setDraftReady(true);
+    });
+    // A back/forward-cache restore keeps React state, so re-check then too.
+    const onPageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) checkReturn();
+    };
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
+  }, []);
+
+  // Keep the saved draft in step with every change.
+  useEffect(() => {
+    if (!draftReady) return;
+    saveCheckoutDraft({ ...form, declarationConfirmed, takeawayRequested });
+  }, [draftReady, form, declarationConfirmed, takeawayRequested]);
 
   const hasFittingService = useMemo(
     () => items.some((item) => isFittingServiceProduct(item.product)),
@@ -162,12 +209,19 @@ export function CheckoutForm() {
   const takeawayAvailable =
     takeawayEligible && availableTakeawayCredit > 0 && takeawayLocationOk;
 
+  // A delivery postcode whose zone check has not started or finished yet.
+  // Leave a restored takeaway tick alone until we know the answer.
+  const zonePending =
+    form.fulfillment === "delivery" &&
+    form.postcode.trim().length >= 5 &&
+    (zoneChecking || deliveryZone === null);
+
   useEffect(() => {
-    if (zoneChecking) return;
+    if (zonePending) return;
     if (takeawayRequested && !takeawayAvailable) {
       setTakeawayRequested(false);
     }
-  }, [takeawayRequested, takeawayAvailable, zoneChecking]);
+  }, [takeawayRequested, takeawayAvailable, zonePending]);
 
   const takeawayCredit =
     takeawayRequested && takeawayAvailable ? availableTakeawayCredit : 0;
@@ -317,6 +371,7 @@ export function CheckoutForm() {
     }
 
     setError(null);
+    setReturnedFromPayment(false);
     setLoading(provider);
     try {
       const res = await fetch(`/api/checkout/${provider}`, {
@@ -368,6 +423,25 @@ export function CheckoutForm() {
   }
 
   return (
+    <>
+      {returnedFromPayment ? (
+        <div
+          role="status"
+          className="mb-6 rounded-lg border border-border bg-soft px-4 py-3 text-sm"
+        >
+          <p className="font-semibold text-primary">No payment was taken.</p>
+          <p className="mt-1 text-muted">
+            Your details are still here. Pay when you’re ready, or call{" "}
+            <a
+              href="tel:08007723870"
+              className="font-semibold text-primary underline"
+            >
+              0800 772 3870
+            </a>{" "}
+            if you’d like to check anything first.
+          </p>
+        </div>
+      ) : null}
     <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr]">
       <div className="space-y-6">
         <section className="rounded-lg border border-border bg-white p-6">
@@ -853,5 +927,6 @@ export function CheckoutForm() {
         </p>
       </aside>
     </div>
+    </>
   );
 }
