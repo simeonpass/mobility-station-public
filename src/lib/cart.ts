@@ -1,3 +1,6 @@
+import type { MultimacFittingBookingPayload } from "@/lib/multimac-fitting";
+import { isFittingServiceProduct } from "@/lib/multimac-fitting";
+
 export type CartProduct = {
   /** Unique cart line key (may include option/add-on config). */
   id: string;
@@ -19,6 +22,10 @@ export type CartProduct = {
   addonVariantId?: string;
   /** Human-readable options summary for display. */
   optionSummary?: string;
+  /** Service lines billed as a customer-facing inc-VAT total. */
+  priceIncludesVat?: boolean;
+  /** Multimac fitting appointment details, carried through to checkout. */
+  fittingBooking?: MultimacFittingBookingPayload;
 };
 
 export type CartItem = {
@@ -27,6 +34,44 @@ export type CartItem = {
 };
 
 export const CART_STORAGE_KEY = "ms-cart";
+/** Set when this browser starts DNA or PayPal checkout. */
+export const CHECKOUT_STARTED_KEY = "ms-checkout-started";
+/** Order reference already treated as paid in this browser. */
+export const CHECKOUT_CONFIRMED_KEY = "ms-checkout-confirmed";
+
+export function markCheckoutStarted() {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.setItem(CHECKOUT_STARTED_KEY, "1");
+  } catch {
+    /* private mode */
+  }
+}
+
+export function readCheckoutHandoff(order: string | null) {
+  if (typeof window === "undefined") {
+    return { started: false, confirmed: false };
+  }
+  try {
+    return {
+      started: sessionStorage.getItem(CHECKOUT_STARTED_KEY) === "1",
+      confirmed:
+        Boolean(order) &&
+        sessionStorage.getItem(CHECKOUT_CONFIRMED_KEY) === order,
+    };
+  } catch {
+    return { started: false, confirmed: false };
+  }
+}
+
+export function rememberCheckoutConfirmed(order: string) {
+  try {
+    sessionStorage.setItem(CHECKOUT_CONFIRMED_KEY, order);
+    sessionStorage.removeItem(CHECKOUT_STARTED_KEY);
+  } catch {
+    /* private mode */
+  }
+}
 
 export function linePrice(product: CartProduct) {
   if (product.sale_price != null && product.sale_price > 0) {
@@ -50,10 +95,21 @@ export function isUsedCartProduct(product: CartProduct) {
   );
 }
 
+export function isExclusiveCartProduct(product: {
+  product_type?: string | null;
+  category?: string | null;
+  id?: string;
+  stockItemId?: string;
+  slug?: string | null;
+}) {
+  return isAdaptationProduct(product) || isFittingServiceProduct(product);
+}
+
 export function isAdaptationProduct(product: {
   product_type?: string | null;
   category?: string | null;
 }) {
+  if (product.product_type === "fitting_service") return false;
   return (
     product.product_type === "vehicle_adaptation" ||
     // Keep in sync with src/lib/adaptations.ts category list for cart safety
@@ -100,7 +156,7 @@ export function cartProductFromListItem(product: {
   product_type: string | null;
   pre_order_enabled?: boolean;
 }): CartProduct | null {
-  if (isAdaptationProduct(product)) return null;
+  if (isExclusiveCartProduct(product)) return null;
   const unit = Number(product.unit_price);
   const sale = Number(product.sale_price);
   const hasUnit = Number.isFinite(unit) && unit > 0;
@@ -179,6 +235,8 @@ export type CheckoutPayload = {
   deliveryFee?: number;
   /** Old scooter takeaway gesture — credit recalculated server-side. */
   takeawayRequested?: boolean;
+  /** Workshop fitting appointment — paid as a service, not a stock item. */
+  fittingBooking?: MultimacFittingBookingPayload;
 };
 
 export const VAT_CONDITIONS = [
